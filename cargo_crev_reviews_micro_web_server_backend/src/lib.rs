@@ -1,30 +1,13 @@
 // cargo_crev_reviews_micro_web_server_backend/src/lib.rs
 
-use serde::{Deserialize, Serialize};
+//! This module contains the boilerplate to parse and match
+//! The real code is in functions_mod
+mod functions_mod;
+
+use cargo_crev_reviews_common::*;
+use functions_mod::*;
 use simple_server::{Method, Server, StatusCode};
 use unwrap::unwrap;
-
-// region: server - parse, match
-#[derive(Serialize, Deserialize, Debug)]
-struct RpcMethod {
-    jsonrpc: String,
-    method: String,
-    params: serde_json::Value,
-    id: u32,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-struct RpcErrorCodeMessage {
-    code: i32,
-    message: String,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-struct RpcError {
-    jsonrpc: String,
-    error: RpcErrorCodeMessage,
-    id: u32,
-}
 
 pub fn start_web_server(host: &str, port: &str) {
     println!("cargo_crev_reviews_micro_web_server_backend started");
@@ -61,33 +44,20 @@ fn parse_post_data_and_match_method(data: &str) -> String {
         format!("error: jsonrpc != 2.0")
     } else {
         match p.method.as_str() {
-            "subtract" => subtract(p.params, p.id),
+            // here add methods and functions that this server recognizes
+            "subtract" => subtract_json(p.params, p.id),
             _ => format!("unknown method = {}", &p.method),
         }
     }
 }
 // region: server - parse, match
 
-// region: subtract
-#[derive(Serialize, Deserialize, Debug)]
-struct SubtractParams {
-    subtrahend: f64,
-    minuend: f64,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-struct SubtractResult {
-    jsonrpc: String,
-    result: f64,
-    id: u32,
-}
-
-fn subtract(params: serde_json::Value, id: u32) -> String {
+fn subtract_json(params: serde_json::Value, id: u32) -> String {
     //println!("SubtractParams: {}", &params);
     let p: SubtractParams = unwrap!(serde_json::from_value(params));
     println!("SubtractParams = {:?}", &p);
 
-    let subtraction = p.subtrahend - p.minuend;
+    let subtraction = subtract(p.subtrahend, p.minuend);
 
     let r = SubtractResult {
         jsonrpc: "2.0".to_string(),
@@ -98,4 +68,3 @@ fn subtract(params: serde_json::Value, id: u32) -> String {
     // return
     body
 }
-// endregion: subtract

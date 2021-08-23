@@ -1,7 +1,6 @@
 use env_logger;
 use log::*;
 
-
 use simple_server::{Method, Server, StatusCode};
 
 fn main() {

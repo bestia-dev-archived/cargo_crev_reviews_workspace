@@ -1,9 +1,10 @@
-
 use simple_server::Server;
 
 #[test]
 fn test_server_new() {
-    Server::new(|_request, response| Ok(response.body("Hello Rust!(test_server_new)".as_bytes().to_vec())?));
+    Server::new(|_request, response| {
+        Ok(response.body("Hello Rust!(test_server_new)".as_bytes().to_vec())?)
+    });
 }
 
 #[test]

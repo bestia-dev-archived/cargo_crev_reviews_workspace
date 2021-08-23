@@ -61,9 +61,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "cargo_crev_reviews_common"
+version = "2020.1228.1953"
+dependencies = [
+ "serde",
+ "serde_json",
+ "unwrap",
+]
+
+[[package]]
 name = "cargo_crev_reviews_micro_web_server_backend"
 version = "2020.1228.1953"
 dependencies = [
+ "cargo_crev_reviews_common",
  "serde",
  "serde_json",
  "simple_server",

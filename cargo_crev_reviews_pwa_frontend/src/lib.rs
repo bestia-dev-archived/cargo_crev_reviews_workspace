@@ -18,7 +18,10 @@ pub fn wasm_bindgen_start() -> Result<(), JsValue> {
     // Initialize debugging for when/if something goes wrong.
     console_error_panic_hook::set_once();
     // write the app version just for debug purposes
-    w::debug_write(&format!("cargo_crev_reviews v{}", env!("CARGO_PKG_VERSION")));
+    w::debug_write(&format!(
+        "cargo_crev_reviews v{}",
+        env!("CARGO_PKG_VERSION")
+    ));
     // set the window initial size (only on desktop)
     unwrap!(w::window().resize_to(360, 640));
 

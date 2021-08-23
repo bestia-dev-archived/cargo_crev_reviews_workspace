@@ -23,12 +23,12 @@
 //! To see examples of this crate in use, please consult the `examples`
 //! directory.
 
-use log::*;
-use unwrap::unwrap;
 use http;
+use log::*;
 use num_cpus;
 use scoped_threadpool;
 use time;
+use unwrap::unwrap;
 
 pub use http::method::Method;
 pub use http::response::Builder as ResponseBuilder;
@@ -391,7 +391,7 @@ impl Server {
             Ok(response) => Ok(write_response(response, stream)?),
             Err(_) => {
                 let mut response_builder = Response::builder();
-                response_builder =  response_builder.status(StatusCode::INTERNAL_SERVER_ERROR);
+                response_builder = response_builder.status(StatusCode::INTERNAL_SERVER_ERROR);
 
                 let response = response_builder
                     .body("<h1>500</h1><p>Internal Server Error!<p>".as_bytes())
@@ -423,9 +423,10 @@ fn write_response<T: Borrow<[u8]>, S: Write>(
 
     if !parts.headers.contains_key(http::header::DATE) {
         // let date = time::strftime("%a, %d %b %Y %H:%M:%S GMT", &time::now_utc()).unwrap();
-        let format_description = unwrap!( time::format_description::parse("[weekday repr:short], [day] [month repr:short] [year] [hour]:[minute]:[second] GMT"));
-        let date = unwrap!( time::OffsetDateTime::now_utc().format(&format_description));
-
+        let format_description = unwrap!(time::format_description::parse(
+            "[weekday repr:short], [day] [month repr:short] [year] [hour]:[minute]:[second] GMT"
+        ));
+        let date = unwrap!(time::OffsetDateTime::now_utc().format(&format_description));
 
         write!(text, "date: {}\r\n", date).unwrap();
     }
@@ -449,9 +450,9 @@ fn write_response<T: Borrow<[u8]>, S: Write>(
 #[test]
 fn test_write_response() {
     let builder = http::response::Builder::new()
-    .status(http::StatusCode::OK)
-    .header(http::header::DATE, "Thu, 01 Jan 1970 00:00:00 GMT")
-    .header(http::header::CONTENT_TYPE, "text/plain".as_bytes());
+        .status(http::StatusCode::OK)
+        .header(http::header::DATE, "Thu, 01 Jan 1970 00:00:00 GMT")
+        .header(http::header::CONTENT_TYPE, "text/plain".as_bytes());
 
     let mut output = vec![];
     let _ = write_response(builder.body("Hello rust".as_bytes()).unwrap(), &mut output).unwrap();
@@ -468,10 +469,10 @@ fn test_write_response() {
 #[test]
 fn test_write_response_no_headers() {
     let builder = http::response::Builder::new()
-    // Well, no headers besides the date ;) Otherwise, we wouldn't know
-    // what `expected` should be.
-    .header(http::header::DATE, "Thu, 01 Jan 1970 00:00:00 GMT")
-    .status(http::StatusCode::OK);
+        // Well, no headers besides the date ;) Otherwise, we wouldn't know
+        // what `expected` should be.
+        .header(http::header::DATE, "Thu, 01 Jan 1970 00:00:00 GMT")
+        .status(http::StatusCode::OK);
 
     let mut output = vec![];
     let _ = write_response(builder.body("Hello rust".as_bytes()).unwrap(), &mut output).unwrap();
