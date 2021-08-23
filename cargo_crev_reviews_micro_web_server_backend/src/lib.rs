@@ -1,11 +1,11 @@
 // cargo_crev_reviews_micro_web_server_backend/src/lib.rs
 
 //! This module contains the boilerplate to parse and match
-//! The real code is in functions_mod
-mod functions_mod;
+//! The real code is in methods_mod
+mod methods_mod;
 
 use cargo_crev_reviews_common::*;
-use functions_mod::*;
+use methods_mod::*;
 use simple_server::{Method, Server, StatusCode};
 use unwrap::unwrap;
 
@@ -44,7 +44,7 @@ fn parse_post_data_and_match_method(data: &str) -> String {
         format!("error: jsonrpc != 2.0")
     } else {
         match p.method.as_str() {
-            // here add methods and functions that this server recognizes
+            // here add methods that this server recognizes
             "subtract" => subtract_json(p.params, p.id),
             _ => format!("unknown method = {}", &p.method),
         }

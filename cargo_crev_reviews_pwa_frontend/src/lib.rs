@@ -13,7 +13,7 @@ use wasm_bindgen_futures::spawn_local;
 use crate::web_sys_mod as w;
 
 #[wasm_bindgen(start)]
-/// To start the Wasm application, wasm_bindgen runs this functions
+/// To start the Wasm application, wasm_bindgen runs this function
 pub fn wasm_bindgen_start() -> Result<(), JsValue> {
     // Initialize debugging for when/if something goes wrong.
     console_error_panic_hook::set_once();

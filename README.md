@@ -9,6 +9,11 @@ Write cargo-crev reviews in a Graphical User Interface
 [comment]: # (auto_cargo_toml_to_md end)
 
 [comment]: # (auto_lines_of_code start)
+[![Lines in Rust code](https://img.shields.io/badge/Lines_in_Rust-898-green.svg)](https://github.com/LucianoBestia/cargo_crev_reviews/)
+[![Lines in Doc comments](https://img.shields.io/badge/Lines_in_Doc_comments-243-blue.svg)](https://github.com/LucianoBestia/cargo_crev_reviews/)
+[![Lines in Comments](https://img.shields.io/badge/Lines_in_comments-66-purple.svg)](https://github.com/LucianoBestia/cargo_crev_reviews/)
+[![Lines in examples](https://img.shields.io/badge/Lines_in_examples-100-yellow.svg)](https://github.com/LucianoBestia/cargo_crev_reviews/)
+[![Lines in tests](https://img.shields.io/badge/Lines_in_tests-143-orange.svg)](https://github.com/LucianoBestia/cargo_crev_reviews/)
 
 [comment]: # (auto_lines_of_code end)
 
@@ -45,6 +50,7 @@ The rust workspace is made of members that have their own README.md:
 
 - backend : [cargo_crev_reviews_micro_web_server_backend](https://github.com/LucianoBestia/cargo_crev_reviews/blob/main/cargo_crev_reviews_micro_web_server_backend/README.md)  
 - GUI frontend : [cargo_crev_reviews_pwa_frontend](https://github.com/LucianoBestia/cargo_crev_reviews/blob/main/cargo_crev_reviews_pwa_frontend/README.md)  
+- common structs : [cargo_crev_reviews_common](https://github.com/LucianoBestia/cargo_crev_reviews/blob/main/cargo_crev_review_common/README.md) 
 - simple server : [simple_server](https://github.com/LucianoBestia/cargo_crev_reviews/blob/main/simple_server/README.md)  
 
 The sub-directory `web_server_folder` contains all the files and folder structure for a working development web_server.  

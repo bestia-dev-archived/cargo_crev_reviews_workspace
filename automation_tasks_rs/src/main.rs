@@ -1,8 +1,8 @@
-//! automation_tasks_rs with_lib
+//! automation_tasks_rs workspace
 
 use cargo_auto_lib::*;
 
-/// automation_tasks_rs with_lib
+/// automation_tasks_rs workspace
 fn main() {
     exit_if_not_run_in_rust_project_root_directory();
 
@@ -89,7 +89,7 @@ fn completion() {
 
 // region: tasks
 
-/// example how to call a list of shell commands
+/// build every member of workspace
 fn task_build() {
     #[rustfmt::skip]
     let shell_commands = [
@@ -104,12 +104,11 @@ run`cargo auto release`
     );
 }
 
-/// example how to call one shell command and combine with rust code
+/// this workspace is basically one single application splitted into 3 projects
+/// it deserves the same version number
 fn task_release() {
-    // `semver` is used for libraries, `version_from_date` is used for binary executables
-    //auto_semver_increment_patch();
-    auto_version_from_date();
-    auto_cargo_toml_to_md();
+    //auto_version_from_date();
+    //auto_cargo_toml_to_md();
     auto_lines_of_code("");
 
     run_shell_command("cargo fmt");
