@@ -26,7 +26,7 @@ Rust does not have a true GUI story. It is mostly for [CLI](https://en.wikipedia
 But it is the best language for [Wasm/Webassembly](https://webassembly.org/). So let's combine this.  
 I will make a rust [workspace](https://doc.rust-lang.org/book/ch14-03-cargo-workspaces.html) (multi-projects):
 
-1. CLI for a web server (microserver)
+1. CLI for a web server (micro-server)
 2. Wasm for the browser (chrome and similar)
 
 The web server CLI will access files, commands, libraries and maybe the network. This will work only in [Linux](https://en.wikipedia.org/wiki/Linux), but today Win10 has integrated Linux with [WSL2](https://en.wikipedia.org/wiki/Windows_Subsystem_for_Linux). It will work just fine on most common existing operating systems.  
@@ -39,8 +39,15 @@ For the browser I will create a [PWA - Progressive Web Application](https://en.w
 ## Development
 
 I will use [cargo-auto](https://crates.io/crates/cargo-auto) to automate the tasks needed to build the project. It is a workspace (multi-project), so this will be interesting. Probably a new template for my [cargo-auto](https://crates.io/crates/cargo-auto) will be born from this project.  
+The sub-directory `automation_tasks_rs` is the rust project for [cargo-auto](https://crates.io/crates/cargo-auto).  
 
+The rust workspace is made of members that have their own README.md:
 
+- backend : [cargo_crev_reviews_micro_web_server_backend](https://github.com/LucianoBestia/cargo_crev_reviews/blob/main/cargo_crev_reviews_micro_web_server_backend/README.md)  
+- GUI frontend : [cargo_crev_reviews_pwa_frontend](https://github.com/LucianoBestia/cargo_crev_reviews/blob/main/cargo_crev_reviews_pwa_frontend/README.md)  
+- simple server : [simple_server](https://github.com/LucianoBestia/cargo_crev_reviews/blob/main/simple_server/README.md)  
+
+The sub-directory `web_server_folder` contains all the files and folder structure for a working development web_server.  
 
 ## cargo crev reviews and advisory
 

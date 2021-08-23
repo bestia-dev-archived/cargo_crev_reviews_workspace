@@ -1,6 +1,5 @@
-use cargo_crev_reviews_micro_web_server_backend;
 
-use cargo_crev_reviews_micro_web_server_backend::Server;
+use simple_server::Server;
 
 #[test]
 fn test_server_new() {

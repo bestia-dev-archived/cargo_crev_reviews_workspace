@@ -64,14 +64,9 @@ dependencies = [
 name = "cargo_crev_reviews_micro_web_server_backend"
 version = "2020.1228.1953"
 dependencies = [
- "env_logger",
- "http",
- "httparse",
- "log",
- "num_cpus",
- "scoped_threadpool",
+ "serde",
+ "serde_json",
  "simple_server",
- "time 0.3.1",
  "unwrap",
 ]
 

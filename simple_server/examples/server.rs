@@ -1,9 +1,7 @@
 use env_logger;
 use log::*;
 
-use cargo_crev_reviews_micro_web_server_backend;
-
-use cargo_crev_reviews_micro_web_server_backend::Server;
+use simple_server::Server;
 
 fn main() {
     env_logger::init();
