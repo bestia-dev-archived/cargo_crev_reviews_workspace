@@ -50,14 +50,14 @@ The rust workspace is made of members that have their own README.md:
 
 - backend : [cargo_crev_reviews_micro_web_server_backend](https://github.com/LucianoBestia/cargo_crev_reviews/blob/main/cargo_crev_reviews_micro_web_server_backend/README.md)  
 - GUI frontend : [cargo_crev_reviews_pwa_frontend](https://github.com/LucianoBestia/cargo_crev_reviews/blob/main/cargo_crev_reviews_pwa_frontend/README.md)  
-- common structs : [cargo_crev_reviews_common](https://github.com/LucianoBestia/cargo_crev_reviews/blob/main/cargo_crev_review_common/README.md) 
+- common structs : [cargo_crev_reviews_common](https://github.com/LucianoBestia/cargo_crev_reviews/blob/main/cargo_crev_reviews_common/README.md) 
 - simple server : [simple_server](https://github.com/LucianoBestia/cargo_crev_reviews/blob/main/simple_server/README.md)  
 
 The sub-directory `web_server_folder` contains all the files and folder structure for a working development web_server.  
 
 ## cargo crev reviews and advisory
 
-We leave in times of danger with `supply chain attacks`.  
+We leave in times of danger with [supply chain attacks](https://en.wikipedia.org/wiki/Supply_chain_attack).  
 It is recommended to always use [cargo-crev](https://github.com/crev-dev/cargo-crev)  
 to verify the trustworthiness of each of your dependencies.  
 Please, spread this info.  
