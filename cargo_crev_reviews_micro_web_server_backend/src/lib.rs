@@ -1,15 +1,29 @@
 // cargo_crev_reviews_micro_web_server_backend/src/lib.rs
 
-use unwrap::unwrap;
-use simple_server::{Method, Server, StatusCode};
 use serde::{Deserialize, Serialize};
-use serde_json::{Result};
+use simple_server::{Method, Server, StatusCode};
+use unwrap::unwrap;
+
+// region: server - parse, match
+#[derive(Serialize, Deserialize, Debug)]
+struct RpcMethod {
+    jsonrpc: String,
+    method: String,
+    params: serde_json::Value,
+    id: u32,
+}
 
 #[derive(Serialize, Deserialize, Debug)]
-struct RpcMethod{
-    jsonrpc:String,
-    method:String,
-    params:serde_json::Value
+struct RpcErrorCodeMessage {
+    code: i32,
+    message: String,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+struct RpcError {
+    jsonrpc: String,
+    error: RpcErrorCodeMessage,
+    id: u32,
 }
 
 pub fn start_web_server(host: &str, port: &str) {
@@ -20,7 +34,7 @@ pub fn start_web_server(host: &str, port: &str) {
         match request.method() {
             &Method::GET => {
                 // I will use only POST, never GET
-                // let body = format!("The path you requested was '{}'", request.uri().path());                 
+                // let body = format!("The path you requested was '{}'", request.uri().path());
                 // Ok(response.body(body.into_bytes())?)
                 Ok(response.body(b"<h1>404</h1><p>Not found!<p>".to_vec())?)
             }
@@ -38,36 +52,50 @@ pub fn start_web_server(host: &str, port: &str) {
     server.listen(host, port);
 }
 
-fn parse_post_data_and_match_method(data:&str)->String{
+/// <https://www.jsonrpc.org/specification>
+fn parse_post_data_and_match_method(data: &str) -> String {
     //println!("data: {}", data);
     let p: RpcMethod = unwrap!(serde_json::from_str(data));
     //println!("deserialized = {:?}", &p);
-    let mut body="unknown data params".to_string();
-    if p.jsonrpc != "2.0"{
-        body = format!("error: jsonrpc != 2.0");    
+    if p.jsonrpc != "2.0" {
+        format!("error: jsonrpc != 2.0")
     } else {
-        body = match p.method.as_str(){
-            "subtract" => subtract(p.params),
-            _ => format!("unknown method = {}", &p.method)
-
-        };        
+        match p.method.as_str() {
+            "subtract" => subtract(p.params, p.id),
+            _ => format!("unknown method = {}", &p.method),
+        }
     }
-    // return
-    body
+}
+// region: server - parse, match
+
+// region: subtract
+#[derive(Serialize, Deserialize, Debug)]
+struct SubtractParams {
+    subtrahend: f64,
+    minuend: f64,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-struct SubtractParams{
-    subtrahend:f64, 
-    minuend:f64
+struct SubtractResult {
+    jsonrpc: String,
+    result: f64,
+    id: u32,
 }
 
-fn subtract(params:serde_json::Value) -> String {
+fn subtract(params: serde_json::Value, id: u32) -> String {
     //println!("SubtractParams: {}", &params);
     let p: SubtractParams = unwrap!(serde_json::from_value(params));
     println!("SubtractParams = {:?}", &p);
+
     let subtraction = p.subtrahend - p.minuend;
-    let body=format!("subtraction = {}", &subtraction);
+
+    let r = SubtractResult {
+        jsonrpc: "2.0".to_string(),
+        result: subtraction,
+        id,
+    };
+    let body = unwrap!(serde_json::to_string(&r));
     // return
     body
 }
+// endregion: subtract
