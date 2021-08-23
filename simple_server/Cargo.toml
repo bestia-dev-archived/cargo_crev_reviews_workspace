@@ -1,7 +1,7 @@
 [package]
-name = "cargo_crev_reviews_micro_web_server_backend"
+name = "simple_server"
 version = "2020.1228.1953"
-description = "Micro web server that is the backend of the application cargo_crev_reviews"
+description = "simple server from https://github.com/steveklabnik/simple-server"
 authors = ["Luciano Bestia"]
 edition = "2018"
 license = "MIT"
@@ -12,8 +12,6 @@ keywords = ["server", "http"]
 publish = false
 
 [dependencies]
-simple_server = { path = "../simple_server" }
-
 unwrap = "1.2.1"
 http = "0.2.4"
 httparse = "1.5.1"
@@ -21,4 +19,6 @@ num_cpus = "1"
 log = "0.4.14"
 time = {version = "0.3.1", features=["default","parsing", "formatting", "macros","std"]}
 scoped_threadpool = "0.1.7"
+
+[dev-dependencies]
 env_logger = "0.9.0"

@@ -70,6 +70,7 @@ dependencies = [
  "log",
  "num_cpus",
  "scoped_threadpool",
+ "simple_server",
  "time 0.3.1",
  "unwrap",
 ]
@@ -334,6 +335,20 @@ dependencies = [
  "itoa",
  "ryu",
  "serde",
+]
+
+[[package]]
+name = "simple_server"
+version = "2020.1228.1953"
+dependencies = [
+ "env_logger",
+ "http",
+ "httparse",
+ "log",
+ "num_cpus",
+ "scoped_threadpool",
+ "time 0.3.1",
+ "unwrap",
 ]
 
 [[package]]

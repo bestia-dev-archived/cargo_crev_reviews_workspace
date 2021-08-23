@@ -3,6 +3,7 @@
 members = [
     "cargo_crev_reviews_micro_web_server_backend",
     "cargo_crev_reviews_pwa_frontend",
+    "simple_server"
 ]
 
 exclude = [
