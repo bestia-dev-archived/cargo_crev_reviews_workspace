@@ -7,6 +7,13 @@ Together the backend and the frontend form a complete application that is cross-
 They share some structs for communication that are defines in a `common` project.  
 The only URL the server operates is: <http://127.0.0.1:8182/cargo_crev_reviews>
 
+## publish only one binary file
+
+If I want to publish this on crates.io it must all be inside one binary executable file.  
+It means that all the static files: css, html, icons, images, ... must be inside the rust code.  
+For developing it is practical to have all this files.  
+I will write an automation task that will convert this files to strings and put it in rust code.  
+
 ## development
 
 the micro-server will accept only [POST](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/POST). It must contain [json-rpc](https://www.jsonrpc.org/specification) like:

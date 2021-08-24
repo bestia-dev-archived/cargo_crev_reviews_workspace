@@ -3,6 +3,7 @@
         "httparse",
         "paypal",
         "steveklabnik",
+        "stylesheet",
         "zdravje"
     ]
 }
