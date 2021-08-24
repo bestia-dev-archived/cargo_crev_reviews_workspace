@@ -56,10 +56,8 @@ fn parse_get_uri_and_response_file(path: &str, response: simple_server::Builder)
     println!("path: {}", path);
     match path {
         "/cargo_crev_reviews/index.html" => response_file_text(response, index_html, path, Cache::NoStore),
-        "/cargo_crev_reviews/templates/review_new_review_template.html" => response_file_text(response, templates_review_new_review_template_html, path, Cache::NoStore),
-        "/cargo_crev_reviews/css/cargo_crev_reviews.css" => {
-            response_file_text(response, files_mod::css_cargo_crev_reviews_css, path, Cache::Ok)
-        }
+        "/cargo_crev_reviews/pages/new_review.html" => response_file_text(response, pages_new_review_html, path, Cache::NoStore),
+        "/cargo_crev_reviews/css/cargo_crev_reviews.css" => response_file_text(response, files_mod::css_cargo_crev_reviews_css, path, Cache::Ok),
         "/cargo_crev_reviews/css/fontawesome.css" => response_file_text(response, css_fontawesome_css, path, Cache::Ok),
         "/cargo_crev_reviews/css/normalize.css" => response_file_text(response, css_normalize_css, path, Cache::Ok),
         "/cargo_crev_reviews/css/Roboto-Medium.woff2" => response_file_base64(response, css_roboto_medium_woff2, path),
@@ -67,6 +65,10 @@ fn parse_get_uri_and_response_file(path: &str, response: simple_server::Builder)
         "/cargo_crev_reviews/icons/icon-032.png" => response_file_base64(response, icons_icon_032_png, path),
         "/cargo_crev_reviews/icons/icon-128.png" => response_file_base64(response, icons_icon_128_png, path),
         "/cargo_crev_reviews/icons/icon-192.png" => response_file_base64(response, icons_icon_192_png, path),
+
+        "/cargo_crev_reviews/pkg/cargo_crev_reviews.js" => response_file_text(response, pkg_cargo_crev_reviews_js, path, Cache::NoStore),
+        "/cargo_crev_reviews/pkg/cargo_crev_reviews_bg.wasm" => response_file_base64(response, pkg_cargo_crev_reviews_bg_wasm, path),
+
         _ => response_404_not_found(response, path),
     }
 }
@@ -82,29 +84,13 @@ fn file_not_found_404() -> &'static str {
     r#"<h1>404</h1><p>Not found! URI must start with `/cargo_crev_reviews`<p>"#
 }
 
-fn response_file_base64(response: simple_server::Builder, f: fn() -> &'static str, path: &str) -> Response<Vec<u8>> {
-    let mime_type = if path.ends_with(".png") {
-        "image/png"
-    } else if path.ends_with(".woff2") {
-        "font/woff2"
-    } else {
-        "image/png"
-    };
-    let response = response.header(http::header::CONTENT_TYPE, mime_type.as_bytes());
-    let body = f().replace("\n", "");
-    unwrap!(response.body(unwrap!(base64::decode(body))))
-}
-
-fn response_file_text(
-    response: simple_server::Builder,
-    f: fn() -> &'static str,
-    path: &str,
-    cache: Cache,
-) -> Response<Vec<u8>> {
+fn response_file_text(response: simple_server::Builder, f: fn() -> &'static str, path: &str, cache: Cache) -> Response<Vec<u8>> {
     let mime_type = if path.ends_with(".html") {
         "text/html"
     } else if path.ends_with(".css") {
         "text/css"
+    } else if path.ends_with(".js") {
+        "application/javascript"
     } else {
         "text/html"
     };
@@ -115,6 +101,21 @@ fn response_file_text(
     };
     let body = f().to_string();
     unwrap!(response.body(body.into_bytes()))
+}
+
+fn response_file_base64(response: simple_server::Builder, f: fn() -> &'static str, path: &str) -> Response<Vec<u8>> {
+    let mime_type = if path.ends_with(".png") {
+        "image/png"
+    } else if path.ends_with(".woff2") {
+        "font/woff2"
+    } else if path.ends_with(".wasm") {
+        "application/wasm"
+    } else {
+        "image/png"
+    };
+    let response = response.header(http::header::CONTENT_TYPE, mime_type.as_bytes());
+    let body = f().replace("\n", "");
+    unwrap!(response.body(unwrap!(base64::decode(body))))
 }
 
 /// <https://www.jsonrpc.org/specification>

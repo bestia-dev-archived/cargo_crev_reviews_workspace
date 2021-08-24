@@ -40,12 +40,7 @@ pub fn find_from(source_str: &str, pos_cursor: usize, find_str: &str) -> Option<
 
 /// returns string between the start end end delimiters without delimiters
 /// and the new cursor position
-pub fn get_delimited_text(
-    source_str: &str,
-    pos_cursor: usize,
-    start_delimiter: &str,
-    end_delimiter: &str,
-) -> Option<(String, usize)> {
+pub fn get_delimited_text(source_str: &str, pos_cursor: usize, start_delimiter: &str, end_delimiter: &str) -> Option<(String, usize)> {
     if let Some(pos_start) = find_pos_after_delimiter(source_str, pos_cursor, start_delimiter) {
         if let Some(pos_end) = find_pos_before_delimiter(source_str, pos_start, end_delimiter) {
             let new_text = unwrap!(source_str.get(pos_start..pos_end)).to_string();
@@ -58,12 +53,7 @@ pub fn get_delimited_text(
 }
 
 /// returns a new String without the delimited text
-pub fn get_text_without_delimited_fragment(
-    source_str: &str,
-    pos_cursor: usize,
-    start_delimiter: &str,
-    end_delimiter: &str,
-) -> String {
+pub fn get_text_without_delimited_fragment(source_str: &str, pos_cursor: usize, start_delimiter: &str, end_delimiter: &str) -> String {
     if let Some(pos_start) = find_pos_before_delimiter(source_str, pos_cursor, start_delimiter) {
         if let Some(pos_end) = find_pos_after_delimiter(source_str, pos_start, end_delimiter) {
             let mut new_text = source_str[..pos_start].to_owned();

@@ -92,12 +92,17 @@ fn completion() {
 
 /// build every member of workspace
 fn task_build() {
+    run_shell_command("cd cargo_crev_reviews_wasm_frontend;wasm-pack build --target web --release;cd ..");
+    // copy to web_server_folder/pkg
+    run_shell_command("rsync -a --info=progress2 --delete-after cargo_crev_reviews_wasm_frontend/pkg/ web_server_folder/cargo_crev_reviews/pkg/");
+
     copy_web_folder_files_into_module();
     #[rustfmt::skip]
     let shell_commands = [
         "cargo fmt", 
         "cargo build"];
     run_shell_commands(shell_commands.to_vec());
+
     println!(
         r#"
 After `cargo auto build`, run the tests and the code. If ok, then 
@@ -231,7 +236,7 @@ fn copy_web_folder_files_into_module() {
     copy_files_from_dir("web_server_folder/cargo_crev_reviews/icons", &mut module_source_code);
     copy_files_from_dir("web_server_folder/cargo_crev_reviews/images", &mut module_source_code);
     copy_files_from_dir("web_server_folder/cargo_crev_reviews/pkg", &mut module_source_code);
-    copy_files_from_dir("web_server_folder/cargo_crev_reviews/templates", &mut module_source_code);
+    copy_files_from_dir("web_server_folder/cargo_crev_reviews/pages", &mut module_source_code);    
     unwrap!(std::fs::write(
         "cargo_crev_reviews_micro_web_server_backend/src/files_mod.rs",
         module_source_code
@@ -257,7 +262,7 @@ fn copy_files_from_dir(root_directory: &str, module_source_code: &mut String) {
                 module_source_code.push_str(&start);
 
                 // binary files are encoded base64
-                let body = if ps.ends_with(".png") || ps.ends_with(".woff2") {
+                let body = if ps.ends_with(".png") || ps.ends_with(".woff2") || ps.ends_with(".wasm")  {
                     let e = base64::encode(unwrap!(std::fs::read(p)));
                     // it is much easier to have lines of 76 characters in rust source code.
                     // before decoding base64 I will eliminate \n

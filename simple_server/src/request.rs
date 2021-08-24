@@ -39,8 +39,7 @@ pub fn read<S: Read>(stream: &mut S, timeout: Option<Duration>) -> Result<Reques
                     return Err(e.into());
                 }
 
-                if timeout.is_some() && elapsed_milliseconds(&start_time) > duration_to_milliseconds(&timeout.unwrap())
-                {
+                if timeout.is_some() && elapsed_milliseconds(&start_time) > duration_to_milliseconds(&timeout.unwrap()) {
                     return Err(Error::Timeout);
                 }
 

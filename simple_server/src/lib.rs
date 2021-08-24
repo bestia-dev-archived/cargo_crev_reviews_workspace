@@ -70,11 +70,7 @@ pub struct Server {
 
 impl fmt::Debug for Server {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(
-            f,
-            "Server {{ timeout: {:?}, static_directory: {:?} }}",
-            self.timeout, self.static_directory
-        )
+        write!(f, "Server {{ timeout: {:?}, static_directory: {:?} }}", self.timeout, self.static_directory)
     }
 }
 
@@ -358,9 +354,7 @@ impl Server {
                 // GET OUT
                 response_builder = response_builder.status(StatusCode::NOT_FOUND);
 
-                let response = response_builder
-                    .body("<h1>404</h1><p>Not found!<p>".as_bytes())
-                    .unwrap();
+                let response = response_builder.body("<h1>404</h1><p>Not found!<p>".as_bytes()).unwrap();
 
                 write_response(response, stream)?;
                 return Ok(());
@@ -388,9 +382,7 @@ impl Server {
                 let mut response_builder = Response::builder();
                 response_builder = response_builder.status(StatusCode::INTERNAL_SERVER_ERROR);
 
-                let response = response_builder
-                    .body("<h1>500</h1><p>Internal Server Error!<p>".as_bytes())
-                    .unwrap();
+                let response = response_builder.body("<h1>500</h1><p>Internal Server Error!<p>".as_bytes()).unwrap();
 
                 Ok(write_response(response, stream)?)
             }
