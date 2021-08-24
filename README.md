@@ -39,7 +39,8 @@ Wasm in browser will just access to our micro web server. This is gonna be our G
 
 I want the simplest [web server](https://en.wikipedia.org/wiki/Web_server) ever. It will be used exclusivelly locally from one super simple [web-application](https://en.wikipedia.org/wiki/Web_application), so  don't need to care much about security. I choose [simple server](https://crates.io/crates/simple-server) from the [rust book](https://doc.rust-lang.org/1.30.0/book/second-edition/ch20-01-single-threaded.html). I don't care about [multi-threading](https://en.wikipedia.org/wiki/Multithreading_(computer_architecture)) or [async](https://en.wikipedia.org/wiki/Asynchrony_(computer_programming)) , because it will be used by only one browser.  
 
-For the browser I will create a [PWA - Progressive Web Application](https://en.wikipedia.org/wiki/Progressive_web_application). All the code will be in rust, I will avoid javascript as a plague. I just don't like it. The GUI will be in [HTML5](https://en.wikipedia.org/wiki/HTML5) and [CSS3](https://en.wikipedia.org/wiki/CSS#CSS_3). This is all supported by all [modern browsers](https://www.bopdesign.com/bop-blog/2012/01/why-use-a-modern-web-browser/). I will use my project [rust_wasm_helper_for_pwa](https://github.com/LucianoBestia/rust_wasm_helper_for_pwa) that creates a minimal PWA you can copy to your project.  
+For the browser I will create a simple web app. All the code will be in rust, I will avoid javascript as a plague. I just don't like it.  
+The GUI will be in [HTML5](https://en.wikipedia.org/wiki/HTML5) and [CSS3](https://en.wikipedia.org/wiki/CSS#CSS_3). This is all supported by all [modern browsers](https://www.bopdesign.com/bop-blog/2012/01/why-use-a-modern-web-browser/).  
 
 ## Development
 
@@ -49,11 +50,12 @@ The sub-directory `automation_tasks_rs` is the rust project for [cargo-auto](htt
 The rust workspace is made of members that have their own README.md:
 
 - backend : [cargo_crev_reviews_micro_web_server_backend](https://github.com/LucianoBestia/cargo_crev_reviews/blob/main/cargo_crev_reviews_micro_web_server_backend/README.md)  
-- GUI frontend : [cargo_crev_reviews_pwa_frontend](https://github.com/LucianoBestia/cargo_crev_reviews/blob/main/cargo_crev_reviews_pwa_frontend/README.md)  
-- common structs : [cargo_crev_reviews_common](https://github.com/LucianoBestia/cargo_crev_reviews/blob/main/cargo_crev_reviews_common/README.md) 
+- GUI frontend : [cargo_crev_reviews_wasm_frontend](https://github.com/LucianoBestia/cargo_crev_reviews/blob/main/cargo_crev_reviews_wasm_frontend/README.md)  
+- common structs : [cargo_crev_reviews_common](https://github.com/LucianoBestia/cargo_crev_reviews/blob/main/cargo_crev_reviews_common/README.md)
 - simple server : [simple_server](https://github.com/LucianoBestia/cargo_crev_reviews/blob/main/simple_server/README.md)  
 
 The sub-directory `web_server_folder` contains all the files and folder structure for a working development web_server.  
+But this files are not used directly. Because of the way the publish to crates.io works, I will embed them inside the rust code as strings (bas64 encoded if needed). I will make an automation task for that.  
 
 ## cargo crev reviews and advisory
 

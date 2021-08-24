@@ -1,26 +1,36 @@
 // cargo_crev_reviews_micro_web_server_backend/src/lib.rs
 
-//! This module contains the boilerplate to parse and match
-//! The real code is in methods_mod
+//! This module contains the boilerplate to parse and match URI and POST json-rpc.
+//! The real code for methods is in methods_mod.rs
+//! The real content of "static files" is in the module files_mod.rs
+mod files_mod;
 mod methods_mod;
-mod template_mod;
 
 use cargo_crev_reviews_common::*;
+use files_mod::*;
 use methods_mod::*;
-use template_mod::*;
 
 use simple_server::{Method, Response, Server, StatusCode};
 use unwrap::unwrap;
+enum Cache {
+    NoStore,
+    Ok,
+}
+
+// region: server - parse, match
 
 pub fn start_web_server(host: &str, port: &str) {
     println!("cargo_crev_reviews_micro_web_server_backend started");
     let server = Server::new(|request, response| {
-        //println!("Request received. {} {}", request.method(), request.uri());
-
+        let path = request.uri().to_string();
+        // println!("Request received. {} {}", request.method(), request.uri());
+        if !request.uri().to_string().starts_with("/cargo_crev_reviews") {
+            return Ok(response_404_not_found(response, &path));
+        }
         match request.method() {
             &Method::GET => {
                 // GET is used only to request files
-                let response = parse_get_data_and_match_method(request.uri().to_string().as_str(), response);
+                let response = parse_get_uri_and_response_file(&path, response);
                 Ok(response)
             }
             &Method::POST => {
@@ -28,35 +38,83 @@ pub fn start_web_server(host: &str, port: &str) {
                 let body = parse_post_data_and_match_method(&data);
                 Ok(response.body(body.into_bytes())?)
             }
-            _ => {
-                let response = response.status(StatusCode::NOT_FOUND);
-                Ok(response.body(b"<h1>404</h1><p>Not found!<p>".to_vec())?)
-            }
+            _ => Ok(response_404_not_found(response, &path)),
         }
     });
+    let x = std::process::Command::new("www")
+        .arg("http://127.0.0.1:8182/cargo_crev_reviews/index.html")
+        .spawn()
+        .unwrap();
+    drop(x);
     server.listen(host, port);
 }
 
 /// GET is used only to request files
-fn parse_get_data_and_match_method(path: &str, response: simple_server::Builder) -> Response<Vec<u8>> {
+/// Files are stored in functions in the files_mod.rs module
+/// there is an automation task to copy files from web_server_folder to the module
+fn parse_get_uri_and_response_file(path: &str, response: simple_server::Builder) -> Response<Vec<u8>> {
     println!("path: {}", path);
-    if path == "/cargo_crev_reviews/index.html" {
-        let response = response.header(http::header::CONTENT_TYPE, "text/html".as_bytes());
-        let response = response.header(http::header::CACHE_CONTROL, "no-store, max-age=0".as_bytes());
-        let body = template_mod::template_html().to_string();
-        unwrap!(response.body(body.into_bytes()))
-    } else if path == "/cargo_crev_reviews/css/cargo_crev_reviews.css" {        
-        let response = response.header(http::header::CONTENT_TYPE, "text/css".as_bytes());
-        let body = template_mod::css().to_string();
-        unwrap!(response.body(body.into_bytes()))
-    } else if path == "/cargo_crev_reviews/favicon.png" {
-        let response = response.header(http::header::CONTENT_TYPE, "image/png".as_bytes());
-        let body = template_mod::icon_original_png().replace("\n","");
-        unwrap!(response.body(unwrap!(base64::decode(body))))
-    } else {
-        let body = "<h1>404</h1><p>Not found!<p>".to_string();
-        unwrap!(response.body(body.into_bytes()))
+    match path {
+        "/cargo_crev_reviews/index.html" => response_file_text(response, index_html, path, Cache::NoStore),
+        "/cargo_crev_reviews/templates/review_new_review_template.html" => response_file_text(response, templates_review_new_review_template_html, path, Cache::NoStore),
+        "/cargo_crev_reviews/css/cargo_crev_reviews.css" => {
+            response_file_text(response, files_mod::css_cargo_crev_reviews_css, path, Cache::Ok)
+        }
+        "/cargo_crev_reviews/css/fontawesome.css" => response_file_text(response, css_fontawesome_css, path, Cache::Ok),
+        "/cargo_crev_reviews/css/normalize.css" => response_file_text(response, css_normalize_css, path, Cache::Ok),
+        "/cargo_crev_reviews/css/Roboto-Medium.woff2" => response_file_base64(response, css_roboto_medium_woff2, path),
+        "/cargo_crev_reviews/icons/fa-solid-900.woff2" => response_file_base64(response, css_fa_solid_900_woff2, path),
+        "/cargo_crev_reviews/icons/icon-032.png" => response_file_base64(response, icons_icon_032_png, path),
+        "/cargo_crev_reviews/icons/icon-128.png" => response_file_base64(response, icons_icon_128_png, path),
+        "/cargo_crev_reviews/icons/icon-192.png" => response_file_base64(response, icons_icon_192_png, path),
+        _ => response_404_not_found(response, path),
     }
+}
+
+fn response_404_not_found(response: simple_server::Builder, path: &str) -> Response<Vec<u8>> {
+    println!("404 not found: {}", path);
+    let response = response.status(StatusCode::NOT_FOUND);
+    let response = response_file_text(response, file_not_found_404, ".html", Cache::Ok);
+    response
+}
+
+fn file_not_found_404() -> &'static str {
+    r#"<h1>404</h1><p>Not found! URI must start with `/cargo_crev_reviews`<p>"#
+}
+
+fn response_file_base64(response: simple_server::Builder, f: fn() -> &'static str, path: &str) -> Response<Vec<u8>> {
+    let mime_type = if path.ends_with(".png") {
+        "image/png"
+    } else if path.ends_with(".woff2") {
+        "font/woff2"
+    } else {
+        "image/png"
+    };
+    let response = response.header(http::header::CONTENT_TYPE, mime_type.as_bytes());
+    let body = f().replace("\n", "");
+    unwrap!(response.body(unwrap!(base64::decode(body))))
+}
+
+fn response_file_text(
+    response: simple_server::Builder,
+    f: fn() -> &'static str,
+    path: &str,
+    cache: Cache,
+) -> Response<Vec<u8>> {
+    let mime_type = if path.ends_with(".html") {
+        "text/html"
+    } else if path.ends_with(".css") {
+        "text/css"
+    } else {
+        "text/html"
+    };
+    let response = response.header(http::header::CONTENT_TYPE, mime_type.as_bytes());
+    let response = match cache {
+        Cache::NoStore => response.header(http::header::CACHE_CONTROL, "no-store, max-age=0".as_bytes()),
+        Cache::Ok => response,
+    };
+    let body = f().to_string();
+    unwrap!(response.body(body.into_bytes()))
 }
 
 /// <https://www.jsonrpc.org/specification>
@@ -69,29 +127,15 @@ fn parse_post_data_and_match_method(data: &str) -> String {
     } else {
         match p.method.as_str() {
             // here add methods that this server recognizes
-            "subtract" => subtract_json(p.params, p.id),
+            "index" => index_html_json(p.params, p.id),
             _ => format!("unknown method = {}", &p.method),
         }
     }
 }
-// region: server - parse, match
 
-fn subtract_json(params: serde_json::Value, id: u32) -> String {
-    //println!("SubtractParams: {}", &params);
-    let p: SubtractParams = unwrap!(serde_json::from_value(params));
-    println!("SubtractParams = {:?}", &p);
+// endregion: server - parse, match
 
-    let subtraction = subtract(p.subtrahend, p.minuend);
-
-    let r = SubtractResult {
-        jsonrpc: "2.0".to_string(),
-        result: subtraction,
-        id,
-    };
-    let body = unwrap!(serde_json::to_string(&r));
-    // return
-    body
-}
+// region: boilerplate to convert json to call methods
 
 fn index_html_json(params: serde_json::Value, id: u32) -> String {
     let p: SubtractParams = unwrap!(serde_json::from_value(params));
@@ -108,3 +152,5 @@ fn index_html_json(params: serde_json::Value, id: u32) -> String {
     // return
     body
 }
+
+// endregion: boilerplate to convert json to call methods

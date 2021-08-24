@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <title>new review</title>
+    <meta name="Description" content="web app for writing new reviews for cargo-crev" />
+    <link rel="stylesheet" href="css/cargo_crev_reviews.css" />
+    <meta name="viewport" content="width = device-width,initial-scale = 1.0" />
+    <link rel="shortcut icon" type="image/x-icon" href="../favicon.png" />
+</head>
+
+<body>
+    <div class="container_0">
+        <div class="container0_content_not_grid">
+            <div style="display: grid;grid-template-columns: 40% 60% ;">
+                <div class="middle">
+                    <h2><a class="c_link_1" href="/rust-reviews/">
+                    New Rust code review</a></h2>
+                </div>
+                <div class="middle right">
+                    <h3>review for <a class="c_link_1" href="https://github.com/crev-dev/cargo-crev" target="_blank">cargo-crev</a></h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form action="/cargo_crev_reviews" method="POST">
+        <div class="container_0">
+            <div class="container0_content_not_grid">
+                <pre>
+crate name:<input type="text" id="crate_name"></input>
+version:<input type="text" id="crate_version"></input>
+
+thoroughness: <input type="radio" name="thoroughness" value="none" data-sb-checked="sb_thoroughness_none" checked="checked" />none     <input type="radio" name="thoroughness" value="low" data-sb-checked="sb_thoroughness_low" checked="checked"/><span class="c_low">low     </span><input type="radio" name="thoroughness" value="medium" data-sb-checked="sb_thoroughness_medium" checked="checked"/><span class="c_medium">medium     </span><input type="radio" name="thoroughness" value="high" data-sb-checked="sb_thoroughness_high" checked="checked" /><span class="c_high">high     </span>
+understanding: <input type="radio" name="understanding" value="none" data-sb-checked="sb_understanding_none" checked="checked"/>none     <input type="radio" name="understanding" value="low" data-sb-checked="sb_understanding_low" checked="checked"/><span class="c_low">low     </span><input type="radio" name="understanding" value="medium" data-sb-checked="sb_understanding_medium" checked="checked"/><span class="c_medium">medium     </span><input type="radio" name="understanding" value="high" data-sb-checked="sb_understanding_high" checked="checked"/><span class="c_high">high     </span>
+rating: <input type="radio" name="rating" value="none" data-sb-checked="sb_rating_none" checked="checked"/><span class="c_none">none     </span><input type="radio" name="rating" value="negative" data-sb-checked="sb_rating_negative" checked="checked"/><span class="c_negative">negative     </span><input type="radio" name="rating" value="neutral" data-sb-checked="sb_rating_neutral" checked="checked"/><span class="c_neutral">neutral     </span><input type="radio" name="rating" value="positive" data-sb-checked="sb_rating_positive" checked="checked"/><span class="c_positive">positive     </span><input type="radio" name="rating" value="strong" data-sb-checked="sb_rating_strong" checked="checked"/><span class="c_strong">strong     </span>
+<textarea style="height: 250px;" name="comment">Try to comment important aspects: 
+security: unsafe:0 FFI:0 asm!:0 file-read:0 file-write:0 no_mangle:0
+network-access:0 build.rs:0 macro_rules:0 proc_macro:0 process::command:0
+line of code:0 dependencies:0 
+malicious potential:0
+owners (in crates.io) reputation: unknown/rust team/active in rust community
+used in your projects:  
+alternative crates you explored:
+</textarea>
+        </pre>
+                <input type="submit" value="Save review locally" />
+                <br/>Later check your review with: <code>cargo crev repo query review `crate_name`</code>
+                <br/> Finally push to remote with: <code>cargo crev publish</code>
+            </div>
+        </div>
+    </form>
+
+    <div class="container_0">
+        <div class="container0_content_not_grid">
+            <pre>
+<span class="c_white">Prerequisites</span> to write new <code>crev reviews</code> for a crate version:
+1. on your developer machine install <code>$ cargo install cargo-crev</code>,
+2. on GitHub or GitLab fork the repo <code>https://github.com/crev-dev/crev-proofs</code> 
+3. create your personal crev ID <code>$ cargo crev id new</code>
+Everything is encrypted, so be careful with the secrets, keys, passphrase,... There's no way to recover them.
+Read the <code><a href="https://github.com/crev-dev/cargo-crev/blob/master/cargo-crev/src/doc/getting_started.md">Get Start Guide</a></code> to know better. 
+</pre>
+        </div>
+    </div>
+
+</body>
+
+</html>

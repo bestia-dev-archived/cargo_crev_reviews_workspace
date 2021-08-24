@@ -1,6 +1,6 @@
-# cargo_crev_reviews_pwa_frontend
+# cargo_crev_reviews_wasm_frontend
 
-This simple [PWA Progressive web application](https://en.wikipedia.org/wiki/Progressive_web_application) is the GUI frontend of the application `cargo_crev_reviews`.  
+This simple web app is the GUI frontend of the application `cargo_crev_reviews`.  
 It is strictly designed for use on desktops as it is a tool for programers. No need to do a mobile version.  
 Together the backend and the frontend form a complete application that is cross-platform.  
 They share some structs for communication that are defines in a `common` project.  

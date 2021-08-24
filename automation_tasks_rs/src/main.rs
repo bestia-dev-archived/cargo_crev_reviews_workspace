@@ -1,6 +1,7 @@
 //! automation_tasks_rs workspace
 
 use cargo_auto_lib::*;
+use unwrap::unwrap;
 
 /// automation_tasks_rs workspace
 fn main() {
@@ -73,7 +74,7 @@ fn completion() {
     let last_word = args[3].as_str();
 
     if last_word == "cargo-auto" || last_word == "auto" {
-        let sub_commands = vec!["build", "release", "doc","commit_and_push","github_new_release"];
+        let sub_commands = vec!["build", "release", "doc", "commit_and_push", "github_new_release"];
         completion_return_one_or_more_sub_commands(sub_commands, word_being_completed);
     }
     /*
@@ -91,6 +92,7 @@ fn completion() {
 
 /// build every member of workspace
 fn task_build() {
+    copy_web_folder_files_into_module();
     #[rustfmt::skip]
     let shell_commands = [
         "cargo fmt", 
@@ -107,6 +109,7 @@ run`cargo auto release`
 /// this workspace is basically one single application splitted into 3 projects
 /// it deserves the same version number
 fn task_release() {
+    copy_web_folder_files_into_module();
     //auto_version_from_date();
     //auto_cargo_toml_to_md();
     auto_lines_of_code("");
@@ -125,7 +128,7 @@ run `cargo auto doc`
 }
 
 /// after release, run the web server and open the browser
-fn task_run() {    
+fn task_run() {
     run_shell_command("web_server_folder/cargo_crev_reviews_micro_web_server_backend");
     run_shell_command("www http://127.0.0.1:8080/cargo_crev_reviews");
     println!(
@@ -195,14 +198,13 @@ Or maybe what changed in this release.
             owner = owner
         );
 
-        let release_id =  github_create_new_release(&owner, &repo, &version, &name, branch, body_md_text).await;
-        println!("New release created, now uploading release asset. This can take some time if the files are big. Wait ...");
+        let release_id = github_create_new_release(&owner, &repo, &version, &name, branch, body_md_text).await;
+        println!(
+            "New release created, now uploading release asset. This can take some time if the files are big. Wait ..."
+        );
 
         // upload asset
-        let path_to_file = format!(
-            "target/release/{package_name}",
-            package_name = package_name()
-        );
+        let path_to_file = format!("target/release/{package_name}", package_name = package_name());
 
         github_upload_asset_to_release(&owner, &repo, &release_id, &path_to_file).await;
         println!(
@@ -220,5 +222,57 @@ Download it and check hot it works.
 
 // endregion: tasks
 
+/// copy all files in the web_server_folder as strings to the module `files_mod.rs`
+fn copy_web_folder_files_into_module() {
+    let mut module_source_code = String::new();
+    module_source_code.push_str("// files_mod.rs\n\n");
+    copy_files_from_dir("web_server_folder/cargo_crev_reviews", &mut module_source_code);
+    copy_files_from_dir("web_server_folder/cargo_crev_reviews/css", &mut module_source_code);
+    copy_files_from_dir("web_server_folder/cargo_crev_reviews/icons", &mut module_source_code);
+    copy_files_from_dir("web_server_folder/cargo_crev_reviews/images", &mut module_source_code);
+    copy_files_from_dir("web_server_folder/cargo_crev_reviews/pkg", &mut module_source_code);
+    copy_files_from_dir("web_server_folder/cargo_crev_reviews/templates", &mut module_source_code);
+    unwrap!(std::fs::write(
+        "cargo_crev_reviews_micro_web_server_backend/src/files_mod.rs",
+        module_source_code
+    ));
+}
 
-    
+/// read all files and push rust code into module
+fn copy_files_from_dir(root_directory: &str, module_source_code: &mut String) {
+    let path = std::path::Path::new(root_directory);
+    for entry in path.read_dir().expect("read_dir call failed") {
+        if let Ok(entry) = entry {
+            let p: std::path::PathBuf = entry.path();
+            if p.is_file() {
+                let ps = p.to_string_lossy();
+                let start = format!(
+                    "\npub fn {}() -> &'static str{{\nr##\"\n",
+                    ps.trim_start_matches("web_server_folder/cargo_crev_reviews/")
+                        .replace("/", "_")
+                        .replace(".", "_")
+                        .replace("-", "_")
+                        .to_lowercase()
+                );
+                module_source_code.push_str(&start);
+
+                // binary files are encoded base64
+                let body = if ps.ends_with(".png") || ps.ends_with(".woff2") {
+                    let e = base64::encode(unwrap!(std::fs::read(p)));
+                    // it is much easier to have lines of 76 characters in rust source code.
+                    // before decoding base64 I will eliminate \n
+                    // rust string is utf8, but base64 is strictly ascii.
+                    // So I have the guarantee 100% that 1 byte = 1 char
+                    let multi_line = e.as_bytes().chunks(76).collect::<Vec<_>>().join(&b'\n');
+                    unwrap!(String::from_utf8(multi_line))
+                } else {
+                    unwrap!(std::fs::read_to_string(p))
+                };
+                module_source_code.push_str(&body);
+
+                let end = format!("\n\"##\n}}\n");
+                module_source_code.push_str(&end);
+            }
+        }
+    }
+}

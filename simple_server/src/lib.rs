@@ -56,8 +56,7 @@ pub use error::Error;
 
 pub type ResponseResult = std::result::Result<Response<Vec<u8>>, Error>;
 
-pub type Handler =
-    Box<dyn Fn(Request<Vec<u8>>, ResponseBuilder) -> ResponseResult + 'static + Send + Sync>;
+pub type Handler = Box<dyn Fn(Request<Vec<u8>>, ResponseBuilder) -> ResponseResult + 'static + Send + Sync>;
 
 /// A web server.
 ///
@@ -200,8 +199,7 @@ impl Server {
     /// }
     /// ```
     pub fn listen(&self, host: &str, port: &str) -> ! {
-        let listener =
-            TcpListener::bind(format!("{}:{}", host, port)).expect("Error starting the server.");
+        let listener = TcpListener::bind(format!("{}:{}", host, port)).expect("Error starting the server.");
 
         info!("Server started at http://{}:{}", host, port);
 
@@ -253,8 +251,7 @@ impl Server {
 
             pool.scoped(|scope| {
                 scope.execute(|| {
-                    self.handle_connection(stream)
-                        .expect("Error handling connection.");
+                    self.handle_connection(stream).expect("Error handling connection.");
                 });
             });
         }
@@ -326,9 +323,7 @@ impl Server {
 
     fn handle_connection(&self, mut stream: TcpStream) -> std::result::Result<(), Error> {
         let request = match request::read(&mut stream, self.timeout) {
-            Err(Error::ConnectionClosed) | Err(Error::Timeout) | Err(Error::HttpParse(_)) => {
-                return Ok(())
-            }
+            Err(Error::ConnectionClosed) | Err(Error::Timeout) | Err(Error::HttpParse(_)) => return Ok(()),
 
             Err(Error::RequestTooLarge) => {
                 let resp = Response::builder()
@@ -403,10 +398,7 @@ impl Server {
     }
 }
 
-fn write_response<T: Borrow<[u8]>, S: Write>(
-    response: Response<T>,
-    mut stream: S,
-) -> std::result::Result<(), Error> {
+fn write_response<T: Borrow<[u8]>, S: Write>(response: Response<T>, mut stream: S) -> std::result::Result<(), Error> {
     use fmt::Write;
 
     let (parts, body) = response.into_parts();
@@ -415,10 +407,7 @@ fn write_response<T: Borrow<[u8]>, S: Write>(
     let mut text = format!(
         "HTTP/1.1 {} {}\r\n",
         parts.status.as_str(),
-        parts
-            .status
-            .canonical_reason()
-            .expect("Unsupported HTTP Status"),
+        parts.status.canonical_reason().expect("Unsupported HTTP Status"),
     );
 
     if !parts.headers.contains_key(http::header::DATE) {

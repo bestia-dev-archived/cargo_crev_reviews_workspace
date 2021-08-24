@@ -2,7 +2,7 @@
 
 members = [
     "cargo_crev_reviews_micro_web_server_backend",
-    "cargo_crev_reviews_pwa_frontend",
+    "cargo_crev_reviews_wasm_frontend",
     "cargo_crev_reviews_common",
     "simple_server"
 ]

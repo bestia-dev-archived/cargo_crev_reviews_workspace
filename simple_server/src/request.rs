@@ -39,9 +39,7 @@ pub fn read<S: Read>(stream: &mut S, timeout: Option<Duration>) -> Result<Reques
                     return Err(e.into());
                 }
 
-                if timeout.is_some()
-                    && elapsed_milliseconds(&start_time)
-                        > duration_to_milliseconds(&timeout.unwrap())
+                if timeout.is_some() && elapsed_milliseconds(&start_time) > duration_to_milliseconds(&timeout.unwrap())
                 {
                     return Err(Error::Timeout);
                 }
@@ -123,8 +121,7 @@ mod server_should {
                     }
                     _ => {
                         let min = ::std::cmp::min(self.content[self.bytes_read..].len(), buf.len());
-                        &buf[..min]
-                            .copy_from_slice(&self.content[self.bytes_read..self.bytes_read + min]);
+                        &buf[..min].copy_from_slice(&self.content[self.bytes_read..self.bytes_read + min]);
                         min
                     }
                 };

@@ -4,11 +4,7 @@ use unwrap::unwrap;
 
 /// return the position after the delimiter or None
 /// Does NOT mutate the pos_cursor, because that is for a higher level logic to decide.
-pub fn find_pos_after_delimiter(
-    source_str: &str,
-    pos_cursor: usize,
-    delimiter: &str,
-) -> Option<usize> {
+pub fn find_pos_after_delimiter(source_str: &str, pos_cursor: usize, delimiter: &str) -> Option<usize> {
     //
     if let Some(pos) = find_from(source_str, pos_cursor, delimiter) {
         let pos = pos + delimiter.len();
@@ -20,11 +16,7 @@ pub fn find_pos_after_delimiter(
 
 /// return the position before the delimiter or None
 /// Does NOT mutate the pos_cursor, because that is for a higher level logic to decide.
-pub fn find_pos_before_delimiter(
-    source_str: &str,
-    pos_cursor: usize,
-    delimiter: &str,
-) -> Option<usize> {
+pub fn find_pos_before_delimiter(source_str: &str, pos_cursor: usize, delimiter: &str) -> Option<usize> {
     if let Some(pos) = find_from(source_str, pos_cursor, delimiter) {
         return Some(pos);
     }
@@ -91,9 +83,7 @@ pub fn replace_wt_placeholder(source_str: &str, wt_name: &str, replace_with: &st
     let end_delimiter = "<";
     let pos_cursor = 0;
     if let Some(pos_start) = find_pos_before_delimiter(source_str, pos_cursor, start_delimiter) {
-        if let Some(pos_end) =
-            find_pos_before_delimiter(source_str, pos_start + start_delimiter.len(), end_delimiter)
-        {
+        if let Some(pos_end) = find_pos_before_delimiter(source_str, pos_start + start_delimiter.len(), end_delimiter) {
             let mut new_text = source_str[..pos_start].to_owned();
             new_text.push_str(replace_with);
             new_text.push_str(&source_str[pos_end..]);
