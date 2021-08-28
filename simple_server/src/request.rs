@@ -14,7 +14,7 @@ fn duration_to_milliseconds(from: &Duration) -> u64 {
     (from.as_secs() * 1000) + (from.subsec_nanos() as u64 / 1_000_000)
 }
 
-pub fn read<S: Read>(stream: &mut S, timeout: Option<Duration>) -> Result<Request<Vec<u8>>, Error> {
+pub fn read<S: Read>(stream: &mut S, timeout: Option<Duration>) -> std::result::Result<Request<Vec<u8>>, Error> {
     use std::mem;
 
     let start_time = Instant::now();
@@ -51,7 +51,7 @@ pub fn read<S: Read>(stream: &mut S, timeout: Option<Duration>) -> Result<Reques
     build_request(request)
 }
 
-fn build_request(mut req: parsing::Request) -> Result<Request<Vec<u8>>, Error> {
+fn build_request(mut req: parsing::Request) -> std::result::Result<Request<Vec<u8>>, Error> {
     let mut http_req = Request::builder();
 
     http_req = http_req.method(req.method());

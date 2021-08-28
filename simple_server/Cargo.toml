@@ -1,12 +1,12 @@
 [package]
 name = "simple_server"
-version = "2020.1228.1953"
+version = "2021.828.831"
 description = "simple server from https://github.com/steveklabnik/simple-server"
 authors = ["Luciano Bestia"]
 edition = "2018"
 license = "MIT"
 readme = "README.md"
-repository = "https://github.com/lucianobestia/cargo_crev_reviews"
+repository = "https://github.com/lucianobestia/cargo_crev_reviews_workspace"
 categories = ["web-programming::http-server"]
 keywords = ["server", "http"]
 publish = false

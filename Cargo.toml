@@ -1,12 +1,20 @@
 [workspace]
 
+# The first member is the main member. Only this project will be published to crates.io.
+# It will contain all of the other members in a single application. 
+# From its Cargo.toml I will use the name and description for README.md.
+# I wanted to give it the name `cargo_crev_reviews_micro_web_server_backend`
+# But because it will be published on `crates.io` I must give it 
+# the name of the whole project: `cargo_crev_reviews`
+
 members = [
-    "cargo_crev_reviews_micro_web_server_backend",
-    "cargo_crev_reviews_wasm_frontend",
+    "cargo_crev_reviews",
+    "cargo_crev_reviews_wasm",
     "cargo_crev_reviews_common",
     "simple_server"
 ]
 
 exclude = [
     "automation_tasks_rs",
+    "web_server_folder"
 ]

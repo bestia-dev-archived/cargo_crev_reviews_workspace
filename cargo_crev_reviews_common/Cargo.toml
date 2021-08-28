@@ -1,12 +1,12 @@
 [package]
 name = "cargo_crev_reviews_common"
-version = "2020.1228.1953"
+version = "2021.828.812"
 description = "Common structs for cargo_crev_reviews backend and frontend"
 authors = ["Luciano Bestia"]
 edition = "2018"
 license = "MIT"
 readme = "README.md"
-repository = "https://github.com/lucianobestia/cargo_crev_reviews"
+repository = "https://github.com/lucianobestia/cargo_crev_reviews_workspace"
 categories = ["web-programming::http-server"]
 keywords = ["server", "http"]
 publish = false

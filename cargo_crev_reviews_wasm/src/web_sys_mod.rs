@@ -140,6 +140,27 @@ pub async fn fetch_response(url: &str) -> String {
     txt_response
 }
 
+/// fetch POST response in Rust with async await for executor spawn_local()
+/// return the response as String. Any error will panic.
+pub async fn fetch_post_response(url: &str, json: Option<&JsValue>) -> String {
+    // Request init
+    let mut opts = RequestInit::new();
+    opts.method("POST");
+    opts.mode(web_sys::RequestMode::Cors);
+    opts.body(json);
+    let request = unwrap!(Request::new_with_str_and_init(url, &opts));
+    // log1("before fetch");
+    let resp_jsvalue = unwrap!(JsFuture::from(window().fetch_with_request(&request)).await);
+    // log1("after fetch");
+    let resp: Response = unwrap!(resp_jsvalue.dyn_into());
+    // log1("before text()");
+    let text_jsvalue = unwrap!(JsFuture::from(unwrap!(resp.text())).await);
+    let txt_response: String = unwrap!(text_jsvalue.as_string());
+    // debug_write(&txt_response);
+    // returns response as String
+    txt_response
+}
+
 pub fn get_now_date() -> String {
     let now_js = js_sys::Date::new_0();
     let now_date = NaiveDate::from_ymd(now_js.get_full_year() as i32, now_js.get_month() + 1, now_js.get_date());

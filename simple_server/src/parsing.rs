@@ -69,7 +69,7 @@ fn slice_indices(buffer: &[u8], value: &[u8]) -> (usize, usize) {
     (start, start + value.len())
 }
 
-pub fn try_parse_request(buffer: Vec<u8>) -> Result<ParseResult, httparse::Error> {
+pub fn try_parse_request(buffer: Vec<u8>) -> std::result::Result<ParseResult, httparse::Error> {
     let result = {
         let mut header_buffer = [httparse::EMPTY_HEADER; 32];
         let mut request = httparse::Request::new(&mut header_buffer);

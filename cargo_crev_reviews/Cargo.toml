@@ -1,0 +1,27 @@
+# This is the backend member of cargo_crev_reviews_workspace.
+# I wanted to give him the name `cargo_crev_reviews_micro_web_server_backend`
+# But because this is the only project that will be published on `crates.io` 
+# I give him the name of the application `cargo_crev_reviews`.
+
+[package]
+name = "cargo_crev_reviews"
+version = "2021.828.851"
+description = "Write cargo-crev reviews in a Graphical User Interface with a cross-platform app written in rust"
+authors = ["Luciano Bestia"]
+edition = "2018"
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/lucianobestia/cargo_crev_reviews_workspace"
+categories = ["web-programming::http-server"]
+keywords = ["server", "http"]
+publish = false
+
+[dependencies]
+simple_server = { path = "../simple_server" }
+cargo_crev_reviews_common = { path = "../cargo_crev_reviews_common" }
+
+unwrap = "1.2.1"
+serde_json = "1.0.66"
+serde = { version = "1.0", features = ["derive"] }
+http="0.2.4"
+base64 = "0.13.0"

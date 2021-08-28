@@ -1,10 +1,10 @@
 [package]
-name = "cargo_crev_reviews"
-version = "2021.817.2058"
+name = "cargo_crev_reviews_wasm"
+version = "2021.828.831"
 authors = ["Luciano Bestia <Luciano.Bestia@gmail.com>"]
 edition = "2018"
-description = "SEY currency converter Progressive Web App"
-repository = "https://github.com/LucianoBestia/cargo_crev_reviews"
+description = "Wasm web app that is the frontend of the application cargo_crev_reviews"
+repository = "https://github.com/LucianoBestia/cargo_crev_reviews_workspace"
 readme = "README.md"
 license = "MIT"
 keywords = ["wasm"]
@@ -17,15 +17,17 @@ publish = false
 crate-type = ["cdylib"]
 
 [dependencies]
+cargo_crev_reviews_common = { path = "../cargo_crev_reviews_common" }
+
 unwrap = "1.2.1"
 wasm-bindgen = { version = "0.2.69", features = ["serde-serialize"] }
 console_error_panic_hook = "0.1.6"
 js-sys = "0.3.46"
 wasm-bindgen-futures = "0.4.20"
 serde_json = "1.0.64"
-serde-wasm-bindgen = "0.2.0"
-strum = "0.20.0"
-strum_macros = "0.20.1"
+serde-wasm-bindgen = "0.3.0"
+strum = "0.21.0"
+strum_macros = "0.21.1"
 serde = {version = "1.0", features = ["derive"]}
 chrono = "0.4.19"
 lazy_static ="1.4.0"
@@ -64,5 +66,6 @@ features = [
 [dev-dependencies]
 wasm-bindgen-test = "0.3.19"
 
-[profile.release]
-panic = "abort"
+# does not work in workspace member
+# [profile.release]
+# panic = "abort"

@@ -1,4 +1,4 @@
-// cargo_crev_reviews_micro_web_server_backend/src/lib.rs
+// cargo_crev_reviews/src/lib.rs
 
 //! This module contains the boilerplate to parse and match URI and POST json-rpc.
 //! The real code for methods is in methods_mod.rs
@@ -20,7 +20,7 @@ enum Cache {
 // region: server - parse, match
 
 pub fn start_web_server(host: &str, port: &str) {
-    println!("cargo_crev_reviews_micro_web_server_backend started");
+    println!("cargo_crev_reviews started");
     let server = Server::new(|request, response| {
         let path = request.uri().to_string();
         // println!("Request received. {} {}", request.method(), request.uri());
@@ -41,7 +41,7 @@ pub fn start_web_server(host: &str, port: &str) {
             _ => Ok(response_404_not_found(response, &path)),
         }
     });
-    let x = std::process::Command::new("www")
+    let x = std::process::Command::new("xdg-open")
         .arg("http://127.0.0.1:8182/cargo_crev_reviews/index.html")
         .spawn()
         .unwrap();
@@ -128,7 +128,7 @@ fn parse_post_data_and_match_method(data: &str) -> String {
     } else {
         match p.method.as_str() {
             // here add methods that this server recognizes
-            "index" => index_html_json(p.params, p.id),
+            "save_review" => save_review_json(p.params, p.id),
             _ => format!("unknown method = {}", &p.method),
         }
     }
@@ -138,15 +138,13 @@ fn parse_post_data_and_match_method(data: &str) -> String {
 
 // region: boilerplate to convert json to call methods
 
-fn index_html_json(params: serde_json::Value, id: u32) -> String {
-    let p: SubtractParams = unwrap!(serde_json::from_value(params));
-    println!("SubtractParams = {:?}", &p);
+fn save_review_json(params: serde_json::Value, id: u32) -> String {
+    let p: SaveReviewParams = unwrap!(serde_json::from_value(params));
+    println!("SaveReviewParams = {:?}", &p);
 
-    let subtraction = subtract(p.subtrahend, p.minuend);
-
-    let r = SubtractResult {
+    let r = StringResult {
         jsonrpc: "2.0".to_string(),
-        result: subtraction,
+        result: "request received".to_string(),
         id,
     };
     let body = unwrap!(serde_json::to_string(&r));

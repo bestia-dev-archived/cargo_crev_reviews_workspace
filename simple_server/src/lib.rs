@@ -92,7 +92,7 @@ impl Server {
     /// # Examples
     ///
     /// ```
-    /// use cargo_crev_reviews_micro_web_server_backend::Server;
+    /// use cargo_crev_reviews::Server;
     ///
     /// fn main() {
     ///     let server = Server::new(|request, mut response| {
@@ -130,7 +130,7 @@ impl Server {
     ///
     /// ```
     /// use std::time::Duration;
-    /// use cargo_crev_reviews_micro_web_server_backend::Server;
+    /// use cargo_crev_reviews::Server;
     ///
     /// fn main() {
     ///     let server = Server::with_timeout(Duration::from_secs(5), |request, response| {
@@ -184,7 +184,7 @@ impl Server {
     /// # Examples
     ///
     /// ```no_run
-    /// use cargo_crev_reviews_micro_web_server_backend::Server;
+    /// use cargo_crev_reviews::Server;
     ///
     /// fn main() {
     ///     let server = Server::new(|request, mut response| {
@@ -216,7 +216,7 @@ impl Server {
     /// # Examples
     ///
     /// ```no_run
-    /// use cargo_crev_reviews_micro_web_server_backend::Server;
+    /// use cargo_crev_reviews::Server;
     /// use std::net::TcpListener;
     ///
     /// fn main() {
@@ -262,7 +262,7 @@ impl Server {
     /// # Examples
     ///
     /// ```no_run
-    /// use cargo_crev_reviews_micro_web_server_backend::Server;
+    /// use cargo_crev_reviews::Server;
     ///
     /// fn main() {
     ///     let mut server = Server::new(|request, mut response| {
@@ -289,7 +289,7 @@ impl Server {
     /// # Examples
     ///
     /// ```no_run
-    /// use cargo_crev_reviews_micro_web_server_backend::Server;
+    /// use cargo_crev_reviews::Server;
     ///
     /// fn main() {
     ///     let mut server = Server::new(|request, mut response| {

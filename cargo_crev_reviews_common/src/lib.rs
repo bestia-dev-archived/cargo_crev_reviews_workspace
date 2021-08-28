@@ -12,6 +12,13 @@ pub struct RpcMethod {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
+pub struct StringResult {
+    pub jsonrpc: String,
+    pub result: String,
+    pub id: u32,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
 pub struct RpcErrorCodeMessage {
     pub code: i32,
     pub message: String,
@@ -26,18 +33,15 @@ pub struct RpcError {
 
 // region: server - parse, match
 
-// region: subtract
+// region: save_review
 #[derive(Serialize, Deserialize, Debug)]
-pub struct SubtractParams {
-    pub subtrahend: f64,
-    pub minuend: f64,
+pub struct SaveReviewParams {
+    pub crate_name: String,
+    pub crate_version: String,
+    pub thoroughness: String,
+    pub understanding: String,
+    pub rating: String,
+    pub comment_md: String,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
-pub struct SubtractResult {
-    pub jsonrpc: String,
-    pub result: f64,
-    pub id: u32,
-}
-
-// endregion: subtract
+// endregion: save_review

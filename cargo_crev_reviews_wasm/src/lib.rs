@@ -1,4 +1,4 @@
-// cargo_crev_reviews_wasm_frontend lib.rs
+// cargo_crev_reviews_wasm lib.rs
 
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsValue;
