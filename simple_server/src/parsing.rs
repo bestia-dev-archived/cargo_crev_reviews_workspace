@@ -25,6 +25,10 @@ pub struct Header<'a> {
 }
 
 impl Request {
+    pub fn buffer_extend_from_slice(&mut self, slice:&[u8]){
+        self.buffer.extend_from_slice(slice);
+
+    }
     pub fn split_body(&mut self) -> Vec<u8> {
         let body = self.buffer.drain(self.body.0..).collect();
         let (start, _) = self.body;

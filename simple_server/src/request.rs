@@ -27,7 +27,30 @@ pub fn read<S: Read>(stream: &mut S, timeout: Option<Duration>) -> std::result::
             Ok(n) => {
                 buffer.extend_from_slice(&read_buf[..n]);
                 match parsing::try_parse_request(mem::replace(&mut buffer, vec![]))? {
-                    parsing::ParseResult::Complete(r) => break r,
+                    parsing::ParseResult::Complete(mut r) => {
+                        // httparse is all about headers. It returns complete when the headers end.
+                        // But there can still be some bytes left for the body.
+                        let mut last_buff = [0_u8; 512];
+                        loop{
+                            match stream.read(&mut last_buff) {
+                                Ok(0) => break,
+                                Ok(n) => r.buffer_extend_from_slice(&last_buff[..n]),
+                                Err(e) => {
+                                    if e.kind() == io::ErrorKind::WouldBlock{
+                                        break;
+                                    }
+                                    if e.kind() != io::ErrorKind::WouldBlock && e.kind() != io::ErrorKind::TimedOut {
+                                        return Err(e.into());
+                                    }                    
+                                    if timeout.is_some() && elapsed_milliseconds(&start_time) > duration_to_milliseconds(&timeout.unwrap()) {
+                                        return Err(Error::Timeout);
+                                    }                    
+                                    continue;
+                                }
+                            }
+                        }
+                        break r
+                    },
                     parsing::ParseResult::Partial(b) => {
                         let _x = mem::replace(&mut buffer, b);
                         continue;

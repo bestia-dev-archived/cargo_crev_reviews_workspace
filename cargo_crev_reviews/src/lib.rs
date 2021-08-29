@@ -35,8 +35,6 @@ pub fn start_web_server(host: &str, port: &str) {
             }
             &Method::POST => {
                 let request_body: &Vec<u8> = request.body();
-                println!("request {:?}", &request);
-                // TODO: why only 25 bytes in body?
                 println!("request_body.len {}", request_body.len());
                 let response_body = parse_post_data_and_match_method(request_body);
                 Ok(response.body(response_body.into_bytes())?)
