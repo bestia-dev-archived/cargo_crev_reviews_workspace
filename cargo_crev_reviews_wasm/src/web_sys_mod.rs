@@ -181,3 +181,23 @@ pub fn get_input_element_value_string_by_id(element_id: &str) -> String {
     let input_html_element = get_input_html_element_by_id(element_id);
     input_html_element.value()
 }
+
+/// get elements by name for example radio group
+pub fn get_value_of_radio_group_by_name(form_element_name: &str) -> String {
+    let document = unwrap!(window().document());
+    let element_form = unwrap!(document.forms().get_with_index(0));
+    let html_form_element = unwrap!(element_form.dyn_into::<web_sys::HtmlFormElement>());
+    let html_collection = html_form_element.elements();
+    let html_form_controls_collection = unwrap!(html_collection.dyn_into::<web_sys::HtmlFormControlsCollection>());
+    let object = unwrap!(html_form_controls_collection.named_item(form_element_name));
+    let radio_node_list = unwrap!(object.dyn_into::<web_sys::RadioNodeList>());
+    radio_node_list.value()
+}
+
+/// get input element value string by id
+pub fn get_text_area_element_value_string_by_id(element_id: &str) -> String {
+    let element = get_element_by_id(element_id);
+    let html_text_area_element = unwrap!(element.dyn_into::<web_sys::HtmlTextAreaElement>());
+    //return
+    html_text_area_element.value()
+}

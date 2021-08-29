@@ -34,9 +34,12 @@ pub fn start_web_server(host: &str, port: &str) {
                 Ok(response)
             }
             &Method::POST => {
-                let data = String::from_utf8_lossy(request.body()).into_owned();
-                let body = parse_post_data_and_match_method(&data);
-                Ok(response.body(body.into_bytes())?)
+                let request_body: &Vec<u8> = request.body();
+                println!("request {:?}", &request);
+                // TODO: why only 25 bytes in body?
+                println!("request_body.len {}", request_body.len());
+                let response_body = parse_post_data_and_match_method(request_body);
+                Ok(response.body(response_body.into_bytes())?)
             }
             _ => Ok(response_404_not_found(response, &path)),
         }
@@ -66,8 +69,8 @@ fn parse_get_uri_and_response_file(path: &str, response: simple_server::Builder)
         "/cargo_crev_reviews/icons/icon-128.png" => response_file_base64(response, icons_icon_128_png, path),
         "/cargo_crev_reviews/icons/icon-192.png" => response_file_base64(response, icons_icon_192_png, path),
 
-        "/cargo_crev_reviews/pkg/cargo_crev_reviews.js" => response_file_text(response, pkg_cargo_crev_reviews_js, path, Cache::NoStore),
-        "/cargo_crev_reviews/pkg/cargo_crev_reviews_bg.wasm" => response_file_base64(response, pkg_cargo_crev_reviews_bg_wasm, path),
+        "/cargo_crev_reviews/pkg/cargo_crev_reviews_wasm.js" => response_file_text(response, pkg_cargo_crev_reviews_wasm_js, path, Cache::NoStore),
+        "/cargo_crev_reviews/pkg/cargo_crev_reviews_wasm_bg.wasm" => response_file_base64(response, pkg_cargo_crev_reviews_wasm_bg_wasm, path),
 
         _ => response_404_not_found(response, path),
     }
@@ -91,6 +94,8 @@ fn response_file_text(response: simple_server::Builder, f: fn() -> &'static str,
         "text/css"
     } else if path.ends_with(".js") {
         "application/javascript"
+    } else if path.ends_with(".json") {
+        "application/json"
     } else {
         "text/html"
     };
@@ -119,9 +124,9 @@ fn response_file_base64(response: simple_server::Builder, f: fn() -> &'static st
 }
 
 /// <https://www.jsonrpc.org/specification>
-fn parse_post_data_and_match_method(data: &str) -> String {
-    //println!("data: {}", data);
-    let p: RpcMethod = unwrap!(serde_json::from_str(data));
+fn parse_post_data_and_match_method(body: &Vec<u8>) -> String {
+    println!("body: {:?}", body);
+    let p: RpcMethod = unwrap!(serde_json::from_slice(body));
     //println!("deserialized = {:?}", &p);
     if p.jsonrpc != "2.0" {
         format!("error: jsonrpc != 2.0")
@@ -139,6 +144,7 @@ fn parse_post_data_and_match_method(data: &str) -> String {
 // region: boilerplate to convert json to call methods
 
 fn save_review_json(params: serde_json::Value, id: u32) -> String {
+    println!("save_review_json");
     let p: SaveReviewParams = unwrap!(serde_json::from_value(params));
     println!("SaveReviewParams = {:?}", &p);
 

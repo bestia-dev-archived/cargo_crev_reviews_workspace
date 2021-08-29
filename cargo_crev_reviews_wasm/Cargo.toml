@@ -1,6 +1,6 @@
 [package]
 name = "cargo_crev_reviews_wasm"
-version = "2021.828.831"
+version = "2021.829.1533"
 authors = ["Luciano Bestia <Luciano.Bestia@gmail.com>"]
 edition = "2018"
 description = "Wasm web app that is the frontend of the application cargo_crev_reviews"
@@ -44,8 +44,11 @@ features = [
   "HtmlAudioElement",
   "HtmlCollection",
   "HtmlElement",
+  "HtmlFormControlsCollection",
+  "HtmlFormElement",
   "HtmlHtmlElement",
   "HtmlInputElement",
+  "HtmlTextAreaElement",
   "IdbFactory",
   "IdbOpenDbRequest",
   "IdbRequest",
@@ -54,7 +57,9 @@ features = [
   "MouseEvent",
   "Navigator",
   "Node",
+  "NodeList",
   "Performance",
+  "RadioNodeList",
   "Request",
   "RequestInit",
   "RequestMode",
