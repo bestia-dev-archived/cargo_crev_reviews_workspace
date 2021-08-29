@@ -48,7 +48,7 @@ checksum = "b700ce4376041dcd0a327fd0097c41095743c4c8af8887265942faf1100bd040"
 
 [[package]]
 name = "cargo_crev_reviews"
-version = "2021.829.1739"
+version = "2021.829.1811"
 dependencies = [
  "base64",
  "cargo_crev_reviews_common",
@@ -70,7 +70,7 @@ dependencies = [
 
 [[package]]
 name = "cargo_crev_reviews_wasm"
-version = "2021.829.1533"
+version = "2021.829.1811"
 dependencies = [
  "cargo_crev_reviews_common",
  "chrono",
@@ -353,7 +353,7 @@ dependencies = [
 
 [[package]]
 name = "simple_server"
-version = "2021.829.1739"
+version = "2021.829.1811"
 dependencies = [
  "env_logger",
  "http",

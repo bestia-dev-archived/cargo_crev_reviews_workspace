@@ -34,8 +34,7 @@ pub fn start_web_server(host: &str, port: &str) {
                 Ok(response)
             }
             &Method::POST => {
-                let request_body: &Vec<u8> = request.body();
-                println!("request_body.len {}", request_body.len());
+                let request_body: &Vec<u8> = request.body();                
                 let response_body = parse_post_data_and_match_method(request_body);
                 Ok(response.body(response_body.into_bytes())?)
             }
@@ -123,7 +122,6 @@ fn response_file_base64(response: simple_server::Builder, f: fn() -> &'static st
 
 /// <https://www.jsonrpc.org/specification>
 fn parse_post_data_and_match_method(body: &Vec<u8>) -> String {
-    println!("body: {:?}", body);
     let p: RpcMethod = unwrap!(serde_json::from_slice(body));
     //println!("deserialized = {:?}", &p);
     if p.jsonrpc != "2.0" {

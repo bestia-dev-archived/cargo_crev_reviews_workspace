@@ -50,12 +50,10 @@ fn button_save_review_on_click(_element_id: &str) {
         id: 1,
         params,
     };
-    //let json_string = unwrap!(serde_json::to_string(&rpc));
-    let json_string = "12345678901234567890123456789012345678901234567890";
+    let json_string = unwrap!(serde_json::to_string(&rpc));
     let json_js_value = JsValue::from_str(&json_string);
     spawn_local(async move {
         let json = Some(&json_js_value);
-        w::debug_write(&format!("json_js_value: {:?}", &json_js_value));
         let resp_body_text = w::fetch_post_response("submit", json).await;
         w::set_inner_html("div_for_wasm_html_injecting", &resp_body_text);
     });

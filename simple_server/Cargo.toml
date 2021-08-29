@@ -1,6 +1,6 @@
 [package]
 name = "simple_server"
-version = "2021.829.1739"
+version = "2021.829.1811"
 description = "simple server from https://github.com/steveklabnik/simple-server"
 authors = ["Luciano Bestia"]
 edition = "2018"

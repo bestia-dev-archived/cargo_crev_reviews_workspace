@@ -36,8 +36,10 @@ fn match_arguments_and_call_tasks(mut args: std::env::Args) {
                 } else if &task == "commit_and_push" {
                     let arg_2 = args.next();
                     task_commit_and_push(arg_2);
-                } else if &task == "run" {
-                    task_run();
+                } else if &task == "run_build" {
+                    task_run_build();
+                } else if &task == "run_release" {
+                    task_run_release();
                 } else {
                     println!("Task {} is unknown.", &task);
                     print_help();
@@ -53,8 +55,9 @@ fn print_help() {
         r#"
 User defined tasks in automation_tasks_rs:
 cargo auto build - builds the crate in debug mode, fmt
+cargo auto run_build - runs the build
 cargo auto release - builds the crate in release mode, version from date, fmt
-cargo auto increment_minor - increments the semver version minor part (only for libraries)
+cargo auto run_release - runs the release
 cargo auto docs - builds the docs, copy to docs directory
 cargo auto commit_and_push - commits with message and push with mandatory message
     if you use SSH, it is easy to start the ssh-agent in the background and ssh-add your credentials for git
@@ -70,7 +73,7 @@ fn completion() {
     let last_word = args[3].as_str();
 
     if last_word == "cargo-auto" || last_word == "auto" {
-        let sub_commands = vec!["build", "release", "doc", "commit_and_push"];
+        let sub_commands = vec!["build", "run_build", "release","run_release", "doc", "commit_and_push"];
         completion_return_one_or_more_sub_commands(sub_commands, word_being_completed);
     }
     /*
@@ -136,11 +139,21 @@ run `cargo auto doc`
 }
 
 /// after release, run the web server and it will automatically open the browser
-fn task_run() {
+fn task_run_build() {
+    run_shell_command("target/debug/cargo_crev_reviews");
+    println!(
+        r#"
+After `cargo auto run_build` close the CLI with ctrl+c and close the browser.
+"#
+    );
+}
+
+/// after release, run the web server and it will automatically open the browser
+fn task_run_release() {
     run_shell_command("target/release/cargo_crev_reviews");
     println!(
         r#"
-After `cargo auto run` close the CLI with ctrl+c and close the browser.
+After `cargo auto run_release` close the CLI with ctrl+c and close the browser.
 "#
     );
 }
