@@ -56,7 +56,7 @@ fn parse_get_uri_and_response_file(path: &str, response: simple_server::Builder)
     println!("path: {}", path);
     match path {
         "/cargo_crev_reviews/index.html" => response_file_text(response, index_html, path, Cache::NoStore),
-        "/cargo_crev_reviews/pages/new_review.html" => response_file_text(response, pages_new_review_html, path, Cache::NoStore),
+        "/cargo_crev_reviews/pages/review_new.html" => response_file_text(response, pages_review_new_html, path, Cache::NoStore),
         "/cargo_crev_reviews/css/cargo_crev_reviews.css" => response_file_text(response, files_mod::css_cargo_crev_reviews_css, path, Cache::Ok),
         "/cargo_crev_reviews/css/fontawesome.css" => response_file_text(response, css_fontawesome_css, path, Cache::Ok),
         "/cargo_crev_reviews/css/normalize.css" => response_file_text(response, css_normalize_css, path, Cache::Ok),
@@ -65,7 +65,6 @@ fn parse_get_uri_and_response_file(path: &str, response: simple_server::Builder)
         "/cargo_crev_reviews/icons/icon-032.png" => response_file_base64(response, icons_icon_032_png, path),
         "/cargo_crev_reviews/icons/icon-128.png" => response_file_base64(response, icons_icon_128_png, path),
         "/cargo_crev_reviews/icons/icon-192.png" => response_file_base64(response, icons_icon_192_png, path),
-
         "/cargo_crev_reviews/pkg/cargo_crev_reviews_wasm.js" => response_file_text(response, pkg_cargo_crev_reviews_wasm_js, path, Cache::NoStore),
         "/cargo_crev_reviews/pkg/cargo_crev_reviews_wasm_bg.wasm" => response_file_base64(response, pkg_cargo_crev_reviews_wasm_bg_wasm, path),
 
@@ -129,29 +128,47 @@ fn parse_post_data_and_match_method(body: &Vec<u8>) -> String {
     } else {
         match p.method.as_str() {
             // here add methods that this server recognizes
-            "save_review" => save_review_json(p.params, p.id),
+            "review_save" => review_save_json(p.params, p.id),
             _ => format!("unknown method = {}", &p.method),
         }
     }
+}
+
+// the first parameter is the Serialize trait and not a struct
+fn return_json_rpc_result<T>(result: T, id: u32) -> String
+where
+    T: serde::Serialize,
+{
+    let result = unwrap!(serde_json::to_value(result));
+    let r = RpcResult {
+        jsonrpc: "2.0".to_string(),
+        result: result,
+        id,
+    };
+    let body = unwrap!(serde_json::to_string(&r));
+    body
 }
 
 // endregion: server - parse, match
 
 // region: boilerplate to convert json to call methods
 
-fn save_review_json(params: serde_json::Value, id: u32) -> String {
-    println!("save_review_json");
-    let p: SaveReviewParams = unwrap!(serde_json::from_value(params));
-    println!("SaveReviewParams = {:?}", &p);
+fn review_save_json(params: serde_json::Value, id: u32) -> String {
+    println!("review_save_json");
+    let p: ReviewSaveParams = unwrap!(serde_json::from_value(params));
+    println!("ReviewSaveParams = {:?}", &p);
 
-    let r = StringResult {
-        jsonrpc: "2.0".to_string(),
-        result: "request received".to_string(),
-        id,
+    let result = ReviewSaveResult {
+        page_html: crate::files_mod::pages_review_show_html().to_string(),
+        crate_name: p.crate_name,
+        crate_version: p.crate_version,
+        thoroughness: p.thoroughness,
+        understanding: p.understanding,
+        rating: p.rating,
+        comment_md: p.comment_md,
     };
-    let body = unwrap!(serde_json::to_string(&r));
-    // return
-    body
+
+    return_json_rpc_result(result, id)
 }
 
 // endregion: boilerplate to convert json to call methods

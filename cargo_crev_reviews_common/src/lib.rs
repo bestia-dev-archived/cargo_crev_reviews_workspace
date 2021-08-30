@@ -12,9 +12,9 @@ pub struct RpcMethod {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct StringResult {
+pub struct RpcResult {
     pub jsonrpc: String,
-    pub result: String,
+    pub result: serde_json::Value,
     pub id: u32,
 }
 
@@ -33,9 +33,9 @@ pub struct RpcError {
 
 // region: server - parse, match
 
-// region: save_review
+// region: review
 #[derive(Serialize, Deserialize, Debug)]
-pub struct SaveReviewParams {
+pub struct ReviewSaveParams {
     pub crate_name: String,
     pub crate_version: String,
     pub thoroughness: String,
@@ -44,4 +44,14 @@ pub struct SaveReviewParams {
     pub comment_md: String,
 }
 
-// endregion: save_review
+#[derive(Serialize, Deserialize, Debug)]
+pub struct ReviewSaveResult {
+    pub page_html: String,
+    pub crate_name: String,
+    pub crate_version: String,
+    pub thoroughness: String,
+    pub understanding: String,
+    pub rating: String,
+    pub comment_md: String,
+}
+// endregion: review

@@ -142,16 +142,16 @@ The first set of requests are GET and response is "static" files embedded in fil
 1. browser request for `/cargo_crev_reviews/index.html` is GET, the response is html text file embedded in files_mod.rs in the function: `index_html()`  
     This html is just an empty shell that gets the css and wasm code. There is no real content inside. This concept is [Single-page application SPA](https://en.wikipedia.org/wiki/Single-page_application).  
 2. index.html requests: 3 css files, `pkg/cargo_crev_reviews.js`, `pkg/cargo_crev_reviews_bg.wasm`, "favicon" `icons/icon-032.png`. All these requests are GET and responses come from files_mod.rs functions, some are text files and others are base64 files.
-3. the browser imports the wasm module and starts the init function that requests `pages/new_review.html`. This is GET, the responses is html text files embedded in files_mod. TODO: Maybe this should already be a json-rpc request
+3. the browser imports the wasm module and starts the init function that requests `pages/review_new.html`. This is GET, the responses is html text files embedded in files_mod. TODO: Maybe this should already be a json-rpc request
     This is a page with the html content.
 
 4. wasm (inside the browser) is rust code and if needed it modifies the received html and inserts it into index.html
 5. the browser renders our first page. Hooray!
 
-6. the user inputs some data and click on the button `save_review`
-7. the macro `on_click!` hides the ugly rust code behind the definition of an event handler in web_sys and calls `save_review_on_click()`
+6. the user inputs some data and click on the button `review_save`
+7. the macro `on_click!` hides the ugly rust code behind the definition of an event handler in web_sys and calls `review_save_on_click()`
 8. wasm creates a json-rpc and sends the POST request to the server
-9. the request is POST, the server calls the method `save_review()` and returns a `json-rpc` response
+9. the request is POST, the server calls the method `review_save()` and returns a `json-rpc` response
 10. The response contains the html to be rendered and optional data to be inserted in this html before rendering.
 
 ## TODO
