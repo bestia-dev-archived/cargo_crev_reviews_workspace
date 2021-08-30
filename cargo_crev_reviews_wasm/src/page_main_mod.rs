@@ -5,10 +5,10 @@ use unwrap::unwrap;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 
-use cargo_crev_reviews_common::*;
+// use cargo_crev_reviews_common::*;
 use wasm_bindgen_futures::spawn_local;
-use web_sys::Request;
-use web_sys::RequestInit;
+//use web_sys::Request;
+//use web_sys::RequestInit;
 
 use crate::on_click;
 use crate::utils_mod as ut;

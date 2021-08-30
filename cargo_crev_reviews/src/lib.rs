@@ -8,7 +8,7 @@ mod methods_mod;
 
 use cargo_crev_reviews_common::*;
 use files_mod::*;
-use methods_mod::*;
+// use methods_mod::*;
 
 use simple_server::{Method, Response, Server, StatusCode};
 use unwrap::unwrap;
@@ -34,7 +34,7 @@ pub fn start_web_server(host: &str, port: &str) {
                 Ok(response)
             }
             &Method::POST => {
-                let request_body: &Vec<u8> = request.body();                
+                let request_body: &Vec<u8> = request.body();
                 let response_body = parse_post_data_and_match_method(request_body);
                 Ok(response.body(response_body.into_bytes())?)
             }

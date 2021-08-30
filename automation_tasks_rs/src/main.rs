@@ -73,7 +73,7 @@ fn completion() {
     let last_word = args[3].as_str();
 
     if last_word == "cargo-auto" || last_word == "auto" {
-        let sub_commands = vec!["build", "run_build", "release","run_release", "doc", "commit_and_push"];
+        let sub_commands = vec!["build", "run_build", "release", "run_release", "doc", "commit_and_push"];
         completion_return_one_or_more_sub_commands(sub_commands, word_being_completed);
     }
     /*
@@ -90,6 +90,7 @@ fn completion() {
 // region: tasks
 
 /// build every member of workspace. One is wasm project, so instead of cargo build, I use wam-pack build
+/// TODO: if the member ends with "_wasm" then exclude from `cargo build`, but `wasm-pack build`
 /// for faster build I will change only the version number to members that was modified
 fn task_build() {
     auto_version_from_date();
@@ -101,7 +102,7 @@ fn task_build() {
     #[rustfmt::skip]
     let shell_commands = [
         "cargo fmt", 
-        "cargo build"];
+        "cargo build --workspace --exclude cargo_crev_reviews_wasm"];
     run_shell_commands(shell_commands.to_vec());
 
     println!(
@@ -126,8 +127,8 @@ fn task_release() {
     //auto_lines_of_code("");
 
     run_shell_command("cargo fmt");
-    run_shell_command("cargo build --release");
-    // run_shell_command(&format!("strip target/release/{}",package_name()));
+    run_shell_command("cargo build --release --workspace --exclude cargo_crev_reviews_wasm");
+    run_shell_command(&format!("strip target/release/{}", package_name()));
 
     println!(
         r#"
@@ -209,7 +210,13 @@ fn copy_web_folder_files_into_module() {
                 let p: std::path::PathBuf = entry.path();
                 if p.is_file() {
                     let ps = p.to_string_lossy();
-                    if !ps.ends_with(".gitignore") && !ps.ends_with("icon_original.png") && !ps.ends_with("README.md") {
+                    if !ps.ends_with(".gitignore")
+                        && !ps.ends_with("icon-original.png")
+                        && !ps.ends_with("README.md")
+                        && !ps.ends_with("package.json")
+                        && !ps.ends_with("cargo_crev_reviews_wasm_bg.wasm.d.ts")
+                        && !ps.ends_with("cargo_crev_reviews_wasm.d.ts")
+                    {
                         let start = format!(
                             "\npub fn {}() -> &'static str{{\nr##\"\n",
                             ps.trim_start_matches("web_server_folder/cargo_crev_reviews/")

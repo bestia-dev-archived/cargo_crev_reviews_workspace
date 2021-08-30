@@ -51,7 +51,7 @@ pub fn get_delimited_text(source_str: &str, pos_cursor: usize, start_delimiter: 
     // return
     None
 }
-
+/*
 /// returns a new String without the delimited text
 pub fn get_text_without_delimited_fragment(source_str: &str, pos_cursor: usize, start_delimiter: &str, end_delimiter: &str) -> String {
     if let Some(pos_start) = find_pos_before_delimiter(source_str, pos_cursor, start_delimiter) {
@@ -64,7 +64,8 @@ pub fn get_text_without_delimited_fragment(source_str: &str, pos_cursor: usize, 
     // return
     source_str.to_owned()
 }
-
+*/
+/*
 /// replace wt (web text) placeholder form the template
 /// wt looks like this: `<div><!--wt_unit-->EUR</div>`
 /// on the left is delimited with a comment, on the right with `<`
@@ -83,3 +84,4 @@ pub fn replace_wt_placeholder(source_str: &str, wt_name: &str, replace_with: &st
     // return
     source_str.to_owned()
 }
+*/
