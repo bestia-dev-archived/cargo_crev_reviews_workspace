@@ -10,6 +10,12 @@ Write cargo-crev reviews in a Graphical User Interface
 
 [comment]: # (auto_lines_of_code start)
 
+[![Lines in Rust code](https://img.shields.io/badge/Lines_in_Rust-16059-green.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
+[![Lines in Doc comments](https://img.shields.io/badge/Lines_in_Doc_comments-284-blue.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
+[![Lines in Comments](https://img.shields.io/badge/Lines_in_comments-115-purple.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
+[![Lines in examples](https://img.shields.io/badge/Lines_in_examples-96-yellow.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
+[![Lines in tests](https://img.shields.io/badge/Lines_in_tests-140-orange.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
+
 [comment]: # (auto_lines_of_code end)
 
 [comment]: # (auto_badges end)
