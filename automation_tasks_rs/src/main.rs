@@ -76,6 +76,7 @@ fn completion() {
         let sub_commands = vec!["build", "run_build", "release", "run_release", "doc", "commit_and_push"];
         completion_return_one_or_more_sub_commands(sub_commands, word_being_completed);
     }
+
     /*
     // the second level if needed
     else if last_word == "new" {
@@ -90,20 +91,18 @@ fn completion() {
 // region: tasks
 
 /// build every member of workspace. One is wasm project, so instead of cargo build, I use wam-pack build
-/// TODO: if the member ends with "_wasm" then exclude from `cargo build`, but `wasm-pack build`
+/// TODO: if the member ends with "_wasm" then exclude from `cargo build` and build with `wasm-pack build` first
 /// for faster build I will change only the version number to members that was modified
 fn task_build() {
+    auto_check_micro_xml("web_server_folder/cargo_crev_reviews/pages");
     auto_version_from_date();
+    run_shell_command("cargo fmt");
     run_shell_command("cd cargo_crev_reviews_wasm;wasm-pack build --target web;cd ..");
     // copy to web_server_folder/pkg
     run_shell_command("rsync -a --info=progress2 --delete-after cargo_crev_reviews_wasm/pkg/ web_server_folder/cargo_crev_reviews/pkg/");
-
+    
     copy_web_folder_files_into_module();
-    #[rustfmt::skip]
-    let shell_commands = [
-        "cargo fmt", 
-        "cargo build --workspace --exclude cargo_crev_reviews_wasm"];
-    run_shell_commands(shell_commands.to_vec());
+    run_shell_command("cargo build --workspace --exclude cargo_crev_reviews_wasm");
 
     println!(
         r#"
@@ -114,19 +113,23 @@ run `cargo auto release`
     );
 }
 
+/// build release every member of workspace. One is wasm project, so instead of cargo build, I use wam-pack build
+/// TODO: if the member ends with "_wasm" then exclude from `cargo build` and build with `wasm-pack build` first
 /// this workspace is basically one single application splitted into 3 projects
-/// it deserves the same version number for the release build. It means that it will build all members.
+/// it deserves the same version number for the release build. It means that it will build all members. 
+/// A little slower than only build.
 fn task_release() {
-    auto_version_from_date_forced();
+    auto_check_micro_xml("web_server_folder/cargo_crev_reviews/pages");
+    auto_version_from_date_forced();    
+    run_shell_command("cargo fmt");
+
     run_shell_command("cd cargo_crev_reviews_wasm;wasm-pack build --target web --release;cd ..");
     // copy to web_server_folder/pkg
     run_shell_command("rsync -a --info=progress2 --delete-after cargo_crev_reviews_wasm/pkg/ web_server_folder/cargo_crev_reviews/pkg/");
 
-    copy_web_folder_files_into_module();
     //auto_cargo_toml_to_md();
     //auto_lines_of_code("");
-
-    run_shell_command("cargo fmt");
+    copy_web_folder_files_into_module();
     run_shell_command("cargo build --release --workspace --exclude cargo_crev_reviews_wasm");
     run_shell_command(&format!("strip target/release/{}", package_name()));
 

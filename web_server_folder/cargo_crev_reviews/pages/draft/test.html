@@ -1,0 +1,38 @@
+<div class="container_0">
+    <div class="container0_content_not_grid">
+        <div style="display: grid;grid-template-columns: 40% 60% ;">
+            <div class="middle">
+                <h2><a class="c_link_1" href="/rust-reviews/">
+                    Edit Rust code review</a></h2>
+            </div>
+            <div class="middle right">
+                <h3>review for <a class="c_link_1" href="https://github.com/crev-dev/cargo-crev" target="_blank">cargo-crev</a></h3>
+            </div>
+        </div>
+    </div>
+</div>
+<form action="/cargo_crev_reviews" method="POST">
+    <div class="container_0">
+        <div class="container0_content_not_grid">
+            <pre>
+crate name:<input type="text" id="crate_name" value="crate_name" value="crate_name" ></input>
+version:<input type="text" id="crate_version" value="crate_version" value="crate_version" ></input>
+
+thoroughness: <input type="radio" name="thoroughness" value="none" checked="checked" >/>none     <input type="radio" name="thoroughness" value="low" checked="checked" >/><span class="c_low" >low     </span><input type="radio" name="thoroughness" value="medium" checked="checked" >/><span class="c_medium" >medium     </span><input type="radio" name="thoroughness" value="high" checked="checked" >/><span class="c_high" >high     </span>
+understanding: <input type="radio" name="understanding" value="none" checked="checked" >/>none     <input type="radio" name="understanding" value="low" checked="checked" >/><span class="c_low" >low     </span><input type="radio" name="understanding" value="medium" checked="checked" >/><span class="c_medium" >medium     </span><input type="radio" name="understanding" value="high" checked="checked" >/><span class="c_high" >high     </span>
+rating: <input type="radio" name="rating" value="none" checked="checked" >/><span class="c_none" >none     </span><input type="radio" name="rating" value="negative" checked="checked" >/><span class="c_negative" >negative     </span><input type="radio" name="rating" value="neutral" checked="checked" >/><span class="c_neutral" >neutral     </span><input type="radio" name="rating" value="positive" checked="checked" >/><span class="c_positive" >positive     </span><input type="radio" name="rating" value="strong" checked="checked" >/><span class="c_strong" >strong     </span>
+                    <textarea style="height: 250px;" id="comment_md" name="comment_md" >Try to comment important aspects: 
+security: unsafe:0 FFI:0 asm!:0 file-read:0 file-write:0 no_mangle:0
+network-access:0 build.rs:0 macro_rules:0 proc_macro:0 process::command:0
+line of code:0 dependencies:0 
+malicious potential:0
+owners (in crates.io) reputation: unknown/rust team/active in rust community
+used in your projects:  
+alternative crates you explored:
+</textarea></pre>
+            <div>
+                <p><span class="span_button" id="button_review_save">Save review locally</span></p>
+            </div>
+        </div>
+    </div>
+</form> cargo_crev_reviews_wasm.js:369:17

@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["cargo_crev_reviews_wasm"] = [{"text":"impl <a class=\"trait\" href=\"https://docs.rs/lazy_static/1.4.0/lazy_static/trait.LazyStatic.html\" title=\"trait lazy_static::LazyStatic\">LazyStatic</a> for <a class=\"struct\" href=\"cargo_crev_reviews_wasm/page_review_mod/struct.REVIEW_SHOW_DATA.html\" title=\"struct cargo_crev_reviews_wasm::page_review_mod::REVIEW_SHOW_DATA\">REVIEW_SHOW_DATA</a>","synthetic":false,"types":["cargo_crev_reviews_wasm::page_review_mod::REVIEW_SHOW_DATA"]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

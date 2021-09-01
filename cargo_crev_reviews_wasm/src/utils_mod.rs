@@ -85,3 +85,8 @@ pub fn replace_wt_placeholder(source_str: &str, wt_name: &str, replace_with: &st
     source_str.to_owned()
 }
 */
+
+/// get a random number u32
+pub fn get_random_u32() -> u32 {
+    (js_sys::Math::random() * u32::MAX as f64) as u32
+}

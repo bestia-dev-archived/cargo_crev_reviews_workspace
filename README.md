@@ -158,6 +158,8 @@ The first set of requests are GET and response is "static" files embedded in fil
 
 Automation tasks for workspaces:  
 auto_cargo_toml_to_md, auto_lines_of_code, auto_md_to_doc_comments
+special types for html encoded strings and attribute_value_encoded strings. So I can be sure that I did or did not encoded them.
+
 
 ## cargo crev reviews and advisory
 

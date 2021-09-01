@@ -1,6 +1,6 @@
 [package]
 name = "cargo_crev_reviews_wasm"
-version = "2021.830.717"
+version = "2021.901.1647"
 authors = ["Luciano Bestia <Luciano.Bestia@gmail.com>"]
 edition = "2018"
 description = "Wasm web app that is the frontend of the application cargo_crev_reviews"
@@ -19,6 +19,7 @@ crate-type = ["cdylib"]
 [dependencies]
 cargo_crev_reviews_common = { path = "../cargo_crev_reviews_common" }
 
+reader_for_microxml="2.0.1"
 unwrap = "1.2.1"
 wasm-bindgen = { version = "0.2.69", features = ["serde-serialize"] }
 console_error_panic_hook = "0.1.6"

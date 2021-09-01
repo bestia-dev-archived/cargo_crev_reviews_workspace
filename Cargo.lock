@@ -48,7 +48,7 @@ checksum = "b700ce4376041dcd0a327fd0097c41095743c4c8af8887265942faf1100bd040"
 
 [[package]]
 name = "cargo_crev_reviews"
-version = "2021.830.717"
+version = "2021.901.1647"
 dependencies = [
  "base64",
  "cargo_crev_reviews_common",
@@ -61,7 +61,7 @@ dependencies = [
 
 [[package]]
 name = "cargo_crev_reviews_common"
-version = "2021.830.717"
+version = "2021.901.1647"
 dependencies = [
  "serde",
  "serde_json",
@@ -70,13 +70,14 @@ dependencies = [
 
 [[package]]
 name = "cargo_crev_reviews_wasm"
-version = "2021.830.717"
+version = "2021.901.1647"
 dependencies = [
  "cargo_crev_reviews_common",
  "chrono",
  "console_error_panic_hook",
  "js-sys",
  "lazy_static",
+ "reader_for_microxml",
  "serde",
  "serde-wasm-bindgen",
  "serde_json",
@@ -274,6 +275,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "reader_for_microxml"
+version = "2.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0d726a3f4c11def37106edaf44caf861a9012ebcd4eb6f748cc4fd93c2a15de1"
+
+[[package]]
 name = "regex"
 version = "1.5.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -353,7 +360,7 @@ dependencies = [
 
 [[package]]
 name = "simple_server"
-version = "2021.830.717"
+version = "2021.901.1647"
 dependencies = [
  "env_logger",
  "http",

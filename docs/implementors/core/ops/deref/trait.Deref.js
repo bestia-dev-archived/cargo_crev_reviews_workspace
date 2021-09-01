@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["cargo_crev_reviews_wasm"] = [{"text":"impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.54.0/core/ops/deref/trait.Deref.html\" title=\"trait core::ops::deref::Deref\">Deref</a> for <a class=\"struct\" href=\"cargo_crev_reviews_wasm/page_review_mod/struct.REVIEW_SHOW_DATA.html\" title=\"struct cargo_crev_reviews_wasm::page_review_mod::REVIEW_SHOW_DATA\">REVIEW_SHOW_DATA</a>","synthetic":false,"types":["cargo_crev_reviews_wasm::page_review_mod::REVIEW_SHOW_DATA"]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

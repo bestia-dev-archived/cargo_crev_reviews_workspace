@@ -14,6 +14,8 @@ pub struct RpcMethod {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct RpcResult {
     pub jsonrpc: String,
+    /// the name of the method that will process this response on the client. This is not in the json-rpc standard.
+    pub method: String,
     pub result: serde_json::Value,
     pub id: u32,
 }
@@ -31,7 +33,7 @@ pub struct RpcError {
     pub id: u32,
 }
 
-// region: server - parse, match
+// endregion: server - parse, match
 
 // region: review
 #[derive(Serialize, Deserialize, Debug)]
@@ -44,9 +46,18 @@ pub struct ReviewSaveParams {
     pub comment_md: String,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
-pub struct ReviewSaveResult {
+#[derive(Serialize, Deserialize, Debug, Default)]
+pub struct ReviewShowParams {
     pub page_html: String,
+    pub crate_name: String,
+    pub crate_version: String,
+    pub thoroughness: String,
+    pub understanding: String,
+    pub rating: String,
+    pub comment_md: String,
+}
+#[derive(Serialize, Deserialize, Debug, Default)]
+pub struct ReviewEditParams {
     pub crate_name: String,
     pub crate_version: String,
     pub thoroughness: String,

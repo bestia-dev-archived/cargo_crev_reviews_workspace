@@ -8,7 +8,7 @@ mod methods_mod;
 
 use cargo_crev_reviews_common::*;
 use files_mod::*;
-// use methods_mod::*;
+use methods_mod::*;
 
 use simple_server::{Method, Response, Server, StatusCode};
 use unwrap::unwrap;
@@ -129,19 +129,21 @@ fn parse_post_data_and_match_method(body: &Vec<u8>) -> String {
         match p.method.as_str() {
             // here add methods that this server recognizes
             "review_save" => review_save_json(p.params, p.id),
+            "review_edit" => review_edit_json(p.params, p.id),
             _ => format!("unknown method = {}", &p.method),
         }
     }
 }
 
 // the first parameter is the Serialize trait and not a struct
-fn return_json_rpc_result<T>(result: T, id: u32) -> String
+fn return_json_rpc_result<T>(result: T, page_method: &str, id: u32) -> String
 where
     T: serde::Serialize,
 {
     let result = unwrap!(serde_json::to_value(result));
     let r = RpcResult {
         jsonrpc: "2.0".to_string(),
+        method: page_method.to_string(),
         result: result,
         id,
     };
@@ -150,25 +152,3 @@ where
 }
 
 // endregion: server - parse, match
-
-// region: boilerplate to convert json to call methods
-
-fn review_save_json(params: serde_json::Value, id: u32) -> String {
-    println!("review_save_json");
-    let p: ReviewSaveParams = unwrap!(serde_json::from_value(params));
-    println!("ReviewSaveParams = {:?}", &p);
-
-    let result = ReviewSaveResult {
-        page_html: crate::files_mod::pages_review_show_html().to_string(),
-        crate_name: p.crate_name,
-        crate_version: p.crate_version,
-        thoroughness: p.thoroughness,
-        understanding: p.understanding,
-        rating: p.rating,
-        comment_md: p.comment_md,
-    };
-
-    return_json_rpc_result(result, id)
-}
-
-// endregion: boilerplate to convert json to call methods
