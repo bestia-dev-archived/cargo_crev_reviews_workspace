@@ -128,7 +128,7 @@ fn task_release() {
     run_shell_command("rsync -a --info=progress2 --delete-after cargo_crev_reviews_wasm/pkg/ web_server_folder/cargo_crev_reviews/pkg/");
 
     //auto_cargo_toml_to_md();
-    //auto_lines_of_code("");
+    auto_lines_of_code("");
     copy_web_folder_files_into_module();
     run_shell_command("cargo build --release --workspace --exclude cargo_crev_reviews_wasm");
     run_shell_command(&format!("strip target/release/{}", package_name()));
