@@ -1,0 +1,31 @@
+----- BEGIN CREV PROOF -----
+kind: package review
+version: -1
+date: "2021-09-02T19:13:57.932503400+02:00"
+from:
+  id-type: crev
+  id: 24YKeuThJDNFSlJyxcl5diSZcKcRbh-0zXM0YxTOFJw
+  url: "https://github.com/LucianoBestia/crev-proofs"
+package:
+  source: SOURCE_ID
+  name: crate_name
+  version: 1.1.1
+													
+  digest: AAECAw
+review:
+  thoroughness: high
+  understanding: high
+  rating: strong
+comment: |-
+  Try to comment important aspects: 
+  security: unsafe:0 FFI:0 asm!:0 file-read:0 file-write:0 no_mangle:0
+  network-access:0 build.rs:0 macro_rules:0 proc_macro:0 process::command:0
+  line of code:0 dependencies:0 
+  malicious potential:0
+  owners (in crates.io) reputation: unknown/rust team/active in rust community
+  used in your projects:  
+  alternative crates you explored:
+----- SIGN CREV PROOF -----
+zuOl8WHkPljOsATlcZRTe-LA3gvTW6az0Dl1cAgTYKe_g2Nj-Qn_b-cDgEuzH0gMEpZVhCQgUoI17hVmYj5-DA
+----- END CREV PROOF -----
+

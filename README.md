@@ -9,10 +9,9 @@ Write cargo-crev reviews in a Graphical User Interface
 [comment]: # (auto_cargo_toml_to_md end)
 
 [comment]: # (auto_lines_of_code start)
-
-[![Lines in Rust code](https://img.shields.io/badge/Lines_in_Rust-16059-green.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
-[![Lines in Doc comments](https://img.shields.io/badge/Lines_in_Doc_comments-284-blue.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
-[![Lines in Comments](https://img.shields.io/badge/Lines_in_comments-115-purple.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
+[![Lines in Rust code](https://img.shields.io/badge/Lines_in_Rust-1336-green.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
+[![Lines in Doc comments](https://img.shields.io/badge/Lines_in_Doc_comments-274-blue.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
+[![Lines in Comments](https://img.shields.io/badge/Lines_in_comments-97-purple.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
 [![Lines in examples](https://img.shields.io/badge/Lines_in_examples-96-yellow.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
 [![Lines in tests](https://img.shields.io/badge/Lines_in_tests-140-orange.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
 
@@ -160,12 +159,46 @@ The first set of requests are GET and response is "static" files embedded in fil
 9. the request is POST, the server calls the method `review_save()` and returns a `json-rpc` response
 10. The response contains the html to be rendered and optional data to be inserted in this html before rendering.
 
+## cargo-crev integration
+
+The [cargo-crev](https://github.com/crev-dev/cargo-crev) project contains many crates. The crates `crev-lib` and `crev-data` are libraries for integration.  
+I want to create a new simple review, similar to the command:  
+`cargo crev crate review -u --skip-activity-check crate_name version`  
+The crate and version must already exist inside the local `cargo registry index cache`. That means we use this dependency for some of our projects. We cannot review something we never actually used. Path to an info file: 
+`~\.cargo\registry\index\github.com-1ecc6299db9ec823\cache\re\ad\reader_for_microxml`  
+The content of this file is roughly:  
+
+```
+bc688d353fc7c7a2f3f1f5fed9a27fc1773fc710
+1.0.0 {
+    "name": "reader_for_microxml",
+    "vers": "1.0.0",
+    "deps": [],
+    "cksum": "623616f68a6441e2f61aa01c9bbcf76f4c9989328e0e10ab747e936718791912",
+    "features": {},
+    "yanked": true,
+    "links": null
+}
+1.1.11 {
+    "name": "reader_for_microxml",
+    "vers": "1.1.11",
+    "deps": [],
+    "cksum": "fd50abb1f0d11a59ebe6d3f31446e4af8d0f8a7df668034b6c9b94453fa30c42",
+    "features": {},
+    "yanked": true,
+    "links": null
+}
+```
+
+In `~/.cargo/registry/src/github.com-1ecc6299db9ec823/reader_for_microxml-1.1.11/` is the entire source code downloaded from crates.io. `Crates.io` guarantees the source code for a crate-version cannot be altered or even deleted. We know it will never change, so we can review exactly this code with confidence.  
+
 ## TODO
 
+crev new review calculate digest and revision
 Automation tasks for workspaces:  
-auto_cargo_toml_to_md, auto_lines_of_code, auto_md_to_doc_comments
-special types for html encoded strings and attribute_value_encoded strings. So I can be sure that I did or did not encoded them.
-
+auto_lines_of_code: exclude files_mod.rs, because it is just embedded files.  
+auto_cargo_toml_to_md, , auto_md_to_doc_comments  
+special types for html encoded strings and attribute_value_encoded strings. So I can be sure that I did or did not encoded them.  
 
 ## cargo crev reviews and advisory
 

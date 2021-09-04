@@ -3,24 +3,36 @@
 //! This module contains the boilerplate to parse and match URI and POST json-rpc.
 //! The real code for methods is in methods_mod.rs
 //! The real content of "static files" is in the module files_mod.rs
+pub mod crev_mod;
 mod files_mod;
 mod methods_mod;
+mod stdio_input_password_mod;
+
+use std::sync::Mutex;
 
 use cargo_crev_reviews_common::*;
 use files_mod::*;
 use methods_mod::*;
 
+use lazy_static::lazy_static;
 use simple_server::{Method, Response, Server, StatusCode};
 use unwrap::unwrap;
+
 enum Cache {
     NoStore,
     Ok,
 }
 
+lazy_static! {
+    /// mutable static, because it is hard to pass variables around with async closures
+    static ref CREV_UNLOCKED: Mutex<Option<crev_data::id::UnlockedId>>=Mutex::new(None);
+    static ref LOCAL: Mutex<Option<crev_lib::Local>>=Mutex::new(None);
+}
+
 // region: server - parse, match
 
 pub fn start_web_server(host: &str, port: &str) {
-    println!("cargo_crev_reviews started");
+    println!("cargo_crev_reviews server started");
     let server = Server::new(|request, response| {
         let path = request.uri().to_string();
         // println!("Request received. {} {}", request.method(), request.uri());
@@ -35,7 +47,7 @@ pub fn start_web_server(host: &str, port: &str) {
             }
             &Method::POST => {
                 let request_body: &Vec<u8> = request.body();
-                let response_body = parse_post_data_and_match_method(request_body);
+                let response_body = unwrap!(parse_post_data_and_match_method(request_body));
                 Ok(response.body(response_body.into_bytes())?)
             }
             _ => Ok(response_404_not_found(response, &path)),
@@ -120,17 +132,17 @@ fn response_file_base64(response: simple_server::Builder, f: fn() -> &'static st
 }
 
 /// <https://www.jsonrpc.org/specification>
-fn parse_post_data_and_match_method(body: &Vec<u8>) -> String {
+fn parse_post_data_and_match_method(body: &Vec<u8>) -> anyhow::Result<String> {
     let p: RpcMethod = unwrap!(serde_json::from_slice(body));
     //println!("deserialized = {:?}", &p);
     if p.jsonrpc != "2.0" {
-        format!("error: jsonrpc != 2.0")
+        Ok(format!("error: jsonrpc != 2.0"))
     } else {
         match p.method.as_str() {
             // here add methods that this server recognizes
             "review_save" => review_save_json(p.params, p.id),
-            "review_edit" => review_edit_json(p.params, p.id),
-            _ => format!("unknown method = {}", &p.method),
+            "review_edit" => Ok(review_edit_json(p.params, p.id)),
+            _ => Err(anyhow::anyhow!("unknown method = {}", &p.method)),
         }
     }
 }

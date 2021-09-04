@@ -36,10 +36,10 @@ fn match_arguments_and_call_tasks(mut args: std::env::Args) {
                 } else if &task == "commit_and_push" {
                     let arg_2 = args.next();
                     task_commit_and_push(arg_2);
-                } else if &task == "run_build" {
-                    task_run_build();
-                } else if &task == "run_release" {
-                    task_run_release();
+                } else if &task == "build_and_run" {
+                    task_build_and_run();
+                } else if &task == "release_and_run" {
+                    task_release_and_run();
                 } else {
                     println!("Task {} is unknown.", &task);
                     print_help();
@@ -55,9 +55,9 @@ fn print_help() {
         r#"
 User defined tasks in automation_tasks_rs:
 cargo auto build - builds the crate in debug mode, fmt
-cargo auto run_build - runs the build
+cargo auto build_and_run - build and run
 cargo auto release - builds the crate in release mode, version from date, fmt
-cargo auto run_release - runs the release
+cargo auto release_and_run - release and run
 cargo auto docs - builds the docs, copy to docs directory
 cargo auto commit_and_push - commits with message and push with mandatory message
     if you use SSH, it is easy to start the ssh-agent in the background and ssh-add your credentials for git
@@ -73,7 +73,7 @@ fn completion() {
     let last_word = args[3].as_str();
 
     if last_word == "cargo-auto" || last_word == "auto" {
-        let sub_commands = vec!["build", "run_build", "release", "run_release", "doc", "commit_and_push"];
+        let sub_commands = vec!["build", "build_and_run", "release", "release_and_run", "doc", "commit_and_push"];
         completion_return_one_or_more_sub_commands(sub_commands, word_being_completed);
     }
 
@@ -107,7 +107,6 @@ fn task_build() {
     println!(
         r#"
 After `cargo auto build`, run the tests and the code. If ok, then 
-run `cargo run` to work with the debug version
 run `cargo auto release`
 "#
     );
@@ -128,36 +127,43 @@ fn task_release() {
     run_shell_command("rsync -a --info=progress2 --delete-after cargo_crev_reviews_wasm/pkg/ web_server_folder/cargo_crev_reviews/pkg/");
 
     //auto_cargo_toml_to_md();
+
+    // I need to exclude the file `cargo_crev_reviews/src/files_mod.rs` because it contains only emendable files
+    // I will empty this files, and later it will be filled with copy_web_folder_files_into_module
+    unwrap!(std::fs::write("cargo_crev_reviews/src/files_mod.rs", ""));
     auto_lines_of_code("");
     copy_web_folder_files_into_module();
+
+
     run_shell_command("cargo build --release --workspace --exclude cargo_crev_reviews_wasm");
     run_shell_command(&format!("strip target/release/{}", package_name()));
 
     println!(
         r#"
-After `cargo auto release`, run the code 
-with `cargo auto run`. If ok, then 
+After `cargo auto release`, run the code. If ok, then 
 run `cargo auto doc`
 "#
     );
 }
 
 /// after release, run the web server and it will automatically open the browser
-fn task_run_build() {
+fn task_build_and_run() {
+    task_build();
     run_shell_command("target/debug/cargo_crev_reviews");
     println!(
         r#"
-After `cargo auto run_build` close the CLI with ctrl+c and close the browser.
+After `cargo auto build_and_run` close the CLI with ctrl+c and close the browser.
 "#
     );
 }
 
 /// after release, run the web server and it will automatically open the browser
-fn task_run_release() {
+fn task_release_and_run() {
+    task_release();
     run_shell_command("target/release/cargo_crev_reviews");
     println!(
         r#"
-After `cargo auto run_release` close the CLI with ctrl+c and close the browser.
+After `cargo auto release_and_run` close the CLI with ctrl+c and close the browser.
 "#
     );
 }
@@ -174,7 +180,7 @@ fn task_docs() {
         &format!("echo \"<meta http-equiv=\\\"refresh\\\" content=\\\"0; url={}/index.html\\\" />\" > docs/index.html",package_name().replace("-","_")) ,
     ];
     run_shell_commands(shell_commands.to_vec());
-    // message to help user with next move
+    // message to help user with next task
     println!(
         r#"
 After `cargo auto doc`, check `docs/index.html`. If ok, then 

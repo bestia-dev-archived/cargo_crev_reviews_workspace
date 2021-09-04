@@ -1,18 +1,24 @@
 {
     "cSpell.words": [
-        "Roboto",
         "airbnb",
         "alipay",
         "amilia",
         "angellist",
+        "crossterm",
         "favicons",
         "fontawesome",
         "grayscale",
         "httparse",
         "paypal",
+        "processthreadsapi",
         "progid",
+        "Roboto",
+        "scanpw",
+        "SIGINT",
         "steveklabnik",
         "stylesheet",
+        "winapi",
+        "wincon",
         "zdravje"
     ]
 }

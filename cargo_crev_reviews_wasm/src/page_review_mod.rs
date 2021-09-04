@@ -53,11 +53,18 @@ fn button_review_save_on_click(_element_id: &str) {
     let rpc_request = rpc_json_request_value(params, "review_save", request_id);
     spawn_local(async move {
         let rpc_response = crate::pages_mod::post_request(rpc_request).await;
-
-        if rpc_response.method == "page_review_show" {
-            // prepare the static Mutex for data and call the function
-            *REVIEW_SHOW_DATA.lock().unwrap() = unwrap!(serde_json::from_value(rpc_response.result));
-            page_review_show();
+        match rpc_response.method.as_str() {
+            "page_review_show" => {
+                // prepare the static Mutex for data and call the function
+                *REVIEW_SHOW_DATA.lock().unwrap() = unwrap!(serde_json::from_value(rpc_response.result));
+                page_review_show();
+            }
+            "page_review_error" => {
+                // show dialog box with error, don't change the html and params
+                let err: cargo_crev_reviews_common::RpcErrorCodeMessage = unwrap!(serde_json::from_value(rpc_response.result));
+                unwrap!(w::window().alert_with_message(err.message.as_str()));
+            }
+            _ => w::debug_write(&format!("Error: Unrecognized method {}", &rpc_response.method)),
         }
     });
 }
@@ -98,7 +105,7 @@ pub fn page_review_show() {
 /// Execute the method and save the result in `next_attribute_replace`, don't push attribute to string
 fn review_replace_next_attribute(
     name: &str,
-    value: &str,
+    _value: &str,
     next_attribute_replace: &mut Option<(&str, String)>,
     params: &MutexGuard<ReviewShowParams>,
 ) -> String {
@@ -143,7 +150,7 @@ fn review_replace_next_text_node(txt: &str, next_text_node_replace: &mut Option<
 /// if the attribute is like `data-wb_checked_th_none="checked" checked="checked"`, starts with `wb_` (web browser bool)
 /// Execute the method and store in `next_attribute_exist`
 /// The next attribute will exist or not because of this bool.
-fn review_exist_next_attribute(name: &str, value: &str, next_attribute_exist: &mut Option<bool>, params: &MutexGuard<ReviewShowParams>) -> String {
+fn review_exist_next_attribute(name: &str, _value: &str, next_attribute_exist: &mut Option<bool>, params: &MutexGuard<ReviewShowParams>) -> String {
     w::debug_write("replace_next_text_node");
     let mut html_error = String::new();
     match name {
