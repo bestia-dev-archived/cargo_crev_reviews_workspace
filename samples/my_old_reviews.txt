@@ -1,22 +1,4 @@
-
 my new review:
-
-
-write the review for wsl_open_browser
-
-1. I am the author of this crate.
-
-wsl_open_browser just opens the windows browser from inside WSL2.
-It transforms file path from Linux to Windows notation.
-
-The code is short and simple, fully commented.
-Repository: https://github.com/LucianoBestia/wsl_open_browser 1
-This crate does not read or write any files. 
-And does not use any network communication. It is safe. 
-It is just 44 lines of rust code.
-
-NO: file-write/read, unsafe, FFI, asm!, network-access, build.rs, macro_rules, proc_macro
-
 
 old_ reviews
 
@@ -108,22 +90,6 @@ https://www.rust-lang.org/governance/wgs/wasm
 https://fitzgeraldnick.com/
 https://github.com/fitzgen
 
-
-cargo-auto 0.5.2
-strong
-2021-08-15
-LucianoBestia
-high, high
-I am the author of this crate.
-Cargo auto subcommand manages the automation_tasks_rs sub-project.
-
-It generates, builds and runs automation_tasks_rs.
-
-Th code is short and simple, fully commented.
-
-file-write/read: only the automation_tasks_rs directory
-
-NO: unsafe, FFI, asm!, network-access, build.rs, macro_rules, proc_macro
 
 
 cargo_auto_lib 0.7.2
@@ -1112,44 +1078,6 @@ And I suppose I have to trust it.
 The crate comes from:
 
 https://github.com/unicode-rs
-unwrap 1.2.1
-positive
-2020-01-24
-LucianoBestia
-medium, medium
-Adds the trati VerboseUnwrap to Result and Option. Adds the macro unwrap! that writes the filename, line and column of the position in code where the panic happened.
-
-unwrap 1.2.1
-positive
-2020-01-24
-LucianoBestia
-medium, medium
-Adds the trait VerboseUnwrap to Result and Option.
-
-Adds the macro unwrap! that writes the filename, line and column of the
-
-position in code where the panic happened.
-
-The original unwrap() did't do this right.
-
-No dependencies, no unsafe, very small crate.
-
-unwrap 1.2.1
-strong
-2020-01-24
-LucianoBestia
-medium, medium
-Adds the trait VerboseUnwrap to Result and Option.
-
-Adds the macro unwrap! that writes the filename, line and column of the
-
-position in code where the panic happened. Very useful.
-
-The original unwrap() did't do this right.
-
-In wasm the normal unwrap() returns totally unuseful: panicked at... src/libcore/option.rs:378:21.
-
-No dependencies, no unsafe, very small crate. Only for panicks.
 
 wasi 0.9.0+wasi-snapshot-preview1
 strong

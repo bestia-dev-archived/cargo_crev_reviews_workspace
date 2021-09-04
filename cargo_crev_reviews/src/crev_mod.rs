@@ -148,8 +148,8 @@ pub fn create_new_review_proof(
     // it needs `use crev_lib::ProofStore;`
     CREV_LOCAL.lock().unwrap().as_ref().unwrap().insert(&proof)?;
 
-    // let commit_msg = format!("Add review for {} v{}", crate_name, crate_version_str);
-    // crev_local.proof_dir_commit(&commit_msg)?;
+    let commit_msg = format!("Add review for {} v{}", crate_name, crate_version_str);
+    CREV_LOCAL.lock().unwrap().as_ref().unwrap().proof_dir_commit(&commit_msg)?;
 
     // return
     Ok(())
