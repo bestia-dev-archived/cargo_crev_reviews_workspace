@@ -91,22 +91,6 @@ https://fitzgeraldnick.com/
 https://github.com/fitzgen
 
 
-
-cargo_auto_lib 0.7.2
-2021-08-15
-LucianoBestia
-I am the author of this crate.
-This library is used by cargo-auto to automate building tasks of rust projects.
-
-It can read and modify files in the rust project like: Cargo.toml, README.md, main.rs, lib.rs,... You can use git to see the changes it makes.
-
-No other files should be read or write.
-
-File write and read: yes
-
-no unsafe, no FFI, no asm!, no network-access, no build.rs, no macro_rules, no proc_macro, no no_mangle
-
-
 chrono 0.4.9
 strong
 2020-04-25

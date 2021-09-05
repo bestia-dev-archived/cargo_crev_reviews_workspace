@@ -1,6 +1,6 @@
 // pages_mod.rs
 
-use cargo_crev_reviews_common::ReviewShowParams;
+use cargo_crev_reviews_common::ReviewItemParams;
 use reader_for_microxml::ReaderForMicroXml;
 use reader_for_microxml::Token;
 use std::sync::MutexGuard;
@@ -9,11 +9,11 @@ use wasm_bindgen::prelude::*;
 
 use crate::web_sys_mod as w;
 
-pub async fn post_request(json_request: JsValue) -> cargo_crev_reviews_common::RpcResult {
+pub async fn post_request(json_request: JsValue) -> cargo_crev_reviews_common::RpcResponse {
     let json = Some(&json_request);
     let resp_body_text = w::fetch_post_response("submit", json).await;
-    let rpc_result: cargo_crev_reviews_common::RpcResult = unwrap!(serde_json::from_str(&resp_body_text));
-    rpc_result
+    let rpc_response: cargo_crev_reviews_common::RpcResponse = unwrap!(serde_json::from_str(&resp_body_text));
+    rpc_response
 }
 
 /// With reader_for_microXml parse the xml.
@@ -22,10 +22,10 @@ pub async fn post_request(json_request: JsValue) -> cargo_crev_reviews_common::R
 /// It is just strings so, that should be super fast.
 pub fn process_html(
     html_fragment: String,
-    params: MutexGuard<ReviewShowParams>,
-    replace_next_attribute: &dyn Fn(&str, &str, &mut Option<(&str, String)>, &MutexGuard<ReviewShowParams>) -> String,
-    replace_next_text_node: &dyn Fn(&str, &mut Option<String>, &MutexGuard<ReviewShowParams>) -> String,
-    exist_next_attribute: &dyn Fn(&str, &str, &mut Option<bool>, &MutexGuard<ReviewShowParams>) -> String,
+    params: MutexGuard<ReviewItemParams>,
+    replace_next_attribute: &dyn Fn(&str, &str, &mut Option<(&str, String)>, &MutexGuard<ReviewItemParams>) -> String,
+    replace_next_text_node: &dyn Fn(&str, &mut Option<String>, &MutexGuard<ReviewItemParams>) -> String,
+    exist_next_attribute: &dyn Fn(&str, &str, &mut Option<bool>, &MutexGuard<ReviewItemParams>) -> String,
 ) -> String {
     let reader_iterator = ReaderForMicroXml::new(&html_fragment);
     let mut html_after_process = String::with_capacity(html_fragment.len());

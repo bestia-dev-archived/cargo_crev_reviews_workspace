@@ -1,6 +1,6 @@
 [package]
 name = "cargo_crev_reviews_common"
-version = "2021.901.1802"
+version = "2021.905.1024"
 description = "Common structs for cargo_crev_reviews backend and frontend"
 authors = ["Luciano Bestia"]
 edition = "2018"

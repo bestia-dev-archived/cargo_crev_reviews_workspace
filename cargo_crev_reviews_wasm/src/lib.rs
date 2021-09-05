@@ -29,16 +29,14 @@ pub fn wasm_bindgen_start() -> Result<(), JsValue> {
     Ok(())
 }
 
-pub fn rpc_json_request_value<T>(params: T, method: &str, id: u32) -> wasm_bindgen::JsValue
+pub fn rpc_request_value<T>(params: T, server_method: &str) -> wasm_bindgen::JsValue
 where
     T: serde::Serialize,
 {
     let params = unwrap!(serde_json::to_value(params));
-    let rpc = cargo_crev_reviews_common::RpcMethod {
-        jsonrpc: String::from("2.0"),
-        method: method.to_string(),
-        id,
-        params,
+    let rpc = cargo_crev_reviews_common::RpcRequest {
+        request_method: server_method.to_string(),
+        request_params: params,
     };
     let json_string = unwrap!(serde_json::to_string(&rpc));
     let json_js_value = JsValue::from_str(&json_string);

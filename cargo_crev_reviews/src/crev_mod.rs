@@ -23,11 +23,35 @@ use std::{ops::Range, str::FromStr, vec};
 use unwrap::unwrap;
 
 use crate::stdio_input_password_mod;
+use cargo_crev_reviews_common::*;
 
 lazy_static! {
     /// mutable static, because it is hard to pass variables around with async closures
     static ref CREV_UNLOCKED: Mutex<Option<crev_data::id::UnlockedId>>=Mutex::new(None);
     static ref CREV_LOCAL: Mutex<Option<crev_lib::Local>>=Mutex::new(None);
+}
+
+#[derive(Deserialize, Clone, Default)]
+pub struct PackageSegment {
+    pub name: String,
+    pub version: String,
+    pub version_for_sorting: Option<String>,
+}
+
+#[derive(Deserialize, Clone, Default)]
+pub struct ReviewSegment {
+    pub thoroughness: Level,
+    pub understanding: Level,
+    pub rating: Rating,
+}
+
+/// only the fields I care about for Review
+#[derive(Deserialize, Clone)]
+pub struct ProofCrevForReview {
+    pub date: String,
+    pub package: PackageSegment,
+    pub review: Option<ReviewSegment>,
+    pub comment: Option<String>,
 }
 
 // region: copied from cargo-crev  (maybe should add this to crev-lib?)
@@ -87,6 +111,46 @@ pub fn unlock_crev_id_interactively() -> anyhow::Result<()> {
 
     // return
     Ok(())
+}
+
+/// list my reviews
+pub fn list_my_reviews() -> anyhow::Result<Vec<ProofCrevForReview>> {
+    let mut vec_proof: Vec<ProofCrevForReview> = vec![];
+    // open every *.proof.crev file in my crev reviews directory
+    for path in proof_crev_files_paths()?.iter() {
+        let file_content = std::fs::read_to_string(path)?;
+        let mut pos_cursor = 0;
+        loop {
+            let range = find_range_including_delimiters(&file_content, &mut pos_cursor, "----- BEGIN CREV PROOF -----", "----- END CREV PROOF -----");
+            match range {
+                Some(mut range) => {
+                    // if there is some white space after the segment,include it in the range.
+                    let pos_2 = find_pos_before_delimiter(&file_content, pos_cursor, "----- BEGIN CREV PROOF -----");
+                    range.end = match pos_2 {
+                        Some(pos_2) => pos_2,
+                        None => file_content.len(),
+                    };
+
+                    let proof_text = unwrap!(file_content.get(range.clone()));
+                    // This must not panic because it is internal to the previous range.
+                    let range_yaml = unwrap!(find_range_between_delimiters(
+                        proof_text,
+                        &mut 0,
+                        "----- BEGIN CREV PROOF -----",
+                        "----- SIGN CREV PROOF -----",
+                    ));
+                    // if this panics it's a bug in the code and not an exception to handle
+                    let yaml = unwrap!(proof_text.get(range_yaml));
+                    let proof_crev: ProofCrevForReview = unwrap!(serde_yaml::from_str(yaml));
+                    // push it to vector
+                    vec_proof.push(proof_crev);
+                }
+                None => break,
+            }
+        }
+    }
+    // return
+    Ok(vec_proof)
 }
 
 /// create new review proof
@@ -219,29 +283,6 @@ fn proof_crev_files_paths() -> anyhow::Result<Vec<String>> {
     Ok(v)
 }
 
-#[derive(Deserialize, Clone, Default)]
-pub struct PackageSegment {
-    pub source: String,
-    pub name: String,
-    pub version: String,
-    pub digest: String,
-    pub version_for_sorting: Option<String>,
-}
-
-#[derive(Deserialize, Clone, Default)]
-pub struct ReviewSegment {
-    pub thoroughness: Level,
-    pub understanding: Level,
-    pub rating: Rating,
-}
-
-/// only the fields I care about for Review
-#[derive(Deserialize, Clone)]
-pub struct ProofCrevForReview {
-    pub package: PackageSegment,
-    pub review: Option<ReviewSegment>,
-}
-
 /// remove old proofs, so the new review proof will be unique
 fn remove_review_proofs(crate_name: &str, crate_version: &str) -> anyhow::Result<()> {
     // open every *.proof.crev file in my crev reviews directory
@@ -293,76 +334,4 @@ fn remove_review_proofs(crate_name: &str, crate_version: &str) -> anyhow::Result
         }
     }
     Ok(())
-}
-
-/// find and return the range of the first occurrence including start and end delimiters
-/// Success: mutates also the cursor position, so the next find will continue from there
-/// Fail: return None if not found and don't mutate pos_cursor
-/// I use type Range to avoid references &str and lifetimes. But the programmer can make
-/// the error to apply the range to the wrong vector.
-pub fn find_range_including_delimiters(source_str: &str, pos_cursor: &mut usize, start_delimiter: &str, end_delimiter: &str) -> Option<std::ops::Range<usize>> {
-    if let Some(pos_start) = find_pos_before_delimiter(source_str, *pos_cursor, start_delimiter) {
-        // dbg!(&pos_start);
-        if let Some(pos_end) = find_pos_after_delimiter(source_str, pos_start, end_delimiter) {
-            // dbg!(&pos_end);
-            *pos_cursor = pos_end;
-            return Some(pos_start..pos_end);
-        }
-    }
-    // return
-    None
-}
-
-/// find and return the range of the first occurrence between start and end delimiters
-/// Success: mutates also the cursor position, so the next find will continue from there
-/// Fail: return None if not found and don't mutate pos_cursor
-/// I use type Range to avoid references &str and lifetimes. But the programmer can make
-/// the error to apply the range to the wrong vector.
-pub fn find_range_between_delimiters(source_str: &str, pos_cursor: &mut usize, start_delimiter: &str, end_delimiter: &str) -> Option<std::ops::Range<usize>> {
-    if let Some(pos_start) = find_pos_after_delimiter(source_str, *pos_cursor, start_delimiter) {
-        // dbg!(&pos_start);
-        if let Some(pos_end) = find_pos_before_delimiter(source_str, pos_start, end_delimiter) {
-            // dbg!(&pos_end);
-            *pos_cursor = pos_end + end_delimiter.len();
-            return Some(pos_start..pos_end);
-        }
-    }
-    // return
-    None
-}
-
-/// return the position after the delimiter or None
-/// Does NOT mutate the pos_cursor, because that is for a higher level logic to decide.
-pub fn find_pos_after_delimiter(source_str: &str, pos_cursor: usize, delimiter: &str) -> Option<usize> {
-    //
-    if let Some(pos) = find_from(source_str, pos_cursor, delimiter) {
-        let pos = pos + delimiter.len();
-        return Some(pos);
-    }
-    // return
-    None
-}
-
-/// return the position before the delimiter or None
-/// Does NOT mutate the pos_cursor, because that is for a higher level logic to decide.
-pub fn find_pos_before_delimiter(source_str: &str, pos_cursor: usize, delimiter: &str) -> Option<usize> {
-    if let Some(pos) = find_from(source_str, pos_cursor, delimiter) {
-        return Some(pos);
-    }
-    // return
-    None
-}
-
-/// find str from pos_cursor low level
-/// panics if pos_cursor is incorrect: Check for bugs in calling functions.
-pub fn find_from(source_str: &str, pos_cursor: usize, find_str: &str) -> Option<usize> {
-    let slice01 = unwrap!(source_str.get(pos_cursor..));
-    let option_pos_found = slice01.find(find_str);
-    if let Some(pos_found) = option_pos_found {
-        // return Option with usize
-        Some(pos_cursor + pos_found)
-    } else {
-        // return
-        None
-    }
 }

@@ -1,18 +1,18 @@
 // cargo_crev_reviews/src/lib.rs
 
-//! This module contains the boilerplate to parse and match URI and POST json-rpc.
+//! This module contains the boilerplate to parse and match URI and POST rpc.
 //! The real code for methods is in methods_mod.rs
 //! The real content of "static files" is in the module files_mod.rs
 pub mod crev_mod;
 mod files_mod;
-mod methods_mod;
+mod server_methods_mod;
 mod stdio_input_password_mod;
 
 use std::sync::Mutex;
 
 use cargo_crev_reviews_common::*;
 use files_mod::*;
-use methods_mod::*;
+use server_methods_mod::*;
 
 use lazy_static::lazy_static;
 use simple_server::{Method, Response, Server, StatusCode};
@@ -33,24 +33,24 @@ lazy_static! {
 
 pub fn start_web_server(host: &str, port: &str) {
     println!("cargo_crev_reviews server started");
-    let server = Server::new(|request, response| {
+    let server = Server::new(|request, response_builder| {
         let path = request.uri().to_string();
         // println!("Request received. {} {}", request.method(), request.uri());
         if !request.uri().to_string().starts_with("/cargo_crev_reviews") {
-            return Ok(response_404_not_found(response, &path));
+            return Ok(response_404_not_found(response_builder, &path));
         }
         match request.method() {
             &Method::GET => {
                 // GET is used only to request files
-                let response = parse_get_uri_and_response_file(&path, response);
+                let response = parse_get_uri_and_response_file(&path, response_builder);
                 Ok(response)
             }
             &Method::POST => {
                 let request_body: &Vec<u8> = request.body();
                 let response_body = unwrap!(parse_post_data_and_match_method(request_body));
-                Ok(response.body(response_body.into_bytes())?)
+                Ok(response_builder.body(response_body.into_bytes())?)
             }
-            _ => Ok(response_404_not_found(response, &path)),
+            _ => Ok(response_404_not_found(response_builder, &path)),
         }
     });
     let x = std::process::Command::new("xdg-open")
@@ -95,7 +95,7 @@ fn file_not_found_404() -> &'static str {
     r#"<h1>404</h1><p>Not found! URI must start with `/cargo_crev_reviews`<p>"#
 }
 
-fn response_file_text(response: simple_server::Builder, f: fn() -> &'static str, path: &str, cache: Cache) -> Response<Vec<u8>> {
+fn response_file_text(response_builder: simple_server::Builder, f: fn() -> &'static str, path: &str, cache: Cache) -> Response<Vec<u8>> {
     let mime_type = if path.ends_with(".html") {
         "text/html"
     } else if path.ends_with(".css") {
@@ -107,16 +107,17 @@ fn response_file_text(response: simple_server::Builder, f: fn() -> &'static str,
     } else {
         "text/html"
     };
-    let response = response.header(http::header::CONTENT_TYPE, mime_type.as_bytes());
-    let response = match cache {
-        Cache::NoStore => response.header(http::header::CACHE_CONTROL, "no-store, max-age=0".as_bytes()),
-        Cache::Ok => response,
+    let response_builder = response_builder.header(http::header::CONTENT_TYPE, mime_type.as_bytes());
+    let response_builder = match cache {
+        Cache::NoStore => response_builder.header(http::header::CACHE_CONTROL, "no-store, max-age=0".as_bytes()),
+        Cache::Ok => response_builder,
     };
     let body = f().to_string();
-    unwrap!(response.body(body.into_bytes()))
+    // builder.body() returns Response
+    unwrap!(response_builder.body(body.into_bytes()))
 }
 
-fn response_file_base64(response: simple_server::Builder, f: fn() -> &'static str, path: &str) -> Response<Vec<u8>> {
+fn response_file_base64(response_builder: simple_server::Builder, f: fn() -> &'static str, path: &str) -> Response<Vec<u8>> {
     let mime_type = if path.ends_with(".png") {
         "image/png"
     } else if path.ends_with(".woff2") {
@@ -126,38 +127,35 @@ fn response_file_base64(response: simple_server::Builder, f: fn() -> &'static st
     } else {
         "image/png"
     };
-    let response = response.header(http::header::CONTENT_TYPE, mime_type.as_bytes());
+    let response_builder = response_builder.header(http::header::CONTENT_TYPE, mime_type.as_bytes());
+    // I artificially added \n to base64 to make it more text editor friendly
     let body = f().replace("\n", "");
-    unwrap!(response.body(unwrap!(base64::decode(body))))
+    // builder.body() returns Response
+    unwrap!(response_builder.body(unwrap!(base64::decode(body))))
 }
 
-/// <https://www.jsonrpc.org/specification>
 fn parse_post_data_and_match_method(body: &Vec<u8>) -> anyhow::Result<String> {
-    let p: RpcMethod = unwrap!(serde_json::from_slice(body));
+    let p: RpcRequest = unwrap!(serde_json::from_slice(body));
     //println!("deserialized = {:?}", &p);
-    if p.jsonrpc != "2.0" {
-        Ok(format!("error: jsonrpc != 2.0"))
-    } else {
-        match p.method.as_str() {
-            // here add methods that this server recognizes
-            "review_save" => review_save_json(p.params, p.id),
-            "review_edit" => Ok(review_edit_json(p.params, p.id)),
-            _ => Err(anyhow::anyhow!("unknown method = {}", &p.method)),
-        }
+    match p.request_method.as_str() {
+        // here add methods that this server recognizes
+        "review_list" => list_my_reviews_json(),
+        "review_save" => review_save_json(p.request_params),
+        "review_edit" => Ok(review_edit_json(p.request_params)),
+        _ => Err(anyhow::anyhow!("unknown server method = {}", &p.request_method)),
     }
 }
 
 // the first parameter is the Serialize trait and not a struct
-fn return_json_rpc_result<T>(result: T, page_method: &str, id: u32) -> String
+fn return_rpc_response<T>(client_method: &str, params: T, page_html: &str) -> String
 where
     T: serde::Serialize,
 {
-    let result = unwrap!(serde_json::to_value(result));
-    let r = RpcResult {
-        jsonrpc: "2.0".to_string(),
-        method: page_method.to_string(),
-        result: result,
-        id,
+    let params = unwrap!(serde_json::to_value(params));
+    let r = RpcResponse {
+        response_method: client_method.to_string(),
+        response_params: params,
+        page_html: page_html.to_string(),
     };
     let body = unwrap!(serde_json::to_string(&r));
     body
