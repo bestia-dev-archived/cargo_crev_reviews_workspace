@@ -247,6 +247,15 @@ pub fn understanding_parse(understanding: &str) -> anyhow::Result<Level> {
     }
 }
 
+pub fn understanding_to_string(understanding: &Level) -> String {
+    match understanding {
+        Level::None => "none".to_string(),
+        Level::Low => "low".to_string(),
+        Level::Medium => "medium".to_string(),
+        Level::High => "high".to_string(),
+    }
+}
+
 pub fn thoroughness_parse(thoroughness: &str) -> anyhow::Result<Level> {
     match thoroughness.to_lowercase().as_str() {
         "none" => Ok(Level::None),
@@ -257,6 +266,14 @@ pub fn thoroughness_parse(thoroughness: &str) -> anyhow::Result<Level> {
     }
 }
 
+pub fn thoroughness_to_string(thoroughness: &Level) -> String {
+    match thoroughness {
+        Level::None => "none".to_string(),
+        Level::Low => "low".to_string(),
+        Level::Medium => "medium".to_string(),
+        Level::High => "high".to_string(),
+    }
+}
 // verify the signature of a proof
 pub fn verify_proof(yaml: &str) -> anyhow::Result<()> {
     let proofs = crev_data::proof::Proof::parse_from(yaml.as_bytes())?;

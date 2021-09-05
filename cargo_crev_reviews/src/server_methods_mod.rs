@@ -15,6 +15,7 @@ pub fn reviews_list_rpc(_params: serde_json::Value) -> anyhow::Result<String> {
         vec_review.push(ReviewItemParams {
             crate_name: p.package.name.clone(),
             crate_version: p.package.version.clone(),
+            date: p.date.clone(),
             thoroughness: p.review.as_ref().unwrap().thoroughness.to_string(),
             understanding: p.review.as_ref().unwrap().understanding.to_string(),
             rating: rating_to_string(&(p.review.as_ref().unwrap().rating)),
@@ -51,6 +52,7 @@ pub fn review_save_rpc(params: serde_json::Value) -> anyhow::Result<String> {
             let client_params = ReviewItemParams {
                 crate_name: p.crate_name,
                 crate_version: p.crate_version,
+                date: p.date,
                 thoroughness: p.thoroughness,
                 understanding: p.understanding,
                 rating: p.rating,
@@ -69,6 +71,7 @@ pub fn review_edit_rpc(params: serde_json::Value) -> anyhow::Result<String> {
     let client_params = ReviewItemParams {
         crate_name: p.crate_name,
         crate_version: p.crate_version,
+        date: p.date,
         thoroughness: p.thoroughness,
         understanding: p.understanding,
         rating: p.rating,

@@ -34,6 +34,7 @@ pub struct RpcMessageParams {
 pub struct ReviewItemParams {
     pub crate_name: String,
     pub crate_version: String,
+    pub date: String,
     pub thoroughness: String,
     pub understanding: String,
     pub rating: String,

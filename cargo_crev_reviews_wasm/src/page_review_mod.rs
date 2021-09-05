@@ -2,7 +2,6 @@
 
 use lazy_static::lazy_static;
 use std::sync::Mutex;
-use std::sync::MutexGuard;
 use unwrap::unwrap;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
@@ -50,16 +49,13 @@ pub fn page_review_list(page_html: &str) {
     let (html_fragment, _new_pos_cursor) = get_delimited_text(page_html, 0, "<body>", "</body>").unwrap();
 
     // call process with functions as parameters, to use for replace attributes and text nodes
-    let html_after_process = html_fragment;
-    /*
-       let html_after_process = crate::pages_mod::process_html(
-           html_fragment,
-           list_data,
-           &review_replace_next_attribute,
-           &review_replace_next_text_node,
-           &review_exist_next_attribute,
-       );
-    */
+    let html_after_process = crate::pages_mod::process_list_html_templates(
+        &html_fragment,
+        &list_data,
+        &review_replace_next_attribute,
+        &review_replace_next_text_node,
+        &review_exist_next_attribute,
+    );
 
     w::set_inner_html("div_for_wasm_html_injecting", &html_after_process);
 
@@ -89,6 +85,7 @@ fn button_review_save_on_click(_element_id: &str) {
     let params = cargo_crev_reviews_common::ReviewItemParams {
         crate_name: w::get_input_element_value_string_by_id("crate_name"),
         crate_version: w::get_input_element_value_string_by_id("crate_version"),
+        date: "".to_string(),
         thoroughness: w::get_value_of_radio_group_by_name("thoroughness"),
         understanding: w::get_value_of_radio_group_by_name("understanding"),
         rating: w::get_value_of_radio_group_by_name("rating"),
@@ -128,8 +125,8 @@ pub fn page_review_show(page_html: &str) {
 
     // call process with functions as parameters, to use for replace attributes and text nodes
     let html_after_process = crate::pages_mod::process_html(
-        html_fragment,
-        params,
+        &html_fragment,
+        &params,
         &review_replace_next_attribute,
         &review_replace_next_text_node,
         &review_exist_next_attribute,
@@ -147,12 +144,7 @@ pub fn page_review_show(page_html: &str) {
 /// if attribute starts with data-wt_ it is a replace command. Like: data-wt_width="width" width="90"
 /// the attribute value is the name of the next attribute, just for security
 /// Execute the client_method and save the result in `next_attribute_replace`, don't push attribute to string
-fn review_replace_next_attribute(
-    name: &str,
-    _value: &str,
-    next_attribute_replace: &mut Option<(&str, String)>,
-    params: &MutexGuard<ReviewItemParams>,
-) -> String {
+fn review_replace_next_attribute(name: &str, _value: &str, next_attribute_replace: &mut Option<(&str, String)>, params: &ReviewItemParams) -> String {
     w::debug_write("replace_next_attribute");
     // returns mostly empty string because it is all written in next_attribute_replace
     // only in case of error it writes something in the html, to find where the error occurred
@@ -175,13 +167,17 @@ fn review_replace_next_attribute(
 /// if the comment is like <!--wt_method_name-->, starts with `wt_` (web browser text)
 /// Execute the replace_method and save the result in `next_text_node_replace`.
 /// On the next text node it will use this value.
-fn review_replace_next_text_node(txt: &str, next_text_node_replace: &mut Option<String>, params: &MutexGuard<ReviewItemParams>) -> String {
+fn review_replace_next_text_node(txt: &str, next_text_node_replace: &mut Option<String>, params: &ReviewItemParams) -> String {
     w::debug_write("review_replace_next_text_node");
     // returns mostly empty string because it is all written in next_attribute_replace
     // only in case of error it writes something in the html, to find where the error occurred
     let mut html_error = String::new();
     match txt {
         "wt_comment_md" => *next_text_node_replace = Some(params.comment_md.clone()),
+        "wt_crate_name_version" => *next_text_node_replace = Some(format!("{} {}", params.crate_name, params.crate_version)),
+        "wt_crate_thoroughness_understanding" => *next_text_node_replace = Some(format!("{} {}", params.thoroughness, params.understanding)),
+        "wt_rating" => *next_text_node_replace = Some(params.rating.clone()),
+        "wt_review_date" => *next_text_node_replace = Some(params.date[..10].to_string()),
         _ => {
             html_error = format!("Unrecognized replace_next_text_node method {}", txt);
             w::debug_write(&html_error);
@@ -194,7 +190,7 @@ fn review_replace_next_text_node(txt: &str, next_text_node_replace: &mut Option<
 /// if the attribute is like `data-wb_checked_th_none="checked" checked="checked"`, starts with `wb_` (web browser bool)
 /// Execute the exists_method and store in `next_attribute_exist`
 /// The next attribute will exist or not because of this bool.
-fn review_exist_next_attribute(name: &str, _value: &str, next_attribute_exist: &mut Option<bool>, params: &MutexGuard<ReviewItemParams>) -> String {
+fn review_exist_next_attribute(name: &str, _value: &str, next_attribute_exist: &mut Option<bool>, params: &ReviewItemParams) -> String {
     w::debug_write("replace_next_text_node");
     let mut html_error = String::new();
     match name {
@@ -231,6 +227,7 @@ fn button_review_edit_on_click(_element_id: &str) {
     let params = cargo_crev_reviews_common::ReviewItemParams {
         crate_name: params.crate_name.to_owned(),
         crate_version: params.crate_version.to_owned(),
+        date: "".to_string(),
         thoroughness: params.thoroughness.to_owned(),
         understanding: params.understanding.to_owned(),
         rating: params.rating.to_owned(),
@@ -263,8 +260,8 @@ pub fn page_review_edit(page_html: &str) {
 
     // call process with functions as parameters, to use for replace attributes and text nodes
     let html_after_process = crate::pages_mod::process_html(
-        html_fragment,
-        params,
+        &html_fragment,
+        &params,
         &review_replace_next_attribute,
         &review_replace_next_text_node,
         &review_exist_next_attribute,
