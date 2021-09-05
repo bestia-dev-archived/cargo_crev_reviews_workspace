@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <title>list reviews</title>
+    <meta name="Description" content="web app for writing new reviews for cargo-crev" />
+    <link rel="stylesheet" href="css/cargo_crev_reviews.css" />
+    <meta name="viewport" content="width = device-width,initial-scale = 1.0" />
+    <link rel="shortcut icon" type="image/x-icon" href="icons/icon-032.png" />
+</head>
+
+<body>
+    <div class="container_0">
+        <div class="container0_content_not_grid">
+            <div class="media_header_grid_02">
+                <div class="middle">
+                    <p class="big bold"><a class="c_link_1" href="/rust-reviews/">My crev reviews</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container_0">
+        <div class="review_header_0" style="grid-template-columns: 25fr 25fr 25fr 25fr;">
+            <div class="review_header0_cell c_white">
+                crate version
+            </div>
+            <div class="review_header0_cell c_positive bold">
+                rating</div>
+            <div class="review_header0_cell">
+                date</div>
+            <div class="review_header0_cell">
+                thoroughness, understanding</div>
+        </div>
+    </div>
+    <!--wtemplate_review start-->
+    <div class="container_0">
+        <div class="review_header_0" style="grid-template-columns: 25fr 25fr 25fr 25fr;">
+            <div class="review_header0_cell">
+                <a class="c_link_1" data-wu_crate_route="href" href="">
+                    <!--wt_crate_name_version-->num-traits 0.2.11</a>
+            </div>
+            <div data-wt_rating_class_color="class" class="review_header0_cell c_positive bold" title="rating">
+                <!--wt_review_rating-->positive</div>
+            <div class="review_header0_cell">
+                <!--wt_review_date-->2020-01-18</div>
+            <div class="review_header0_cell" title="thoroughness understanding">
+                <!--wt_crate_thoroughness_understanding-->none high</div>
+        </div>
+
+        <div class="review_comment" style="word-wrap: break-word;overflow-wrap:break-word;">
+            <!--wn_review_comment-->
+            <div>here comes a comment in markdown converted to html.</div>
+        </div>
+    </div>
+    <!--wtemplate_review end-->
+    <!--wtemplate_not_for_render start-->
+    <!--this div is here only for the graphical designer 
+            to see how it looks to have 2 or more reviews 
+        In runtime it is not rendered.-->
+    <div class="container_0">
+        <div class="review_header_0" style="grid-template-columns: 25fr 25fr 25fr 25fr;">
+            <div class="review_header0_cell">num-traits 0.2.6</div>
+            <div class="review_header0_cell c_positive bold">positive</div>
+            <div class="review_header0_cell">2019-08-30</div>
+            <div class="review_header0_cell">medium high</div>
+        </div>
+
+        <div class="review_comment">Not quite ready for untrusted input due to panics and not fuzzed. Minor soundness concerns for floating point operations, rooted in Rust language `as` operator not having fully specified behavior (yet). All is well for the integer part of the
+            library.
+        </div>
+    </div>
+    <!--wtemplate_not_for_render end-->
+
+</body>
+
+</html>

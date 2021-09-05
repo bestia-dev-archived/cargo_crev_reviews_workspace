@@ -19,6 +19,7 @@
         "stylesheet",
         "winapi",
         "wincon",
+        "wtemplate",
         "zdravje"
     ]
 }

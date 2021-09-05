@@ -22,7 +22,7 @@ pub fn wasm_bindgen_start() -> Result<(), JsValue> {
 
     //async block
     spawn_local(async {
-        crate::page_review_mod::page_review_new().await;
+        crate::page_review_mod::request_review_list().await;
     });
 
     // return

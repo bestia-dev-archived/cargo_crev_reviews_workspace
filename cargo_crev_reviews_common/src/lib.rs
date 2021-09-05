@@ -40,7 +40,7 @@ pub struct ReviewItemParams {
     pub comment_md: String,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Default)]
 pub struct ReviewListParams {
     pub list_of_review: Vec<ReviewItemParams>,
 }

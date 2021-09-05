@@ -16,14 +16,60 @@ use crate::*;
 
 lazy_static! {
     /// mutable static, because it is hard to pass variables around with on_click events
-    static ref REVIEW_SHOW_DATA: Mutex<ReviewItemParams> = Mutex::new(ReviewItemParams::default());
+    static ref REVIEW_ITEM_DATA: Mutex<ReviewItemParams> = Mutex::new(ReviewItemParams::default());
+    static ref REVIEW_LIST_DATA: Mutex<ReviewListParams> = Mutex::new(ReviewListParams::default());
 }
 
-// the struct are in the common project
-// ReviewItemParams
+// this structs are in the common project:
 // ReviewItemParams
 
+pub async fn request_review_list() {
+    // dummy message, just to satisfy the request struct
+    let params = cargo_crev_reviews_common::RpcMessageParams { message: "".to_string() };
+    let rpc_request = rpc_request_value(params, "review_list");
+    spawn_local(async move {
+        let rpc_response = crate::pages_mod::post_request(rpc_request).await;
+        match rpc_response.response_method.as_str() {
+            "page_review_list" => {
+                // prepare the static Mutex for data and call the function
+                *REVIEW_LIST_DATA.lock().unwrap() = unwrap!(serde_json::from_value(rpc_response.response_params));
+                page_review_list(&rpc_response.page_html);
+            }
+            _ => w::debug_write(&format!("Error: Unrecognized client_method {}", &rpc_response.response_method)),
+        }
+    });
+}
+
+/// the code for processing the page review_list
+/// the data is already in static Mutex REVIEW_LIST_DATA
+pub fn page_review_list(page_html: &str) {
+    w::debug_write("page_review_list()");
+    // lock static variable with page data
+    let list_data = REVIEW_LIST_DATA.lock().unwrap();
+    // only the html inside the <body> </body>
+    let (html_fragment, _new_pos_cursor) = get_delimited_text(page_html, 0, "<body>", "</body>").unwrap();
+
+    // call process with functions as parameters, to use for replace attributes and text nodes
+    let html_after_process = html_fragment;
+    /*
+       let html_after_process = crate::pages_mod::process_html(
+           html_fragment,
+           list_data,
+           &review_replace_next_attribute,
+           &review_replace_next_text_node,
+           &review_exist_next_attribute,
+       );
+    */
+
+    w::set_inner_html("div_for_wasm_html_injecting", &html_after_process);
+
+    //on_click!("button_review_edit", button_review_edit_on_click);
+    // on_click!("button_review_delete", button_review_delete_on_click);
+    // on_click!("button_review_publish", button_review_publish_on_click);
+}
+
 // region: new
+
 /// fetch and inject HTML fragment into index.html/div_for_wasm_html_injecting
 pub async fn page_review_new() {
     w::debug_write("page_review_new()");
@@ -54,7 +100,7 @@ fn button_review_save_on_click(_element_id: &str) {
         match rpc_response.response_method.as_str() {
             "page_review_show" => {
                 // prepare the static Mutex for data and call the function
-                *REVIEW_SHOW_DATA.lock().unwrap() = unwrap!(serde_json::from_value(rpc_response.response_params));
+                *REVIEW_ITEM_DATA.lock().unwrap() = unwrap!(serde_json::from_value(rpc_response.response_params));
                 page_review_show(&rpc_response.page_html);
             }
             "page_review_error" => {
@@ -72,11 +118,11 @@ fn button_review_save_on_click(_element_id: &str) {
 // region: show
 
 /// the code for processing the page review_show
-/// the data and html are already in static Mutex REVIEW_SHOW_DATA
+/// the data and html are already in static Mutex REVIEW_ITEM_DATA
 pub fn page_review_show(page_html: &str) {
     w::debug_write("page_review_show()");
     // lock static variable with page data
-    let params = REVIEW_SHOW_DATA.lock().unwrap();
+    let params = REVIEW_ITEM_DATA.lock().unwrap();
     // only the html inside the <body> </body>
     let (html_fragment, _new_pos_cursor) = get_delimited_text(page_html, 0, "<body>", "</body>").unwrap();
 
@@ -180,7 +226,7 @@ fn review_exist_next_attribute(name: &str, _value: &str, next_attribute_exist: &
 fn button_review_edit_on_click(_element_id: &str) {
     w::debug_write("button_review_edit_on_click()");
     // lock static variable with page data
-    let params = REVIEW_SHOW_DATA.lock().unwrap();
+    let params = REVIEW_ITEM_DATA.lock().unwrap();
 
     let params = cargo_crev_reviews_common::ReviewItemParams {
         crate_name: params.crate_name.to_owned(),
@@ -197,7 +243,7 @@ fn button_review_edit_on_click(_element_id: &str) {
 
         if rpc_response.response_method == "page_review_edit" {
             // prepare the static Mutex and call the function
-            *REVIEW_SHOW_DATA.lock().unwrap() = unwrap!(serde_json::from_value(rpc_response.response_params));
+            *REVIEW_ITEM_DATA.lock().unwrap() = unwrap!(serde_json::from_value(rpc_response.response_params));
             page_review_edit(&rpc_response.page_html);
         }
     });
@@ -207,11 +253,11 @@ fn button_review_edit_on_click(_element_id: &str) {
 // region: edit
 
 /// the code for processing the page review_edit
-/// the data and html are already in static Mutex REVIEW_SHOW_DATA
+/// the data and html are already in static Mutex REVIEW_ITEM_DATA
 pub fn page_review_edit(page_html: &str) {
     w::debug_write("page_review_edit()");
     // lock static variable with page data
-    let params = REVIEW_SHOW_DATA.lock().unwrap();
+    let params = REVIEW_ITEM_DATA.lock().unwrap();
     // only the html inside the <body> </body>
     let (html_fragment, _new_pos_cursor) = get_delimited_text(&page_html, 0, "<body>", "</body>").unwrap();
 

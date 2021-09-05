@@ -228,6 +228,14 @@ pub fn rating_parse(rating: &str) -> anyhow::Result<Rating> {
         _ => Err(anyhow::anyhow!("unrecognized rating: {}", rating)),
     }
 }
+pub fn rating_to_string(rating: &Rating) -> String {
+    match rating {
+        Rating::Negative => "negative".to_string(),
+        Rating::Neutral => "neutral".to_string(),
+        Rating::Positive => "positive".to_string(),
+        Rating::Strong => "strong".to_string(),
+    }
+}
 
 pub fn understanding_parse(understanding: &str) -> anyhow::Result<Level> {
     match understanding.to_lowercase().as_str() {

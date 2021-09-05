@@ -275,7 +275,7 @@ dependencies = [
 
 [[package]]
 name = "cargo_crev_reviews"
-version = "2021.905.1024"
+version = "2021.905.1142"
 dependencies = [
  "anyhow",
  "base64",
@@ -297,7 +297,7 @@ dependencies = [
 
 [[package]]
 name = "cargo_crev_reviews_common"
-version = "2021.905.1024"
+version = "2021.905.1058"
 dependencies = [
  "serde",
  "serde_json",
@@ -306,7 +306,7 @@ dependencies = [
 
 [[package]]
 name = "cargo_crev_reviews_wasm"
-version = "2021.905.1024"
+version = "2021.905.1058"
 dependencies = [
  "cargo_crev_reviews_common",
  "chrono",

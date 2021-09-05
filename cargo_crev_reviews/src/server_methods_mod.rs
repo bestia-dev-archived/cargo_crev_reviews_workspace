@@ -1,32 +1,43 @@
 // server_methods_mod
 
-use crate::*;
+use crate::crev_mod::*;
+use crate::response_post_method_mod::return_rpc_response;
 use cargo_crev_reviews_common::*;
 use unwrap::unwrap;
 
 // region: boilerplate to convert json to call methods
 
-pub fn list_my_reviews_json() -> anyhow::Result<String> {
+pub fn reviews_list_rpc(_params: serde_json::Value) -> anyhow::Result<String> {
     println!("list_my_reviews_json()");
-
-    let vec_proof = unwrap!(crev_mod::list_my_reviews());
-    let client_method = "client_review_list";
-    let client_params = RpcMessageParams { message: "".to_string() };
-    let page_html = "";
+    let mut vec_review: Vec<ReviewItemParams> = vec![];
+    let vec_proof = unwrap!(list_my_reviews());
+    for p in vec_proof.iter() {
+        vec_review.push(ReviewItemParams {
+            crate_name: p.package.name.clone(),
+            crate_version: p.package.version.clone(),
+            thoroughness: p.review.as_ref().unwrap().thoroughness.to_string(),
+            understanding: p.review.as_ref().unwrap().understanding.to_string(),
+            rating: rating_to_string(&(p.review.as_ref().unwrap().rating)),
+            comment_md: p.comment.as_ref().unwrap_or(&"".to_string()).clone(),
+        })
+    }
+    let client_method = "page_review_list";
+    let client_params = ReviewListParams { list_of_review: vec_review };
+    let page_html = crate::files_mod::pages_review_list_html();
     Ok(return_rpc_response(client_method, client_params, page_html))
 }
 
-pub fn review_save_json(params: serde_json::Value) -> anyhow::Result<String> {
+pub fn review_save_rpc(params: serde_json::Value) -> anyhow::Result<String> {
     println!("review_save_json()");
 
     let p: ReviewItemParams = unwrap!(serde_json::from_value(params));
 
-    match crev_mod::create_new_review_proof(
+    match create_new_review_proof(
         &p.crate_name,
         &p.crate_version,
-        crev_mod::thoroughness_parse(&p.thoroughness)?,
-        crev_mod::understanding_parse(&p.understanding)?,
-        crev_mod::rating_parse(&p.rating)?,
+        thoroughness_parse(&p.thoroughness)?,
+        understanding_parse(&p.understanding)?,
+        rating_parse(&p.rating)?,
         &p.comment_md,
     ) {
         Err(err) => {
@@ -51,7 +62,7 @@ pub fn review_save_json(params: serde_json::Value) -> anyhow::Result<String> {
     }
 }
 
-pub fn review_edit_json(params: serde_json::Value) -> String {
+pub fn review_edit_rpc(params: serde_json::Value) -> anyhow::Result<String> {
     println!("review_edit_json()");
     let p: ReviewItemParams = unwrap!(serde_json::from_value(params));
     let client_method = "page_review_edit";
@@ -65,7 +76,7 @@ pub fn review_edit_json(params: serde_json::Value) -> String {
     };
     let page_html = crate::files_mod::pages_review_edit_html();
 
-    return_rpc_response(client_method, client_params, page_html)
+    Ok(return_rpc_response(client_method, client_params, page_html))
 }
 
 // endregion: boilerplate to convert json to call methods
