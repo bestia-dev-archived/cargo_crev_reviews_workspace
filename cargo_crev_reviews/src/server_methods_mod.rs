@@ -28,6 +28,13 @@ pub fn reviews_list_rpc(_params: serde_json::Value) -> anyhow::Result<String> {
     Ok(return_rpc_response(client_method, client_params, page_html))
 }
 
+pub fn review_new_rpc(_params: serde_json::Value) -> anyhow::Result<String> {
+    let client_method = "page_review_new";
+    let page_html = crate::files_mod::pages_review_new_html();
+    let client_params = RpcEmptyParams {};
+    Ok(return_rpc_response(client_method, client_params, page_html))
+}
+
 pub fn review_save_rpc(params: serde_json::Value) -> anyhow::Result<String> {
     println!("review_save_json()");
 

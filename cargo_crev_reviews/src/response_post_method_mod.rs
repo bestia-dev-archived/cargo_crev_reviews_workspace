@@ -10,6 +10,7 @@ pub fn parse_post_data_and_match_method(body: &Vec<u8>) -> anyhow::Result<String
     match p.request_method.as_str() {
         // here add methods that this server recognizes
         "review_list" => reviews_list_rpc(p.request_params),
+        "review_new" => review_new_rpc(p.request_params),
         "review_save" => review_save_rpc(p.request_params),
         "review_edit" => review_edit_rpc(p.request_params),
         _ => Err(anyhow::anyhow!("unknown server method = {}", &p.request_method)),

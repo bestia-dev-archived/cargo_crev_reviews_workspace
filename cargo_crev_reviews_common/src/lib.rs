@@ -26,6 +26,9 @@ pub struct RpcMessageParams {
     pub message: String,
 }
 
+/// generic empty params for Rpc
+#[derive(Serialize, Deserialize, Debug)]
+pub struct RpcEmptyParams {}
 // endregion: platform wide structs
 
 // region: review

@@ -24,7 +24,7 @@ lazy_static! {
 
 pub async fn request_review_list() {
     // dummy message, just to satisfy the request struct
-    let params = cargo_crev_reviews_common::RpcMessageParams { message: "".to_string() };
+    let params = cargo_crev_reviews_common::RpcEmptyParams {};
     let rpc_request = rpc_request_value(params, "review_list");
     spawn_local(async move {
         let rpc_response = crate::pages_mod::post_request(rpc_request).await;
@@ -59,20 +59,33 @@ pub fn page_review_list(page_html: &str) {
 
     w::set_inner_html("div_for_wasm_html_injecting", &html_after_process);
 
-    //on_click!("button_review_edit", button_review_edit_on_click);
-    // on_click!("button_review_delete", button_review_delete_on_click);
-    // on_click!("button_review_publish", button_review_publish_on_click);
+    on_click!("button_review_new", button_review_new_on_click);
+}
+
+/// send rpc requests
+fn button_review_new_on_click(_element_id: &str) {
+    w::debug_write("button_review_new_on_click()");
+    // values from page and form
+    let params = cargo_crev_reviews_common::RpcEmptyParams {};
+    let rpc_request = rpc_request_value(params, "review_new");
+    spawn_local(async move {
+        let rpc_response = crate::pages_mod::post_request(rpc_request).await;
+        match rpc_response.response_method.as_str() {
+            "page_review_new" => {
+                page_review_new(&rpc_response.page_html).await;
+            }
+            _ => w::debug_write(&format!("Error: Unrecognized client_method {}", &rpc_response.response_method)),
+        }
+    });
 }
 
 // region: new
 
 /// fetch and inject HTML fragment into index.html/div_for_wasm_html_injecting
-pub async fn page_review_new() {
+pub async fn page_review_new(page_html: &str) {
     w::debug_write("page_review_new()");
-    // fetch page_main.html and inject it
-    let resp_body_text = w::fetch_response("pages/review_new.html").await;
     // only the html inside the <body> </body>
-    let (html_fragment, _new_pos_cursor) = get_delimited_text(&resp_body_text, 0, "<body>", "</body>").unwrap();
+    let (html_fragment, _new_pos_cursor) = get_delimited_text(&page_html, 0, "<body>", "</body>").unwrap();
     w::set_inner_html("div_for_wasm_html_injecting", &html_fragment);
 
     on_click!("button_review_save", button_review_save_on_click);
