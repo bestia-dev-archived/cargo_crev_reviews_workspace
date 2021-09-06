@@ -29,7 +29,7 @@ pub fn wasm_bindgen_start() -> Result<(), JsValue> {
     Ok(())
 }
 
-pub fn rpc_request_value<T>(params: T, server_method: &str) -> wasm_bindgen::JsValue
+pub fn create_rpc_request<T>(server_method: &str, params: T) -> wasm_bindgen::JsValue
 where
     T: serde::Serialize,
 {

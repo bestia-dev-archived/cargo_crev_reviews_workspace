@@ -1,6 +1,6 @@
 [package]
 name = "cargo_crev_reviews_common"
-version = "2021.905.1822"
+version = "2021.906.1013"
 description = "Common structs for cargo_crev_reviews backend and frontend"
 authors = ["Luciano Bestia"]
 edition = "2018"
@@ -15,3 +15,4 @@ publish = false
 unwrap = "1.2.1"
 serde_json = "1.0.66"
 serde = { version = "1.0", features = ["derive"] }
+strum = { version = "0.21", features = ["derive"] }

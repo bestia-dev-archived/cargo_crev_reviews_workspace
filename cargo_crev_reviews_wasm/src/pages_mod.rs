@@ -3,16 +3,30 @@
 use cargo_crev_reviews_common::*;
 use reader_for_microxml::ReaderForMicroXml;
 use reader_for_microxml::Token;
+use std::str::FromStr;
 use unwrap::unwrap;
 use wasm_bindgen::prelude::*;
 
+use crate::page_review_mod;
 use crate::web_sys_mod as w;
 
-pub async fn post_request(json_request: JsValue) -> cargo_crev_reviews_common::RpcResponse {
+pub async fn post_request_and_await_response(json_request: JsValue) -> cargo_crev_reviews_common::RpcResponse {
     let json = Some(&json_request);
     let resp_body_text = w::fetch_post_response("submit", json).await;
     let rpc_response: cargo_crev_reviews_common::RpcResponse = unwrap!(serde_json::from_str(&resp_body_text));
     rpc_response
+}
+
+pub async fn match_response_method_and_call_function(response: RpcResponse) {
+    let response_enum = ResponseMethod::from_str(response.response_method.as_str());
+    match response_enum {
+        Ok(response_enum) => match response_enum {
+            ResponseMethod::PageReviewNew => page_review_mod::page_review_new(response).await,
+            ResponseMethod::PageReviewShow => page_review_mod::page_review_show(response),
+            ResponseMethod::PageReviewError => page_review_mod::page_review_error(response),
+        },
+        Err(_err) => w::debug_write(&format!("Error: Unrecognized client_method {}", response.response_method)),
+    }
 }
 
 /// inside the html_fragment there can be repetitive segments

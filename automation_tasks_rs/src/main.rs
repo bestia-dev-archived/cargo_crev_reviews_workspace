@@ -94,7 +94,7 @@ fn completion() {
 /// TODO: if the member ends with "_wasm" then exclude from `cargo build` and build with `wasm-pack build` first
 /// for faster build I will change only the version number to members that was modified
 fn task_build() {
-    auto_check_micro_xml("web_server_folder/cargo_crev_reviews/pages");
+    auto_check_micro_xml("web_server_folder/cargo_crev_reviews");
     auto_version_from_date();
     run_shell_command("cargo fmt");
     run_shell_command("cd cargo_crev_reviews_wasm;wasm-pack build --target web;cd ..");
@@ -118,7 +118,7 @@ run `cargo auto release`
 /// it deserves the same version number for the release build. It means that it will build all members. 
 /// A little slower than only build.
 fn task_release() {
-    auto_check_micro_xml("web_server_folder/cargo_crev_reviews/pages");
+    auto_check_micro_xml("web_server_folder/cargo_crev_reviews");
     auto_version_from_date_forced();    
     run_shell_command("cargo fmt");
 
@@ -265,6 +265,5 @@ fn copy_web_folder_files_into_module() {
     copy_files_from_dir("web_server_folder/cargo_crev_reviews/icons", &mut module_source_code);
     copy_files_from_dir("web_server_folder/cargo_crev_reviews/images", &mut module_source_code);
     copy_files_from_dir("web_server_folder/cargo_crev_reviews/pkg", &mut module_source_code);
-    copy_files_from_dir("web_server_folder/cargo_crev_reviews/pages", &mut module_source_code);
     unwrap!(std::fs::write("cargo_crev_reviews/src/files_mod.rs", module_source_code));
 }

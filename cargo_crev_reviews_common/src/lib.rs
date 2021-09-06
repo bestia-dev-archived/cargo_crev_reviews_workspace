@@ -1,9 +1,34 @@
 // cargo_crev_reviews_common
 
 use serde::{Deserialize, Serialize};
+use strum::{EnumString, IntoStaticStr};
 use unwrap::unwrap;
 
 // region: platform wide structs
+
+/// methods available on the server
+#[derive(IntoStaticStr, EnumString, Debug)]
+pub enum RequestMethod {
+    #[strum(serialize = "review_list")]
+    ReviewList,
+    #[strum(serialize = "review_new")]
+    ReviewNew,
+    #[strum(serialize = "review_save")]
+    ReviewSave,
+    #[strum(serialize = "review_edit")]
+    ReviewEdit,
+}
+
+/// methods available on the client
+#[derive(IntoStaticStr, EnumString, Debug)]
+pub enum ResponseMethod {
+    #[strum(serialize = "page_review_new")]
+    PageReviewNew,
+    #[strum(serialize = "page_review_show")]
+    PageReviewShow,
+    #[strum(serialize = "page_review_error")]
+    PageReviewError,
+}
 
 /// the request_method will be processed on the server
 #[derive(Serialize, Deserialize, Debug)]

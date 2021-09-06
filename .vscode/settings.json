@@ -17,6 +17,8 @@
         "SIGINT",
         "steveklabnik",
         "stylesheet",
+        "termion",
+        "unhide",
         "winapi",
         "wincon",
         "wtemplate",

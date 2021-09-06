@@ -1,57 +1,15 @@
 
-Try to comment important aspects: 
 
 
-
+wasm-bindgen 0.2.60
+wasm-bindgen-backend 0.2.60
+wasm-bindgen-futures 0.4.10
+wasm-bindgen-macro 0.2.60
+wasm-bindgen-macro-support 0.2.60
+wasm-bindgen-shared 0.2.60
+wasm-bindgen-test-macro 0.3.10
+web-sys 0.3.53
+cargo_auto_lib 0.7.19
 cargo-auto 0.5.2
-strong
-2021-08-15
-LucianoBestia
-high, high
-
-I am the author of this crate.  
-Cargo auto subcommand manages the automation_tasks_rs sub-project.  
-It generates, builds and runs automation_tasks_rs.  
-  
-line of code:210 dependencies:6  
-security: file-read/write: only the `automation_tasks_rs` directory, process::command:4 (cargo and automation_tasks_rs)  
-unsafe:0 FFI:0 asm!:0 no_mangle:0 network-access:0 build.rs:0 macro_rules:0 proc_macro:0  
-malicious potential: 0%  
-owners (in crates.io) reputation: LucianoBestia (me)  
-used in your projects: every project automation  
-alternative crates you explored: cargo-make, cargo-task, cargo-xtask, make, bash scripts,...  
-
-
-
 unwrap 1.2.1
-strong
-2020-01-24
-LucianoBestia
-medium, medium
-
-Adds the trait VerboseUnwrap to Result and Option.  
-Adds the macro unwrap! that writes the filename, line and column of the  
-position in code where the panic happened. Very useful.  
-The original unwrap() in wasm returns totally unuseful: `panicked at... src/libcore/option.rs:378:21`.  
-  
-security: unsafe:0 FFI:0 asm!:0 file-read:0 file-write:0 no_mangle:0  
-network-access:0 build.rs:0 macro_rules:2 proc_macro:0 process::command:0  
-line of code:158 dependencies:0  
-malicious potential:0%  
-owners (in crates.io) reputation: `canndrew` unknown  
-used in your projects: all my projects  
-alternative crates you explored: original unwrap()  
-
 wsl_open_browser 2021.823.702
-
-I am the author of this crate.  
-wsl_open_browser just opens the windows browser from inside WSL2.  
-It transforms file path from Linux to Windows notation.  
-  
-line of code:45 dependencies:1  
-security: unsafe:0 FFI:0 asm!:0 file-read:0 file-write:0 no_mangle:0  
-network-access:0 build.rs:0 macro_rules:0 proc_macro:0 process::command:1  
-malicious potential:0%  
-owners (in crates.io) reputation: LucianoBestia (me)  
-used in your projects: use in `bash` and for `cargo doc --open`  
-

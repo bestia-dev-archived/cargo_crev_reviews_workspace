@@ -16,7 +16,6 @@ pub fn parse_get_uri_and_response_file(path: &str, response: simple_server::Buil
     println!("path: {}", path);
     match path {
         "/cargo_crev_reviews/index.html" => response_file_text(response, index_html, path, Cache::NoStore),
-        "/cargo_crev_reviews/pages/review_new.html" => response_file_text(response, pages_review_new_html, path, Cache::NoStore),
         "/cargo_crev_reviews/css/cargo_crev_reviews.css" => response_file_text(response, css_cargo_crev_reviews_css, path, Cache::Ok),
         "/cargo_crev_reviews/css/fontawesome.css" => response_file_text(response, css_fontawesome_css, path, Cache::Ok),
         "/cargo_crev_reviews/css/normalize.css" => response_file_text(response, css_normalize_css, path, Cache::Ok),
@@ -27,7 +26,6 @@ pub fn parse_get_uri_and_response_file(path: &str, response: simple_server::Buil
         "/cargo_crev_reviews/icons/icon-192.png" => response_file_base64(response, icons_icon_192_png, path),
         "/cargo_crev_reviews/pkg/cargo_crev_reviews_wasm.js" => response_file_text(response, pkg_cargo_crev_reviews_wasm_js, path, Cache::NoStore),
         "/cargo_crev_reviews/pkg/cargo_crev_reviews_wasm_bg.wasm" => response_file_base64(response, pkg_cargo_crev_reviews_wasm_bg_wasm, path),
-
         _ => response_404_not_found(response, path),
     }
 }

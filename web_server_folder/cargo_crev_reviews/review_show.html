@@ -5,6 +5,7 @@
     <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
     <title>show review</title>
     <meta name="Description" content="web app for writing new reviews for cargo-crev" />
+    <link rel="stylesheet" href="css/normalize.css" />
     <link rel="stylesheet" href="css/cargo_crev_reviews.css" />
     <meta name="viewport" content="width = device-width,initial-scale = 1.0" />
     <link rel="shortcut icon" type="image/x-icon" href="icons/icon-032.png" />
@@ -27,20 +28,20 @@
 
     <div class="container_0">
         <div class="container0_content_not_grid">
+            <ul>
+                <li id="button_review_edit">Edit</li>
+                <li id="button_review_delete">Delete</li>
+                <li id="button_review_list" style="float:right">Home</li>
+            </ul>
             <pre>
 crate name:<input type="text" id="crate_name" disabled="disabled" data-wt_crate_name="value" value="crate_name"></input>
-version:<input type="text" id="crate_version" disabled="disabled" data-wt_crate_version="value" value="version"></input>
+version:<input type="text" id="crate_version" disabled="disabled" data-wt_crate_version="value" value="version" length="20" ></input>
 
 thoroughness: <input type="text" id="thoroughness" disabled="disabled" data-wt_thoroughness="value" value="thoroughness"></input>
 understanding: <input type="text" id="understanding" disabled="disabled" data-wt_understanding="value" value="understanding"></input>
 rating: <input type="text" id="rating" disabled="disabled" data-wt_rating="value" value="rating"></input>
 <textarea style="height: 250px;" id="comment_md" name="comment_md" disabled="disabled"><!--wt_comment_md-->comment_md</textarea>
-        </pre>
-            <div>
-                <span class="span_button" id="button_review_edit">Edit</span>
-                <span class="span_button" id="button_review_delete">Delete</span>
-                <span class="span_button" id="button_review_publish">Publish</span>
-            </div>
+            </pre>
         </div>
     </div>
 

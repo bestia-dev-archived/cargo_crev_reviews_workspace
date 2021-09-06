@@ -6,8 +6,8 @@
 mod crev_mod;
 mod files_mod;
 mod response_get_files_mod;
+mod response_methods_mod;
 mod response_post_method_mod;
-mod server_methods_mod;
 mod stdio_input_password_mod;
 
 pub use crev_mod::unlock_crev_id_interactively;
@@ -21,6 +21,23 @@ lazy_static! {
     /// mutable static, because it is hard to pass variables around with async closures
     static ref CREV_UNLOCKED: Mutex<Option<crev_data::id::UnlockedId>>=Mutex::new(None);
     static ref LOCAL: Mutex<Option<crev_lib::Local>>=Mutex::new(None);
+}
+
+lazy_static! {
+    /// ansi color
+    pub static ref GREEN: String = termion::color::Fg(termion::color::Green).to_string();
+    /// ansi color
+    pub static ref YELLOW: String = termion::color::Fg(termion::color::Yellow).to_string();
+    /// ansi color
+    pub static ref RED: String = termion::color::Fg(termion::color::Red).to_string();
+    /// ansi reset color
+    pub static ref RESET: String = termion::color::Fg(termion::color::Reset).to_string();
+    /// ansi clear line
+    pub static ref CLEAR_LINE: String = termion::clear::CurrentLine.to_string();
+    /// ansi clear all
+    pub static ref CLEAR_ALL: String = termion::clear::All.to_string();
+    /// ansi unhide cursor
+    pub static ref UNHIDE_CURSOR: String = termion::cursor::Show.to_string();
 }
 
 // region: server - parse, match

@@ -104,77 +104,6 @@
             background-color: var(--b_color_body);
             color: var(--f_color_body);
         }
-        /*CSS Reset*/
-        
-        div,
-        span,
-        applet,
-        object,
-        iframe,
-        h1,
-        h2,
-        h3,
-        h4,
-        h5,
-        h6,
-        p,
-        blockquote,
-        pre,
-        a,
-        abbr,
-        acronym,
-        address,
-        big,
-        cite,
-        code,
-        del,
-        dfn,
-        em,
-        font,
-        img,
-        ins,
-        kbd,
-        q,
-        s,
-        samp,
-        small,
-        strike,
-        strong,
-        sub,
-        sup,
-        tt,
-        var,
-        b,
-        u,
-        i,
-        center,
-        dl,
-        dt,
-        dd,
-        ol,
-        ul,
-        li,
-        fieldset,
-        form,
-        label,
-        legend,
-        table,
-        caption,
-        tbody,
-        tfoot,
-        thead,
-        tr,
-        th,
-        td {
-            margin: 0;
-            padding: 0;
-            border: 0;
-            border-style: none;
-            outline: 0;
-            font-family: 'Roboto', sans-serif;
-            vertical-align: baseline;
-            background: transparent;
-        }
         /* no color */
         
         a:link,
@@ -236,12 +165,6 @@
             padding: 18px;
             font-size: 100%;
             font-family: Consolas, Liberation Mono, Courier, monospace;
-        }
-        
-        ul {
-            margin-left: 0;
-            padding-left: 40px;
-            list-style-position: inside;
         }
         /* endregion: basics */
         /* region: css classes */
@@ -455,12 +378,6 @@ A small difference to help search and replace refactoring.
             font-size: 80%;
         }
         /* endregion: colors and attributes */
-        
-        .button {
-            background: var(--b_color_button);
-            border-radius: 6px;
-            font-size: 120%;
-        }
         /*** Tooltip Styles */
         /* Add this attribute to the element that needs a tooltip */
         
@@ -542,11 +459,26 @@ A small difference to help search and replace refactoring.
                 opacity: 0.1;
             }
         }
+        /* Navigation menu */
         
-        .span_button {
+        ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: var(--b_color_grid_header);
+        }
+        
+        li {
             cursor: pointer;
-            border: 1px solid;
+            float: left;
+            display: block;
+            color: var(--f_color_link);
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+        }
+        
+        li:hover {
             background-color: var(--b_color_button);
-            color: var(--f_color_body);
-            padding: 2%;
         }

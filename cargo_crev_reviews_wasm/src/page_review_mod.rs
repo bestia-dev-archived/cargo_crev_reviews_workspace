@@ -25,15 +25,11 @@ lazy_static! {
 pub async fn request_review_list() {
     // dummy message, just to satisfy the request struct
     let params = cargo_crev_reviews_common::RpcEmptyParams {};
-    let rpc_request = rpc_request_value(params, "review_list");
+    let rpc_request = create_rpc_request( "review_list",params);
     spawn_local(async move {
-        let rpc_response = crate::pages_mod::post_request(rpc_request).await;
+        let rpc_response = crate::pages_mod::post_request_and_await_response(rpc_request).await;
         match rpc_response.response_method.as_str() {
-            "page_review_list" => {
-                // prepare the static Mutex for data and call the function
-                *REVIEW_LIST_DATA.lock().unwrap() = unwrap!(serde_json::from_value(rpc_response.response_params));
-                page_review_list(&rpc_response.page_html);
-            }
+            "page_review_list" => page_review_list(rpc_response),
             _ => w::debug_write(&format!("Error: Unrecognized client_method {}", &rpc_response.response_method)),
         }
     });
@@ -41,8 +37,11 @@ pub async fn request_review_list() {
 
 /// the code for processing the page review_list
 /// the data is already in static Mutex REVIEW_LIST_DATA
-pub fn page_review_list(page_html: &str) {
+pub fn page_review_list(response: RpcResponse) {
     w::debug_write("page_review_list()");
+    // prepare the static Mutex for data and call the function
+    *REVIEW_LIST_DATA.lock().unwrap() = unwrap!(serde_json::from_value(response.response_params));
+    let page_html = &response.page_html;
     // lock static variable with page data
     let list_data = REVIEW_LIST_DATA.lock().unwrap();
     // only the html inside the <body> </body>
@@ -59,31 +58,27 @@ pub fn page_review_list(page_html: &str) {
 
     w::set_inner_html("div_for_wasm_html_injecting", &html_after_process);
 
-    on_click!("button_review_new", button_review_new_on_click);
+    on_click!("button_review_new", request_review_new);
 }
 
 /// send rpc requests
-fn button_review_new_on_click(_element_id: &str) {
-    w::debug_write("button_review_new_on_click()");
+fn request_review_new(_element_id: &str) {
+    w::debug_write("request_review_new()");
     // values from page and form
     let params = cargo_crev_reviews_common::RpcEmptyParams {};
-    let rpc_request = rpc_request_value(params, "review_new");
+    let rpc_request = create_rpc_request("review_new",params);
     spawn_local(async move {
-        let rpc_response = crate::pages_mod::post_request(rpc_request).await;
-        match rpc_response.response_method.as_str() {
-            "page_review_new" => {
-                page_review_new(&rpc_response.page_html).await;
-            }
-            _ => w::debug_write(&format!("Error: Unrecognized client_method {}", &rpc_response.response_method)),
-        }
+        let rpc_response = crate::pages_mod::post_request_and_await_response(rpc_request).await;
+        pages_mod::match_response_method_and_call_function(rpc_response).await;
     });
 }
 
 // region: new
 
 /// fetch and inject HTML fragment into index.html/div_for_wasm_html_injecting
-pub async fn page_review_new(page_html: &str) {
+pub async fn page_review_new(response: RpcResponse) {
     w::debug_write("page_review_new()");
+    let page_html = &response.page_html;
     // only the html inside the <body> </body>
     let (html_fragment, _new_pos_cursor) = get_delimited_text(&page_html, 0, "<body>", "</body>").unwrap();
     w::set_inner_html("div_for_wasm_html_injecting", &html_fragment);
@@ -104,22 +99,10 @@ fn button_review_save_on_click(_element_id: &str) {
         rating: w::get_value_of_radio_group_by_name("rating"),
         comment_md: w::get_text_area_element_value_string_by_id("comment_md"),
     };
-    let rpc_request = rpc_request_value(params, "review_save");
+    let rpc_request = create_rpc_request( "review_save",params);
     spawn_local(async move {
-        let rpc_response = crate::pages_mod::post_request(rpc_request).await;
-        match rpc_response.response_method.as_str() {
-            "page_review_show" => {
-                // prepare the static Mutex for data and call the function
-                *REVIEW_ITEM_DATA.lock().unwrap() = unwrap!(serde_json::from_value(rpc_response.response_params));
-                page_review_show(&rpc_response.page_html);
-            }
-            "page_review_error" => {
-                // show dialog box with error, don't change the html and params
-                let err: cargo_crev_reviews_common::RpcMessageParams = unwrap!(serde_json::from_value(rpc_response.response_params));
-                unwrap!(w::window().alert_with_message(err.message.as_str()));
-            }
-            _ => w::debug_write(&format!("Error: Unrecognized client_method {}", &rpc_response.response_method)),
-        }
+        let rpc_response = crate::pages_mod::post_request_and_await_response(rpc_request).await;
+        pages_mod::match_response_method_and_call_function(rpc_response).await;
     });
 }
 
@@ -129,8 +112,12 @@ fn button_review_save_on_click(_element_id: &str) {
 
 /// the code for processing the page review_show
 /// the data and html are already in static Mutex REVIEW_ITEM_DATA
-pub fn page_review_show(page_html: &str) {
+pub fn page_review_show(response: RpcResponse) {
     w::debug_write("page_review_show()");
+    let page_html = &response.page_html;
+    // prepare the static Mutex for data and call the function
+    *REVIEW_ITEM_DATA.lock().unwrap() = unwrap!(serde_json::from_value(response.response_params));
+
     // lock static variable with page data
     let params = REVIEW_ITEM_DATA.lock().unwrap();
     // only the html inside the <body> </body>
@@ -151,6 +138,12 @@ pub fn page_review_show(page_html: &str) {
     on_click!("button_review_edit", button_review_edit_on_click);
     // on_click!("button_review_delete", button_review_delete_on_click);
     // on_click!("button_review_publish", button_review_publish_on_click);
+}
+
+pub fn page_review_error(response: RpcResponse) {
+    // show dialog box with error, don't change the html and params
+    let err: cargo_crev_reviews_common::RpcMessageParams = unwrap!(serde_json::from_value(response.response_params));
+    unwrap!(w::window().alert_with_message(err.message.as_str()));
 }
 
 /// if the `next_attribute_replace` is not None then replace attribute with `next_attribute_replace`
@@ -246,10 +239,10 @@ fn button_review_edit_on_click(_element_id: &str) {
         rating: params.rating.to_owned(),
         comment_md: params.comment_md.to_owned(),
     };
-    let rpc_request = rpc_request_value(params, "review_edit");
+    let rpc_request = create_rpc_request( "review_edit",params);
 
     spawn_local(async move {
-        let rpc_response = crate::pages_mod::post_request(rpc_request).await;
+        let rpc_response = crate::pages_mod::post_request_and_await_response(rpc_request).await;
 
         if rpc_response.response_method == "page_review_edit" {
             // prepare the static Mutex and call the function

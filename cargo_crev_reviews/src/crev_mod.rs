@@ -101,7 +101,8 @@ pub fn vcs_info_to_revision_string(vcs: Option<VcsInfoJson>) -> String {
 /// unlock crev_id interactively
 pub fn unlock_crev_id_interactively() -> anyhow::Result<()> {
     let crev_local = crev_lib::local::Local::auto_create_or_open()?;
-    println!("Unlock the local crev id. Unlocking needs 2-3 seconds after you press Enter. Wait...");
+    println!("First unlock your crev-id with the passphrase. Unlocking needs 2-3 seconds after you press Enter. Holly patience...");
+    println!("Then it automatically opens the default browser.");
     let crev_unlocked = crev_local.read_current_unlocked_id(&stdio_input_password_mod::read_passphrase_interactively)?;
     println!("Unlocked.");
 
@@ -114,7 +115,7 @@ pub fn unlock_crev_id_interactively() -> anyhow::Result<()> {
 }
 
 /// list my reviews
-pub fn list_my_reviews() -> anyhow::Result<Vec<ProofCrevForReview>> {
+pub fn crev_list_my_reviews() -> anyhow::Result<Vec<ProofCrevForReview>> {
     let mut vec_proof: Vec<ProofCrevForReview> = vec![];
     // open every *.proof.crev file in my crev reviews directory
     for path in proof_crev_files_paths()?.iter() {
@@ -154,7 +155,7 @@ pub fn list_my_reviews() -> anyhow::Result<Vec<ProofCrevForReview>> {
 }
 
 /// create new review proof
-pub fn create_new_review_proof(
+pub fn crev_new_review(
     crate_name: &str,
     crate_version_str: &str,
     thoroughness: crev_data::Level,
@@ -237,45 +238,8 @@ pub fn rating_to_string(rating: &Rating) -> String {
     }
 }
 
-pub fn understanding_parse(understanding: &str) -> anyhow::Result<Level> {
-    match understanding.to_lowercase().as_str() {
-        "none" => Ok(Level::None),
-        "low" => Ok(Level::Low),
-        "medium" => Ok(Level::Medium),
-        "high" => Ok(Level::High),
-        _ => Err(anyhow::anyhow!("unrecognized understanding: {}", understanding)),
-    }
-}
-
-pub fn understanding_to_string(understanding: &Level) -> String {
-    match understanding {
-        Level::None => "none".to_string(),
-        Level::Low => "low".to_string(),
-        Level::Medium => "medium".to_string(),
-        Level::High => "high".to_string(),
-    }
-}
-
-pub fn thoroughness_parse(thoroughness: &str) -> anyhow::Result<Level> {
-    match thoroughness.to_lowercase().as_str() {
-        "none" => Ok(Level::None),
-        "low" => Ok(Level::Low),
-        "medium" => Ok(Level::Medium),
-        "high" => Ok(Level::High),
-        _ => Err(anyhow::anyhow!("unrecognized thoroughness: {}", thoroughness)),
-    }
-}
-
-pub fn thoroughness_to_string(thoroughness: &Level) -> String {
-    match thoroughness {
-        Level::None => "none".to_string(),
-        Level::Low => "low".to_string(),
-        Level::Medium => "medium".to_string(),
-        Level::High => "high".to_string(),
-    }
-}
 // verify the signature of a proof
-pub fn verify_proof(yaml: &str) -> anyhow::Result<()> {
+pub fn _verify_proof(yaml: &str) -> anyhow::Result<()> {
     let proofs = crev_data::proof::Proof::parse_from(yaml.as_bytes())?;
     let proof = &proofs[0];
     println!("signature: {}", proof.signature());
