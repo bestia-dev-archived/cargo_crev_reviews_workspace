@@ -1,96 +1,128 @@
 // page_review_mod.rs
 
+use function_name::named;
 use lazy_static::lazy_static;
 use std::sync::Mutex;
 use unwrap::unwrap;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
-use wasm_bindgen_futures::spawn_local;
 
 use cargo_crev_reviews_common::*;
 
 use crate::on_click;
-// use crate::web_sys_mod as w;
+use crate::pages_mod::*;
 use crate::*;
+
+// this structs are in the common project: ReviewItemData, ReviewListData
 
 lazy_static! {
     /// mutable static, because it is hard to pass variables around with on_click events
-    static ref REVIEW_ITEM_DATA: Mutex<ReviewItemParams> = Mutex::new(ReviewItemParams::default());
-    static ref REVIEW_LIST_DATA: Mutex<ReviewListParams> = Mutex::new(ReviewListParams::default());
+    static ref REVIEW_ITEM_DATA: Mutex<ReviewItemData> = Mutex::new(ReviewItemData::default());
+    static ref REVIEW_LIST_DATA: Mutex<ReviewListData> = Mutex::new(ReviewListData::default());
 }
 
-// this structs are in the common project:
-// ReviewItemParams
-
-pub async fn request_review_list() {
-    // dummy message, just to satisfy the request struct
-    let params = cargo_crev_reviews_common::RpcEmptyParams {};
-    let rpc_request = create_rpc_request( "review_list",params);
-    spawn_local(async move {
-        let rpc_response = crate::pages_mod::post_request_and_await_response(rpc_request).await;
-        match rpc_response.response_method.as_str() {
-            "page_review_list" => page_review_list(rpc_response),
-            _ => w::debug_write(&format!("Error: Unrecognized client_method {}", &rpc_response.response_method)),
-        }
-    });
+/// store data in static Mutex because of events like on_click
+fn store_to_review_item_data(rpc_response: RpcResponse) {
+    *REVIEW_ITEM_DATA.lock().unwrap() = unwrap!(serde_json::from_value(rpc_response.response_data));
 }
 
-/// the code for processing the page review_list
+/// store data in static Mutex because of events like on_click
+fn store_static_review_list_data(rpc_response: RpcResponse) {
+    *REVIEW_LIST_DATA.lock().unwrap() = unwrap!(serde_json::from_value(rpc_response.response_data));
+}
+
+pub fn request_review_list(_element_id: &str) {
+    post_request_await_run_response_method(RequestMethod::RpcReviewList, RpcEmptyData {});
+}
+
+/// the code for processing the page rpc_review_list
 /// the data is already in static Mutex REVIEW_LIST_DATA
-pub fn page_review_list(response: RpcResponse) {
-    w::debug_write("page_review_list()");
-    // prepare the static Mutex for data and call the function
-    *REVIEW_LIST_DATA.lock().unwrap() = unwrap!(serde_json::from_value(response.response_params));
-    let page_html = &response.page_html;
-    // lock static variable with page data
-    let list_data = REVIEW_LIST_DATA.lock().unwrap();
-    // only the html inside the <body> </body>
-    let (html_fragment, _new_pos_cursor) = get_delimited_text(page_html, 0, "<body>", "</body>").unwrap();
+#[named]
+pub fn page_review_list(rpc_response: RpcResponse) {
+    w::debug_write(function_name!());
+
+    let page_html = page_html(&rpc_response);
+    store_static_review_list_data(rpc_response);
 
     // call process with functions as parameters, to use for replace attributes and text nodes
-    let html_after_process = crate::pages_mod::process_list_html_templates(
-        &html_fragment,
-        &list_data,
+    let html_after_process = crate::pages_mod::process_html_with_list(
+        &page_html,
+        &REVIEW_LIST_DATA.lock().unwrap(),
         &review_replace_next_attribute,
         &review_replace_next_text_node,
         &review_exist_next_attribute,
     );
 
-    w::set_inner_html("div_for_wasm_html_injecting", &html_after_process);
+    inject_into_html(&html_after_process);
 
     on_click!("button_review_new", request_review_new);
+    on_click!("button_review_publish", request_review_publish);
+
+    // on_click for every row of the list
+    for (row_num, _item) in REVIEW_LIST_DATA.lock().unwrap().list_of_review.iter().enumerate() {
+        row_on_click!("button_review_edit", row_num, request_review_edit_from_list);
+        row_on_click!("button_open_crates_io", row_num, button_open_crates_io_onclick);
+        row_on_click!("button_open_lib_rs", row_num, button_open_lib_rs_onclick);
+    }
 }
 
-/// send rpc requests
+#[named]
+fn button_open_crates_io_onclick(_element_id: &str, row_num: usize) {
+    w::debug_write(function_name!());
+    // from list get crate name and version
+    let item = &REVIEW_LIST_DATA.lock().unwrap().list_of_review[row_num];
+    let url = format!("https://crates.io/crates/{}/{}", item.crate_name, item.crate_version);
+    unwrap!(w::window().open_with_url(&url));
+}
+
+#[named]
+fn button_open_lib_rs_onclick(_element_id: &str, row_num: usize) {
+    w::debug_write(function_name!());
+    // from list get crate name and version
+    let item = &REVIEW_LIST_DATA.lock().unwrap().list_of_review[row_num];
+    let url = format!("https://lib.rs/crates/{}", item.crate_name);
+    unwrap!(w::window().open_with_url(&url));
+}
+
+#[named]
+fn request_review_publish(_element_id: &str) {
+    w::debug_write(function_name!());
+    w::show_snackbar();
+    post_request_await_run_response_method(RequestMethod::RpcReviewPublish, RpcEmptyData {});
+}
+
+#[named]
 fn request_review_new(_element_id: &str) {
-    w::debug_write("request_review_new()");
-    // values from page and form
-    let params = cargo_crev_reviews_common::RpcEmptyParams {};
-    let rpc_request = create_rpc_request("review_new",params);
-    spawn_local(async move {
-        let rpc_response = crate::pages_mod::post_request_and_await_response(rpc_request).await;
-        pages_mod::match_response_method_and_call_function(rpc_response).await;
-    });
+    w::debug_write(function_name!());
+    post_request_await_run_response_method(RequestMethod::RpcReviewNew, RpcEmptyData {});
 }
 
-// region: new
+#[named]
+pub fn page_review_new(rpc_response: RpcResponse) {
+    w::debug_write(function_name!());
+    let page_html = page_html(&rpc_response);
+    store_to_review_item_data(rpc_response);
+    // call process with functions as parameters, to use for replace attributes and text nodes
+    let html_after_process = crate::pages_mod::process_html_with_item(
+        &page_html,
+        &REVIEW_ITEM_DATA.lock().unwrap(),
+        &review_replace_next_attribute,
+        &review_replace_next_text_node,
+        &review_exist_next_attribute,
+        None,
+    );
+    inject_into_html(&html_after_process);
 
-/// fetch and inject HTML fragment into index.html/div_for_wasm_html_injecting
-pub async fn page_review_new(response: RpcResponse) {
-    w::debug_write("page_review_new()");
-    let page_html = &response.page_html;
-    // only the html inside the <body> </body>
-    let (html_fragment, _new_pos_cursor) = get_delimited_text(&page_html, 0, "<body>", "</body>").unwrap();
-    w::set_inner_html("div_for_wasm_html_injecting", &html_fragment);
-
-    on_click!("button_review_save", button_review_save_on_click);
+    on_click!("button_review_save", request_review_save);
+    on_click!("button_review_list", request_review_list);
 }
 
 /// send rpc requests
-fn button_review_save_on_click(_element_id: &str) {
-    w::debug_write("button_review_save_on_click()");
+#[named]
+fn request_review_save(_element_id: &str) {
+    w::debug_write(function_name!());
     // values from page and form
-    let params = cargo_crev_reviews_common::ReviewItemParams {
+    let request_data = ReviewItemData {
         crate_name: w::get_input_element_value_string_by_id("crate_name"),
         crate_version: w::get_input_element_value_string_by_id("crate_version"),
         date: "".to_string(),
@@ -99,184 +131,137 @@ fn button_review_save_on_click(_element_id: &str) {
         rating: w::get_value_of_radio_group_by_name("rating"),
         comment_md: w::get_text_area_element_value_string_by_id("comment_md"),
     };
-    let rpc_request = create_rpc_request( "review_save",params);
-    spawn_local(async move {
-        let rpc_response = crate::pages_mod::post_request_and_await_response(rpc_request).await;
-        pages_mod::match_response_method_and_call_function(rpc_response).await;
-    });
+    post_request_await_run_response_method(RequestMethod::RpcReviewSave, request_data);
 }
 
-// endregion: new
+#[named]
+fn request_review_edit_from_list(_element_id: &str, row_num: usize) {
+    w::debug_write(function_name!());
+    // from list get crate name and version
+    let item = &REVIEW_LIST_DATA.lock().unwrap().list_of_review[row_num];
+    let review_filter_data = ReviewFilterData {
+        crate_name: item.crate_name.clone(),
+        crate_version: item.crate_version.clone(),
+    };
 
-// region: show
+    post_request_await_run_response_method(RequestMethod::RpcReviewEdit, review_filter_data);
+}
 
-/// the code for processing the page review_show
+/// the code for processing the page_review_edit
 /// the data and html are already in static Mutex REVIEW_ITEM_DATA
-pub fn page_review_show(response: RpcResponse) {
-    w::debug_write("page_review_show()");
-    let page_html = &response.page_html;
-    // prepare the static Mutex for data and call the function
-    *REVIEW_ITEM_DATA.lock().unwrap() = unwrap!(serde_json::from_value(response.response_params));
-
-    // lock static variable with page data
-    let params = REVIEW_ITEM_DATA.lock().unwrap();
-    // only the html inside the <body> </body>
-    let (html_fragment, _new_pos_cursor) = get_delimited_text(page_html, 0, "<body>", "</body>").unwrap();
+#[named]
+pub fn page_review_edit(rpc_response: RpcResponse) {
+    w::debug_write(function_name!());
+    let page_html = page_html(&rpc_response);
+    store_to_review_item_data(rpc_response);
 
     // call process with functions as parameters, to use for replace attributes and text nodes
-    let html_after_process = crate::pages_mod::process_html(
-        &html_fragment,
-        &params,
+    let html_after_process = crate::pages_mod::process_html_with_item(
+        &page_html,
+        &REVIEW_ITEM_DATA.lock().unwrap(),
         &review_replace_next_attribute,
         &review_replace_next_text_node,
         &review_exist_next_attribute,
+        None,
     );
 
-    w::debug_write(&html_after_process);
-    w::set_inner_html("div_for_wasm_html_injecting", &html_after_process);
+    inject_into_html(&html_after_process);
 
-    on_click!("button_review_edit", button_review_edit_on_click);
-    // on_click!("button_review_delete", button_review_delete_on_click);
-    // on_click!("button_review_publish", button_review_publish_on_click);
+    on_click!("button_review_save", request_review_save);
+    on_click!("button_review_list", request_review_list);
 }
 
-pub fn page_review_error(response: RpcResponse) {
-    // show dialog box with error, don't change the html and params
-    let err: cargo_crev_reviews_common::RpcMessageParams = unwrap!(serde_json::from_value(response.response_params));
-    unwrap!(w::window().alert_with_message(err.message.as_str()));
+#[named]
+pub fn page_review_error(rpc_response: RpcResponse) {
+    w::debug_write(function_name!());
+    let page_html = page_html(&rpc_response);
+
+    // modal dialog box with error, don't change the html and data
+    //let err: RpcMessageData = unwrap!(serde_json::from_value(rpc_response.response_data));
+
+    w::set_inner_html("div_for_modal", &page_html);
+    on_click!("modal_close", modal_close_on_click);
+}
+
+fn modal_close_on_click(_element_id: &str) {
+    w::set_inner_html("div_for_modal", "");
 }
 
 /// if the `next_attribute_replace` is not None then replace attribute with `next_attribute_replace`
 /// if attribute starts with data-wt_ it is a replace command. Like: data-wt_width="width" width="90"
 /// the attribute value is the name of the next attribute, just for security
-/// Execute the client_method and save the result in `next_attribute_replace`, don't push attribute to string
-fn review_replace_next_attribute(name: &str, _value: &str, next_attribute_replace: &mut Option<(&str, String)>, params: &ReviewItemParams) -> String {
-    w::debug_write("replace_next_attribute");
+/// Execute the response_method and save the result in `next_attribute_replace`, don't push attribute to string
+#[named]
+fn review_replace_next_attribute(name: &str, value: &str, next_attribute_replace: &mut Option<(String, String)>, data: &ReviewItemData) {
+    // w::debug_write(&format!("{} {} {}", function_name!(), name, value));
     // returns mostly empty string because it is all written in next_attribute_replace
     // only in case of error it writes something in the html, to find where the error occurred
-    let mut html_error = String::new();
-    match name {
-        "data-wt_crate_name" => *next_attribute_replace = Some(("value", params.crate_name.clone())),
-        "data-wt_crate_version" => *next_attribute_replace = Some(("value", params.crate_version.clone())),
-        "data-wt_thoroughness" => *next_attribute_replace = Some(("value", params.thoroughness.clone())),
-        "data-wt_understanding" => *next_attribute_replace = Some(("value", params.understanding.clone())),
-        "data-wt_rating" => *next_attribute_replace = Some(("value", params.rating.clone())),
-        _ => {
-            html_error = format!("Unrecognized replace_next_attribute method {}", name);
-            w::debug_write(&html_error);
-        }
-    }
-    // return
-    html_error
+    let attribute_name = value.to_string();
+    let replace_text = match_wt(name.trim_start_matches("data-"), data);
+    *next_attribute_replace = Some((attribute_name, replace_text));
 }
 
-/// if the comment is like <!--wt_method_name-->, starts with `wt_` (web browser text)
+/// if the comment is like <!--wt_method_name-->, starts with `wt_ web-browser text`
 /// Execute the replace_method and save the result in `next_text_node_replace`.
 /// On the next text node it will use this value.
-fn review_replace_next_text_node(txt: &str, next_text_node_replace: &mut Option<String>, params: &ReviewItemParams) -> String {
-    w::debug_write("review_replace_next_text_node");
-    // returns mostly empty string because it is all written in next_attribute_replace
-    // only in case of error it writes something in the html, to find where the error occurred
-    let mut html_error = String::new();
-    match txt {
-        "wt_comment_md" => *next_text_node_replace = Some(params.comment_md.clone()),
-        "wt_crate_name_version" => *next_text_node_replace = Some(format!("{} {}", params.crate_name, params.crate_version)),
-        "wt_crate_thoroughness_understanding" => *next_text_node_replace = Some(format!("{} {}", params.thoroughness, params.understanding)),
-        "wt_rating" => *next_text_node_replace = Some(params.rating.clone()),
-        "wt_review_date" => *next_text_node_replace = Some(params.date[..10].to_string()),
-        _ => {
-            html_error = format!("Unrecognized replace_next_text_node method {}", txt);
-            w::debug_write(&html_error);
-        }
-    }
-    // return
-    html_error
+#[named]
+fn review_replace_next_text_node(name: &str, next_text_node_replace: &mut Option<String>, data: &ReviewItemData) {
+    // w::debug_write(&format!("{} {}", function_name!(), name));
+    let replace_text = match_wt(name, data);
+    *next_text_node_replace = Some(replace_text);
 }
 
-/// if the attribute is like `data-wb_checked_th_none="checked" checked="checked"`, starts with `wb_` (web browser bool)
+/// the use of complete string wt_xxx enables easy and exact text search around the source code
+fn match_wt(wt_name: &str, data: &ReviewItemData) -> String {
+    match wt_name {
+        "wt_comment_md" => data.comment_md.clone(),
+        "wt_crate_name" => data.crate_name.clone(),
+        "wt_crate_version" => data.crate_version.clone(),
+        "wt_crate_name_version" => format!("{} {}", data.crate_name, data.crate_version),
+        "wt_thoroughness" => data.thoroughness.clone(),
+        "wt_understanding" => data.understanding.clone(),
+        "wt_crate_thoroughness_understanding" => format!("{} {}", data.thoroughness, data.understanding),
+        "wt_rating" => data.rating.clone(),
+        "wt_review_date" => data.date[..10].to_string(),
+        "wt_rating_class_color" => format!("review_header0_cell c_{} bold", data.rating),
+        "wt_cargo_crev_reviews_version" => env!("CARGO_PKG_VERSION").to_string(),
+        _ => {
+            let html_error = format!("Unrecognized replace_wt method {}", wt_name);
+            w::debug_write(&html_error);
+            html_error
+        }
+    }
+}
+
+/// if the attribute is like `data-wb_checked_th_none="checked" checked="checked"`, starts with `wb_ web-browser bool`
+/// the use of complete string wb_xxx enables easy and exact text search around the source code
 /// Execute the exists_method and store in `next_attribute_exist`
 /// The next attribute will exist or not because of this bool.
-fn review_exist_next_attribute(name: &str, _value: &str, next_attribute_exist: &mut Option<bool>, params: &ReviewItemParams) -> String {
-    w::debug_write("replace_next_text_node");
-    let mut html_error = String::new();
-    match name {
-        "data-wb_checked_th_none" => *next_attribute_exist = Some(if params.thoroughness == "none" { true } else { false }),
-        "data-wb_checked_th_low" => *next_attribute_exist = Some(if params.thoroughness == "low" { true } else { false }),
-        "data-wb_checked_th_medium" => *next_attribute_exist = Some(if params.thoroughness == "medium" { true } else { false }),
-        "data-wb_checked_th_high" => *next_attribute_exist = Some(if params.thoroughness == "high" { true } else { false }),
+#[named]
+fn review_exist_next_attribute(name: &str, _value: &str, next_attribute_exist: &mut Option<bool>, data: &ReviewItemData) {
+    w::debug_write(function_name!());
+    let name = name.trim_start_matches("data-");
+    let is_exist = match name {
+        "wb_checked_th_none" => data.thoroughness == "none",
+        "wb_checked_th_low" => data.thoroughness == "low",
+        "wb_checked_th_medium" => data.thoroughness == "medium",
+        "wb_checked_th_high" => data.thoroughness == "high",
 
-        "data-wb_checked_un_none" => *next_attribute_exist = Some(if params.understanding == "none" { true } else { false }),
-        "data-wb_checked_un_low" => *next_attribute_exist = Some(if params.understanding == "low" { true } else { false }),
-        "data-wb_checked_un_medium" => *next_attribute_exist = Some(if params.understanding == "medium" { true } else { false }),
-        "data-wb_checked_un_high" => *next_attribute_exist = Some(if params.understanding == "high" { true } else { false }),
+        "wb_checked_un_none" => data.understanding == "none",
+        "wb_checked_un_low" => data.understanding == "low",
+        "wb_checked_un_medium" => data.understanding == "medium",
+        "wb_checked_un_high" => data.understanding == "high",
 
-        "data-wb_checked_ra_none" => *next_attribute_exist = Some(if params.rating == "none" { true } else { false }),
-        "data-wb_checked_ra_negative" => *next_attribute_exist = Some(if params.rating == "negative" { true } else { false }),
-        "data-wb_checked_ra_neutral" => *next_attribute_exist = Some(if params.rating == "neutral" { true } else { false }),
-        "data-wb_checked_ra_positive" => *next_attribute_exist = Some(if params.rating == "positive" { true } else { false }),
-        "data-wb_checked_ra_strong" => *next_attribute_exist = Some(if params.rating == "strong" { true } else { false }),
+        "wb_checked_ra_none" => data.rating == "none",
+        "wb_checked_ra_negative" => data.rating == "negative",
+        "wb_checked_ra_neutral" => data.rating == "neutral",
+        "wb_checked_ra_positive" => data.rating == "positive",
+        "wb_checked_ra_strong" => data.rating == "strong",
         _ => {
-            html_error = format!("Unrecognized review_exist_next_attribute method {}", name);
+            let html_error = format!("Unrecognized review_exist_next_attribute method {}", name);
             w::debug_write(&html_error);
+            false
         }
-    }
-    // return
-    html_error
-}
-
-/// send rpc requests
-fn button_review_edit_on_click(_element_id: &str) {
-    w::debug_write("button_review_edit_on_click()");
-    // lock static variable with page data
-    let params = REVIEW_ITEM_DATA.lock().unwrap();
-
-    let params = cargo_crev_reviews_common::ReviewItemParams {
-        crate_name: params.crate_name.to_owned(),
-        crate_version: params.crate_version.to_owned(),
-        date: "".to_string(),
-        thoroughness: params.thoroughness.to_owned(),
-        understanding: params.understanding.to_owned(),
-        rating: params.rating.to_owned(),
-        comment_md: params.comment_md.to_owned(),
     };
-    let rpc_request = create_rpc_request( "review_edit",params);
-
-    spawn_local(async move {
-        let rpc_response = crate::pages_mod::post_request_and_await_response(rpc_request).await;
-
-        if rpc_response.response_method == "page_review_edit" {
-            // prepare the static Mutex and call the function
-            *REVIEW_ITEM_DATA.lock().unwrap() = unwrap!(serde_json::from_value(rpc_response.response_params));
-            page_review_edit(&rpc_response.page_html);
-        }
-    });
+    *next_attribute_exist = Some(is_exist);
 }
-// endregion: show
-
-// region: edit
-
-/// the code for processing the page review_edit
-/// the data and html are already in static Mutex REVIEW_ITEM_DATA
-pub fn page_review_edit(page_html: &str) {
-    w::debug_write("page_review_edit()");
-    // lock static variable with page data
-    let params = REVIEW_ITEM_DATA.lock().unwrap();
-    // only the html inside the <body> </body>
-    let (html_fragment, _new_pos_cursor) = get_delimited_text(&page_html, 0, "<body>", "</body>").unwrap();
-
-    // call process with functions as parameters, to use for replace attributes and text nodes
-    let html_after_process = crate::pages_mod::process_html(
-        &html_fragment,
-        &params,
-        &review_replace_next_attribute,
-        &review_replace_next_text_node,
-        &review_exist_next_attribute,
-    );
-
-    w::debug_write(&html_after_process);
-    w::set_inner_html("div_for_wasm_html_injecting", &html_after_process);
-
-    on_click!("button_review_save", button_review_save_on_click);
-}
-
-// endregion: edit

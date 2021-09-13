@@ -214,7 +214,7 @@ fn copy_web_folder_files_into_module() {
     /// nested function or inner function, cannot capture environment as closures. Good.
     fn copy_files_from_dir(root_directory: &str, module_source_code: &mut String) {
         let path = std::path::Path::new(root_directory);
-        for entry in path.read_dir().expect("read_dir call failed") {
+        for entry in unwrap!(path.read_dir()) {
             if let Ok(entry) = entry {
                 let p: std::path::PathBuf = entry.path();
                 if p.is_file() {
@@ -225,6 +225,7 @@ fn copy_web_folder_files_into_module() {
                         && !ps.ends_with("package.json")
                         && !ps.ends_with("cargo_crev_reviews_wasm_bg.wasm.d.ts")
                         && !ps.ends_with("cargo_crev_reviews_wasm.d.ts")
+                        && !ps.ends_with("LICENSE")
                     {
                         let start = format!(
                             "\npub fn {}() -> &'static str{{\nr##\"\n",
@@ -263,7 +264,7 @@ fn copy_web_folder_files_into_module() {
     copy_files_from_dir("web_server_folder/cargo_crev_reviews", &mut module_source_code);
     copy_files_from_dir("web_server_folder/cargo_crev_reviews/css", &mut module_source_code);
     copy_files_from_dir("web_server_folder/cargo_crev_reviews/icons", &mut module_source_code);
-    copy_files_from_dir("web_server_folder/cargo_crev_reviews/images", &mut module_source_code);
+    copy_files_from_dir("web_server_folder/cargo_crev_reviews/js", &mut module_source_code);
     copy_files_from_dir("web_server_folder/cargo_crev_reviews/pkg", &mut module_source_code);
     unwrap!(std::fs::write("cargo_crev_reviews/src/files_mod.rs", module_source_code));
 }

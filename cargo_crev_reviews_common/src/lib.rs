@@ -9,23 +9,27 @@ use unwrap::unwrap;
 /// methods available on the server
 #[derive(IntoStaticStr, EnumString, Debug)]
 pub enum RequestMethod {
-    #[strum(serialize = "review_list")]
-    ReviewList,
-    #[strum(serialize = "review_new")]
-    ReviewNew,
-    #[strum(serialize = "review_save")]
-    ReviewSave,
-    #[strum(serialize = "review_edit")]
-    ReviewEdit,
+    #[strum(serialize = "rpc_review_list")]
+    RpcReviewList,
+    #[strum(serialize = "rpc_review_new")]
+    RpcReviewNew,
+    #[strum(serialize = "rpc_review_save")]
+    RpcReviewSave,
+    #[strum(serialize = "rpc_review_edit")]
+    RpcReviewEdit,
+    #[strum(serialize = "rpc_review_publish")]
+    RpcReviewPublish,
 }
 
 /// methods available on the client
 #[derive(IntoStaticStr, EnumString, Debug)]
 pub enum ResponseMethod {
+    #[strum(serialize = "page_review_list")]
+    PageReviewList,
     #[strum(serialize = "page_review_new")]
     PageReviewNew,
-    #[strum(serialize = "page_review_show")]
-    PageReviewShow,
+    #[strum(serialize = "page_review_edit")]
+    PageReviewEdit,
     #[strum(serialize = "page_review_error")]
     PageReviewError,
 }
@@ -34,32 +38,38 @@ pub enum ResponseMethod {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct RpcRequest {
     pub request_method: String,
-    pub request_params: serde_json::Value,
+    pub request_data: serde_json::Value,
 }
 
 /// the response_method will be processed on the client
 #[derive(Serialize, Deserialize, Debug)]
 pub struct RpcResponse {
     pub response_method: String,
-    pub response_params: serde_json::Value,
-    pub page_html: String,
+    pub response_data: serde_json::Value,
+    pub response_html: String,
 }
 
 /// generic message for Rpc
 #[derive(Serialize, Deserialize, Debug)]
-pub struct RpcMessageParams {
+pub struct RpcMessageData {
     pub message: String,
 }
 
-/// generic empty params for Rpc
+/// generic empty data for Rpc
 #[derive(Serialize, Deserialize, Debug)]
-pub struct RpcEmptyParams {}
+pub struct RpcEmptyData {}
 // endregion: platform wide structs
 
 // region: review
 
 #[derive(Serialize, Deserialize, Debug, Default)]
-pub struct ReviewItemParams {
+pub struct ReviewFilterData {
+    pub crate_name: String,
+    pub crate_version: String,
+}
+
+#[derive(Serialize, Deserialize, Debug, Default)]
+pub struct ReviewItemData {
     pub crate_name: String,
     pub crate_version: String,
     pub date: String,
@@ -70,8 +80,9 @@ pub struct ReviewItemParams {
 }
 
 #[derive(Serialize, Deserialize, Debug, Default)]
-pub struct ReviewListParams {
-    pub list_of_review: Vec<ReviewItemParams>,
+pub struct ReviewListData {
+    pub filter: String,
+    pub list_of_review: Vec<ReviewItemData>,
 }
 
 // endregion: review

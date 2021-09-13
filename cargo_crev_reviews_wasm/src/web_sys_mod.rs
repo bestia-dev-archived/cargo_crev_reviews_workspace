@@ -37,7 +37,7 @@ macro_rules! row_on_click {
             $function_ident($element_prefix, $row_number);
         }) as Box<dyn FnMut()>);
 
-        let html_element = crate::web_sys_mod::get_html_element_by_id(&format!("{}{}", $element_prefix, $row_number));
+        let html_element = crate::web_sys_mod::get_html_element_by_id(&format!("{}({})", $element_prefix, $row_number));
         html_element.set_onclick(Some(closure.as_ref().unchecked_ref()));
         closure.forget();
     }};
@@ -200,4 +200,23 @@ pub fn get_text_area_element_value_string_by_id(element_id: &str) -> String {
     let html_text_area_element = unwrap!(element.dyn_into::<web_sys::HtmlTextAreaElement>());
     //return
     html_text_area_element.value()
+}
+
+pub fn show_snackbar() {
+    // Get the snackbar DIV
+    let element = get_element_by_id("snackbar");
+    // Add the "show" class to DIV
+    element.set_class_name("show");
+    // After 3 seconds, remove the show class from DIV
+    let closure = wasm_bindgen::prelude::Closure::wrap(Box::new(move || {
+        debug_write("Timeout closure.");
+        let class_name = element.class_name();
+        let class_name = class_name.replace("show", "");
+        element.set_class_name(&class_name);
+    }) as Box<dyn Fn()>);
+
+    window()
+        .set_timeout_with_callback_and_timeout_and_arguments_0(closure.as_ref().unchecked_ref(), 3000)
+        .unwrap();
+    closure.forget();
 }

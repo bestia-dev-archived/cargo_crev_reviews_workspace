@@ -115,7 +115,7 @@ pub fn unlock_crev_id_interactively() -> anyhow::Result<()> {
 }
 
 /// list my reviews
-pub fn crev_list_my_reviews() -> anyhow::Result<Vec<ProofCrevForReview>> {
+pub fn crev_list_my_reviews(filter: &Option<ReviewFilterData>) -> anyhow::Result<Vec<ProofCrevForReview>> {
     let mut vec_proof: Vec<ProofCrevForReview> = vec![];
     // open every *.proof.crev file in my crev reviews directory
     for path in proof_crev_files_paths()?.iter() {
@@ -143,8 +143,15 @@ pub fn crev_list_my_reviews() -> anyhow::Result<Vec<ProofCrevForReview>> {
                     // if this panics it's a bug in the code and not an exception to handle
                     let yaml = unwrap!(proof_text.get(range_yaml));
                     let proof_crev: ProofCrevForReview = unwrap!(serde_yaml::from_str(yaml));
-                    // push it to vector
-                    vec_proof.push(proof_crev);
+                    // push it to vector, if it filters
+                    match filter {
+                        None => vec_proof.push(proof_crev),
+                        Some(filter) => {
+                            if filter.crate_name == proof_crev.package.name && filter.crate_version == proof_crev.package.version {
+                                vec_proof.push(proof_crev);
+                            }
+                        }
+                    }
                 }
                 None => break,
             }
@@ -154,8 +161,18 @@ pub fn crev_list_my_reviews() -> anyhow::Result<Vec<ProofCrevForReview>> {
     Ok(vec_proof)
 }
 
-/// create new review proof
-pub fn crev_new_review(
+/// edit my reviews, find it in list
+pub fn crev_edit_review(filter: ReviewFilterData) -> anyhow::Result<ProofCrevForReview> {
+    let vec = crev_list_my_reviews(&Some(filter))?;
+    if vec.is_empty() {
+        return Err(anyhow::anyhow!("Crate version not found in my reviews!"));
+    }
+    // return
+    Ok(vec[0].clone())
+}
+
+/// create save review proof
+pub fn crev_save_review(
     crate_name: &str,
     crate_version_str: &str,
     thoroughness: crev_data::Level,
@@ -323,4 +340,10 @@ fn remove_review_proofs(crate_name: &str, crate_version: &str) -> anyhow::Result
         }
     }
     Ok(())
+}
+
+pub fn crev_publish() -> anyhow::Result<String> {
+    let output = std::process::Command::new("cargo").arg("crev").arg("publish").output()?;
+    let ret_val = format!("{} {}", String::from_utf8(output.stdout)?, String::from_utf8(output.stderr)?);
+    Ok(ret_val)
 }

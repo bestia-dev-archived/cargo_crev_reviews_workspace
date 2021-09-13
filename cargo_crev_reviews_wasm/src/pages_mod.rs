@@ -1,124 +1,157 @@
 // pages_mod.rs
 
 use cargo_crev_reviews_common::*;
+
 use reader_for_microxml::ReaderForMicroXml;
 use reader_for_microxml::Token;
 use std::str::FromStr;
 use unwrap::unwrap;
 use wasm_bindgen::prelude::*;
+use wasm_bindgen_futures::spawn_local;
 
 use crate::page_review_mod;
 use crate::web_sys_mod as w;
 
-pub async fn post_request_and_await_response(json_request: JsValue) -> cargo_crev_reviews_common::RpcResponse {
-    let json = Some(&json_request);
-    let resp_body_text = w::fetch_post_response("submit", json).await;
-    let rpc_response: cargo_crev_reviews_common::RpcResponse = unwrap!(serde_json::from_str(&resp_body_text));
-    rpc_response
+pub fn post_request_await_run_response_method<T>(request_method: RequestMethod, request_data: T)
+where
+    T: serde::Serialize,
+{
+    let request_method: &'static str = request_method.into();
+    let data = unwrap!(serde_json::to_value(request_data));
+    let rpc = cargo_crev_reviews_common::RpcRequest {
+        request_method: request_method.to_string(),
+        request_data: data,
+    };
+    let json_string = unwrap!(serde_json::to_string(&rpc));
+    let rpc_request = JsValue::from_str(&json_string);
+
+    spawn_local(async move {
+        let rpc_request = Some(&rpc_request);
+        let resp_body_text = w::fetch_post_response("submit", rpc_request).await;
+        let rpc_response: cargo_crev_reviews_common::RpcResponse = unwrap!(serde_json::from_str(&resp_body_text));
+        match_response_method_and_call_function(rpc_response).await;
+    });
 }
 
 pub async fn match_response_method_and_call_function(response: RpcResponse) {
     let response_enum = ResponseMethod::from_str(response.response_method.as_str());
     match response_enum {
         Ok(response_enum) => match response_enum {
-            ResponseMethod::PageReviewNew => page_review_mod::page_review_new(response).await,
-            ResponseMethod::PageReviewShow => page_review_mod::page_review_show(response),
+            ResponseMethod::PageReviewList => page_review_mod::page_review_list(response),
+            ResponseMethod::PageReviewNew => page_review_mod::page_review_new(response),
+            ResponseMethod::PageReviewEdit => page_review_mod::page_review_edit(response),
             ResponseMethod::PageReviewError => page_review_mod::page_review_error(response),
         },
-        Err(_err) => w::debug_write(&format!("Error: Unrecognized client_method {}", response.response_method)),
+        Err(_err) => w::debug_write(&format!("Error: Unrecognized response_method {}", response.response_method)),
     }
 }
 
-/// inside the html_fragment there can be repetitive segments
-/// in the fragment they are marked with <!--wtemplate_review start--><!--wtemplate_review end-->
-/// sometimes we need some html in the fragment, that will not be processed and must be removed.
-/// it is marked with: <!--wtemplate_not_for_render start--> <!--wtemplate_not_for_render end-->
-pub fn process_list_html_templates(
-    html_fragment: &str,
-    params_as_list: &ReviewListParams,
-    replace_next_attribute: &dyn Fn(&str, &str, &mut Option<(&str, String)>, &ReviewItemParams) -> String,
-    replace_next_text_node: &dyn Fn(&str, &mut Option<String>, &ReviewItemParams) -> String,
-    exist_next_attribute: &dyn Fn(&str, &str, &mut Option<bool>, &ReviewItemParams) -> String,
-) -> String {
-    // region: first remove the marked segments
-    let mut html_after_remove_segments = String::with_capacity(html_fragment.len());
-    let mut cursor = 0;
-    let mut old_end = 0;
-    while let Some(range_to_remove) = cargo_crev_reviews_common::find_range_including_delimiters(
-        &html_fragment,
-        &mut cursor,
-        "<!--wtemplate_not_for_render start-->",
-        "<!--wtemplate_not_for_render end-->",
-    ) {
-        w::debug_write(&format!("range_to_remove: {:?}", &range_to_remove));
-        html_after_remove_segments.push_str(&html_fragment[old_end..range_to_remove.start.clone()]);
-        old_end = range_to_remove.end.clone();
-    }
-    html_after_remove_segments.push_str(&html_fragment[old_end..]);
-    // endregion: first remove the marked segments
-    w::debug_write(&format!("html_after_remove_segments: {}", &html_after_remove_segments));
+pub fn page_html(response: &RpcResponse) -> String {
+    let response_html = &response.response_html;
+    // only the html inside the <body> </body>
+    let (html_fragment, _new_pos_cursor) = get_delimited_text(response_html, 0, "<body>", "</body>").unwrap();
+    html_fragment
+}
 
-    // region: find templates, process html and push str
-    let mut html = String::with_capacity(html_after_remove_segments.len());
+pub fn inject_into_html(html_after_process: &str) {
+    w::set_inner_html("div_for_wasm_html_injecting", html_after_process);
+}
+
+/// process repetitive segments with a list of data
+pub fn process_html_with_list(
+    html_old: &str,
+    data_as_list: &ReviewListData,
+    replace_next_attribute: &dyn Fn(&str, &str, &mut Option<(String, String)>, &ReviewItemData),
+    replace_next_text_node: &dyn Fn(&str, &mut Option<String>, &ReviewItemData),
+    exist_next_attribute: &dyn Fn(&str, &str, &mut Option<bool>, &ReviewItemData),
+) -> String {
+    let html_after_process_1 = delete_wd(html_old);
+    let html_new = process_repetitive_html(
+        html_after_process_1,
+        data_as_list,
+        replace_next_attribute,
+        replace_next_text_node,
+        exist_next_attribute,
+    );
+    // return
+    html_new
+}
+
+/// inside the html there can be `wr_ web-browser repetitive segments`
+/// marked with <!--wr_review start--><!--wr_review end-->
+fn process_repetitive_html(
+    html_old: String,
+    data_as_list: &ReviewListData,
+    replace_next_attribute: &dyn Fn(&str, &str, &mut Option<(String, String)>, &ReviewItemData),
+    replace_next_text_node: &dyn Fn(&str, &mut Option<String>, &ReviewItemData),
+    exist_next_attribute: &dyn Fn(&str, &str, &mut Option<bool>, &ReviewItemData),
+) -> String {
+    let mut html_new = String::with_capacity(html_old.len());
     let mut cursor = 0;
     let mut old_end = 0;
-    while let Some(range_including_delimiters) = cargo_crev_reviews_common::find_range_including_delimiters(
-        &html_after_remove_segments,
-        &mut cursor,
-        "<!--wtemplate_review start-->",
-        "<!--wtemplate_review end-->",
-    ) {
-        w::debug_write(&format!("range_including_delimiters: {:?}", &range_including_delimiters));
-        let template_with_delimiters = &html_after_remove_segments[range_including_delimiters.clone()];
-        w::debug_write(&format!("template_with_delimiters: {}", template_with_delimiters));
+    while let Some(range_including_delimiters) =
+        cargo_crev_reviews_common::find_range_including_delimiters(&html_old, &mut cursor, "<!--wr_review start-->", "<!--wr_review end-->")
+    {
+        let template_with_delimiters = &html_old[range_including_delimiters.clone()];
         // add part before delimiter
-        html.push_str(&html_after_remove_segments[old_end..range_including_delimiters.start.clone()]);
+        html_new.push_str(&html_old[old_end..range_including_delimiters.start.clone()]);
         old_end = range_including_delimiters.end.clone();
 
         // exclude delimiters
-        if let Some(range_excluding_delimiters) = cargo_crev_reviews_common::find_range_between_delimiters(
-            &template_with_delimiters,
-            &mut 0,
-            "<!--wtemplate_review start-->",
-            "<!--wtemplate_review end-->",
-        ) {
-            w::debug_write(&format!("range_excluding_delimiters: {:?}", &range_excluding_delimiters));
+        if let Some(range_excluding_delimiters) =
+            cargo_crev_reviews_common::find_range_between_delimiters(&template_with_delimiters, &mut 0, "<!--wr_review start-->", "<!--wr_review end-->")
+        {
             let html_repetitive_template = &template_with_delimiters[range_excluding_delimiters];
-            w::debug_write(&format!("html_repetitive_template: {}", html_repetitive_template));
             // process template and push as many &str is needed
-            for params in params_as_list.list_of_review.iter() {
-                let list_item_html = crate::pages_mod::process_html(
+            for (row_num, data) in data_as_list.list_of_review.iter().enumerate() {
+                let list_item_html = crate::pages_mod::process_html_with_item(
                     html_repetitive_template,
-                    params,
+                    data,
                     &replace_next_attribute,
                     &replace_next_text_node,
                     &exist_next_attribute,
+                    Some(row_num),
                 );
-                html.push_str(&list_item_html);
+                html_new.push_str(&list_item_html);
             }
         }
     }
-    // finally push the rest of html_after_remove_segments
-    html.push_str(&html_after_remove_segments[old_end..]);
-    // endregion: find templates, process html and push str
-    // return
-    html
+    html_new.push_str(&html_old[old_end..]);
+    html_new
+}
+
+/// in the html there can be segments that are only to help for graphical design
+/// this segments must be deleted before rendering the html
+/// it is marked with: <!--wd_delete start--> <!--wd_delete end-->
+fn delete_wd(html_old: &str) -> String {
+    let mut html_new = String::with_capacity(html_old.len());
+    let mut cursor = 0;
+    let mut old_end = 0;
+    while let Some(range_to_remove) =
+        cargo_crev_reviews_common::find_range_including_delimiters(&html_old, &mut cursor, "<!--wd_delete start-->", "<!--wd_delete end-->")
+    {
+        html_new.push_str(&html_old[old_end..range_to_remove.start.clone()]);
+        old_end = range_to_remove.end.clone();
+    }
+    html_new.push_str(&html_old[old_end..]);
+    html_new
 }
 
 /// With reader_for_microXml parse the xml.
 /// If found the magic word `wt_` then run some code and push the result instead of the next element or attribute
 /// If normal element or attribute push it to the new String builder
 /// It is just strings so, that should be super fast.
-pub fn process_html(
+pub fn process_html_with_item(
     html_fragment: &str,
-    params: &ReviewItemParams,
-    replace_next_attribute: &dyn Fn(&str, &str, &mut Option<(&str, String)>, &ReviewItemParams) -> String,
-    replace_next_text_node: &dyn Fn(&str, &mut Option<String>, &ReviewItemParams) -> String,
-    exist_next_attribute: &dyn Fn(&str, &str, &mut Option<bool>, &ReviewItemParams) -> String,
+    data: &ReviewItemData,
+    replace_next_attribute: &dyn Fn(&str, &str, &mut Option<(String, String)>, &ReviewItemData),
+    replace_next_text_node: &dyn Fn(&str, &mut Option<String>, &ReviewItemData),
+    exist_next_attribute: &dyn Fn(&str, &str, &mut Option<bool>, &ReviewItemData),
+    row_num: Option<usize>,
 ) -> String {
     let reader_iterator = ReaderForMicroXml::new(html_fragment);
     let mut html_after_process = String::with_capacity(html_fragment.len());
-    let mut next_attribute_replace: Option<(&str, String)> = None;
+    let mut next_attribute_replace: Option<(String, String)> = None;
     let mut next_attribute_exist: Option<bool> = None;
     let mut next_text_node_replace: Option<String> = None;
     let mut last_token = "";
@@ -148,6 +181,7 @@ pub fn process_html(
                             is_exist
                         }
                     };
+
                     if exist_attribute {
                         let html = match next_attribute_replace {
                             Some(tuple_next_attribute_replace) => {
@@ -158,14 +192,20 @@ pub fn process_html(
                             None => {
                                 if name.starts_with("data-wt_") {
                                     // returns nothing, it writes into `next_attribute_replace`
-                                    replace_next_attribute(name, value, &mut next_attribute_replace, &params);
+                                    replace_next_attribute(name, value, &mut next_attribute_replace, &data);
                                     String::new()
                                 } else if name.starts_with("data-wb_") {
                                     // returns nothing, it writes into `next_attribute_exist`
-                                    exist_next_attribute(name, value, &mut next_attribute_exist, &params);
+                                    exist_next_attribute(name, value, &mut next_attribute_exist, &data);
                                     String::new()
                                 } else {
-                                    format!(r#"{}="{}" "#, name, value,)
+                                    // non processed attribute,
+                                    // but `id` is special, it could have row_num in parenthesis like id="item(0)"
+                                    if name == "id" && row_num.is_some() {
+                                        format!(r#"{}="{}({})" "#, name, value, row_num.unwrap())
+                                    } else {
+                                        format!(r#"{}="{}" "#, name, value)
+                                    }
                                 }
                             }
                         };
@@ -191,13 +231,13 @@ pub fn process_html(
                     if last_token == "element" || last_token == "attribute" {
                         html_after_process.push_str(">");
                     }
-                    let html = if txt.starts_with("wt_") {
-                        replace_next_text_node(txt, &mut next_text_node_replace, &params)
+                    if txt.starts_with("wt_") {
+                        replace_next_text_node(txt, &mut next_text_node_replace, &data);
                     } else {
-                        format!(r#"<!--{}-->"#, txt)
-                    };
+                        let html = format!(r#"<!--{}-->"#, txt);
+                        html_after_process.push_str(&html);
+                    }
 
-                    html_after_process.push_str(&html);
                     last_token = "comment"
                 }
                 Token::EndElement(end_element_name) => {

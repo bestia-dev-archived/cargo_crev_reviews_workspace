@@ -5,9 +5,9 @@
 //! The real content of "static files" is in the module files_mod.rs
 mod crev_mod;
 mod files_mod;
-mod response_get_files_mod;
-mod response_methods_mod;
-mod response_post_method_mod;
+mod response_get_mod;
+mod response_post_mod;
+mod rpc_methods_mod;
 mod stdio_input_password_mod;
 
 pub use crev_mod::unlock_crev_id_interactively;
@@ -48,20 +48,20 @@ pub fn start_web_server(host: &str, port: &str) {
         let path = request.uri().to_string();
         // println!("Request received. {} {}", request.method(), request.uri());
         if !request.uri().to_string().starts_with("/cargo_crev_reviews") {
-            return Ok(response_get_files_mod::response_404_not_found(response_builder, &path));
+            return Ok(response_get_mod::response_404_not_found(response_builder, &path));
         }
         match request.method() {
             &Method::GET => {
                 // GET is used only to request files
-                let response = response_get_files_mod::parse_get_uri_and_response_file(&path, response_builder);
+                let response = response_get_mod::parse_get_uri_and_response_file(&path, response_builder);
                 Ok(response)
             }
             &Method::POST => {
                 let request_body: &Vec<u8> = request.body();
-                let response_body = unwrap!(response_post_method_mod::parse_post_data_and_match_method(request_body));
+                let response_body = unwrap!(response_post_mod::parse_post_data_and_match_method(request_body));
                 Ok(response_builder.body(response_body.into_bytes())?)
             }
-            _ => Ok(response_get_files_mod::response_404_not_found(response_builder, &path)),
+            _ => Ok(response_get_mod::response_404_not_found(response_builder, &path)),
         }
     });
     // open default browser in Linux

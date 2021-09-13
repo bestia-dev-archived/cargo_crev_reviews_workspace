@@ -81,31 +81,32 @@ The micro-server will accept mostly [POST](https://developer.mozilla.org/en-US/d
 ```bash
 Syntax:
 
---> data sent to Server
-<-- data sent to Client
+--> data sent to Server - request
+<-- data sent to Client - response
 
 rpc call with named parameters:
 
 --> {
-"server_method": "subtract_calculate", 
-"params": {
+"request_method": "subtract_calculate", 
+"request_data": {
     "subtrahend": 23, 
     "minuend": 42, 
     }
 }
 
 <-- {
-"client_method": "subtract_show", 
-"params": {
+"response_method": "subtract_show", 
+"response_data": {
     "subtracted": 19,     
-    }
+    },
+"response_html":"..."    
 }
 ```
 
 An example how to test a POST request with curl:
 
 ```bash
-curl -d '{"server_method": "subtract", "params": {"subtrahend": 23, "minuend": 42}}' -H 'Content-Type: application/json' http://127.0.0.1:8182/cargo_crev_reviews
+curl -d '{"request_method": "subtract", "request_data": {"subtrahend": 23, "minuend": 42}}' -H 'Content-Type: application/json' http://127.0.0.1:8182/cargo_crev_reviews
 ```
 
 There are also a small number of GET requests for static files mostly to start the communication between the browser and the server.  
@@ -147,16 +148,16 @@ The first set of requests are GET and response is "static" files embedded in fil
 1. browser request for `/cargo_crev_reviews/index.html` is GET, the response is html text file embedded in files_mod.rs in the function: `index_html()`  
     This html is just an empty shell that gets the css and wasm code. There is no real content inside. This concept is [Single-page application SPA](https://en.wikipedia.org/wiki/Single-page_application).  
 2. index.html requests: 3 css files, `pkg/cargo_crev_reviews.js`, `pkg/cargo_crev_reviews_bg.wasm`, "favicon" `icons/icon-032.png`. All these requests are GET and responses come from files_mod.rs functions, some are text files and others are base64 files.
-3. the browser imports the wasm module and starts the init function that requests `review_new.html`. This is GET, the responses is html text files embedded in files_mod. TODO: Maybe this should already be a rpc request
+3. the browser imports the wasm module and starts the init function that requests `rpc_review_new.html`. This is GET, the responses is html text files embedded in files_mod. TODO: Maybe this should already be a rpc request
     This is a page with the html content.
 
 4. wasm (inside the browser) is rust code and if needed it modifies the received html and inserts it into index.html
 5. the browser renders our first page. Hooray!
 
-6. the user inputs some data and click on the button `review_save`
+6. the user inputs some data and click on the button `rpc_review_save`
 7. the macro `on_click!` hides the ugly rust code behind the definition of an event handler in web_sys and calls `review_save_on_click()`
 8. wasm creates a rpc and sends the POST request to the server
-9. the request is POST, the server calls the method `review_save()` and returns a `rpc` response
+9. the request is POST, the server calls the method `rpc_review_save()` and returns a `rpc` response
 10. The response contains the html to be rendered and optional data to be inserted in this html before rendering.
 
 ## cargo-crev integration
@@ -164,11 +165,11 @@ The first set of requests are GET and response is "static" files embedded in fil
 The [cargo-crev](https://github.com/crev-dev/cargo-crev) project contains many crates. The crates `crev-lib` and `crev-data` are libraries for integration.  
 I want to create a new simple review, similar to the command:  
 `cargo crev crate review -u --skip-activity-check crate_name version`  
-The crate and version must already exist inside the local `cargo registry index cache`. That means we use this dependency for some of our projects. We cannot review something we never actually used. Path to an info file: 
+The crate and version must already exist inside the local `cargo registry index cache`. That means we use this dependency for some of our projects. We cannot review something we never actually used. Path to an info file:  
 `~\.cargo\registry\index\github.com-1ecc6299db9ec823\cache\re\ad\reader_for_microxml`  
 The content of this file is roughly:  
 
-```
+```yaml
 bc688d353fc7c7a2f3f1f5fed9a27fc1773fc710
 1.0.0 {
     "name": "reader_for_microxml",
@@ -194,7 +195,11 @@ In `~/.cargo/registry/src/github.com-1ecc6299db9ec823/reader_for_microxml-1.1.11
 
 ## TODO
 
-crev new review calculate digest and revision
+open source code in VSCode? or just open folder?
+show if there is newer version. cache it in a file.
+delete
+markdown instead of raw text
+modal instead of alert for publish command
 Automation tasks for workspaces:  
 auto_lines_of_code: exclude files_mod.rs, because it is just embedded files.  
 auto_cargo_toml_to_md, , auto_md_to_doc_comments  

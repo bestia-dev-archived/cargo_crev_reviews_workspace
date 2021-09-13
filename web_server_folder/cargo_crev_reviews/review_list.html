@@ -7,21 +7,34 @@
     <meta name="Description" content="web app for writing new reviews for cargo-crev" />
     <link rel="stylesheet" href="css/normalize.css" />
     <link rel="stylesheet" href="css/cargo_crev_reviews.css" />
+    <link rel="stylesheet" href="css/fontawesome.css" />
     <meta name="viewport" content="width = device-width,initial-scale = 1.0" />
     <link rel="shortcut icon" type="image/x-icon" href="icons/icon-032.png" />
+    <script src="js/dropdown.js"></script>
 </head>
 
 <body>
     <div class="container_0">
-        <div class="container0_content_not_grid">
-            <p class="big bold">My crev reviews</p>
-            <ul>
-                <li id="button_review_new">Write new review</li>
-            </ul>
+        <div style="display: grid;grid-template-columns: 2% 46% 50% 2% ;">
+            <div></div>
+            <div class="middle">
+                <h2>List my Rust code reviews</h2>
+            </div>
+            <div class="middle right">
+                <h3>review for <a class="c_link_1" href="https://github.com/crev-dev/cargo-crev" target="_blank">cargo-crev</a></h3>
+            </div>
+            <div></div>
         </div>
+        <ul>
+            <li id="button_review_new">Write new review</li>
+            <li id="button_review_publish">Publish to git remote repository</li>
+        </ul>
     </div>
     <div class="container_0">
-        <div class="review_header_0" style="grid-template-columns: 25fr 25fr 25fr 25fr;">
+        <div class="review_header_0" style="grid-template-columns: 10fr 35fr 15fr 15fr 25fr;">
+            <div class="review_header0_cell">
+                act
+            </div>
             <div class="review_header0_cell c_white">
                 crate version
             </div>
@@ -33,12 +46,23 @@
                 thoroughness, understanding</div>
         </div>
     </div>
-    <!--wtemplate_review start-->
+    <!--wr_review start-->
     <div class="container_0">
-        <div class="review_header_0" style="grid-template-columns: 25fr 25fr 25fr 25fr;">
+        <div class="review_header_0" style="grid-template-columns: 10fr 35fr 15fr 15fr 25fr;">
             <div class="review_header0_cell">
-                <a class="c_link_1" data-wu_crate_route="href" href="">
-                    <!--wt_crate_name_version-->num-traits 0.2.11</a>
+                <div class="dropdown">
+                    <div class="dropbtn"><i class="fas fa-ellipsis-h" style="pointer-events: none;"></i></div>
+                    <div class="dropdown-content">
+                        <a id="button_review_edit">Edit review</a>
+                        <a id="button_open_crates_io">Open crates.io</a>
+                        <a id="button_open_source_code">Open local cargo cache source code</a>
+                        <a id="button_open_lib_rs">Open lib.rs</a>
+                        <a id="button_review_delete">Delete</a>
+                    </div>
+                </div>
+            </div>
+            <div class="review_header0_cell">
+                <!--wt_crate_name_version-->num-traits 0.2.11
             </div>
             <div data-wt_rating_class_color="class" class="review_header0_cell c_positive bold" title="rating">
                 <!--wt_rating-->positive</div>
@@ -52,15 +76,26 @@
             <!--wt_comment_md-->first we try text and then change to markdown
         </div>
     </div>
-    <!--wtemplate_review end-->
-    <!--wtemplate_not_for_render start-->
-    <!--this div is here only for the graphical designer 
-            to see how it looks to have 2 or more reviews 
-        In runtime it is not rendered.-->
+    <!--wr_review end-->
+    <!--wd_delete start-->
+    <!--This div is here only for the graphical designer to see how it looks to have 2 or more rows. 
+    Before render it is deleted.-->
     <div class="container_0">
-        <div class="review_header_0" style="grid-template-columns: 25fr 25fr 25fr 25fr;">
+        <div class="review_header_0" style="grid-template-columns: 10fr 35fr 15fr 15fr 25fr;">
+            <div class="review_header0_cell">
+                <div class="dropdown">
+                    <div class="dropbtn"><i class="fas fa-ellipsis-h" style="pointer-events: none;"></i></div>
+                    <div class="dropdown-content">
+                        <a>Edit review</a>
+                        <a>Open crates.io</a>
+                        <a>Open local cargo cache source code</a>
+                        <a>Open lib.rs</a>
+                        <a>Delete</a>
+                    </div>
+                </div>
+            </div>
             <div class="review_header0_cell">num-traits 0.2.6</div>
-            <div class="review_header0_cell c_positive bold">positive</div>
+            <div class="review_header0_cell c_strong bold">strong</div>
             <div class="review_header0_cell">2019-08-30</div>
             <div class="review_header0_cell">medium high</div>
         </div>
@@ -69,8 +104,16 @@
             library.
         </div>
     </div>
-    <!--wtemplate_not_for_render end-->
-
+    <!--wd_delete end-->
+    <div id="snackbar">Publishing to remote repo...</div>
+    <div>
+        <div class="container0_content_not_grid" style="line-height: 0.8em;">
+            <p class="small">© Luciano Bestia 2021, MIT Licence, Version:
+                <!--wt_cargo_crev_reviews_version-->2020.05.05<br/> Open source repository for this full stack Rust app on
+                <a class="c_link_1 break-all" target="blank" href="https://github.com/LucianoBestia/cargo_crev_reviews_workspace/">GitHub</a>
+            </p>
+        </div>
+    </div>
 </body>
 
 </html>

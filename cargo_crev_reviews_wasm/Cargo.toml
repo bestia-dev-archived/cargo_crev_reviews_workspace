@@ -1,6 +1,6 @@
 [package]
 name = "cargo_crev_reviews_wasm"
-version = "2021.906.1013"
+version = "2021.913.1111"
 authors = ["Luciano Bestia <Luciano.Bestia@gmail.com>"]
 edition = "2018"
 description = "Wasm web app that is the frontend of the application cargo_crev_reviews"
@@ -31,6 +31,7 @@ strum = { version = "0.21", features = ["derive"] }
 serde = {version = "1.0", features = ["derive"]}
 chrono = "0.4.19"
 lazy_static ="1.4.0"
+function_name = "0.2.0"
 
 [dependencies.web-sys]
 version = "0.3.46"
