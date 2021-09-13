@@ -14,13 +14,45 @@ use crate::web_sys_mod as w;
 
 pub trait PageProcessor {
     // region: mandatory functions to implement
-    fn replace_next_text_node(&self, name: &str, next_text_node_replace: &mut Option<String>);
-    fn replace_next_attribute(&self, name: &str, value: &str, next_attribute_replace: &mut Option<(String, String)>);
+    fn process_loop(&self, html_repetitive_template: &str, html_new: &mut String);
     fn match_wt(&self, wt_name: &str) -> String;
-    fn exist_next_attribute(&self, name: &str, _value: &str, next_attribute_exist: &mut Option<bool>);
+    fn match_wb(&self, wb_name: &str) -> bool;
     // endregion: mandatory functions to implement
 
     // region: trait functions
+    /// if the comment is like <!--wt_method_name-->, starts with `wt_ web-browser text`
+    /// Execute the replace_method and save the result in `next_text_node_replace`.
+    /// On the next text node it will use this value.    
+    fn replace_next_text_node(&self, name: &str, next_text_node_replace: &mut Option<String>) {
+        // w::debug_write(&format!("{} {}", function_name!(), name));
+        let replace_text = self.match_wt(name);
+        *next_text_node_replace = Some(replace_text);
+    }
+
+    /// if the `next_attribute_replace` is not None then replace attribute with `next_attribute_replace`
+    /// if attribute starts with data-wt_ it is a replace command. Like: data-wt_width="width" width="90"
+    /// the attribute value is the name of the next attribute, just for security
+    /// Execute the response_method and save the result in `next_attribute_replace`, don't push attribute to string
+    fn replace_next_attribute(&self, name: &str, value: &str, next_attribute_replace: &mut Option<(String, String)>) {
+        // w::debug_write(&format!("{} {} {}", function_name!(), name, value));
+        // returns mostly empty string because it is all written in next_attribute_replace
+        // only in case of error it writes something in the html, to find where the error occurred
+        let attribute_name = value.to_string();
+        let replace_text = self.match_wt(name.trim_start_matches("data-"));
+        *next_attribute_replace = Some((attribute_name, replace_text));
+    }
+
+    /// if the attribute is like `data-wb_checked_th_none="checked" checked="checked"`, starts with `wb_ web-browser bool`
+    /// the use of complete string wb_xxx enables easy and exact text search around the source code
+    /// Execute the exists_method and store in `next_attribute_exist`
+    /// The next attribute will exist or not because of this bool.
+    fn exist_next_attribute(&self, name: &str, _value: &str, next_attribute_exist: &mut Option<bool>) {
+        // w::debug_write(function_name!());
+        let wb_name = name.trim_start_matches("data-");
+        let is_exist = self.match_wb(wb_name);
+        *next_attribute_exist = Some(is_exist);
+    }
+
     /// With reader_for_microXml parse the xml.
     /// If found the magic word `wt_` then run some code and push the result instead of the next element or attribute
     /// If normal element or attribute push it to the new String builder
@@ -141,9 +173,9 @@ pub trait PageProcessor {
     // endregion: trait functions
 
     /// process repetitive segments with a list of data
-    fn process_html_with_list(html_old: &str, data_as_list: &ReviewListData) -> String {
+    fn process_html_with_list(&self, html_old: &str) -> String {
         let html_after_process_1 = Self::delete_wd(html_old);
-        let html_new = Self::process_repetitive_html(html_after_process_1, data_as_list);
+        let html_new = self.process_repetitive_html(html_after_process_1);
         // return
         html_new
     }
@@ -167,7 +199,7 @@ pub trait PageProcessor {
 
     /// inside the html there can be `wr_ web-browser repetitive segments`
     /// marked with <!--wr_review start--><!--wr_review end-->
-    fn process_repetitive_html(html_old: String, data_as_list: &ReviewListData) -> String {
+    fn process_repetitive_html(&self, html_old: String) -> String {
         let mut html_new = String::with_capacity(html_old.len());
         let mut cursor = 0;
         let mut old_end = 0;
@@ -184,11 +216,8 @@ pub trait PageProcessor {
                 cargo_crev_reviews_common::find_range_between_delimiters(&template_with_delimiters, &mut 0, "<!--wr_review start-->", "<!--wr_review end-->")
             {
                 let html_repetitive_template = &template_with_delimiters[range_excluding_delimiters];
-                // process template and push as many &str is needed
-                for (row_num, data) in data_as_list.list_of_review.iter().enumerate() {
-                    let list_item_html = data.process_html_with_item(html_repetitive_template, Some(row_num));
-                    html_new.push_str(&list_item_html);
-                }
+
+                self.process_loop(html_repetitive_template, &mut html_new);
             }
         }
         html_new.push_str(&html_old[old_end..]);
