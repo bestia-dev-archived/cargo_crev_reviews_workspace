@@ -85,6 +85,12 @@ pub struct ReviewListData {
     pub list_of_review: Vec<ReviewItemData>,
 }
 
+/// all possible structs for review data
+pub enum DataReviewEnum {
+    ReviewItemData,
+    ReviewListData,
+    RpcMessageData,
+}
 // endregion: review
 
 /// returns string between the start end end delimiters without delimiters

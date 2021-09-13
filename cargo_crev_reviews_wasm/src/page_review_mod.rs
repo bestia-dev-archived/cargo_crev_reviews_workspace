@@ -21,6 +21,108 @@ lazy_static! {
     static ref REVIEW_LIST_DATA: Mutex<ReviewListData> = Mutex::new(ReviewListData::default());
 }
 
+impl PageProcessor for ReviewListData {
+    /// if the comment is like <!--wt_method_name-->, starts with `wt_ web-browser text`
+    /// Execute the replace_method and save the result in `next_text_node_replace`.
+    /// On the next text node it will use this value.
+    #[named]
+    fn replace_next_text_node(&self, name: &str, next_text_node_replace: &mut Option<String>) {}
+    /// if the `next_attribute_replace` is not None then replace attribute with `next_attribute_replace`
+    /// if attribute starts with data-wt_ it is a replace command. Like: data-wt_width="width" width="90"
+    /// the attribute value is the name of the next attribute, just for security
+    /// Execute the response_method and save the result in `next_attribute_replace`, don't push attribute to string
+    #[named]
+    fn replace_next_attribute(&self, name: &str, value: &str, next_attribute_replace: &mut Option<(String, String)>) {}
+    /// the use of complete string wt_xxx enables easy and exact text search around the source code
+    fn match_wt(&self, wt_name: &str) -> String {
+        "".to_string()
+    }
+    /// if the attribute is like `data-wb_checked_th_none="checked" checked="checked"`, starts with `wb_ web-browser bool`
+    /// the use of complete string wb_xxx enables easy and exact text search around the source code
+    /// Execute the exists_method and store in `next_attribute_exist`
+    /// The next attribute will exist or not because of this bool.
+    #[named]
+    fn exist_next_attribute(&self, name: &str, _value: &str, next_attribute_exist: &mut Option<bool>) {}
+}
+
+impl PageProcessor for ReviewItemData {
+    /// if the comment is like <!--wt_method_name-->, starts with `wt_ web-browser text`
+    /// Execute the replace_method and save the result in `next_text_node_replace`.
+    /// On the next text node it will use this value.
+    #[named]
+    fn replace_next_text_node(&self, name: &str, next_text_node_replace: &mut Option<String>) {
+        // w::debug_write(&format!("{} {}", function_name!(), name));
+        let replace_text = match_wt(name, self);
+        *next_text_node_replace = Some(replace_text);
+    }
+    /// if the `next_attribute_replace` is not None then replace attribute with `next_attribute_replace`
+    /// if attribute starts with data-wt_ it is a replace command. Like: data-wt_width="width" width="90"
+    /// the attribute value is the name of the next attribute, just for security
+    /// Execute the response_method and save the result in `next_attribute_replace`, don't push attribute to string
+    #[named]
+    fn replace_next_attribute(&self, name: &str, value: &str, next_attribute_replace: &mut Option<(String, String)>) {
+        // w::debug_write(&format!("{} {} {}", function_name!(), name, value));
+        // returns mostly empty string because it is all written in next_attribute_replace
+        // only in case of error it writes something in the html, to find where the error occurred
+        let attribute_name = value.to_string();
+        let replace_text = self.match_wt(name.trim_start_matches("data-"));
+        *next_attribute_replace = Some((attribute_name, replace_text));
+    }
+    /// the use of complete string wt_xxx enables easy and exact text search around the source code
+    fn match_wt(&self, wt_name: &str) -> String {
+        match wt_name {
+            "wt_comment_md" => self.comment_md.clone(),
+            "wt_crate_name" => self.crate_name.clone(),
+            "wt_crate_version" => self.crate_version.clone(),
+            "wt_crate_name_version" => format!("{} {}", self.crate_name, self.crate_version),
+            "wt_thoroughness" => self.thoroughness.clone(),
+            "wt_understanding" => self.understanding.clone(),
+            "wt_crate_thoroughness_understanding" => format!("{} {}", self.thoroughness, self.understanding),
+            "wt_rating" => self.rating.clone(),
+            "wt_review_date" => self.date[..10].to_string(),
+            "wt_rating_class_color" => format!("review_header0_cell c_{} bold", self.rating),
+            "wt_cargo_crev_reviews_version" => env!("CARGO_PKG_VERSION").to_string(),
+            _ => {
+                let html_error = format!("Unrecognized replace_wt method {}", wt_name);
+                w::debug_write(&html_error);
+                html_error
+            }
+        }
+    }
+    /// if the attribute is like `data-wb_checked_th_none="checked" checked="checked"`, starts with `wb_ web-browser bool`
+    /// the use of complete string wb_xxx enables easy and exact text search around the source code
+    /// Execute the exists_method and store in `next_attribute_exist`
+    /// The next attribute will exist or not because of this bool.
+    #[named]
+    fn exist_next_attribute(&self, name: &str, _value: &str, next_attribute_exist: &mut Option<bool>) {
+        // w::debug_write(function_name!());
+        let name = name.trim_start_matches("data-");
+        let is_exist = match name {
+            "wb_checked_th_none" => self.thoroughness == "none",
+            "wb_checked_th_low" => self.thoroughness == "low",
+            "wb_checked_th_medium" => self.thoroughness == "medium",
+            "wb_checked_th_high" => self.thoroughness == "high",
+
+            "wb_checked_un_none" => self.understanding == "none",
+            "wb_checked_un_low" => self.understanding == "low",
+            "wb_checked_un_medium" => self.understanding == "medium",
+            "wb_checked_un_high" => self.understanding == "high",
+
+            "wb_checked_ra_none" => self.rating == "none",
+            "wb_checked_ra_negative" => self.rating == "negative",
+            "wb_checked_ra_neutral" => self.rating == "neutral",
+            "wb_checked_ra_positive" => self.rating == "positive",
+            "wb_checked_ra_strong" => self.rating == "strong",
+            _ => {
+                let html_error = format!("Unrecognized review_exist_next_attribute method {}", name);
+                w::debug_write(&html_error);
+                false
+            }
+        };
+        *next_attribute_exist = Some(is_exist);
+    }
+}
+
 /// store data in static Mutex because of events like on_click
 fn store_to_review_item_data(rpc_response: RpcResponse) {
     *REVIEW_ITEM_DATA.lock().unwrap() = unwrap!(serde_json::from_value(rpc_response.response_data));
@@ -45,13 +147,8 @@ pub fn page_review_list(rpc_response: RpcResponse) {
     store_static_review_list_data(rpc_response);
 
     // call process with functions as parameters, to use for replace attributes and text nodes
-    let html_after_process = crate::pages_mod::process_html_with_list(
-        &page_html,
-        &REVIEW_LIST_DATA.lock().unwrap(),
-        &review_replace_next_attribute,
-        &review_replace_next_text_node,
-        &review_exist_next_attribute,
-    );
+    let data = &REVIEW_LIST_DATA.lock().unwrap();
+    let html_after_process = ReviewListData::process_html_with_list(&page_html, data);
 
     inject_into_html(&html_after_process);
 
@@ -59,7 +156,7 @@ pub fn page_review_list(rpc_response: RpcResponse) {
     on_click!("button_review_publish", request_review_publish);
 
     // on_click for every row of the list
-    for (row_num, _item) in REVIEW_LIST_DATA.lock().unwrap().list_of_review.iter().enumerate() {
+    for (row_num, _item) in data.list_of_review.iter().enumerate() {
         row_on_click!("button_review_edit", row_num, request_review_edit_from_list);
         row_on_click!("button_open_crates_io", row_num, button_open_crates_io_onclick);
         row_on_click!("button_open_lib_rs", row_num, button_open_lib_rs_onclick);
@@ -103,14 +200,8 @@ pub fn page_review_new(rpc_response: RpcResponse) {
     let page_html = page_html(&rpc_response);
     store_to_review_item_data(rpc_response);
     // call process with functions as parameters, to use for replace attributes and text nodes
-    let html_after_process = crate::pages_mod::process_html_with_item(
-        &page_html,
-        &REVIEW_ITEM_DATA.lock().unwrap(),
-        &review_replace_next_attribute,
-        &review_replace_next_text_node,
-        &review_exist_next_attribute,
-        None,
-    );
+    let data = &REVIEW_ITEM_DATA.lock().unwrap();
+    let html_after_process = data.process_html_with_item(&page_html, None);
     inject_into_html(&html_after_process);
 
     on_click!("button_review_save", request_review_save);
@@ -156,14 +247,8 @@ pub fn page_review_edit(rpc_response: RpcResponse) {
     store_to_review_item_data(rpc_response);
 
     // call process with functions as parameters, to use for replace attributes and text nodes
-    let html_after_process = crate::pages_mod::process_html_with_item(
-        &page_html,
-        &REVIEW_ITEM_DATA.lock().unwrap(),
-        &review_replace_next_attribute,
-        &review_replace_next_text_node,
-        &review_exist_next_attribute,
-        None,
-    );
+    let data = &REVIEW_ITEM_DATA.lock().unwrap();
+    let html_after_process = data.process_html_with_item(&page_html, None);
 
     inject_into_html(&html_after_process);
 

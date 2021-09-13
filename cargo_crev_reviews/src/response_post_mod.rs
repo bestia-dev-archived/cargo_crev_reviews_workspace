@@ -29,7 +29,7 @@ pub fn return_rpc_response<T>(response_method: ResponseMethod, data: T, response
 where
     T: serde::Serialize,
 {
-    let response_method: &'static str = ResponseMethod::PageReviewError.into();
+    let response_method: &'static str = response_method.into();
     let data = unwrap!(serde_json::to_value(data));
     let r = RpcResponse {
         response_method: response_method.to_string(),
