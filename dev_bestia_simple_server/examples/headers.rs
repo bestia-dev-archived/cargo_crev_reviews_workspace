@@ -1,8 +1,8 @@
 use env_logger;
 use log::*;
 
-use http::header;
 use dev_bestia_simple_server::Server;
+use http::header;
 
 fn main() {
     env_logger::init();

@@ -14,8 +14,8 @@ mod stdio_input_password_mod;
 
 pub use crev_mod::unlock_crev_id_interactively;
 
-use lazy_static::lazy_static;
 use dev_bestia_simple_server::{Method, Server};
+use lazy_static::lazy_static;
 use std::sync::Mutex;
 // use unwrap::unwrap;
 
