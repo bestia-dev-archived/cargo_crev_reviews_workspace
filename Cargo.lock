@@ -276,7 +276,7 @@ dependencies = [
 
 [[package]]
 name = "cargo_crev_reviews"
-version = "2021.915.1333"
+version = "2021.915.1501"
 dependencies = [
  "anyhow",
  "base64",
@@ -312,7 +312,7 @@ dependencies = [
 
 [[package]]
 name = "cargo_crev_reviews_wasm"
-version = "2021.915.1333"
+version = "2021.915.1501"
 dependencies = [
  "cargo_crev_reviews_common",
  "chrono",

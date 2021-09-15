@@ -198,7 +198,7 @@ pub fn page_review_list(rpc_response: RpcResponse) {
         row_on_click!("button_open_crates_io", row_num, button_open_crates_io_onclick);
         row_on_click!("button_open_lib_rs", row_num, button_open_lib_rs_onclick);
         row_on_click!("button_open_source_code", row_num, button_open_source_code_onclick);
-        row_on_click!("button_review_delete", row_num, request_review_delete);
+        row_on_click!("button_review_delete", row_num, modal_delete);
     }
 }
 
@@ -383,9 +383,30 @@ pub fn page_review_publish_modal(rpc_response: RpcResponse) {
 }
 
 #[named]
+pub fn modal_delete(_element_id: &str, row_num: usize) {
+    w::debug_write(function_name!());
+    let page_html = format!(
+        r#"
+    <div id="modal_message" class="w3_modal">
+        <div class="w3_modal_content">
+            <div>Do you really want to delete?</div>        
+            <button id="modal_yes_delete({})">Yes</button>
+            <button id="modal_close">No</button>
+        </div>
+    </div>"#,
+        row_num
+    );
+    w::set_inner_html("div_for_modal", &page_html);
+
+    on_click!("modal_close", modal_close_on_click);
+    // I had to add modal_yes_delete(0), because row_on_click works that way.
+    row_on_click!("modal_yes_delete", row_num, request_review_delete);
+}
+
+#[named]
 fn request_review_delete(_element_id: &str, row_num: usize) {
     w::debug_write(function_name!());
-    // TODO: modal Do you really want to?
+    modal_close_on_click("");
 
     // from list get crate name and version
     let item = &REVIEW_LIST_DATA.lock().unwrap().list_of_review[row_num];

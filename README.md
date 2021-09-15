@@ -21,11 +21,24 @@ Write cargo-crev reviews in a Graphical User Interface
 
 [comment]: # (auto_badges end)
 
+## Try it
+
+Warning: only one review for crate_name+crate_version is allowed. The old review will be removed before saving the new review. This project does not edit Issues or Advisories, only Reviews.  
+If you already have cargo-crev installed and configured:
+
+```bash
+cargo install cargo_crev_reviews
+cargo_crev_reviews
+```
+
+Input your passphrase for cargo-crev proof signing.  
+![screen_1](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/raw/main/images/screen_1.png "screen_1")  
+
 ## Motivation
 
 I think [cargo-crev](https://lib.rs/crates/cargo-crev) is a great tool to express trustworthiness in the open-source community, especially for the [rust programming language](https://www.rust-lang.org/).  I fear so much of [supply chain attacks](https://en.wikipedia.org/wiki/Supply_chain_attack) using dependencies from [crates.io](https://crates.io/). For the smallest project you can get 100 dependencies easily. How to trust them all? To review them all manually? It is just crazy.  
 But if enough people write reviews, it will be so much easier to trust the code. It is the same principle as [booking.com](https://www.booking.com/) or [air-bnb](https://www.airbnb.com/). Guests of a hotel write a review about their actual experience in the hotel. And you can read a hopefully truthful review and can understand if the hotel is good or bad. Sometimes can happen to find a fake review, but if there is enough people, most of them will be sincere.  
-Sadly, writing reviews in `cargo-crev` is very hard if you are not a die-hard [VIM](https://www.vim.org/) user. I just cannot do that. I am a [VSCode](https://code.visualstudio.com/) guy. I don't intend to lear VIM. Sorry.  
+Sadly, writing reviews in `cargo-crev` is hard.  
 This is a great project for me to play and learn with [rust](https://www.rust-lang.org/): let's make a [GUI](https://en.wikipedia.org/wiki/Graphical_user_interface) to write reviews for `cargo-crev`.  
 And we will see walking the path what obstacles we must overcome.  
 
@@ -38,12 +51,12 @@ I will make a rust [workspace](https://doc.rust-lang.org/book/ch14-03-cargo-work
 1. CLI for a web server (micro-server)
 2. Wasm for the browser (chrome and similar)
 
-The web server CLI will access files, commands, libraries and maybe the network. This will work only in [Linux](https://en.wikipedia.org/wiki/Linux), but today Win10 has integrated Linux with [WSL2](https://en.wikipedia.org/wiki/Windows_Subsystem_for_Linux). It will work just fine on most common existing operating systems.  
-Wasm in browser will just access to our micro web server. This is gonna be our GUI and because browser work in every [OS](https://en.wikipedia.org/wiki/Operating_system), we are developing for [cross-platform](https://en.wikipedia.org/wiki/Cross-platform_software).  
+The web server CLI will access files, commands, libraries and the network. This will work only in [Linux](https://en.wikipedia.org/wiki/Linux), but today Win10 has integrated Linux with [WSL2](https://en.wikipedia.org/wiki/Windows_Subsystem_for_Linux). It will work just fine on all the operating systems for rust development.  
+Wasm in browser will just access the local micro web server. This is gonna be our GUI and because browser work in every [OS](https://en.wikipedia.org/wiki/Operating_system), we are developing for [cross-platform](https://en.wikipedia.org/wiki/Cross-platform_software).  
 
-I want the simplest [web server](https://en.wikipedia.org/wiki/Web_server) ever. It will be used exclusively locally from one super simple [web-application](https://en.wikipedia.org/wiki/Web_application), so  don't need to care much about security. I choose [simple server](https://crates.io/crates/simple-server) from the [rust book](https://doc.rust-lang.org/1.30.0/book/second-edition/ch20-01-single-threaded.html). I don't care about [multi-threading](https://en.wikipedia.org/wiki/Multithreading_(computer_architecture)) or [async](https://en.wikipedia.org/wiki/Asynchrony_(computer_programming)) , because it will be used by only one browser. The example from the book evolved into the github repository of the author of the book [github.com/steveklabnik](https://github.com/steveklabnik/simple-server). I cloned it and update the dependencies and consequently also some broken code from the upgrade.  
+I want the simplest [web server](https://en.wikipedia.org/wiki/Web_server) ever. It will be used exclusively locally from one super simple [web-application](https://en.wikipedia.org/wiki/Web_application), so  don't need to care much about security. I choose [simple server](https://crates.io/crates/simple-server) from the [rust book](https://doc.rust-lang.org/1.30.0/book/second-edition/ch20-01-single-threaded.html). I don't care about [multi-threading](https://en.wikipedia.org/wiki/Multithreading_(computer_architecture)) or [async](https://en.wikipedia.org/wiki/Asynchrony_(computer_programming)) , because it will be used by only one browser. The example from the book evolved into the github repository of the author of the book [github.com/steveklabnik](https://github.com/steveklabnik/simple-server). I cloned it and update the dependencies and consequently fixed some broken code.  
 
-For the browser I will create a simple web app. All the code will be in rust, I will avoid javascript as a plague. I just don't like it.  
+For the browser I will create a simple web app. All the code will be in rust, I will avoid javascript.  
 The GUI will be in [HTML5](https://en.wikipedia.org/wiki/HTML5) and [CSS3](https://en.wikipedia.org/wiki/CSS#CSS_3). This is all supported by all [modern browsers](https://www.bopdesign.com/bop-blog/2012/01/why-use-a-modern-web-browser/).  
 
 ## Development
@@ -195,12 +208,8 @@ In `~/.cargo/registry/src/github.com-1ecc6299db9ec823/reader_for_microxml-1.1.11
 
 ## TODO
 
-new module for cargo data: \\wsl$\Debian\home\luciano\.cargo\registry\index\github.com-1ecc6299db9ec823\an\yh\anyhow
-to find newest version and so on.
-
-open source code in VSCode? or just open folder?
+ask if you really want to delete?
 show if there is newer version. cache it in a file.
-delete
 markdown instead of raw text
 Automation tasks for workspaces:  
 auto_lines_of_code: exclude files_mod.rs, because it is just embedded files.  
@@ -209,7 +218,7 @@ special types for html encoded strings and attribute_value_encoded strings. So I
 
 ## cargo crev reviews and advisory
 
-We leave in times of danger with [supply chain attacks](https://en.wikipedia.org/wiki/Supply_chain_attack).  
+We live in times of danger with [supply chain attacks](https://en.wikipedia.org/wiki/Supply_chain_attack).  
 It is recommended to always use [cargo-crev](https://github.com/crev-dev/cargo-crev)  
 to verify the trustworthiness of each of your dependencies.  
 Please, spread this info.  
