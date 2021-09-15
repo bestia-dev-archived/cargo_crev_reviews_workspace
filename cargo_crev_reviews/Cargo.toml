@@ -5,7 +5,7 @@
 
 [package]
 name = "cargo_crev_reviews"
-version = "2021.913.1625"
+version = "2021.915.1130"
 description = "Write cargo-crev reviews in a Graphical User Interface with a cross-platform app written in rust"
 authors = ["Luciano Bestia"]
 edition = "2018"
@@ -23,10 +23,11 @@ cargo_crev_reviews_common = { path = "../cargo_crev_reviews_common" }
 http="0.2.4"
 base64 = "0.13.0"
 crossterm = "0.21.0"
-cargo = "0.55.0"
+cargo = "0.56.0"
 strum = { version = "0.21", features = ["derive"] }
 termion = "1.5.6"
 function_name = "0.2.0"
+crates-index = "0.17.0"
 
 crev-lib="0.22.0"
 crev-data="0.22.0"

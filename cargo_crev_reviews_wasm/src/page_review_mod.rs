@@ -21,28 +21,94 @@ lazy_static! {
     static ref REVIEW_LIST_DATA: Mutex<ReviewListData> = Mutex::new(ReviewListData::default());
 }
 
-impl PageProcessor for ReviewListData {
+impl PageProcessor for RpcMessageData {
     /// process template and push as many &str is needed
-    fn process_loop(&self, html_repetitive_template: &str, html_new: &mut String) {
-        for (row_num, data) in self.list_of_review.iter().enumerate() {
-            let list_item_html = data.process_html_with_item(html_repetitive_template, Some(row_num));
-            html_new.push_str(&list_item_html);
+    fn process_repetitive_items(&self, name_of_repeat_segment: &str, _html_repetitive_template: &str, html_new: &mut String) {
+        match name_of_repeat_segment {
+            _ => {
+                let msg = format!("unrecognized name_of_repeat_segment {}", name_of_repeat_segment);
+                w::debug_write(&msg);
+                html_new.push_str(&msg);
+            }
         }
     }
 
     /// the use of complete string wt_xxx enables easy and exact text search around the source code
-    fn match_wt(&self, _wt_name: &str) -> String {
-        "".to_string()
+    fn match_wt(&self, wt_name: &str) -> String {
+        match wt_name {
+            "wt_message" => self.message.to_string(),
+            _ => {
+                let html_error = format!("Unrecognized replace_wt method {}", wt_name);
+                w::debug_write(&html_error);
+                html_error
+            }
+        }
     }
     /// the use of complete string wb_xxx enables easy and exact text search around the source code
-    fn match_wb(&self, _wb_name: &str) -> bool {
-        false
+    fn match_wb(&self, wb_name: &str) -> bool {
+        match wb_name {
+            _ => {
+                let html_error = format!("Unrecognized wb_exist_next_attribute method {}", wb_name);
+                w::debug_write(&html_error);
+                false
+            }
+        }
+    }
+}
+
+impl PageProcessor for ReviewListData {
+    /// process template and push as many &str is needed
+    fn process_repetitive_items(&self, name_of_repeat_segment: &str, html_repetitive_template: &str, html_new: &mut String) {
+        match name_of_repeat_segment {
+            "review" => {
+                w::debug_write(&format!("process_repetitive_items {}", name_of_repeat_segment));
+                for (row_num, data) in self.list_of_review.iter().enumerate() {
+                    let list_item_html = data.process_html_with_item(html_repetitive_template, Some(row_num));
+                    html_new.push_str(&list_item_html);
+                }
+            }
+            _ => {
+                let msg = format!("unrecognized name_of_repeat_segment {}", name_of_repeat_segment);
+                w::debug_write(&msg);
+                html_new.push_str(&msg);
+            }
+        }
+    }
+
+    /// the use of complete string wt_xxx enables easy and exact text search around the source code
+    fn match_wt(&self, wt_name: &str) -> String {
+        match wt_name {
+            "wt_cargo_crev_reviews_version" => env!("CARGO_PKG_VERSION").to_string(),
+            _ => {
+                let html_error = format!("Unrecognized replace_wt method {}", wt_name);
+                w::debug_write(&html_error);
+                html_error
+            }
+        }
+    }
+    /// the use of complete string wb_xxx enables easy and exact text search around the source code
+    fn match_wb(&self, wb_name: &str) -> bool {
+        match wb_name {
+            _ => {
+                let html_error = format!("Unrecognized wb_exist_next_attribute method {}", wb_name);
+                w::debug_write(&html_error);
+                false
+            }
+        }
     }
 }
 
 impl PageProcessor for ReviewItemData {
     /// process template and push as many &str is needed
-    fn process_loop(&self, _html_repetitive_template: &str, _html_new: &mut String) {}
+    fn process_repetitive_items(&self, name_of_repeat_segment: &str, _html_repetitive_template: &str, html_new: &mut String) {
+        match name_of_repeat_segment {
+            _ => {
+                let msg = format!("unrecognized name_of_repeat_segment {}", name_of_repeat_segment);
+                w::debug_write(&msg);
+                html_new.push_str(&msg);
+            }
+        }
+    }
 
     /// the use of complete string wt_xxx enables easy and exact text search around the source code
     fn match_wt(&self, wt_name: &str) -> String {
@@ -84,7 +150,7 @@ impl PageProcessor for ReviewItemData {
             "wb_checked_ra_positive" => self.rating == "positive",
             "wb_checked_ra_strong" => self.rating == "strong",
             _ => {
-                let html_error = format!("Unrecognized review_exist_next_attribute method {}", wb_name);
+                let html_error = format!("Unrecognized wb_exist_next_attribute method {}", wb_name);
                 w::debug_write(&html_error);
                 false
             }
@@ -116,7 +182,7 @@ pub fn page_review_list(rpc_response: RpcResponse) {
     store_static_review_list_data(rpc_response);
 
     // call process with functions as parameters, to use for replace attributes and text nodes
-    let html_after_process = REVIEW_LIST_DATA.lock().unwrap().process_html_with_list(&page_html);
+    let html_after_process = REVIEW_LIST_DATA.lock().unwrap().process_html(&page_html);
 
     inject_into_html(&html_after_process);
 
@@ -126,6 +192,7 @@ pub fn page_review_list(rpc_response: RpcResponse) {
     // on_click for every row of the list
     for (row_num, _item) in REVIEW_LIST_DATA.lock().unwrap().list_of_review.iter().enumerate() {
         row_on_click!("button_review_edit", row_num, request_review_edit_from_list);
+        row_on_click!("button_review_new_version", row_num, request_review_new_version);
         row_on_click!("button_open_crates_io", row_num, button_open_crates_io_onclick);
         row_on_click!("button_open_lib_rs", row_num, button_open_lib_rs_onclick);
     }
@@ -152,7 +219,7 @@ fn button_open_lib_rs_onclick(_element_id: &str, row_num: usize) {
 #[named]
 fn request_review_publish(_element_id: &str) {
     w::debug_write(function_name!());
-    w::show_snackbar();
+    modal_publishing();
     post_request_await_run_response_method(RequestMethod::RpcReviewPublish, RpcEmptyData {});
 }
 
@@ -169,11 +236,25 @@ pub fn page_review_new(rpc_response: RpcResponse) {
     store_to_review_item_data(rpc_response);
     // call process with functions as parameters, to use for replace attributes and text nodes
     let data = &REVIEW_ITEM_DATA.lock().unwrap();
-    let html_after_process = data.process_html_with_item(&page_html, None);
+    let html_after_process = data.process_html(&page_html);
     inject_into_html(&html_after_process);
 
     on_click!("button_review_save", request_review_save);
     on_click!("button_review_list", request_review_list);
+}
+
+#[named]
+fn request_review_new_version(_element_id: &str, row_num: usize) {
+    w::debug_write(function_name!());
+    // from list get crate name and version
+    let item = &REVIEW_LIST_DATA.lock().unwrap().list_of_review[row_num];
+    let review_filter_data = ReviewFilterData {
+        crate_name: item.crate_name.clone(),
+        crate_version: Some(item.crate_version.clone()),
+        old_crate_version: None,
+    };
+
+    post_request_await_run_response_method(RequestMethod::RpcReviewNewVersion, review_filter_data);
 }
 
 /// send rpc requests
@@ -200,7 +281,8 @@ fn request_review_edit_from_list(_element_id: &str, row_num: usize) {
     let item = &REVIEW_LIST_DATA.lock().unwrap().list_of_review[row_num];
     let review_filter_data = ReviewFilterData {
         crate_name: item.crate_name.clone(),
-        crate_version: item.crate_version.clone(),
+        crate_version: Some(item.crate_version.clone()),
+        old_crate_version: None,
     };
 
     post_request_await_run_response_method(RequestMethod::RpcReviewEdit, review_filter_data);
@@ -216,7 +298,7 @@ pub fn page_review_edit(rpc_response: RpcResponse) {
 
     // call process with functions as parameters, to use for replace attributes and text nodes
     let data = &REVIEW_ITEM_DATA.lock().unwrap();
-    let html_after_process = data.process_html_with_item(&page_html, None);
+    let html_after_process = data.process_html(&page_html);
 
     inject_into_html(&html_after_process);
 
@@ -230,12 +312,37 @@ pub fn page_review_error(rpc_response: RpcResponse) {
     let page_html = page_html(&rpc_response);
 
     // modal dialog box with error, don't change the html and data
-    //let err: RpcMessageData = unwrap!(serde_json::from_value(rpc_response.response_data));
+    let data: RpcMessageData = unwrap!(serde_json::from_value(rpc_response.response_data));
+    let html_after_process = data.process_html(&page_html);
 
-    w::set_inner_html("div_for_modal", &page_html);
+    w::set_inner_html("div_for_modal", &html_after_process);
     on_click!("modal_close", modal_close_on_click);
 }
 
 fn modal_close_on_click(_element_id: &str) {
     w::set_inner_html("div_for_modal", "");
+}
+
+pub fn modal_publishing() {
+    let page_html = r#"<div id="modal_message" class="w3_modal">
+    <div class="w3_modal_content">
+        <code>$ cargo crev publish</code>
+        <div>publishing to remote repository. Wait a minute...</div>        
+    </div>
+</div>"#;
+
+    w::set_inner_html("div_for_modal", page_html);
+}
+
+#[named]
+pub fn page_review_publish_modal(rpc_response: RpcResponse) {
+    w::debug_write(function_name!());
+    let page_html = page_html(&rpc_response);
+
+    // modal dialog box with error, don't change the html and data
+    let data: RpcMessageData = unwrap!(serde_json::from_value(rpc_response.response_data));
+    let html_after_process = data.process_html(&page_html);
+
+    w::set_inner_html("div_for_modal", &html_after_process);
+    on_click!("modal_close", modal_close_on_click);
 }

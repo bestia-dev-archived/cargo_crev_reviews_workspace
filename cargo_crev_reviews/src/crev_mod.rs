@@ -145,10 +145,24 @@ pub fn crev_list_my_reviews(filter: &Option<ReviewFilterData>) -> anyhow::Result
                     let proof_crev: ProofCrevForReview = unwrap!(serde_yaml::from_str(yaml));
                     // push it to vector, if it filters
                     match filter {
+                        // no filter, push all for list
                         None => vec_proof.push(proof_crev),
                         Some(filter) => {
-                            if filter.crate_name == proof_crev.package.name && filter.crate_version == proof_crev.package.version {
-                                vec_proof.push(proof_crev);
+                            // always filtered at least by crate_name
+                            if filter.crate_name == proof_crev.package.name {
+                                match &filter.crate_version {
+                                    None => {
+                                        // all the versions of one crate
+                                        vec_proof.push(proof_crev);
+                                    }
+                                    Some(version) => {
+                                        if version == proof_crev.package.version.as_str() {
+                                            // exact match
+                                            vec_proof.push(proof_crev);
+                                            break;
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
@@ -165,10 +179,42 @@ pub fn crev_list_my_reviews(filter: &Option<ReviewFilterData>) -> anyhow::Result
 pub fn crev_edit_review(filter: ReviewFilterData) -> anyhow::Result<ProofCrevForReview> {
     let vec = crev_list_my_reviews(&Some(filter))?;
     if vec.is_empty() {
-        return Err(anyhow::anyhow!("Crate version not found in my reviews!"));
+        anyhow::bail!("Crate version not found in my reviews!");
     }
     // return
     Ok(vec[0].clone())
+}
+
+/// list the user-selected crate+version
+/// then find the newest version in cargo registry index and change the version field
+/// all the rest stays the same
+pub fn crev_new_version(filter: ReviewFilterData) -> anyhow::Result<ProofCrevForReview> {
+    let new_filter = ReviewFilterData {
+        crate_name: filter.crate_name.clone(),
+        crate_version: None,
+        old_crate_version: None,
+    };
+    let vec_of_reviews = crev_list_my_reviews(&Some(new_filter))?;
+    if vec_of_reviews.is_empty() {
+        anyhow::bail!("Crate reviews for {} not found in my reviews!", filter.crate_name.as_str());
+    }
+    let max_version = crate::cargo_mod::max_version_from_registry_index(filter.crate_name.as_str())?;
+
+    if let Some(version) = filter.crate_version.as_ref() {
+        if version == max_version.as_str() {
+            anyhow::bail!("Max version {} is already reviewed!", &max_version);
+        }
+        for x in vec_of_reviews.iter() {
+            if x.package.version.as_str() == version {
+                let mut review = x.clone();
+                review.package.version = max_version;
+                return Ok(review);
+            }
+        }
+    }
+
+    // return last review, or default
+    anyhow::bail!("Cannot add new version for {}!", &filter.crate_name);
 }
 
 /// create save review proof
@@ -185,18 +231,12 @@ pub fn crev_save_review(
         understanding,
         rating,
     };
-    // Brute force. I didn't find functions in crate-lib, so I wrote something raw myself.
-    let crate_dir_name = format!("{}-{}", crate_name, crate_version_str);
-    let crate_src_path = format!(
-        "{}/registry/src/github.com-1ecc6299db9ec823/{}",
-        home::cargo_home()?.to_str().unwrap(),
-        crate_dir_name
-    );
-    let crate_root = std::path::Path::new(&crate_src_path);
+    let crate_root = crate::cargo_mod::cargo_registry_src_dir_for_crate(crate_name, crate_version_str)?;
+
     if !crate_root.exists() {
-        return Err(anyhow::anyhow!("The crate {}-{} does not exist in the local cargo registry cache. You must use the crate in your projects, if you want to review it. This way cargo will download the source code for the crate that you review. ", crate_name, crate_version_str));
+        anyhow::bail!("The crate {}-{} does not exist in the local cargo registry cache. You must use the crate as dependency in your projects, if you want to review it. This way cargo will download the source code for the crate that you review. ", crate_name, crate_version_str);
     }
-    let digest_clean = crev_lib::get_recursive_digest_for_dir(crate_root, &cargo_min_ignore_list())?;
+    let digest_clean = crev_lib::get_recursive_digest_for_dir(&crate_root, &cargo_min_ignore_list())?;
     let vcs = VcsInfoJson::read_from_crate_dir(&crate_root)?;
 
     let crate_version = crev_data::Version::from_str(crate_version_str)?;
@@ -243,7 +283,7 @@ pub fn rating_parse(rating: &str) -> anyhow::Result<Rating> {
         "neutral" => Ok(Rating::Neutral),
         "positive" => Ok(Rating::Positive),
         "strong" => Ok(Rating::Strong),
-        _ => Err(anyhow::anyhow!("unrecognized rating: {}", rating)),
+        _ => anyhow::bail!("unrecognized rating: {}", rating),
     }
 }
 pub fn rating_to_string(rating: &Rating) -> String {

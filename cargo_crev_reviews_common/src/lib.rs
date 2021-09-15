@@ -19,6 +19,8 @@ pub enum RequestMethod {
     RpcReviewEdit,
     #[strum(serialize = "rpc_review_publish")]
     RpcReviewPublish,
+    #[strum(serialize = "rpc_review_new_version")]
+    RpcReviewNewVersion,
 }
 
 /// methods available on the client
@@ -32,6 +34,8 @@ pub enum ResponseMethod {
     PageReviewEdit,
     #[strum(serialize = "page_review_error")]
     PageReviewError,
+    #[strum(serialize = "page_review_publish_modal")]
+    PageReviewPublishModal,
 }
 
 /// the request_method will be processed on the server
@@ -65,7 +69,8 @@ pub struct RpcEmptyData {}
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct ReviewFilterData {
     pub crate_name: String,
-    pub crate_version: String,
+    pub crate_version: Option<String>,
+    pub old_crate_version: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Default)]

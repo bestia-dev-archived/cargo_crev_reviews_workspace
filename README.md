@@ -195,11 +195,13 @@ In `~/.cargo/registry/src/github.com-1ecc6299db9ec823/reader_for_microxml-1.1.11
 
 ## TODO
 
+new module for cargo data: \\wsl$\Debian\home\luciano\.cargo\registry\index\github.com-1ecc6299db9ec823\an\yh\anyhow
+to find newest version and so on.
+
 open source code in VSCode? or just open folder?
 show if there is newer version. cache it in a file.
 delete
 markdown instead of raw text
-modal instead of alert for publish command
 Automation tasks for workspaces:  
 auto_lines_of_code: exclude files_mod.rs, because it is just embedded files.  
 auto_cargo_toml_to_md, , auto_md_to_doc_comments  

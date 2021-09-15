@@ -81,22 +81,16 @@ pub fn rpc_review_save(request_data: serde_json::Value) -> anyhow::Result<String
         rating_parse(&p.rating)?,
         &p.comment_md,
     ) {
-        Err(err) => response_err_message(err),
+        Err(err) => Ok(crate::response_post_mod::response_err_message(&err)),
         Ok(()) => request_review_list(),
     }
-}
-
-fn response_err_message(err: anyhow::Error) -> anyhow::Result<String> {
-    let response_method = ResponseMethod::PageReviewError;
-    let response_data = RpcMessageData { message: err.to_string() };
-    let response_html = crate::files_mod::modal_alert_html();
-    Ok(return_rpc_response(response_method, response_data, response_html))
 }
 
 fn request_review_list() -> anyhow::Result<String> {
     let request_data = ReviewFilterData {
         crate_name: String::new(),
-        crate_version: String::new(),
+        crate_version: None,
+        old_crate_version: None,
     };
     let request_data = unwrap!(serde_json::to_value(request_data));
     rpc_reviews_list(request_data)
@@ -116,12 +110,24 @@ pub fn rpc_review_edit(request_data: serde_json::Value) -> anyhow::Result<String
 }
 
 #[named]
+pub fn rpc_review_new_version(request_data: serde_json::Value) -> anyhow::Result<String> {
+    println!(function_name!());
+    let filter: ReviewFilterData = unwrap!(serde_json::from_value(request_data));
+    // find the item from the list
+    let p = crev_new_version(filter)?;
+    let response_method = ResponseMethod::PageReviewEdit;
+    let response_data = from_crev_to_item(&p);
+    let response_html = crate::files_mod::review_edit_html();
+
+    Ok(return_rpc_response(response_method, response_data, response_html))
+}
+
+#[named]
 pub fn rpc_review_publish(_request_data: serde_json::Value) -> anyhow::Result<String> {
     println!(function_name!());
-
     match crev_publish() {
-        Ok(ret_val) => response_err_message(anyhow::anyhow!(ret_val)),
-        Err(err) => response_err_message(err),
+        Ok(ret_val) => Ok(crate::response_post_mod::response_modal_message(&ret_val)),
+        Err(err) => Ok(crate::response_post_mod::response_err_message(&err)),
     }
 }
 // endregion: review

@@ -3,6 +3,7 @@
 //! This module contains the boilerplate to parse and match URI and POST rpc.
 //! The real code for methods is in methods_mod.rs
 //! The real content of "static files" is in the module files_mod.rs
+mod cargo_mod;
 mod crev_mod;
 mod files_mod;
 mod response_get_mod;
@@ -15,7 +16,7 @@ pub use crev_mod::unlock_crev_id_interactively;
 use lazy_static::lazy_static;
 use simple_server::{Method, Server};
 use std::sync::Mutex;
-use unwrap::unwrap;
+// use unwrap::unwrap;
 
 lazy_static! {
     /// mutable static, because it is hard to pass variables around with async closures
@@ -58,10 +59,19 @@ pub fn start_web_server(host: &str, port: &str) {
             }
             &Method::POST => {
                 let request_body: &Vec<u8> = request.body();
-                let response_body = unwrap!(response_post_mod::parse_post_data_and_match_method(request_body));
+                let response_body = response_post_mod::parse_post_data_and_match_method(request_body);
+                match response_body {
+                    Ok(response_body) => Ok(response_builder.body(response_body.into_bytes())?),
+                    Err(err) => {
+                        let response_body = response_post_mod::response_err_message(&err);
+                        Ok(response_builder.body(response_body.into_bytes())?)
+                    }
+                }
+            }
+            _ => {
+                let response_body = response_post_mod::response_modal_message("Unknown request method!");
                 Ok(response_builder.body(response_body.into_bytes())?)
             }
-            _ => Ok(response_get_mod::response_404_not_found(response_builder, &path)),
         }
     });
     // open default browser in Linux

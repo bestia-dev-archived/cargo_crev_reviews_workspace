@@ -14,12 +14,79 @@ use crate::web_sys_mod as w;
 
 pub trait PageProcessor {
     // region: mandatory functions to implement
-    fn process_loop(&self, html_repetitive_template: &str, html_new: &mut String);
+    fn process_repetitive_items(&self, name_of_repeat_segment: &str, html_repetitive_template: &str, html_new: &mut String);
     fn match_wt(&self, wt_name: &str) -> String;
     fn match_wb(&self, wb_name: &str) -> bool;
     // endregion: mandatory functions to implement
 
     // region: trait functions
+
+    /// process repetitive segments with a list of data
+    fn process_html(&self, html_old: &str) -> String {
+        let html_after_delete = Self::delete_wd(html_old);
+        // here inside is also the call to process_html_with_item
+        let html_new = self.process_repetitive_html(html_after_delete);
+        // return
+        html_new
+    }
+
+    /// in the html there can be segments that are only to help for graphical design
+    /// this segments must be deleted before rendering the html
+    /// it is marked with: <!--wd_start_delete--> <!--wd_end_delete-->
+    fn delete_wd(html_old: &str) -> String {
+        let mut html_new = String::with_capacity(html_old.len());
+        let mut cursor = 0;
+        let mut old_end = 0;
+        while let Some(range_to_remove) = find_range_including_delimiters(&html_old, &mut cursor, "<!--wd_start_delete-->", "<!--wd_end_delete-->") {
+            html_new.push_str(&html_old[old_end..range_to_remove.start.clone()]);
+            old_end = range_to_remove.end.clone();
+        }
+        html_new.push_str(&html_old[old_end..]);
+        html_new
+    }
+
+    /// inside the html there can be `wr_ web-browser repetitive segments`
+    /// marked with <!--wr_start_name--><!--wr_end_name-->
+    fn process_repetitive_html(&self, html_old: String) -> String {
+        let mut html_wo_repeat = String::with_capacity(html_old.len());
+        let mut cursor = 0;
+        let mut old_end = 0;
+        let mut vec_of_repeat: Vec<(String, String)> = vec![];
+
+        // remove the repeat segments and store them in a vec
+        while let Some(range_name_of_segment) = find_range_between_delimiters(&html_old, &mut cursor, "<!--wr_start_", "-->") {
+            let name_of_repeat_segment = &html_old[range_name_of_segment];
+            let start_marker = format!("<!--wr_start_{}-->", name_of_repeat_segment);
+            let end_marker = format!("<!--wr_end_{}-->", name_of_repeat_segment);
+            if let Some(range_segment) = find_range_between_delimiters(&html_old, &mut 0, &start_marker, &end_marker) {
+                vec_of_repeat.push((name_of_repeat_segment.to_string(), html_old[range_segment.clone()].to_string()));
+                html_wo_repeat.push_str(&html_old[old_end..range_segment.start]);
+                old_end = range_segment.end;
+            }
+        }
+        html_wo_repeat.push_str(&html_old[old_end..]);
+
+        // here process the main item without repetitive segments. Because it is short.
+        let html_wo_repeat = self.process_html_with_item(&html_wo_repeat, None);
+
+        let mut html_new = String::with_capacity(html_wo_repeat.len());
+        let mut old_end = 0;
+        for rep in vec_of_repeat.iter() {
+            let name_of_repeat_segment = rep.0.clone();
+            let start_marker = format!("<!--wr_start_{}-->", name_of_repeat_segment);
+            let end_marker = format!("<!--wr_end_{}-->", name_of_repeat_segment);
+            if let Some(range_segment) = find_range_including_delimiters(&html_wo_repeat, &mut 0, &start_marker, &end_marker) {
+                html_new.push_str(&html_wo_repeat[old_end..range_segment.start]);
+                old_end = range_segment.end;
+            }
+            let html_rep = rep.1.clone();
+            self.process_repetitive_items(&name_of_repeat_segment, &html_rep, &mut html_new);
+        }
+        html_new.push_str(&html_wo_repeat[old_end..]);
+
+        html_new
+    }
+
     /// if the comment is like <!--wt_method_name-->, starts with `wt_ web-browser text`
     /// Execute the replace_method and save the result in `next_text_node_replace`.
     /// On the next text node it will use this value.    
@@ -171,58 +238,6 @@ pub trait PageProcessor {
     }
 
     // endregion: trait functions
-
-    /// process repetitive segments with a list of data
-    fn process_html_with_list(&self, html_old: &str) -> String {
-        let html_after_process_1 = Self::delete_wd(html_old);
-        let html_new = self.process_repetitive_html(html_after_process_1);
-        // return
-        html_new
-    }
-
-    /// in the html there can be segments that are only to help for graphical design
-    /// this segments must be deleted before rendering the html
-    /// it is marked with: <!--wd_delete start--> <!--wd_delete end-->
-    fn delete_wd(html_old: &str) -> String {
-        let mut html_new = String::with_capacity(html_old.len());
-        let mut cursor = 0;
-        let mut old_end = 0;
-        while let Some(range_to_remove) =
-            cargo_crev_reviews_common::find_range_including_delimiters(&html_old, &mut cursor, "<!--wd_delete start-->", "<!--wd_delete end-->")
-        {
-            html_new.push_str(&html_old[old_end..range_to_remove.start.clone()]);
-            old_end = range_to_remove.end.clone();
-        }
-        html_new.push_str(&html_old[old_end..]);
-        html_new
-    }
-
-    /// inside the html there can be `wr_ web-browser repetitive segments`
-    /// marked with <!--wr_review start--><!--wr_review end-->
-    fn process_repetitive_html(&self, html_old: String) -> String {
-        let mut html_new = String::with_capacity(html_old.len());
-        let mut cursor = 0;
-        let mut old_end = 0;
-        while let Some(range_including_delimiters) =
-            cargo_crev_reviews_common::find_range_including_delimiters(&html_old, &mut cursor, "<!--wr_review start-->", "<!--wr_review end-->")
-        {
-            let template_with_delimiters = &html_old[range_including_delimiters.clone()];
-            // add part before delimiter
-            html_new.push_str(&html_old[old_end..range_including_delimiters.start.clone()]);
-            old_end = range_including_delimiters.end.clone();
-
-            // exclude delimiters
-            if let Some(range_excluding_delimiters) =
-                cargo_crev_reviews_common::find_range_between_delimiters(&template_with_delimiters, &mut 0, "<!--wr_review start-->", "<!--wr_review end-->")
-            {
-                let html_repetitive_template = &template_with_delimiters[range_excluding_delimiters];
-
-                self.process_loop(html_repetitive_template, &mut html_new);
-            }
-        }
-        html_new.push_str(&html_old[old_end..]);
-        html_new
-    }
 }
 
 pub fn post_request_await_run_response_method<T>(request_method: RequestMethod, request_data: T)
@@ -231,7 +246,7 @@ where
 {
     let request_method: &'static str = request_method.into();
     let data = unwrap!(serde_json::to_value(request_data));
-    let rpc = cargo_crev_reviews_common::RpcRequest {
+    let rpc = RpcRequest {
         request_method: request_method.to_string(),
         request_data: data,
     };
@@ -241,7 +256,7 @@ where
     spawn_local(async move {
         let rpc_request = Some(&rpc_request);
         let resp_body_text = w::fetch_post_response("submit", rpc_request).await;
-        let rpc_response: cargo_crev_reviews_common::RpcResponse = unwrap!(serde_json::from_str(&resp_body_text));
+        let rpc_response: RpcResponse = unwrap!(serde_json::from_str(&resp_body_text));
         match_response_method_and_call_function(rpc_response).await;
     });
 }
@@ -254,6 +269,7 @@ pub async fn match_response_method_and_call_function(response: RpcResponse) {
             ResponseMethod::PageReviewNew => page_review_mod::page_review_new(response),
             ResponseMethod::PageReviewEdit => page_review_mod::page_review_edit(response),
             ResponseMethod::PageReviewError => page_review_mod::page_review_error(response),
+            ResponseMethod::PageReviewPublishModal => page_review_mod::page_review_publish_modal(response),
         },
         Err(_err) => w::debug_write(&format!("Error: Unrecognized response_method {}", response.response_method)),
     }
