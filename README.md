@@ -66,7 +66,7 @@ The rust workspace is made of members:
 
 - backend CLI (this will be the main and only project to be published on crates.io)
 - GUI frontend
-- simple_server
+- dev_bestia_simple_server
 
 The sub-directory `web_server_folder` contains all the files and folder structure for a working development web_server.  
 But this files are not used directly. Because of the way the publish to crates.io works, I will embed them inside the rust code as strings (base64 encoded if needed). I will make an automation task for that.  
@@ -139,7 +139,7 @@ Common structures between backend and frontend. It is kind of a contract for com
 All in 100% rust language. One automation task keeps in sync the backend and frontend module.  
 TODO: I have a problem when serialize and deserialize structs. Most of the time I need then name of the field. Because with the name i can bind in different scenarios. Using structs I don't have the name of the field at runtime. I think I will ditch most of the structs to have just a plain old flat text. Inside that text every field will have a slice and a name. And I can then use that in runtime for bindings.  
 
-## simple_server
+## dev_bestia_simple_server
 
 This is a simple web server. I want to have the code here if I need to modify something or maybe make it more simple.  
 The code is from the [rust book](https://doc.rust-lang.org/book/ch20-01-single-threaded.html)

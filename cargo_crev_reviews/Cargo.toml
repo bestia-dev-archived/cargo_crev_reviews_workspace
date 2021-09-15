@@ -23,7 +23,7 @@ include = [
 ]
 
 [dependencies]
-simple_server = { path = "../simple_server" }
+dev_bestia_simple_server = { path = "../dev_bestia_simple_server" }
 
 http="0.2.4"
 base64 = "0.13.0"

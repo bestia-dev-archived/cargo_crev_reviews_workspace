@@ -1,5 +1,5 @@
 [package]
-name = "simple_server"
+name = "dev_bestia_simple_server"
 version = "2021.910.1336"
 description = "simple server from https://github.com/steveklabnik/simple-server"
 authors = ["Luciano Bestia"]

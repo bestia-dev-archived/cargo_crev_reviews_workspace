@@ -1,7 +1,7 @@
 // response_get_files_mod.rs
 
 use crate::files_mod::*;
-use simple_server::{Response, StatusCode};
+use dev_bestia_simple_server::{Response, StatusCode};
 use unwrap::unwrap;
 
 enum Cache {
@@ -12,7 +12,7 @@ enum Cache {
 /// GET is used only to request files
 /// Files are stored in functions in the files_mod.rs module
 /// there is an automation task to copy files from web_server_folder to the module
-pub fn parse_get_uri_and_response_file(path: &str, response: simple_server::Builder) -> Response<Vec<u8>> {
+pub fn parse_get_uri_and_response_file(path: &str, response: dev_bestia_simple_server::Builder) -> Response<Vec<u8>> {
     println!("path: {}", path);
     match path {
         "/cargo_crev_reviews/index.html" => response_file_text(response, index_html, path, Cache::NoStore),
@@ -31,7 +31,7 @@ pub fn parse_get_uri_and_response_file(path: &str, response: simple_server::Buil
     }
 }
 
-pub fn response_404_not_found(response: simple_server::Builder, path: &str) -> Response<Vec<u8>> {
+pub fn response_404_not_found(response: dev_bestia_simple_server::Builder, path: &str) -> Response<Vec<u8>> {
     println!("404 not found: {}", path);
     let response = response.status(StatusCode::NOT_FOUND);
     let response = response_file_text(response, file_not_found_404, ".html", Cache::Ok);
@@ -42,7 +42,7 @@ fn file_not_found_404() -> &'static str {
     r#"<h1>404</h1><p>Not found! URI must start with `/cargo_crev_reviews`<p>"#
 }
 
-fn response_file_text(response_builder: simple_server::Builder, f: fn() -> &'static str, path: &str, cache: Cache) -> Response<Vec<u8>> {
+fn response_file_text(response_builder: dev_bestia_simple_server::Builder, f: fn() -> &'static str, path: &str, cache: Cache) -> Response<Vec<u8>> {
     let mime_type = if path.ends_with(".html") {
         "text/html"
     } else if path.ends_with(".css") {
@@ -64,7 +64,7 @@ fn response_file_text(response_builder: simple_server::Builder, f: fn() -> &'sta
     unwrap!(response_builder.body(body.into_bytes()))
 }
 
-fn response_file_base64(response_builder: simple_server::Builder, f: fn() -> &'static str, path: &str) -> Response<Vec<u8>> {
+fn response_file_base64(response_builder: dev_bestia_simple_server::Builder, f: fn() -> &'static str, path: &str) -> Response<Vec<u8>> {
     let mime_type = if path.ends_with(".png") {
         "image/png"
     } else if path.ends_with(".woff2") {

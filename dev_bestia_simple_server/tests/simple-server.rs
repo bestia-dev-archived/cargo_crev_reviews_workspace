@@ -1,4 +1,4 @@
-use simple_server::Server;
+use dev_bestia_simple_server::Server;
 
 #[test]
 fn test_server_new() {

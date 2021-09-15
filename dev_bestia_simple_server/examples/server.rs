@@ -1,7 +1,7 @@
 use env_logger;
 use log::*;
 
-use simple_server::Server;
+use dev_bestia_simple_server::Server;
 
 fn main() {
     env_logger::init();
