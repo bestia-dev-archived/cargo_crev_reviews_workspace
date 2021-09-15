@@ -5,7 +5,7 @@
 
 [package]
 name = "cargo_crev_reviews"
-version = "2021.915.1518"
+version = "2021.915.1608"
 description = "Write cargo-crev reviews in a Graphical User Interface with a cross-platform app written in rust"
 authors = ["Luciano Bestia"]
 edition = "2018"
@@ -24,7 +24,6 @@ include = [
 
 [dependencies]
 simple_server = { path = "../simple_server" }
-cargo_crev_reviews_common = { path = "../cargo_crev_reviews_common" }
 
 http="0.2.4"
 base64 = "0.13.0"

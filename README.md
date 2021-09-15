@@ -66,7 +66,6 @@ The rust workspace is made of members:
 
 - backend CLI (this will be the main and only project to be published on crates.io)
 - GUI frontend
-- common structs
 - simple_server
 
 The sub-directory `web_server_folder` contains all the files and folder structure for a working development web_server.  
@@ -79,7 +78,7 @@ I wanted to give it the name `cargo_crev_reviews_micro_web_server_backend`, but 
 It is the backend of the application `cargo_crev_reviews`.  
 The frontend is the GUI web app that runs in the browser and is connected only to this backend. It is provided also by the backend app.  
 Together the backend and the frontend form a complete application that is cross-platform.  
-They share some structs for communication that are defined in the `common` project.  
+They share some structs for communication that are defined in the `common_mod` module. One automation task copies the content from backend to frontend projects to keep them in sync.  
 The only URL the server operates is: <http://127.0.0.1:8182/cargo_crev_reviews>
 
 If I want to publish this on crates.io it must all be inside one binary executable file.  
@@ -134,10 +133,10 @@ It is strictly designed for use on desktops as it is a tool for programers. No n
 The method name is used to match and call the appropriate function.  
 The html template must be microXml compatible. The wasm code reads element by element and when finds a marker, inserts the data. I wanted the html template to be complete with some sample texts. So the markers are added in front of the element or attribute they are meant to replace.  
 
-## common structs - cargo_crev_reviews_common
+## common structs - common_mod.rs
 
 Common structures between backend and frontend. It is kind of a contract for communication.  
-All in 100% rust language.  
+All in 100% rust language. One automation task keeps in sync the backend and frontend module.  
 TODO: I have a problem when serialize and deserialize structs. Most of the time I need then name of the field. Because with the name i can bind in different scenarios. Using structs I don't have the name of the field at runtime. I think I will ditch most of the structs to have just a plain old flat text. Inside that text every field will have a slice and a name. And I can then use that in runtime for bindings.  
 
 ## simple_server

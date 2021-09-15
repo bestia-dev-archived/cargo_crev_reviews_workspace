@@ -4,6 +4,7 @@
 //! The real code for methods is in methods_mod.rs
 //! The real content of "static files" is in the module files_mod.rs
 mod cargo_mod;
+mod common_mod;
 mod crev_mod;
 mod files_mod;
 mod response_get_mod;

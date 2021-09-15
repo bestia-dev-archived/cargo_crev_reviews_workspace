@@ -3,6 +3,7 @@
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsValue;
 
+mod common_mod;
 mod page_review_mod;
 mod pages_mod;
 mod utils_mod;

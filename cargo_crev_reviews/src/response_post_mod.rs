@@ -1,7 +1,7 @@
 // response_post_method_mod.rs
 
+use crate::common_mod::*;
 use crate::rpc_methods_mod::*;
-use cargo_crev_reviews_common::*;
 use std::str::FromStr;
 use unwrap::unwrap;
 

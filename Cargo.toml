@@ -10,7 +10,6 @@
 members = [
     "cargo_crev_reviews",
     "cargo_crev_reviews_wasm",
-    "cargo_crev_reviews_common",
     "simple_server"
 ]
 

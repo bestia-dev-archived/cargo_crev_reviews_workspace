@@ -7,13 +7,13 @@ use unwrap::unwrap;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 
-use cargo_crev_reviews_common::*;
+use crate::common_mod::*;
 
 use crate::on_click;
 use crate::pages_mod::*;
 use crate::*;
 
-// this structs are in the common project: ReviewItemData, ReviewListData
+// this structs are in the common module: ReviewItemData, ReviewListData
 
 lazy_static! {
     /// mutable static, because it is hard to pass variables around with on_click events

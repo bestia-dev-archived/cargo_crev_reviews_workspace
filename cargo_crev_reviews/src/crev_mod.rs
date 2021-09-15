@@ -22,8 +22,8 @@ use std::sync::Mutex;
 use std::{ops::Range, str::FromStr, vec};
 use unwrap::unwrap;
 
+use crate::common_mod::*;
 use crate::stdio_input_password_mod;
-use cargo_crev_reviews_common::*;
 
 lazy_static! {
     /// mutable static, because it is hard to pass variables around with async closures

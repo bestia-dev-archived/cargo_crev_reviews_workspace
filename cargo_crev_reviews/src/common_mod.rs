@@ -1,4 +1,7 @@
-// cargo_crev_reviews_common
+// common_mod_rs
+
+// WARNING: modify this file only in cargo_crev_reviews project.
+// One automation task will copy it over to cargo_crev_reviews_wasm !
 
 use serde::{Deserialize, Serialize};
 use strum::{EnumString, IntoStaticStr};
@@ -96,12 +99,6 @@ pub struct ReviewListData {
     pub list_of_review: Vec<ReviewItemData>,
 }
 
-/// all possible structs for review data
-pub enum DataReviewEnum {
-    ReviewItemData,
-    ReviewListData,
-    RpcMessageData,
-}
 // endregion: review
 
 /// returns string between the start end end delimiters without delimiters

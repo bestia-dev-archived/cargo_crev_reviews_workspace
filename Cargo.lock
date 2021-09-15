@@ -276,12 +276,11 @@ dependencies = [
 
 [[package]]
 name = "cargo_crev_reviews"
-version = "2021.915.1518"
+version = "2021.915.1608"
 dependencies = [
  "anyhow",
  "base64",
  "cargo",
- "cargo_crev_reviews_common",
  "crates-index",
  "crev-data",
  "crev-lib",
@@ -301,20 +300,9 @@ dependencies = [
 ]
 
 [[package]]
-name = "cargo_crev_reviews_common"
-version = "2021.915.1333"
-dependencies = [
- "serde",
- "serde_json",
- "strum",
- "unwrap",
-]
-
-[[package]]
 name = "cargo_crev_reviews_wasm"
-version = "2021.915.1518"
+version = "2021.915.1608"
 dependencies = [
- "cargo_crev_reviews_common",
  "chrono",
  "console_error_panic_hook",
  "function_name",

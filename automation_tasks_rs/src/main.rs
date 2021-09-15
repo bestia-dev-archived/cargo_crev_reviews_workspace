@@ -31,6 +31,8 @@ fn match_arguments_and_call_tasks(mut args: std::env::Args) {
                     task_build();
                 } else if &task == "release" || &task == "r" {
                     task_release();
+                } else if &task == "copy_common" {
+                    task_copy_common();
                 } else if &task == "docs" || &task == "doc" || &task == "d" {
                     task_docs();
                 } else if &task == "commit_and_push" {
@@ -58,6 +60,7 @@ cargo auto build - builds the crate in debug mode, fmt
 cargo auto build_and_run - build and run
 cargo auto release - builds the crate in release mode, version from date, fmt
 cargo auto release_and_run - release and run
+cargo auto copy_common - copy common_mod.rs from cargo_crev_reviews to cargo_crev_reviews_wasm
 cargo auto docs - builds the docs, copy to docs directory
 cargo auto commit_and_push - commits with message and push with mandatory message
     if you use SSH, it is easy to start the ssh-agent in the background and ssh-add your credentials for git
@@ -73,7 +76,7 @@ fn completion() {
     let last_word = args[3].as_str();
 
     if last_word == "cargo-auto" || last_word == "auto" {
-        let sub_commands = vec!["build", "build_and_run", "release", "release_and_run", "doc", "commit_and_push"];
+        let sub_commands = vec!["build", "build_and_run", "release", "release_and_run","copy_common", "doc", "commit_and_push"];
         completion_return_one_or_more_sub_commands(sub_commands, word_being_completed);
     }
 
@@ -95,6 +98,7 @@ fn completion() {
 /// for faster build I will change only the version number to members that was modified
 fn task_build() {
     auto_check_micro_xml("web_server_folder/cargo_crev_reviews");
+    task_copy_common();
     auto_version_from_date();
     run_shell_command("cargo fmt");
     run_shell_command("cd cargo_crev_reviews_wasm;wasm-pack build --target web;cd ..");
@@ -119,6 +123,7 @@ run `cargo auto release`
 /// A little slower than only build.
 fn task_release() {
     auto_check_micro_xml("web_server_folder/cargo_crev_reviews");
+    task_copy_common();
     auto_version_from_date_forced();    
     run_shell_command("cargo fmt");
 
@@ -166,6 +171,10 @@ fn task_release_and_run() {
 After `cargo auto release_and_run` close the CLI with ctrl+c and close the browser.
 "#
     );
+}
+
+fn task_copy_common() {
+    std::fs::copy("cargo_crev_reviews/src/common_mod.rs", "cargo_crev_reviews_wasm/src/common_mod.rs").unwrap();
 }
 
 /// example how to call a list of shell commands and combine with rust code

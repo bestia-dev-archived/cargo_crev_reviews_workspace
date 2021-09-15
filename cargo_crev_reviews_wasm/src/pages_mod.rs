@@ -1,6 +1,6 @@
 // pages_mod.rs
 
-use cargo_crev_reviews_common::*;
+use crate::common_mod::*;
 
 use reader_for_microxml::ReaderForMicroXml;
 use reader_for_microxml::Token;
