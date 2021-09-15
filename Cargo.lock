@@ -285,7 +285,7 @@ dependencies = [
  "crev-data",
  "crev-lib",
  "crossterm",
- "dev_bestia_simple_server",
+ "dev_bestia_simple_server 2021.910.1336 (registry+https://github.com/rust-lang/crates.io-index)",
  "fnv",
  "function_name",
  "home",
@@ -823,6 +823,21 @@ name = "dev_bestia_simple_server"
 version = "2021.910.1336"
 dependencies = [
  "env_logger",
+ "http",
+ "httparse",
+ "log",
+ "num_cpus",
+ "scoped_threadpool",
+ "time 0.3.1",
+ "unwrap",
+]
+
+[[package]]
+name = "dev_bestia_simple_server"
+version = "2021.910.1336"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6a4da78eee064db6abfa644a503ea89bd8fcc6731bfa4a9d4660aefc6edee231"
+dependencies = [
  "http",
  "httparse",
  "log",
