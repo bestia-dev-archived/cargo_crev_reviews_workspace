@@ -21,6 +21,12 @@ pub enum RequestMethod {
     RpcReviewPublish,
     #[strum(serialize = "rpc_review_new_version")]
     RpcReviewNewVersion,
+    #[strum(serialize = "rpc_update_registry_index")]
+    RpcUpdateRegistryIndex,
+    #[strum(serialize = "rpc_review_open_source_code")]
+    RpcReviewOpenSourceCode,
+    #[strum(serialize = "rpc_review_delete")]
+    RpcReviewDelete,
 }
 
 /// methods available on the client

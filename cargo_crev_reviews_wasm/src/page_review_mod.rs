@@ -188,13 +188,17 @@ pub fn page_review_list(rpc_response: RpcResponse) {
 
     on_click!("button_review_new", request_review_new);
     on_click!("button_review_publish", request_review_publish);
+    on_click!("button_update_registry_index", request_update_registry_index);
 
     // on_click for every row of the list
     for (row_num, _item) in REVIEW_LIST_DATA.lock().unwrap().list_of_review.iter().enumerate() {
         row_on_click!("button_review_edit", row_num, request_review_edit_from_list);
         row_on_click!("button_review_new_version", row_num, request_review_new_version);
+        row_on_click!("button_open_crev_dev", row_num, button_open_crev_dev_onclick);
         row_on_click!("button_open_crates_io", row_num, button_open_crates_io_onclick);
         row_on_click!("button_open_lib_rs", row_num, button_open_lib_rs_onclick);
+        row_on_click!("button_open_source_code", row_num, button_open_source_code_onclick);
+        row_on_click!("button_review_delete", row_num, request_review_delete);
     }
 }
 
@@ -208,6 +212,15 @@ fn button_open_crates_io_onclick(_element_id: &str, row_num: usize) {
 }
 
 #[named]
+fn button_open_crev_dev_onclick(_element_id: &str, row_num: usize) {
+    w::debug_write(function_name!());
+    // from list get crate name and version
+    let item = &REVIEW_LIST_DATA.lock().unwrap().list_of_review[row_num];
+    let url = format!("https://web.crev.dev/rust-reviews/crate/{}/", item.crate_name);
+    unwrap!(w::window().open_with_url(&url));
+}
+
+#[named]
 fn button_open_lib_rs_onclick(_element_id: &str, row_num: usize) {
     w::debug_write(function_name!());
     // from list get crate name and version
@@ -217,10 +230,43 @@ fn button_open_lib_rs_onclick(_element_id: &str, row_num: usize) {
 }
 
 #[named]
+fn button_open_source_code_onclick(_element_id: &str, row_num: usize) {
+    w::debug_write(function_name!());
+    // from list get crate name and version
+    let item = &REVIEW_LIST_DATA.lock().unwrap().list_of_review[row_num];
+    let review_filter_data = ReviewFilterData {
+        crate_name: item.crate_name.clone(),
+        crate_version: Some(item.crate_version.clone()),
+        old_crate_version: None,
+    };
+    post_request_await_run_response_method(RequestMethod::RpcReviewOpenSourceCode, review_filter_data);
+}
+
+#[named]
 fn request_review_publish(_element_id: &str) {
     w::debug_write(function_name!());
-    modal_publishing();
+    let page_html = r#"
+<div id="modal_message" class="w3_modal">
+    <div class="w3_modal_content">
+        <code>$ cargo crev publish</code>
+        <div>publishing to remote repository. Wait a minute...</div>        
+    </div>
+</div>"#;
+    w::set_inner_html("div_for_modal", page_html);
     post_request_await_run_response_method(RequestMethod::RpcReviewPublish, RpcEmptyData {});
+}
+
+#[named]
+fn request_update_registry_index(_element_id: &str) {
+    w::debug_write(function_name!());
+    let page_html = r#"
+    <div id="modal_message" class="w3_modal">
+        <div class="w3_modal_content">
+            <div>Updating registry index. Wait a minute...</div>        
+        </div>
+    </div>"#;
+    w::set_inner_html("div_for_modal", page_html);
+    post_request_await_run_response_method(RequestMethod::RpcUpdateRegistryIndex, RpcEmptyData {});
 }
 
 #[named]
@@ -323,17 +369,6 @@ fn modal_close_on_click(_element_id: &str) {
     w::set_inner_html("div_for_modal", "");
 }
 
-pub fn modal_publishing() {
-    let page_html = r#"<div id="modal_message" class="w3_modal">
-    <div class="w3_modal_content">
-        <code>$ cargo crev publish</code>
-        <div>publishing to remote repository. Wait a minute...</div>        
-    </div>
-</div>"#;
-
-    w::set_inner_html("div_for_modal", page_html);
-}
-
 #[named]
 pub fn page_review_publish_modal(rpc_response: RpcResponse) {
     w::debug_write(function_name!());
@@ -345,4 +380,20 @@ pub fn page_review_publish_modal(rpc_response: RpcResponse) {
 
     w::set_inner_html("div_for_modal", &html_after_process);
     on_click!("modal_close", modal_close_on_click);
+}
+
+#[named]
+fn request_review_delete(_element_id: &str, row_num: usize) {
+    w::debug_write(function_name!());
+    // TODO: modal Do you really want to?
+
+    // from list get crate name and version
+    let item = &REVIEW_LIST_DATA.lock().unwrap().list_of_review[row_num];
+    let review_filter_data = ReviewFilterData {
+        crate_name: item.crate_name.clone(),
+        crate_version: Some(item.crate_version.clone()),
+        old_crate_version: None,
+    };
+
+    post_request_await_run_response_method(RequestMethod::RpcReviewDelete, review_filter_data);
 }

@@ -204,6 +204,10 @@ pub fn crev_new_version(filter: ReviewFilterData) -> anyhow::Result<ProofCrevFor
         if version == max_version.as_str() {
             anyhow::bail!("Max version {} is already reviewed!", &max_version);
         }
+        let path_dir = crate::cargo_mod::cargo_registry_src_dir_for_crate(&filter.crate_name, &max_version)?;
+        if !path_dir.exists() {
+            anyhow::bail!("Max version {} src is not cached on your system. It means you don't have a dependency on it in your projects. You cannot review a crate version that you don't use.", &max_version);
+        }
         for x in vec_of_reviews.iter() {
             if x.package.version.as_str() == version {
                 let mut review = x.clone();
@@ -265,7 +269,7 @@ pub fn crev_save_review(
     let proof = proof.sign_by(&CREV_UNLOCKED.lock().unwrap().as_ref().unwrap())?;
 
     // if exists an old proof with same crate+version, delete it and then save the new one
-    remove_review_proofs(crate_name, crate_version_str)?;
+    delete_review_proofs(crate_name, crate_version_str)?;
 
     // it needs `use crev_lib::ProofStore;`
     CREV_LOCAL.lock().unwrap().as_ref().unwrap().insert(&proof)?;
@@ -330,7 +334,7 @@ fn proof_crev_files_paths() -> anyhow::Result<Vec<String>> {
 }
 
 /// remove old proofs, so the new review proof will be unique
-fn remove_review_proofs(crate_name: &str, crate_version: &str) -> anyhow::Result<()> {
+pub fn delete_review_proofs(crate_name: &str, crate_version: &str) -> anyhow::Result<()> {
     // open every *.proof.crev file in my crev reviews directory
     for path in proof_crev_files_paths()?.iter() {
         let mut file_content = std::fs::read_to_string(path)?;

@@ -20,6 +20,9 @@ fn match_request_method_and_call_function(request_method: &str, request_data: se
             RequestMethod::RpcReviewEdit => rpc_review_edit(request_data),
             RequestMethod::RpcReviewNewVersion => rpc_review_new_version(request_data),
             RequestMethod::RpcReviewPublish => rpc_review_publish(request_data),
+            RequestMethod::RpcUpdateRegistryIndex => rpc_update_registry_index(request_data),
+            RequestMethod::RpcReviewOpenSourceCode => rpc_review_open_source_code(request_data),
+            RequestMethod::RpcReviewDelete => rpc_review_delete(request_data),
         },
         Err(_err) => anyhow::bail!("unknown server method = {}", request_method),
     }

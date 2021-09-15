@@ -3,8 +3,10 @@
 use crate::crev_mod::*;
 use crate::response_post_mod::return_rpc_response;
 use ::function_name::named;
+use anyhow::Context;
 use cargo_crev_reviews_common::*;
 use std::str::FromStr;
+use std::time::Duration;
 use unwrap::unwrap;
 
 // region: review
@@ -130,4 +132,41 @@ pub fn rpc_review_publish(_request_data: serde_json::Value) -> anyhow::Result<St
         Err(err) => Ok(crate::response_post_mod::response_err_message(&err)),
     }
 }
+
+#[named]
+pub fn rpc_update_registry_index(_request_data: serde_json::Value) -> anyhow::Result<String> {
+    println!(function_name!());
+    match crate::cargo_mod::update_registry_index() {
+        Ok(_ret_val) => Ok(crate::response_post_mod::response_modal_message("Registry index updated.")),
+        Err(err) => Ok(crate::response_post_mod::response_err_message(&err)),
+    }
+}
+
+#[named]
+pub fn rpc_review_open_source_code(request_data: serde_json::Value) -> anyhow::Result<String> {
+    println!(function_name!());
+    let filter: ReviewFilterData = unwrap!(serde_json::from_value(request_data));
+    let version = filter.crate_version.context("Parameter version in None.")?;
+    let path_dir = crate::cargo_mod::cargo_registry_src_dir_for_crate(&filter.crate_name, &version)?;
+    if !path_dir.exists() {
+        anyhow::bail!("Src for version {} is not cached on your system.", &version);
+    }
+    let mut child = std::process::Command::new("code").arg(path_dir).spawn()?;
+    std::thread::sleep(Duration::new(1, 0));
+    child.kill()?;
+
+    Ok(crate::response_post_mod::response_modal_message("VSCode started."))
+}
+
+#[named]
+pub fn rpc_review_delete(filter_data: serde_json::Value) -> anyhow::Result<String> {
+    println!(function_name!());
+
+    let filter: ReviewFilterData = unwrap!(serde_json::from_value(filter_data));
+    let version = filter.crate_version.context("Parameter version in None.")?;
+    crate::crev_mod::delete_review_proofs(filter.crate_name.as_str(), &version)?;
+
+    request_review_list()
+}
+
 // endregion: review

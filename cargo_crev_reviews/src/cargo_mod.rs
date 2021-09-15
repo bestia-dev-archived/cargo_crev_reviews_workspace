@@ -27,10 +27,20 @@ pub fn max_version_from_registry_index(crate_name: &str) -> anyhow::Result<Strin
     if !index.exists() {
         anyhow::bail!("Local Registry IndexCould does not exist");
     }
+    index.update()?;
     let crate_releases = index.crate_(crate_name).context("Cannot find crate name in registry.")?;
     // max version by semver
     let crate_version = crate_releases.highest_version();
     Ok(crate_version.version().to_string())
+}
+
+pub fn update_registry_index() -> anyhow::Result<()> {
+    let index = crates_index::Index::new_cargo_default();
+    if !index.exists() {
+        anyhow::bail!("Local Registry IndexCould does not exist");
+    }
+    index.update()?;
+    Ok(())
 }
 
 /*
