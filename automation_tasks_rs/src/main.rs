@@ -29,8 +29,12 @@ fn match_arguments_and_call_tasks(mut args: std::env::Args) {
                 println!("Running automation task: {}", &task);
                 if &task == "build" || &task == "b" {
                     task_build();
+                } else if &task == "build_and_run" {
+                    task_build_and_run();
                 } else if &task == "release" || &task == "r" {
                     task_release();
+                } else if &task == "release_and_run" {
+                    task_release_and_run();
                 } else if &task == "copy_common" {
                     task_copy_common();
                 } else if &task == "docs" || &task == "doc" || &task == "d" {
@@ -38,10 +42,8 @@ fn match_arguments_and_call_tasks(mut args: std::env::Args) {
                 } else if &task == "commit_and_push" {
                     let arg_2 = args.next();
                     task_commit_and_push(arg_2);
-                } else if &task == "build_and_run" {
-                    task_build_and_run();
-                } else if &task == "release_and_run" {
-                    task_release_and_run();
+                } else if &task == "publish_to_crates_io_cargo_crev_reviews" {
+                    task_publish_to_crates_io_cargo_crev_reviews();
                 } else {
                     println!("Task {} is unknown.", &task);
                     print_help();
@@ -64,7 +66,7 @@ cargo auto copy_common - copy common_mod.rs from cargo_crev_reviews to cargo_cre
 cargo auto docs - builds the docs, copy to docs directory
 cargo auto commit_and_push - commits with message and push with mandatory message
     if you use SSH, it is easy to start the ssh-agent in the background and ssh-add your credentials for git
-cargo auto publish_to_crates_io - publish to crates.io, git tag
+cargo auto publish_to_crates_io_cargo_crev_reviews - publish to crates.io, git tag
 "#
     );
 }
@@ -76,7 +78,7 @@ fn completion() {
     let last_word = args[3].as_str();
 
     if last_word == "cargo-auto" || last_word == "auto" {
-        let sub_commands = vec!["build", "build_and_run", "release", "release_and_run","copy_common", "doc", "commit_and_push"];
+        let sub_commands = vec!["build", "build_and_run", "release", "release_and_run","copy_common", "doc", "commit_and_push","publish_to_crates_io_cargo_crev_reviews"];
         completion_return_one_or_more_sub_commands(sub_commands, word_being_completed);
     }
 
@@ -207,13 +209,36 @@ fn task_commit_and_push(arg_2: Option<String>) {
             println!(
                 r#"
 After `cargo auto commit and push`
-run `cargo auto publish_to_crates_io`
+run `cargo auto publish_to_crates_io_cargo_crev_reviews`
 "#
             );
         }
     }
 }
 
+/// publish simple_server
+fn task_publish_to_crates_io_cargo_crev_reviews() {
+    unwrap!(std::env::set_current_dir("cargo_crev_reviews"));
+    let cargo_toml = CargoToml::read();
+    // git tag
+    let shell_command = format!(
+        "git tag -f -a v{version} -m version_{version}",
+        version = cargo_toml.package_version()
+    );
+    run_shell_command(&shell_command);
+    // cargo publish
+    run_shell_command("cargo publish");
+    unwrap!(std::env::set_current_dir(""));
+    println!(
+        r#"
+After `cargo auto publish_to_crates_io_cargo_crev_reviews', 
+check `https://crates.io/crates/{package_name}`.
+Install the new version `cargo install cargo_crev_reviews`
+and try it `cargo_crev_reviews`
+"#,
+        package_name = cargo_toml.package_name()
+    );
+}
 // endregion: tasks
 
 /// copy all files in the web_server_folder as strings to the module `files_mod.rs`
