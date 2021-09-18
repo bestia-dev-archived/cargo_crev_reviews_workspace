@@ -207,33 +207,23 @@ bc688d353fc7c7a2f3f1f5fed9a27fc1773fc710
 
 Cargo also downloads from crates.io the complete source code for every dependency in the path `~/.cargo/registry/src/github.com-1ecc6299db9ec823/`. `Crates.io` guarantees the source code for a crate+version cannot be altered or deleted. We know it will never change, so we can review exactly this local code with confidence.  
 
-## TODO
-
-ask if you really want to delete?
-show if there is newer version. cache it in a file.
-markdown instead of raw text
-Automation tasks for workspaces:  
-auto_lines_of_code: exclude files_mod.rs, because it is just embedded files.  
-auto_cargo_toml_to_md, , auto_md_to_doc_comments  
-special types for html encoded strings and attribute_value_encoded strings. So I can be sure that I did or did not encoded them.  
-
 ## cargo crev reviews and advisory
 
 We live in times of danger with [supply chain attacks](https://en.wikipedia.org/wiki/Supply_chain_attack).  
 It is recommended to always use [cargo-crev](https://github.com/crev-dev/cargo-crev)  
 to verify the trustworthiness of each of your dependencies.  
 Please, spread this info.  
-You can also read reviews quickly on the web. Example for the crate `num-traits`:  
-<https://web.crev.dev/rust-reviews/crate/num-traits/>  
+You can also read reviews quickly on the web:  
+<https://web.crev.dev/rust-reviews/crates/>  
 
 ## open-source free and free as a beer
 
 My open-source projects are free and free as a beer (MIT license).  
 I just love programming.  
 But I need also to drink. If you find my projects and tutorials helpful,  
-please buy me a beer or two donating on my [paypal](https://www.paypal.com/paypalme/LucianoBestia).  
+please buy me a beer donating on my [paypal](https://www.paypal.com/paypalme/LucianoBestia).  
 You know the price of a beer in your local bar ;-)  
 So I can drink a free beer for your health :-)  
-[Na zdravje](https://translate.google.com/?hl=en&sl=sl&tl=en&text=Na%20zdravje&op=translate) !
+[Na zdravje](https://translate.google.com/?hl=en&sl=sl&tl=en&text=Na%20zdravje&op=translate) ! 🍻
 
 [comment]: # (auto_md_to_doc_comments segment end A)

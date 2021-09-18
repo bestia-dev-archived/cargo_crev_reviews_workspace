@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["ReviewEditParams",""],["ReviewSaveParams",""],["ReviewShowParams",""],["RpcError",""],["RpcErrorCodeMessage",""],["RpcMethod",""],["RpcResult",""]]});

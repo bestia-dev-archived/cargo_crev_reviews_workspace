@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["read_passphrase_interactively","Attempts to read a password from standard input. Backspace and ctrl+c are NOT ALLOWED for simplicity. The replacement character * is printed. The result is either a `String` or a `crossterm::ErrorKind`.  "]]});

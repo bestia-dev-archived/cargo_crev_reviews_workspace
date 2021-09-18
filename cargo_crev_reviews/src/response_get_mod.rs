@@ -24,6 +24,7 @@ pub fn parse_get_uri_and_response_file(path: &str, response: dev_bestia_simple_s
         "/cargo_crev_reviews/icons/icon-032.png" => response_file_base64(response, icons_icon_032_png, path),
         "/cargo_crev_reviews/icons/icon-128.png" => response_file_base64(response, icons_icon_128_png, path),
         "/cargo_crev_reviews/icons/icon-192.png" => response_file_base64(response, icons_icon_192_png, path),
+        "/cargo_crev_reviews/images/Logo_02.png" => response_file_base64(response, images_Logo_02_png, path),
         "/cargo_crev_reviews/js/dropdown.js" => response_file_text(response, js_dropdown_js, path, Cache::Ok),
         "/cargo_crev_reviews/pkg/cargo_crev_reviews_wasm.js" => response_file_text(response, pkg_cargo_crev_reviews_wasm_js, path, Cache::NoStore),
         "/cargo_crev_reviews/pkg/cargo_crev_reviews_wasm_bg.wasm" => response_file_base64(response, pkg_cargo_crev_reviews_wasm_bg_wasm, path),

@@ -273,6 +273,7 @@ fn copy_web_folder_files_into_module() {
     copy_files_from_dir("web_server_folder/cargo_crev_reviews", &mut module_source_code);
     copy_files_from_dir("web_server_folder/cargo_crev_reviews/css", &mut module_source_code);
     copy_files_from_dir("web_server_folder/cargo_crev_reviews/icons", &mut module_source_code);
+    copy_files_from_dir("web_server_folder/cargo_crev_reviews/images", &mut module_source_code);
     copy_files_from_dir("web_server_folder/cargo_crev_reviews/js", &mut module_source_code);
     copy_files_from_dir("web_server_folder/cargo_crev_reviews/pkg", &mut module_source_code);
     unwrap!(std::fs::write("cargo_crev_reviews/src/files_mod.rs", module_source_code));

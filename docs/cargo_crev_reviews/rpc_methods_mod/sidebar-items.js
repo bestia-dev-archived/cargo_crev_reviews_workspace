@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["from_crev_to_item",""],["request_review_list",""],["rpc_review_delete",""],["rpc_review_edit",""],["rpc_review_new",""],["rpc_review_new_version",""],["rpc_review_open_source_code",""],["rpc_review_publish",""],["rpc_review_save",""],["rpc_reviews_list","maybe add filter for one crate_name"],["rpc_update_registry_index",""]]});

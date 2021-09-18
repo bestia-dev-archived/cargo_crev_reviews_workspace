@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["post_request",""],["process_html","With reader_for_microXml parse the xml. If found the magic word `wt_` then run some code and push the result instead of the next element or attribute If normal element or attribute push it to the new String builder It is just strings so, that should be super fast."]]});
+initSidebarItems({"fn":[["inject_into_html",""],["match_response_method_and_call_function",""],["page_html",""],["post_request_await_run_response_method",""]],"trait":[["PageProcessor",""]]});
