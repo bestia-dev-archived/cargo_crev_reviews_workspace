@@ -1,7 +1,8 @@
 // common_mod_rs
 
-// WARNING: modify this file only in cargo_crev_reviews project.
-// One automation task will copy it over to cargo_crev_reviews_wasm !
+//! common structs between the backend and frontend
+//! WARNING: modify this file only in cargo_crev_reviews project.
+//! One automation task will copy it over to cargo_crev_reviews_wasm !
 
 use serde::{Deserialize, Serialize};
 use strum::{EnumString, IntoStaticStr};

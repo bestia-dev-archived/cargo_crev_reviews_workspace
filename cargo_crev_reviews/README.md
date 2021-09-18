@@ -5,14 +5,14 @@
 [comment]: # (auto_cargo_toml_to_md start)
 
 **Write cargo-crev reviews in a Graphical User Interface with a cross-platform app written in rust**  
-***[repository](https://github.com/lucianobestia/cargo_crev_reviews_workspace); version: 2021.918.1526  date: 2021-09-18 authors: Luciano Bestia***  
+***[repository](https://github.com/lucianobestia/cargo_crev_reviews_workspace); version: 2021.918.1640  date: 2021-09-18 authors: Luciano Bestia***  
 
 [comment]: # (auto_cargo_toml_to_md end)
 
 [comment]: # (auto_lines_of_code start)
-[![Lines in Rust code](https://img.shields.io/badge/Lines_in_Rust-1034-green.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
-[![Lines in Doc comments](https://img.shields.io/badge/Lines_in_Doc_comments-272-blue.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
-[![Lines in Comments](https://img.shields.io/badge/Lines_in_comments-105-purple.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
+[![Lines in Rust code](https://img.shields.io/badge/Lines_in_Rust-16881-green.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
+[![Lines in Doc comments](https://img.shields.io/badge/Lines_in_Doc_comments-281-blue.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
+[![Lines in Comments](https://img.shields.io/badge/Lines_in_comments-124-purple.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
 [![Lines in examples](https://img.shields.io/badge/Lines_in_examples-0-yellow.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
 [![Lines in tests](https://img.shields.io/badge/Lines_in_tests-0-orange.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
 

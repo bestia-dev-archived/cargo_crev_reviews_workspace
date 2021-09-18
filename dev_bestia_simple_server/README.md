@@ -5,7 +5,7 @@
 [comment]: # (auto_cargo_toml_to_md start)
 
 **simple server from <https://github.com/steveklabnik/simple-server>**  
-***[repository](https://github.com/lucianobestia/cargo_crev_reviews_workspace); version: 2021.918.1526  date: 2021-09-18 authors: Luciano Bestia***  
+***[repository](https://github.com/lucianobestia/cargo_crev_reviews_workspace); version: 2021.918.1640  date: 2021-09-18 authors: Luciano Bestia***  
 
 [comment]: # (auto_cargo_toml_to_md end)
 

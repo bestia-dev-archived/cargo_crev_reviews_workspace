@@ -1,5 +1,7 @@
 // pages_mod.rs
 
+//! generic code to process html pages
+
 use crate::common_mod::*;
 
 use reader_for_microxml::ReaderForMicroXml;

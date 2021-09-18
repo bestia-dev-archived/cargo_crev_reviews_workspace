@@ -1,6 +1,8 @@
 // stdio_input_password_mod.rs
 // modified from https://forge.typ3.tech/charles/scanpw
 
+//! reads password from stdin
+
 // crossterm = "0.17"
 
 use crossterm::{

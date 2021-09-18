@@ -99,7 +99,7 @@ fn completion() {
 fn task_build() {
     auto_check_micro_xml("web_server_folder/cargo_crev_reviews");
     task_copy_common();
-    auto_version_from_date();
+    auto_version_increment_semver_or_date();
     run_shell_command("cargo fmt");
     run_shell_command("cd cargo_crev_reviews_wasm;wasm-pack build --target web;cd ..");
     // copy to web_server_folder/pkg
@@ -124,7 +124,7 @@ run `cargo auto release`
 fn task_release() {
     auto_check_micro_xml("web_server_folder/cargo_crev_reviews");
     task_copy_common();
-    auto_version_from_date_forced();    
+    auto_version_increment_semver_or_date_forced();    
     run_shell_command("cargo fmt");
 
     run_shell_command("cd cargo_crev_reviews_wasm;wasm-pack build --target web --release;cd ..");
@@ -269,6 +269,7 @@ fn copy_web_folder_files_into_module() {
 
     let mut module_source_code = String::new();
     module_source_code.push_str("// files_mod.rs\n\n");
+    module_source_code.push_str("//! embedded files as rust code\n\n");
     copy_files_from_dir("web_server_folder/cargo_crev_reviews", &mut module_source_code);
     copy_files_from_dir("web_server_folder/cargo_crev_reviews/css", &mut module_source_code);
     copy_files_from_dir("web_server_folder/cargo_crev_reviews/icons", &mut module_source_code);

@@ -1,5 +1,7 @@
 // crev_mod.rs
 
+//! functions around the crev data and lib
+
 // crev-lib="0.22.0"
 // crev-data="0.22.0"
 // anyhow="1.0.43"

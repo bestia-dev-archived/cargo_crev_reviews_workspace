@@ -100,19 +100,21 @@
 <span id="98"> 98</span>
 <span id="99"> 99</span>
 <span id="100">100</span>
+<span id="101">101</span>
+<span id="102">102</span>
 </pre><pre class="rust">
-<span class="kw">use</span> <span class="ident">std::str::FromStr</span>;
-
-<span class="kw">use</span> <span class="ident">anyhow::Context</span>;
-
 <span class="comment">// cargo_mod.rs</span>
 
-<span class="doccomment">/// data from the cargo world</span>
-<span class="doccomment">/// \\wsl$\Debian\home\luciano\.cargo\registry\index\github.com-1ecc6299db9ec823\an\yh\anyhow</span>
-<span class="doccomment">/// \\wsl$\Debian\home\luciano\.cargo\registry\src\github.com-1ecc6299db9ec823\anyhow-1.0.37\</span>
+<span class="doccomment">//! functions around the cargo registry  </span>
+<span class="doccomment">//! ~\.cargo\registry\index\github.com-1ecc6299db9ec823\an\yh\anyhow  </span>
+<span class="doccomment">//! ~\.cargo\registry\src\github.com-1ecc6299db9ec823\anyhow-1.0.37\  </span>
 
+
+<span class="kw">use</span> <span class="ident">std::str::FromStr</span>;
+<span class="kw">use</span> <span class="ident">anyhow::Context</span>;
 <span class="comment">// use unwrap::unwrap;</span>
 
+<span class="doccomment">/// cargo registry src directory for a crate</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cargo_registry_src_dir_for_crate</span>(<span class="ident">crate_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">crate_version_str</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">anyhow::Result</span><span class="op">&lt;</span><span class="ident">std::path::PathBuf</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">crate_dir_name</span> <span class="op">=</span> <span class="macro">format!</span>(<span class="string">&quot;{}-{}&quot;</span>, <span class="ident">crate_name</span>, <span class="ident">crate_version_str</span>);
     <span class="kw">let</span> <span class="ident">crate_src_path</span> <span class="op">=</span> <span class="macro">format!</span>(
@@ -125,6 +127,7 @@
     <span class="prelude-val">Ok</span>(<span class="ident">crate_root</span>)
 }
 
+<span class="doccomment">/// max version from registry index cache</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">max_version_from_registry_index</span>(<span class="ident">crate_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">anyhow::Result</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">index</span> <span class="op">=</span> <span class="ident">crates_index::Index::new_cargo_default</span>();
     <span class="kw">if</span> <span class="op">!</span><span class="ident">index</span>.<span class="ident">exists</span>() {
@@ -137,6 +140,7 @@
     <span class="prelude-val">Ok</span>(<span class="ident">crate_version</span>.<span class="ident">version</span>().<span class="ident">to_string</span>())
 }
 
+<span class="doccomment">/// fetch/pull the registry index from github</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">update_registry_index</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">anyhow::Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">index</span> <span class="op">=</span> <span class="ident">crates_index::Index::new_cargo_default</span>();
     <span class="kw">if</span> <span class="op">!</span><span class="ident">index</span>.<span class="ident">exists</span>() {

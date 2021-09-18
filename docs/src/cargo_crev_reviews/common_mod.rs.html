@@ -203,11 +203,13 @@
 <span id="201">201</span>
 <span id="202">202</span>
 <span id="203">203</span>
+<span id="204">204</span>
 </pre><pre class="rust">
-<span class="comment">// common_mod_rs</span>
+<span class="comment">// common_mod.rs</span>
 
-<span class="comment">// WARNING: modify this file only in cargo_crev_reviews project.</span>
-<span class="comment">// One automation task will copy it over to cargo_crev_reviews_wasm !</span>
+<span class="doccomment">//! common structs between the backend and frontend</span>
+<span class="doccomment">//! WARNING: modify this file only in cargo_crev_reviews project.</span>
+<span class="doccomment">//! One automation task will copy it over to cargo_crev_reviews_wasm !</span>
 
 <span class="kw">use</span> <span class="ident">serde</span>::{<span class="ident">Deserialize</span>, <span class="ident">Serialize</span>};
 <span class="kw">use</span> <span class="ident">strum</span>::{<span class="ident">EnumString</span>, <span class="ident">IntoStaticStr</span>};

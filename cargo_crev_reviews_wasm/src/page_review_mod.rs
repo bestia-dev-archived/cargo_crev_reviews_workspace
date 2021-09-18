@@ -1,5 +1,7 @@
 // page_review_mod.rs
 
+//! functions to render the pages for reviews
+
 use function_name::named;
 use lazy_static::lazy_static;
 use std::sync::Mutex;

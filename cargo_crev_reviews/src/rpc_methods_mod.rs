@@ -1,5 +1,7 @@
 // rpc_methods_mod.rs
 
+//! rpc methods prepare the data to respond the POST rpc requests
+
 use crate::common_mod::*;
 use crate::crev_mod::*;
 use crate::response_post_mod::return_rpc_response;

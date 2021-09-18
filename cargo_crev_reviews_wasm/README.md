@@ -5,7 +5,7 @@
 [comment]: # (auto_cargo_toml_to_md start)
 
 **Wasm web app that is the frontend of the application cargo_crev_reviews**  
-***[repository](https://github.com/LucianoBestia/cargo_crev_reviews_workspace); version: 2021.918.1526  date: 2021-09-18 authors: Luciano Bestia***  
+***[repository](https://github.com/LucianoBestia/cargo_crev_reviews_workspace); version: 2021.918.1640  date: 2021-09-18 authors: Luciano Bestia***  
 
 [comment]: # (auto_cargo_toml_to_md end)
 

@@ -1,5 +1,7 @@
 // response_get_files_mod.rs
 
+//! response for the GET method. Mainly the static files, that are embedded in Rust code.
+
 use crate::files_mod::*;
 use dev_bestia_simple_server::{Response, StatusCode};
 use unwrap::unwrap;

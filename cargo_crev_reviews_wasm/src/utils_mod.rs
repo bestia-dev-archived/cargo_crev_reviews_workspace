@@ -1,4 +1,6 @@
-//! utils_mod.rs
+// utils_mod.rs
+
+//! small utility functions
 
 /*
 /// replace wt (web text) placeholder form the template

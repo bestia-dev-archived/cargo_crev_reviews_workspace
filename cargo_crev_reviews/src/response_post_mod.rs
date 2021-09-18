@@ -1,5 +1,7 @@
 // response_post_method_mod.rs
 
+//! generic functions for response to the POST method
+
 use crate::common_mod::*;
 use crate::rpc_methods_mod::*;
 use std::str::FromStr;
