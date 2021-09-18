@@ -131,17 +131,15 @@ fn task_release() {
     // copy to web_server_folder/pkg
     run_shell_command("rsync -a --info=progress2 --delete-after cargo_crev_reviews_wasm/pkg/ web_server_folder/cargo_crev_reviews/pkg/");
 
-    //auto_cargo_toml_to_md();
+    auto_cargo_toml_to_md();
 
-    // I need to exclude the file `cargo_crev_reviews/src/files_mod.rs` because it contains only emendable files
-    // I will empty this files, and later it will be filled with copy_web_folder_files_into_module
-    unwrap!(std::fs::write("cargo_crev_reviews/src/files_mod.rs", ""));
     auto_lines_of_code("");
     copy_web_folder_files_into_module();
 
 
     run_shell_command("cargo build --release --workspace --exclude cargo_crev_reviews_wasm");
-    run_shell_command(&format!("strip target/release/{}", package_name()));
+    let cargo_toml = CargoToml::read();
+    run_shell_command(&format!("strip target/release/{}", cargo_toml.package_name()));
 
     println!(
         r#"
@@ -179,14 +177,15 @@ fn task_copy_common() {
 
 /// example how to call a list of shell commands and combine with rust code
 fn task_docs() {
-    // auto_md_to_doc_comments();
+    auto_md_to_doc_comments();
+    let cargo_toml = CargoToml::read();
     #[rustfmt::skip]
     let shell_commands = [
         "cargo doc --no-deps --document-private-items --open",
         // copy target/doc into docs/ because it is github standard
         "rsync -a --info=progress2 --delete-after target/doc/ docs/",
         "echo Create simple index.html file in docs directory",
-        &format!("echo \"<meta http-equiv=\\\"refresh\\\" content=\\\"0; url={}/index.html\\\" />\" > docs/index.html",package_name().replace("-","_")) ,
+        &format!("echo \"<meta http-equiv=\\\"refresh\\\" content=\\\"0; url={}/index.html\\\" />\" > docs/index.html",cargo_toml.package_name().replace("-","_")) ,
     ];
     run_shell_commands(shell_commands.to_vec());
     // message to help user with next task

@@ -1,17 +1,16 @@
-[comment]: # (auto_md_to_doc_comments segment start A)
-
 # cargo_crev_reviews_workspace
 
 [comment]: # (auto_cargo_toml_to_md start)
 
-Write cargo-crev reviews in a Graphical User Interface
+**Write cargo-crev reviews in a Graphical User Interface with a cross-platform app written in rust**  
+***[repository](https://github.com/lucianobestia/cargo_crev_reviews_workspace); version: 2021.918.1526  date: 2021-09-18 authors: Luciano Bestia***  
 
 [comment]: # (auto_cargo_toml_to_md end)
 
 [comment]: # (auto_lines_of_code start)
-[![Lines in Rust code](https://img.shields.io/badge/Lines_in_Rust-1336-green.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
-[![Lines in Doc comments](https://img.shields.io/badge/Lines_in_Doc_comments-274-blue.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
-[![Lines in Comments](https://img.shields.io/badge/Lines_in_comments-97-purple.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
+[![Lines in Rust code](https://img.shields.io/badge/Lines_in_Rust-2554-green.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
+[![Lines in Doc comments](https://img.shields.io/badge/Lines_in_Doc_comments-601-blue.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
+[![Lines in Comments](https://img.shields.io/badge/Lines_in_comments-208-purple.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
 [![Lines in examples](https://img.shields.io/badge/Lines_in_examples-96-yellow.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
 [![Lines in tests](https://img.shields.io/badge/Lines_in_tests-140-orange.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
 
@@ -53,5 +52,3 @@ please buy me a beer donating on my [paypal](https://www.paypal.com/paypalme/Luc
 You know the price of a beer in your local bar ;-)  
 So I can drink a free beer for your health :-)  
 [Na zdravje](https://translate.google.com/?hl=en&sl=sl&tl=en&text=Na%20zdravje&op=translate) ! 🍻
-
-[comment]: # (auto_md_to_doc_comments segment end A)

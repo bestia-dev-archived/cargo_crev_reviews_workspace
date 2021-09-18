@@ -467,8 +467,46 @@
 <span id="465">465</span>
 <span id="466">466</span>
 <span id="467">467</span>
+<span id="468">468</span>
+<span id="469">469</span>
+<span id="470">470</span>
+<span id="471">471</span>
+<span id="472">472</span>
+<span id="473">473</span>
+<span id="474">474</span>
+<span id="475">475</span>
+<span id="476">476</span>
+<span id="477">477</span>
+<span id="478">478</span>
+<span id="479">479</span>
+<span id="480">480</span>
+<span id="481">481</span>
+<span id="482">482</span>
+<span id="483">483</span>
+<span id="484">484</span>
+<span id="485">485</span>
+<span id="486">486</span>
+<span id="487">487</span>
 </pre><pre class="rust">
-<span class="doccomment">//! A simple web-server.</span>
+<span class="comment">// dev_bestia_simple_server/lib.rs</span>
+
+<span class="comment">// region: auto_md_to_doc_comments include README.md A //!</span>
+<span class="doccomment">//! # dev_bestia_simple_server</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! **simple server from &lt;https://github.com/steveklabnik/simple-server&gt;**  </span>
+<span class="doccomment">//! ***[repository](https://github.com/lucianobestia/cargo_crev_reviews_workspace); version: 2021.918.1526  date: 2021-09-18 authors: Luciano Bestia***  </span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! [![Lines in Rust code](https://img.shields.io/badge/Lines_in_Rust-511-green.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)</span>
+<span class="doccomment">//! [![Lines in Doc comments](https://img.shields.io/badge/Lines_in_Doc_comments-221-blue.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)</span>
+<span class="doccomment">//! [![Lines in Comments](https://img.shields.io/badge/Lines_in_comments-15-purple.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)</span>
+<span class="doccomment">//! [![Lines in examples](https://img.shields.io/badge/Lines_in_examples-96-yellow.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)</span>
+<span class="doccomment">//! [![Lines in tests](https://img.shields.io/badge/Lines_in_tests-140-orange.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! I want the simplest [web server](https://en.wikipedia.org/wiki/Web_server) ever. It will be used exclusively locally from one super simple [web-application](https://en.wikipedia.org/wiki/Web_application), so  don&#39;t need to care much about security. I choose [simple server](https://crates.io/crates/simple-server) from the [rust book](https://doc.rust-lang.org/1.30.0/book/second-edition/ch20-01-single-threaded.html). I don&#39;t care about [multi-threading](https://en.wikipedia.org/wiki/Multithreading_(computer_architecture)) or [async](https://en.wikipedia.org/wiki/Asynchrony_(computer_programming)) , because it will be used by only one browser. The example from the book evolved into the github repository of the author of the book [github.com/steveklabnik](https://github.com/steveklabnik/simple-server).  </span>
+<span class="doccomment">//! I cloned it, updated the dependencies and consequently fixed some broken code.  </span>
+<span class="doccomment">//! I had to publish it to crates.io because the project cargo_crev_reviews use it. Crates.io does not accept `local path` dependencies, only crates.io dependencies.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! ## A simple web-server</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! The `simple-server` crate is designed to give you the tools to to build</span>
 <span class="doccomment">//! an HTTP server, based around the http crate, blocking I/O, and a</span>
@@ -479,7 +517,7 @@
 <span class="doccomment">//! your needs, you may or may not want to choose another server.</span>
 <span class="doccomment">//! However, just the simple stuff is often enough for many projects.</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! # Examples</span>
+<span class="doccomment">//! ## Examples</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! At its core, `simple-server` contains a `Server`. The `Server` is</span>
 <span class="doccomment">//! passed a handler upon creation, and the `listen` method is used</span>
@@ -492,6 +530,8 @@
 <span class="doccomment">//!</span>
 <span class="doccomment">//! To see examples of this crate in use, please consult the `examples`</span>
 <span class="doccomment">//! directory.</span>
+<span class="doccomment">//!</span>
+<span class="comment">// endregion: auto_md_to_doc_comments include README.md A //!</span>
 
 <span class="kw">use</span> <span class="ident">http</span>;
 <span class="kw">use</span> <span class="ident">log</span>::<span class="kw-2">*</span>;

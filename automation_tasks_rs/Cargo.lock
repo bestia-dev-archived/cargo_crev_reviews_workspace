@@ -46,7 +46,7 @@ checksum = "bef38d45163c2f1dde094a7dfd33ccf595c92905c8f8f4fdc18d06fb1037718a"
 
 [[package]]
 name = "cargo_auto_lib"
-version = "0.7.19"
+version = "0.7.22"
 dependencies = [
  "anyhow",
  "cargo_toml",
