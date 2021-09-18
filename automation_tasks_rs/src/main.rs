@@ -228,7 +228,7 @@ fn task_publish_to_crates_io_cargo_crev_reviews() {
     run_shell_command(&shell_command);
     // cargo publish
     run_shell_command("cargo publish");
-    unwrap!(std::env::set_current_dir(""));
+    unwrap!(std::env::set_current_dir(".."));
     println!(
         r#"
 After `cargo auto publish_to_crates_io_cargo_crev_reviews', 

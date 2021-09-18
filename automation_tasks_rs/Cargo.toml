@@ -8,8 +8,8 @@ description = "cargo auto - automation tasks written in Rust language"
 publish = false
 
 [dependencies]
-# cargo_auto_lib = "0.7.19"
-cargo_auto_lib ={path="../../cargo_auto_lib"}
+cargo_auto_lib = "0.7.22"
+# cargo_auto_lib ={path="../../cargo_auto_lib"}
 
 unwrap="1.2.1"
 base64 = "0.13.0"
