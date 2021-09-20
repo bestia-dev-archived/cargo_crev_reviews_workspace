@@ -393,3 +393,9 @@ pub fn crev_publish() -> anyhow::Result<String> {
     let ret_val = format!("{} {}", String::from_utf8(output.stdout)?, String::from_utf8(output.stderr)?);
     Ok(ret_val)
 }
+
+pub fn verify_project() -> anyhow::Result<String> {
+    let output = std::process::Command::new("cargo").arg("crev").arg("verify").output().unwrap();
+    let output = format!("{} {}", String::from_utf8_lossy(&output.stdout), String::from_utf8_lossy(&output.stderr));
+    Ok(output)
+}

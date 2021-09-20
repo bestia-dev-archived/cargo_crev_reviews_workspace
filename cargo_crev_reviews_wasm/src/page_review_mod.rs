@@ -38,6 +38,7 @@ impl PageProcessor for RpcMessageData {
     /// the use of complete string wt_xxx enables easy and exact text search around the source code
     fn match_wt(&self, wt_name: &str) -> String {
         match wt_name {
+            "wt_cargo_crev_reviews_version" => env!("CARGO_PKG_VERSION").to_string(),
             "wt_message" => self.message.to_string(),
             _ => {
                 let html_error = format!("Unrecognized replace_wt method {}", wt_name);
@@ -188,9 +189,7 @@ pub fn page_review_list(rpc_response: RpcResponse) {
 
     inject_into_html(&html_after_process);
 
-    on_click!("button_review_new", request_review_new);
-    on_click!("button_review_publish", request_review_publish);
-    on_click!("button_update_registry_index", request_update_registry_index);
+    navigation_on_click();
 
     // on_click for every row of the list
     for (row_num, _item) in REVIEW_LIST_DATA.lock().unwrap().list_of_review.iter().enumerate() {
@@ -202,6 +201,13 @@ pub fn page_review_list(rpc_response: RpcResponse) {
         row_on_click!("button_open_source_code", row_num, button_open_source_code_onclick);
         row_on_click!("button_review_delete", row_num, modal_delete);
     }
+}
+
+fn navigation_on_click() {
+    on_click!("button_review_new", request_review_new);
+    on_click!("button_review_publish", request_review_publish);
+    on_click!("button_update_registry_index", request_update_registry_index);
+    on_click!("button_verify_project", request_verify_project);
 }
 
 #[named]
@@ -359,7 +365,6 @@ pub fn page_review_error(rpc_response: RpcResponse) {
     w::debug_write(function_name!());
     let page_html = page_html(&rpc_response);
 
-    // modal dialog box with error, don't change the html and data
     let data: RpcMessageData = unwrap!(serde_json::from_value(rpc_response.response_data));
     let html_after_process = data.process_html(&page_html);
 
@@ -419,4 +424,25 @@ fn request_review_delete(_element_id: &str, row_num: usize) {
     };
 
     post_request_await_run_response_method(RequestMethod::RpcReviewDelete, review_filter_data);
+}
+
+#[named]
+fn request_verify_project(_element_id: &str) {
+    w::debug_write(function_name!());
+    let empty_data = RpcEmptyData {};
+
+    post_request_await_run_response_method(RequestMethod::RpcVerifyProject, empty_data);
+}
+
+#[named]
+pub fn page_verify_list(rpc_response: RpcResponse) {
+    w::debug_write(function_name!());
+    let page_html = page_html(&rpc_response);
+
+    // modal dialog box with error, don't change the html and data
+    let data: RpcMessageData = unwrap!(serde_json::from_value(rpc_response.response_data));
+    let html_after_process = data.process_html(&page_html);
+
+    inject_into_html(&html_after_process);
+    navigation_on_click();
 }

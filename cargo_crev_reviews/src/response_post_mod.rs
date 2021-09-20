@@ -25,6 +25,7 @@ fn match_request_method_and_call_function(request_method: &str, request_data: se
             RequestMethod::RpcUpdateRegistryIndex => rpc_update_registry_index(request_data),
             RequestMethod::RpcReviewOpenSourceCode => rpc_review_open_source_code(request_data),
             RequestMethod::RpcReviewDelete => rpc_review_delete(request_data),
+            RequestMethod::RpcVerifyProject => rpc_verify_project(request_data),
         },
         Err(_err) => anyhow::bail!("unknown server method = {}", request_method),
     }

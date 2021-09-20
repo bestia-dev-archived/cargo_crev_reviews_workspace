@@ -31,6 +31,8 @@ pub enum RequestMethod {
     RpcReviewOpenSourceCode,
     #[strum(serialize = "rpc_review_delete")]
     RpcReviewDelete,
+    #[strum(serialize = "rpc_verify_project")]
+    RpcVerifyProject,
 }
 
 /// methods available on the client
@@ -46,6 +48,8 @@ pub enum ResponseMethod {
     PageReviewError,
     #[strum(serialize = "page_review_publish_modal")]
     PageReviewPublishModal,
+    #[strum(serialize = "page_verify_list")]
+    PageVerifyList,
 }
 
 /// the request_method will be processed on the server

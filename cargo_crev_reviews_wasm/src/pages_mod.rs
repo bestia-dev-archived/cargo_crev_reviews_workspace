@@ -273,6 +273,7 @@ pub async fn match_response_method_and_call_function(response: RpcResponse) {
             ResponseMethod::PageReviewEdit => page_review_mod::page_review_edit(response),
             ResponseMethod::PageReviewError => page_review_mod::page_review_error(response),
             ResponseMethod::PageReviewPublishModal => page_review_mod::page_review_publish_modal(response),
+            ResponseMethod::PageVerifyList => page_review_mod::page_verify_list(response),
         },
         Err(_err) => w::debug_write(&format!("Error: Unrecognized response_method {}", response.response_method)),
     }
