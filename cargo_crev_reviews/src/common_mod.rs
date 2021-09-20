@@ -105,6 +105,18 @@ pub struct ReviewListData {
 }
 
 // endregion: review
+#[derive(Serialize, Deserialize, Debug, Default)]
+pub struct VerifyItemData {
+    pub status: String,
+    pub crate_name: String,
+    pub crate_version: String,
+}
+
+#[derive(Serialize, Deserialize, Debug, Default)]
+pub struct VerifyListData {
+    pub project_dir: String,
+    pub list_of_verify: Vec<VerifyItemData>,
+}
 
 /// returns string between the start end end delimiters without delimiters
 /// and the new cursor position

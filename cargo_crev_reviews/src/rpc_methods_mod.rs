@@ -175,9 +175,8 @@ pub fn rpc_review_delete(filter_data: serde_json::Value) -> anyhow::Result<Strin
 pub fn rpc_verify_project(_filter_data: serde_json::Value) -> anyhow::Result<String> {
     println!(function_name!());
 
-    let message = crate::crev_mod::verify_project()?;
+    let response_data = crate::crev_mod::verify_project()?;
     let response_method = ResponseMethod::PageVerifyList;
-    let response_data = RpcMessageData { message };
     let response_html = crate::files_mod::verify_list_html();
 
     Ok(return_rpc_response(response_method, response_data, response_html))

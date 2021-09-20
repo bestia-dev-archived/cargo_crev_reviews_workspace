@@ -20,7 +20,7 @@ use crev_data::{
 use crev_lib::ProofStore;
 use lazy_static::lazy_static;
 use serde::Deserialize;
-use std::sync::Mutex;
+use std::{env, sync::Mutex};
 use std::{ops::Range, str::FromStr, vec};
 use unwrap::unwrap;
 
@@ -394,8 +394,25 @@ pub fn crev_publish() -> anyhow::Result<String> {
     Ok(ret_val)
 }
 
-pub fn verify_project() -> anyhow::Result<String> {
+pub fn verify_project() -> anyhow::Result<VerifyListData> {
     let output = std::process::Command::new("cargo").arg("crev").arg("verify").output().unwrap();
     let output = format!("{} {}", String::from_utf8_lossy(&output.stdout), String::from_utf8_lossy(&output.stderr));
-    Ok(output)
+
+    // Trust check result: pass, none, warn
+    // parse the result
+    let mut list_of_verify = vec![];
+    for line in output.lines() {
+        if line.starts_with("none ") || line.starts_with("pass ") || line.starts_with("warn ") {
+            let s: Vec<&str> = line.split_whitespace().collect();
+            list_of_verify.push(VerifyItemData {
+                status: s[0].to_string(),
+                crate_name: s[1].to_string(),
+                crate_version: s[2].to_string(),
+            })
+        }
+    }
+    Ok(VerifyListData {
+        project_dir: env::current_dir()?.to_string_lossy().to_string(),
+        list_of_verify,
+    })
 }
