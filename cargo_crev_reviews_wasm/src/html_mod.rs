@@ -261,7 +261,7 @@ where
     });
 }
 
-pub fn cln_html(response: &RpcResponse) -> String {
+pub fn extract_html(response: &RpcResponse) -> String {
     let response_html = &response.response_html;
     // only the html inside the <body> </body>
     let (html_fragment, _new_pos_cursor) = get_delimited_text(response_html, 0, "<body>", "</body>").unwrap();

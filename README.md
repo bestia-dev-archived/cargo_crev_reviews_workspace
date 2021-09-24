@@ -16,10 +16,6 @@
 
 [comment]: # (auto_lines_of_code end)
 
-[comment]: # (auto_badges end)
-
-[comment]: # (auto_badges end)
-
 ## Workspace
 
 This is a rust [workspace](https://doc.rust-lang.org/book/ch14-03-cargo-workspaces.html) (multi-projects) that contains member projects.  
@@ -29,9 +25,6 @@ The main member project is `cargo_crev_reviews`. Continue reading the main READM
 
 show if there is newer version. cache it in a file.
 markdown instead of raw text
-Automation tasks for workspaces:  
-auto_lines_of_code: exclude files_mod.rs, because it is just embedded files.  
-auto_cargo_toml_to_md, , auto_md_to_doc_comments  
 special types for html encoded strings and attribute_value_encoded strings. So I can be sure that I did or did not encoded them.  
 
 ## cargo crev reviews and advisory

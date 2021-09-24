@@ -60,7 +60,7 @@ For the browser I will create a simple web app. All the code will be in rust, I 
 
 ## Development
 
-I will use [cargo-auto](https://crates.io/crates/cargo-auto) to automate the tasks needed to build the project. It is a workspace (multi-project), so this will be interesting. I will update the code of cargo-auto to work with workspaces. Cargo-auto is also a project of mine.  
+I will use [cargo-auto](https://crates.io/crates/cargo-auto) to automate the tasks needed to build the project.  
 The sub-directory `automation_tasks_rs` is the rust project for [cargo-auto](https://crates.io/crates/cargo-auto).  
 
 The rust workspace is made of members:
@@ -71,12 +71,12 @@ The rust workspace is made of members:
 The sub-directory `web_server_folder` contains all the files and folder structure for a working development web_server.  
 But this files are not used directly. Because of the way the publish to crates.io works, I will embed them inside the rust code as strings (base64 encoded if needed). I will make an automation task for that.  
 
+There is a file `auto_generated_mod.rs` where automation tasks writes boilerplate code.
+
 ## backend - cargo_crev_reviews
 
 This is a micro-web-server intended for local use with only one local browser connected to it.  
-I wanted to give it the name `cargo_crev_reviews_micro_web_server_backend`, but because this one will be published on crates.io, I must give it the name of the whole project `cargo_crev_reviews`.  
-It is the backend of the application `cargo_crev_reviews`.  
-The frontend is the GUI web app that runs in the browser and is connected only to this backend. It is provided also by the backend app.  
+It is the backend of the application `cargo_crev_reviews`. I had to use the same name here.  
 Together the backend and the frontend form a complete application that is cross-platform.  
 They share some structs for communication that are defined in the `common_structs_mod` module. One automation task copies the content from backend to frontend projects to keep them in sync.  
 The only URL the server operates is: <http://127.0.0.1:8182/cargo_crev_reviews>
@@ -86,7 +86,7 @@ It means that all the static files: css, html, icons, images, ... must be inside
 For developing it is practical to have all this files as files.  
 But before release an automation task converts this files to strings and put them into the rust code.  
 
-The micro-server will accept mostly [POST](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/POST) with json similar to  [json-rpc](https://www.jsonrpc.org/specification). But sure I had to modify it to something more adequate for my use-case. I think in the future I will change that even more to something more adequate.  
+The micro-server will accept mostly [POST](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/POST) with json similar to  [json-rpc](https://www.jsonrpc.org/specification). But sure I had to modify it to something more adequate for my use-case. I think in the future I will change that even more to something even more adequate.  
 
 ```bash
 Syntax:
@@ -137,35 +137,7 @@ The html template must be microXml compatible. The wasm code reads element by el
 
 Common structures between backend and frontend. It is kind of a contract for communication.  
 All in 100% rust language. One automation task keeps in sync the backend and frontend module.  
-TODO: I have a problem when serialize and deserialize structs. Most of the time I need then name of the field. Because with the name i can bind in different scenarios. Using structs I don't have the name of the field at runtime. I think I will ditch most of the structs to have just a plain old flat text. Inside that text every field will have a slice and a name. And I can then use that in runtime for bindings.  
-
-## Code-flow
-
-Everything is compiled into one single executable binary for Linux: `cargo_crev_reviews`.  
-First it opens the default browser with `xdg-open` on <http://127.0.0.1:8182/cargo_crev_reviews/index.html>.  
-If your WSL2 does not have yet a default browser run this:  
-
-``` bash
-ln -s "/mnt/c/Program Files/Mozilla Firefox/firefox.exe" /usr/bin/browser_in_win
-export BROWSER='/usr/bin/browser_in_win'
-```
-
-The command `ln -sf` is permanent and persistent. It makes a symbolic link file that stays there forever. But `export BROWSER=` is NOT persistent. You need to add this command to `~/.bashrc` that runs it on every start of terminal.  
-
-In the next millisecond the web server starts listening to 127.0.0.1 port 8182.  
-The first set of requests are GET and response is "static" files embedded in files_mod.rs
-
-1. browser request for `/cargo_crev_reviews/index.html` is GET, the response is html text file embedded in files_mod.rs in the function: `index_html()`  
-    This html is just an empty shell that gets the css and wasm code. There is no real content inside. This concept is [Single-page application SPA](https://en.wikipedia.org/wiki/Single-page_application).  
-2. index.html requests: 3 css files, `pkg/cargo_crev_reviews.js`, `pkg/cargo_crev_reviews_bg.wasm`, "favicon" `icons/icon-032.png`. All these requests are GET and responses come from files_mod.rs functions, some are text files and others are base64 files.
-3. the browser imports the wasm module and starts the init function that requests `srv_review_list`. This responds with: cln_method_name, response_html and response_data.
-4. wasm (inside the browser) is rust code. First it matches method_name and calls the appropriate function. It processes the html with the data and inserts it into index.html (the empty shell).
-5. the browser renders our first page. Hooray!
-6. the user click on some button.
-7. the macro `on_click!` or `row_on_click!` hides the ugly rust code behind the definition of an event handler in web_sys and calls a function
-8. wasm creates a rpc request and sends/POST to the server
-9. the request is POST, the server first matches the method_name and calls the appropriate function. The function processes the call and prepares some data. It loads the html template.
-10. The response contains the html to be rendered and data to be inserted in this html before rendering.
+TODO: Using structs is not generic enough. Most of the time I need then name of a field. Because with the name I can bind in different scenarios. Using structs I don't have the name of the field at runtime. I think I will ditch most of the structs to have just a plain old flat text with QVS21. Inside that text every field will have a slice and a name. And I can then use that in runtime for bindings.  
 
 ## cargo-crev integration
 

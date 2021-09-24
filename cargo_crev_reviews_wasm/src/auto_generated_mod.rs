@@ -24,7 +24,7 @@ pub async fn match_response_method_and_call_function(response: common_structs_mo
 
 // proxy for public functions on server
 pub mod srv_methods {
-    use crate::cln_methods_mod::post_request_await_run_response_method;
+    use crate::html_mod::post_request_await_run_response_method;
     use function_name::named;
 
     // generator srv_methods start

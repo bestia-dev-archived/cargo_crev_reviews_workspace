@@ -2,8 +2,24 @@
 
 use unwrap::unwrap;
 
-/// functions must be prefixed and start with pub fn
-pub fn list_methods(file_path:&str, function_prefix:&str )->Vec<String>{
+pub fn list_methods_in_files(dir_path:&str, file_prefix:&str, function_prefix:&str)->Vec<String> {
+    let mut function_list: Vec<String>=vec![];
+    for entry in unwrap!(std::fs::read_dir(dir_path)){
+        match entry{
+            Ok(entry) => {
+                let path = entry.path();
+                if path.file_name().unwrap().to_string_lossy().starts_with(file_prefix){
+                    function_list.extend_from_slice(&list_methods(path.to_string_lossy().to_string().as_str(), function_prefix));
+                }
+            }
+            Err(err) => eprintln!("{}", err),
+        }
+    }
+    function_list
+}
+
+/// functions must be prefixed and start with `pub fn `
+fn list_methods(file_path:&str, function_prefix:&str )->Vec<String>{
     let mut vec:Vec<String>=vec![];
     let code = unwrap!(std::fs::read_to_string(file_path));
     let mut cursor = 0;

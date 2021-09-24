@@ -11,7 +11,7 @@ use crate::auto_generated_mod::common_structs_mod::*;
 use crate::auto_generated_mod::srv_methods;
 
 // use crate::on_click;
-use crate::cln_methods_mod::*;
+use crate::html_mod::*;
 use crate::*;
 
 lazy_static! {
@@ -111,10 +111,10 @@ pub fn request_verify_list(_element_id: &str) {
 #[named]
 pub fn cln_verify_list(srv_response: RpcResponse) {
     w::debug_write(function_name!());
-    let cln_html = cln_html(&srv_response);
+    let html = extract_html(&srv_response);
     *VERIFY_LIST_DATA.lock().unwrap() = unwrap!(serde_json::from_value(srv_response.response_data));
     // modal dialog box with error, don't change the html and data
-    let html_after_process = VERIFY_LIST_DATA.lock().unwrap().process_html(&cln_html);
+    let html_after_process = VERIFY_LIST_DATA.lock().unwrap().process_html(&html);
 
     inject_into_html(&html_after_process);
     navigation_on_click();

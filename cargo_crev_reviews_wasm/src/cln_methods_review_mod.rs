@@ -11,7 +11,7 @@ use wasm_bindgen::JsCast;
 
 use crate::auto_generated_mod::common_structs_mod::*;
 use crate::auto_generated_mod::*;
-use crate::cln_methods_mod::*;
+use crate::html_mod::*;
 use crate::on_click;
 use crate::*;
 
@@ -182,11 +182,11 @@ pub fn request_review_list(_element_id: &str) {
 pub fn cln_review_list(srv_response: RpcResponse) {
     w::debug_write(function_name!());
 
-    let cln_html = cln_html(&srv_response);
+    let html = extract_html(&srv_response);
     store_static_review_list_data(srv_response);
 
     // call process with functions as parameters, to use for replace attributes and text nodes
-    let html_after_process = REVIEW_LIST_DATA.lock().unwrap().process_html(&cln_html);
+    let html_after_process = REVIEW_LIST_DATA.lock().unwrap().process_html(&html);
 
     inject_into_html(&html_after_process);
 
@@ -247,14 +247,14 @@ fn button_open_source_code_onclick(_element_id: &str, row_num: usize) {
 #[named]
 pub fn request_review_publish(_element_id: &str) {
     w::debug_write(function_name!());
-    let cln_html = r#"
+    let html = r#"
 <div id="modal_message" class="w3_modal">
     <div class="w3_modal_content">
         <code>$ cargo crev publish</code>
         <div>publishing to remote repository. Wait a minute...</div>        
     </div>
 </div>"#;
-    w::set_inner_html("div_for_modal", cln_html);
+    w::set_inner_html("div_for_modal", html);
     let request_data = RpcEmptyData {};
     srv_methods::srv_review_publish(request_data);
 }
@@ -262,13 +262,13 @@ pub fn request_review_publish(_element_id: &str) {
 #[named]
 pub fn request_update_registry_index(_element_id: &str) {
     w::debug_write(function_name!());
-    let cln_html = r#"
+    let html = r#"
     <div id="modal_message" class="w3_modal">
         <div class="w3_modal_content">
             <div>Updating registry index. Wait a minute...</div>        
         </div>
     </div>"#;
-    w::set_inner_html("div_for_modal", cln_html);
+    w::set_inner_html("div_for_modal", html);
     let request_data = RpcEmptyData {};
     srv_methods::srv_update_registry_index(request_data);
 }
@@ -283,11 +283,11 @@ pub fn request_review_new(_element_id: &str) {
 #[named]
 pub fn cln_review_new(srv_response: RpcResponse) {
     w::debug_write(function_name!());
-    let cln_html = cln_html(&srv_response);
+    let html = extract_html(&srv_response);
     store_to_review_item_data(srv_response);
     // call process with functions as parameters, to use for replace attributes and text nodes
     let data = &REVIEW_ITEM_DATA.lock().unwrap();
-    let html_after_process = data.process_html(&cln_html);
+    let html_after_process = data.process_html(&html);
     inject_into_html(&html_after_process);
 
     on_click!("button_review_save", request_review_save);
@@ -342,12 +342,12 @@ fn request_review_edit_from_list(_element_id: &str, row_num: usize) {
 #[named]
 pub fn cln_review_edit(srv_response: RpcResponse) {
     w::debug_write(function_name!());
-    let cln_html = cln_html(&srv_response);
+    let html = extract_html(&srv_response);
     store_to_review_item_data(srv_response);
 
     // call process with functions as parameters, to use for replace attributes and text nodes
     let data = &REVIEW_ITEM_DATA.lock().unwrap();
-    let html_after_process = data.process_html(&cln_html);
+    let html_after_process = data.process_html(&html);
 
     inject_into_html(&html_after_process);
 
@@ -358,10 +358,10 @@ pub fn cln_review_edit(srv_response: RpcResponse) {
 #[named]
 pub fn cln_review_error(srv_response: RpcResponse) {
     w::debug_write(function_name!());
-    let cln_html = cln_html(&srv_response);
+    let html = extract_html(&srv_response);
 
     let data: RpcMessageData = unwrap!(serde_json::from_value(srv_response.response_data));
-    let html_after_process = data.process_html(&cln_html);
+    let html_after_process = data.process_html(&html);
 
     w::set_inner_html("div_for_modal", &html_after_process);
     on_click!("modal_close", modal_close_on_click);
@@ -374,11 +374,11 @@ fn modal_close_on_click(_element_id: &str) {
 #[named]
 pub fn cln_review_publish_modal(srv_response: RpcResponse) {
     w::debug_write(function_name!());
-    let cln_html = cln_html(&srv_response);
+    let html = extract_html(&srv_response);
 
     // modal dialog box with error, don't change the html and data
     let data: RpcMessageData = unwrap!(serde_json::from_value(srv_response.response_data));
-    let html_after_process = data.process_html(&cln_html);
+    let html_after_process = data.process_html(&html);
 
     w::set_inner_html("div_for_modal", &html_after_process);
     on_click!("modal_close", modal_close_on_click);
@@ -387,7 +387,7 @@ pub fn cln_review_publish_modal(srv_response: RpcResponse) {
 #[named]
 pub fn modal_delete(_element_id: &str, row_num: usize) {
     w::debug_write(function_name!());
-    let cln_html = format!(
+    let html = format!(
         r#"
     <div id="modal_message" class="w3_modal">
         <div class="w3_modal_content">
@@ -398,7 +398,7 @@ pub fn modal_delete(_element_id: &str, row_num: usize) {
     </div>"#,
         row_num
     );
-    w::set_inner_html("div_for_modal", &cln_html);
+    w::set_inner_html("div_for_modal", &html);
 
     on_click!("modal_close", modal_close_on_click);
     // I had to add modal_yes_delete(0), because row_on_click works that way.

@@ -21,9 +21,9 @@ use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsValue;
 
 mod auto_generated_mod;
-mod cln_methods_mod;
 mod cln_methods_review_mod;
 mod cln_methods_verify_mod;
+mod html_mod;
 mod utils_mod;
 mod web_sys_mod;
 
