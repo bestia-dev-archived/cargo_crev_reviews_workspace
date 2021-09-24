@@ -2,6 +2,17 @@
 
 use unwrap::unwrap;
 
+pub fn replace_delimited_segment(file_path:&str, replace_with: String, start_delimiter:&str, end_delimiter:&str ) {    
+    let old_generated = unwrap!(std::fs::read_to_string(file_path));
+    let range = unwrap!(find_range_between_delimiters(&old_generated,&mut 0,start_delimiter, end_delimiter));
+    let mut new_generated = String::with_capacity(old_generated.len());
+    new_generated.push_str(&old_generated[..range.start]);
+    new_generated.push_str("\n");
+    new_generated.push_str(&replace_with);
+    new_generated.push_str(&old_generated[range.end..]);
+    unwrap!(std::fs::write(file_path, new_generated));
+}
+
 /// find and return the range of the first occurrence between start and end delimiters
 /// Success: mutates also the cursor position, so the next find will continue from there
 /// Fail: return None if not found and don't mutate pos_cursor

@@ -179,6 +179,8 @@ After `cargo auto release_and_run` close the CLI with ctrl+c and close the brows
 /// modify auto_generated_mod.rs
 fn task_generated_mod() {
     common_structs_copy();
+    generate_rpc_server_functions();
+    generate_match_response_method();
 }
 
 /// example how to call a list of shell commands and combine with rust code
@@ -309,7 +311,7 @@ fn copy_web_folder_files_into_module() {
 }
 
 fn common_structs_copy(){
-    // 1. copy from cargo_crev_reviews/src/common_structs_mod.rs 
+    // copy from cargo_crev_reviews/src/common_structs_mod.rs 
     // to cargo_crev_reviews_wasm/src/auto_generated_mod inside common_structs module 
     let code = unwrap!(std::fs::read_to_string("cargo_crev_reviews/src/common_structs_mod.rs"));
     let old_generated = unwrap!(std::fs::read_to_string("cargo_crev_reviews_wasm/src/auto_generated_mod.rs"));
@@ -320,4 +322,54 @@ fn common_structs_copy(){
     new_generated.push_str(&code);
     new_generated.push_str(&old_generated[range.end..]);
     unwrap!(std::fs::write("cargo_crev_reviews_wasm/src/auto_generated_mod.rs", new_generated));
+}
+
+fn generate_rpc_server_functions(){    
+    let mut function_list = vec![];
+    function_list.extend_from_slice(&list_functions("cargo_crev_reviews/src/rpc_methods_mod.rs", "rpc_"));
+    
+    let mut code = String::new();
+    for function_name in function_list{
+        let temp = format!(r#"
+#[named]
+pub fn {}<T>(request_data: T)
+where
+    T: serde::Serialize,
+{{
+    let request_method = function_name!();
+    post_request_await_run_response_method(request_method, request_data);
+}}
+"#, &function_name);
+        code.push_str(&temp);
+    }
+    
+    replace_delimited_segment("cargo_crev_reviews_wasm/src/auto_generated_mod.rs",code,"// generator rpc_server start", "// generator rpc_server end");   
+}
+
+/// functions must be prefixed and start with pub fn
+fn list_functions(file_path:&str, function_prefix:&str )->Vec<String>{
+    let mut vec:Vec<String>=vec![];
+    let code = unwrap!(std::fs::read_to_string(file_path));
+    let mut cursor = 0;
+    let functions_starts_with = format!("pub fn {}", function_prefix);
+    while let Some(range) = find_range_between_delimiters(&code,&mut cursor, &functions_starts_with, "("){
+        vec.push(format!("{}{}",function_prefix, &code[range]));
+    }
+    vec
+}
+
+fn generate_match_response_method(){
+    let mut function_list = vec![];
+    // list functions starting with `pub fn page_`
+    function_list.extend_from_slice(&list_functions("cargo_crev_reviews_wasm/src/page_review_mod.rs", "page_"));
+    function_list.extend_from_slice(&list_functions("cargo_crev_reviews_wasm/src/page_verify_mod.rs", "page_"));
+
+    let mut code = String::new();
+    for function_name in function_list{
+        let temp = format!(r#"
+        "{}" => {}(response),
+"#, &function_name, &function_name);
+        code.push_str(&temp);
+    }
+    replace_delimited_segment("cargo_crev_reviews_wasm/src/auto_generated_mod.rs",code,"// generator match_response_method start", "// generator match_response_method end");   
 }

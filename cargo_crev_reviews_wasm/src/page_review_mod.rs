@@ -173,7 +173,7 @@ fn store_static_review_list_data(rpc_response: RpcResponse) {
 
 pub fn request_review_list(_element_id: &str) {
     let request_data = RpcEmptyData {};
-    rpc_server::rpc_review_list(request_data);
+    rpc_server::rpc_reviews_list(request_data);
 }
 
 /// the code for processing the page rpc_review_list
