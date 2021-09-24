@@ -31,7 +31,7 @@ pub mod cln_methods {
     // generator cln_methods start
 
     #[named]
-    pub fn page_review_edit<T>(response_data: T, response_html: &str) -> anyhow::Result<String>
+    pub fn cln_review_edit<T>(response_data: T, response_html: &str) -> anyhow::Result<String>
     where
         T: serde::Serialize,
     {
@@ -40,7 +40,7 @@ pub mod cln_methods {
     }
 
     #[named]
-    pub fn page_review_error<T>(response_data: T, response_html: &str) -> anyhow::Result<String>
+    pub fn cln_review_error<T>(response_data: T, response_html: &str) -> anyhow::Result<String>
     where
         T: serde::Serialize,
     {
@@ -49,7 +49,7 @@ pub mod cln_methods {
     }
 
     #[named]
-    pub fn page_review_list<T>(response_data: T, response_html: &str) -> anyhow::Result<String>
+    pub fn cln_review_list<T>(response_data: T, response_html: &str) -> anyhow::Result<String>
     where
         T: serde::Serialize,
     {
@@ -58,7 +58,7 @@ pub mod cln_methods {
     }
 
     #[named]
-    pub fn page_review_new<T>(response_data: T, response_html: &str) -> anyhow::Result<String>
+    pub fn cln_review_new<T>(response_data: T, response_html: &str) -> anyhow::Result<String>
     where
         T: serde::Serialize,
     {
@@ -67,7 +67,7 @@ pub mod cln_methods {
     }
 
     #[named]
-    pub fn page_review_publish_modal<T>(response_data: T, response_html: &str) -> anyhow::Result<String>
+    pub fn cln_review_publish_modal<T>(response_data: T, response_html: &str) -> anyhow::Result<String>
     where
         T: serde::Serialize,
     {
@@ -76,7 +76,7 @@ pub mod cln_methods {
     }
 
     #[named]
-    pub fn page_verify_list<T>(response_data: T, response_html: &str) -> anyhow::Result<String>
+    pub fn cln_verify_list<T>(response_data: T, response_html: &str) -> anyhow::Result<String>
     where
         T: serde::Serialize,
     {

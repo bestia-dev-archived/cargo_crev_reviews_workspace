@@ -146,15 +146,15 @@
 //! The first set of requests are GET and response is "static" files embedded in files_mod.rs
 //!
 //! 1. browser request for `/cargo_crev_reviews/index.html` is GET, the response is html text file embedded in files_mod.rs in the function: `index_html()`  
-//!     This html is just an empty shell that gets the css and wasm code. There is no real content inside. This concept is [Single-page application SPA](https://en.wikipedia.org/wiki/Single-page_application).  
+//!     This html is just an empty shell that gets the css and wasm code. There is no real content inside. This concept is [Single-page application SPA](https://en.wikipedia.org/wiki/Single-cln_application).  
 //! 2. index.html requests: 3 css files, `pkg/cargo_crev_reviews.js`, `pkg/cargo_crev_reviews_bg.wasm`, "favicon" `icons/icon-032.png`. All these requests are GET and responses come from files_mod.rs functions, some are text files and others are base64 files.
-//! 3. the browser imports the wasm module and starts the init function that requests `srv_review_list`. This responds with: method_name, page_html and data.
-//! 4. wasm (inside the browser) is rust code. First it matches method_name and calls the appropriate function. It processes the page_html with the data and inserts it into index.html (the empty shell).
+//! 3. the browser imports the wasm module and starts the init function that requests `srv_review_list`. This responds with: method_name, cln_html and data.
+//! 4. wasm (inside the browser) is rust code. First it matches method_name and calls the appropriate function. It processes the cln_html with the data and inserts it into index.html (the empty shell).
 //! 5. the browser renders our first page. Hooray!
 //! 6. the user click on some button.
 //! 7. the macro `on_click!` or `row_on_click!` hides the ugly rust code behind the definition of an event handler in web_sys and calls a function
 //! 8. wasm creates a rpc request and sends/POST to the server
-//! 9. the request is POST, the server first matches the method_name and calls the appropriate function. The function processes the call and prepares some data. It loads the page html template.
+//! 9. the request is POST, the server first matches the method_name and calls the appropriate function. The function processes the call and prepares some data. It loads the html template.
 //! 10. The response contains the html to be rendered and data to be inserted in this html before rendering.
 //!
 //! ## cargo-crev integration

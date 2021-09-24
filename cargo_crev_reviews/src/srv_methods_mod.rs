@@ -43,7 +43,7 @@ pub fn srv_reviews_list(_request_data: serde_json::Value) -> anyhow::Result<Stri
     };
     let response_html = crate::files_mod::review_list_html();
 
-    cln_methods::page_review_list(response_data, response_html)
+    cln_methods::cln_review_list(response_data, response_html)
 }
 
 #[named]
@@ -71,7 +71,7 @@ alternative crates explored:
         "#
         .to_string(),
     };
-    cln_methods::page_review_new(response_data, response_html)
+    cln_methods::cln_review_new(response_data, response_html)
 }
 
 #[named]
@@ -112,7 +112,7 @@ pub fn srv_review_edit(request_data: serde_json::Value) -> anyhow::Result<String
     let response_data = from_crev_to_item(&p);
     let response_html = crate::files_mod::review_edit_html();
 
-    cln_methods::page_review_edit(response_data, response_html)
+    cln_methods::cln_review_edit(response_data, response_html)
 }
 
 #[named]
@@ -125,7 +125,7 @@ pub fn srv_review_edit_or_new(request_data: serde_json::Value) -> anyhow::Result
         Ok(p) => {
             let response_data = from_crev_to_item(&p);
             let response_html = crate::files_mod::review_edit_html();
-            cln_methods::page_review_edit(response_data, response_html)
+            cln_methods::cln_review_edit(response_data, response_html)
         }
     }
 }
@@ -138,7 +138,7 @@ pub fn srv_review_new_version(request_data: serde_json::Value) -> anyhow::Result
     let p = crev_new_version(filter)?;
     let response_data = from_crev_to_item(&p);
     let response_html = crate::files_mod::review_edit_html();
-    cln_methods::page_review_edit(response_data, response_html)
+    cln_methods::cln_review_edit(response_data, response_html)
 }
 
 #[named]
@@ -192,6 +192,6 @@ pub fn srv_verify_project(_filter_data: serde_json::Value) -> anyhow::Result<Str
 
     let response_data = crate::crev_mod::verify_project()?;
     let response_html = crate::files_mod::verify_list_html();
-    cln_methods::page_verify_list(response_data, response_html)
+    cln_methods::cln_verify_list(response_data, response_html)
 }
 // endregion: review

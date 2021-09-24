@@ -351,9 +351,9 @@ where
 
 fn generate_client_match_response_method(){
     let mut function_list = vec![];
-    // list functions starting with `pub fn page_`
-    function_list.extend_from_slice(&list_methods("cargo_crev_reviews_wasm/src/page_review_mod.rs", "page_"));
-    function_list.extend_from_slice(&list_methods("cargo_crev_reviews_wasm/src/page_verify_mod.rs", "page_"));
+    // list functions starting with `pub fn cln_`
+    function_list.extend_from_slice(&list_methods("cargo_crev_reviews_wasm/src/cln_methods_review_mod.rs", "cln_"));
+    function_list.extend_from_slice(&list_methods("cargo_crev_reviews_wasm/src/cln_methods_verify_mod.rs", "cln_"));
     function_list.sort();
 
     let mut code = String::new();
@@ -368,8 +368,8 @@ fn generate_client_match_response_method(){
 
 fn generate_client_methods(){    
     let mut function_list = vec![];
-    function_list.extend_from_slice(&list_methods("cargo_crev_reviews_wasm/src/page_review_mod.rs", "page_"));
-    function_list.extend_from_slice(&list_methods("cargo_crev_reviews_wasm/src/page_verify_mod.rs", "page_"));
+    function_list.extend_from_slice(&list_methods("cargo_crev_reviews_wasm/src/cln_methods_review_mod.rs", "cln_"));
+    function_list.extend_from_slice(&list_methods("cargo_crev_reviews_wasm/src/cln_methods_verify_mod.rs", "cln_"));
     function_list.sort();
     
     let mut code = String::new();

@@ -1,4 +1,4 @@
-// page_verify_mod.rs
+// cln_methods_verify_mod.rs
 
 use function_name::named;
 use lazy_static::lazy_static;
@@ -11,7 +11,7 @@ use crate::auto_generated_mod::common_structs_mod::*;
 use crate::auto_generated_mod::srv_methods;
 
 // use crate::on_click;
-use crate::pages_mod::*;
+use crate::cln_methods_mod::*;
 use crate::*;
 
 lazy_static! {
@@ -20,7 +20,7 @@ lazy_static! {
     static ref VERIFY_LIST_DATA: Mutex<VerifyListData> = Mutex::new(VerifyListData::default());
 }
 
-impl PageProcessor for VerifyListData {
+impl HtmlProcessor for VerifyListData {
     /// process template and push as many &str is needed
     fn process_repetitive_items(&self, name_of_repeat_segment: &str, html_repetitive_template: &str, html_new: &mut String) {
         match name_of_repeat_segment {
@@ -63,7 +63,7 @@ impl PageProcessor for VerifyListData {
     }
 }
 
-impl PageProcessor for VerifyItemData {
+impl HtmlProcessor for VerifyItemData {
     /// process template and push as many &str is needed
     fn process_repetitive_items(&self, name_of_repeat_segment: &str, _html_repetitive_template: &str, html_new: &mut String) {
         match name_of_repeat_segment {
@@ -109,12 +109,12 @@ pub fn request_verify_list(_element_id: &str) {
 }
 
 #[named]
-pub fn page_verify_list(srv_response: RpcResponse) {
+pub fn cln_verify_list(srv_response: RpcResponse) {
     w::debug_write(function_name!());
-    let page_html = page_html(&srv_response);
+    let cln_html = cln_html(&srv_response);
     *VERIFY_LIST_DATA.lock().unwrap() = unwrap!(serde_json::from_value(srv_response.response_data));
     // modal dialog box with error, don't change the html and data
-    let html_after_process = VERIFY_LIST_DATA.lock().unwrap().process_html(&page_html);
+    let html_after_process = VERIFY_LIST_DATA.lock().unwrap().process_html(&cln_html);
 
     inject_into_html(&html_after_process);
     navigation_on_click();

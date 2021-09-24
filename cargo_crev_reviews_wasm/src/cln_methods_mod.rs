@@ -1,6 +1,6 @@
-// pages_mod.rs
+// cln_methods_mod.rs
 
-//! generic code to process html pages
+//! generic code to process html
 
 use reader_for_microxml::ReaderForMicroXml;
 use reader_for_microxml::Token;
@@ -13,7 +13,7 @@ use crate::on_click;
 use crate::utils_mod::*;
 use crate::web_sys_mod as w;
 
-pub trait PageProcessor {
+pub trait HtmlProcessor {
     // region: mandatory functions to implement
     fn process_repetitive_items(&self, name_of_repeat_segment: &str, html_repetitive_template: &str, html_new: &mut String);
     fn match_wt(&self, wt_name: &str) -> String;
@@ -261,7 +261,7 @@ where
     });
 }
 
-pub fn page_html(response: &RpcResponse) -> String {
+pub fn cln_html(response: &RpcResponse) -> String {
     let response_html = &response.response_html;
     // only the html inside the <body> </body>
     let (html_fragment, _new_pos_cursor) = get_delimited_text(response_html, 0, "<body>", "</body>").unwrap();
@@ -273,8 +273,8 @@ pub fn inject_into_html(html_after_process: &str) {
 }
 
 pub fn navigation_on_click() {
-    use crate::page_review_mod::*;
-    use crate::page_verify_mod::*;
+    use crate::cln_methods_review_mod::*;
+    use crate::cln_methods_verify_mod::*;
     use wasm_bindgen::JsCast;
     on_click!("button_review_new", request_review_new);
     on_click!("button_review_publish", request_review_publish);
