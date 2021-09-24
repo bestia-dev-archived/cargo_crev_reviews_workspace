@@ -8,7 +8,7 @@ use crate::page_verify_mod;
 use crate::web_sys_mod as w;
 
 /// match the string and call a function
-pub async fn match_response_method_and_call_function(response: common_mod::RpcResponse) {
+pub async fn match_response_method_and_call_function(response: common_structs_mod::RpcResponse) {
     match response.response_method.as_str() {
         "page_review_list" => page_review_mod::page_review_list(response),
         "page_review_new" => page_review_mod::page_review_new(response),
@@ -126,7 +126,7 @@ pub mod rpc_server {
     }
 }
 
-pub mod common_mod {
+pub mod common_structs_mod {
     // common_mod
 
     //! common structs between the backend and frontend

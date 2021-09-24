@@ -214,7 +214,7 @@
 
 mod auto_generated_mod;
 mod cargo_mod;
-mod common_mod;
+mod common_structs_mod;
 mod crev_mod;
 mod files_mod;
 mod response_get_mod;

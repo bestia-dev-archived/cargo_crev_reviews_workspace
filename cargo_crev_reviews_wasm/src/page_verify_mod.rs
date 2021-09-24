@@ -7,7 +7,7 @@ use unwrap::unwrap;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 
-use crate::auto_generated_mod::common_mod::*;
+use crate::auto_generated_mod::common_structs_mod::*;
 use crate::auto_generated_mod::rpc_server;
 
 // use crate::on_click;

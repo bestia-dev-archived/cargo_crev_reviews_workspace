@@ -2,7 +2,7 @@
 
 //! generic functions for response to the POST method
 
-use crate::common_mod::*;
+use crate::common_structs_mod::*;
 use unwrap::unwrap;
 
 pub fn parse_post_data_and_match_method(body: &Vec<u8>) -> anyhow::Result<String> {

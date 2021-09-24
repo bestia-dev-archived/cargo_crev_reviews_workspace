@@ -3,7 +3,7 @@
 //! rpc methods prepare the data to respond the POST rpc requests
 
 use crate::auto_generated_mod::rpc_client;
-use crate::common_mod::*;
+use crate::common_structs_mod::*;
 use crate::crev_mod::*;
 
 use anyhow::Context;

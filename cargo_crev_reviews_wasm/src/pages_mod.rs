@@ -8,7 +8,7 @@ use unwrap::unwrap;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::spawn_local;
 
-use crate::auto_generated_mod::common_mod::*;
+use crate::auto_generated_mod::common_structs_mod::*;
 use crate::on_click;
 use crate::utils_mod::*;
 use crate::web_sys_mod as w;

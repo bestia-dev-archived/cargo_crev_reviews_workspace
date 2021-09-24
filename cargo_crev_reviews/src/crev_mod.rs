@@ -25,7 +25,7 @@ use std::{env, sync::Mutex};
 use std::{ops::Range, str::FromStr, vec};
 use unwrap::unwrap;
 
-use crate::common_mod::*;
+use crate::common_structs_mod::*;
 use crate::stdio_input_password_mod;
 use crate::utils_mod::*;
 
