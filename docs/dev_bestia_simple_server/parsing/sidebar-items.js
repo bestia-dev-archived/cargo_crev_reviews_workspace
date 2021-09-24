@@ -1,1 +1,0 @@
-initSidebarItems({"enum":[["ParseResult",""]],"fn":[["slice_indices",""],["try_parse_request",""]],"struct":[["Header",""],["HeaderIndices",""],["HeaderIter",""],["Request",""],["RequestMethodIndices",""],["RequestProtocolIndices",""]]});

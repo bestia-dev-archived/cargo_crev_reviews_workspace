@@ -395,6 +395,61 @@
 <span id="393">393</span>
 <span id="394">394</span>
 <span id="395">395</span>
+<span id="396">396</span>
+<span id="397">397</span>
+<span id="398">398</span>
+<span id="399">399</span>
+<span id="400">400</span>
+<span id="401">401</span>
+<span id="402">402</span>
+<span id="403">403</span>
+<span id="404">404</span>
+<span id="405">405</span>
+<span id="406">406</span>
+<span id="407">407</span>
+<span id="408">408</span>
+<span id="409">409</span>
+<span id="410">410</span>
+<span id="411">411</span>
+<span id="412">412</span>
+<span id="413">413</span>
+<span id="414">414</span>
+<span id="415">415</span>
+<span id="416">416</span>
+<span id="417">417</span>
+<span id="418">418</span>
+<span id="419">419</span>
+<span id="420">420</span>
+<span id="421">421</span>
+<span id="422">422</span>
+<span id="423">423</span>
+<span id="424">424</span>
+<span id="425">425</span>
+<span id="426">426</span>
+<span id="427">427</span>
+<span id="428">428</span>
+<span id="429">429</span>
+<span id="430">430</span>
+<span id="431">431</span>
+<span id="432">432</span>
+<span id="433">433</span>
+<span id="434">434</span>
+<span id="435">435</span>
+<span id="436">436</span>
+<span id="437">437</span>
+<span id="438">438</span>
+<span id="439">439</span>
+<span id="440">440</span>
+<span id="441">441</span>
+<span id="442">442</span>
+<span id="443">443</span>
+<span id="444">444</span>
+<span id="445">445</span>
+<span id="446">446</span>
+<span id="447">447</span>
+<span id="448">448</span>
+<span id="449">449</span>
+<span id="450">450</span>
 </pre><pre class="rust">
 <span class="comment">// crev_mod.rs</span>
 
@@ -411,6 +466,7 @@
 <span class="comment">// serde_yaml = &quot;0.8.20&quot;</span>
 <span class="comment">// home=&quot;0.5.3&quot;</span>
 
+<span class="kw">use</span> <span class="ident">anyhow::Context</span>;
 <span class="kw">use</span> <span class="ident">crev_data</span>::{
     <span class="ident">proof</span>::{<span class="ident">CommonOps</span>, <span class="ident">ContentExt</span>},
     <span class="ident">Level</span>, <span class="ident">Rating</span>,
@@ -418,7 +474,7 @@
 <span class="kw">use</span> <span class="ident">crev_lib::ProofStore</span>;
 <span class="kw">use</span> <span class="ident">lazy_static::lazy_static</span>;
 <span class="kw">use</span> <span class="ident">serde::Deserialize</span>;
-<span class="kw">use</span> <span class="ident">std::sync::Mutex</span>;
+<span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">env</span>, <span class="ident">sync::Mutex</span>};
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">ops::Range</span>, <span class="ident">str::FromStr</span>, <span class="ident">vec</span>};
 <span class="kw">use</span> <span class="ident">unwrap::unwrap</span>;
 
@@ -575,6 +631,18 @@
     <span class="prelude-val">Ok</span>(<span class="ident">vec_proof</span>)
 }
 
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">crev_sort_list_by_name_version</span>(<span class="ident">vec_of_reviews</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ProofCrevForReview</span><span class="op">&gt;</span>) {
+    <span class="ident">vec_of_reviews</span>.<span class="ident">sort_by</span>(<span class="op">|</span><span class="ident">a</span>, <span class="ident">b</span><span class="op">|</span> <span class="kw">match</span> <span class="ident">a</span>.<span class="ident">package</span>.<span class="ident">name</span>.<span class="ident">cmp</span>(<span class="kw-2">&amp;</span><span class="ident">b</span>.<span class="ident">package</span>.<span class="ident">name</span>) {
+        <span class="ident">std::cmp::Ordering::Less</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">std::cmp::Ordering::Less</span>,
+        <span class="ident">std::cmp::Ordering::Equal</span> <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">semver::Version::parse</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>.<span class="ident">package</span>.<span class="ident">version</span>).<span class="ident">unwrap</span>();
+            <span class="kw">let</span> <span class="ident">b</span> <span class="op">=</span> <span class="ident">semver::Version::parse</span>(<span class="kw-2">&amp;</span><span class="ident">b</span>.<span class="ident">package</span>.<span class="ident">version</span>).<span class="ident">unwrap</span>();
+            <span class="ident">a</span>.<span class="ident">cmp</span>(<span class="kw-2">&amp;</span><span class="ident">b</span>)
+        }
+        <span class="ident">std::cmp::Ordering::Greater</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">std::cmp::Ordering::Greater</span>,
+    });
+}
+
 <span class="doccomment">/// edit my reviews, find it in list</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">crev_edit_review</span>(<span class="ident">filter</span>: <span class="ident">ReviewFilterData</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">anyhow::Result</span><span class="op">&lt;</span><span class="ident">ProofCrevForReview</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">vec</span> <span class="op">=</span> <span class="ident">crev_list_my_reviews</span>(<span class="kw-2">&amp;</span><span class="prelude-val">Some</span>(<span class="ident">filter</span>))<span class="question-mark">?</span>;
@@ -583,6 +651,25 @@
     }
     <span class="comment">// return</span>
     <span class="prelude-val">Ok</span>(<span class="ident">vec</span>[<span class="number">0</span>].<span class="ident">clone</span>())
+}
+
+<span class="doccomment">/// edit or new</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">crev_edit_or_new_review</span>(<span class="ident">filter</span>: <span class="ident">ReviewFilterData</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">anyhow::Result</span><span class="op">&lt;</span><span class="ident">ProofCrevForReview</span><span class="op">&gt;</span> {
+    <span class="kw">let</span> <span class="ident">new_filter</span> <span class="op">=</span> <span class="ident">ReviewFilterData</span> {
+        <span class="ident">crate_name</span>: <span class="ident">filter</span>.<span class="ident">crate_name</span>.<span class="ident">clone</span>(),
+        <span class="ident">crate_version</span>: <span class="prelude-val">None</span>,
+        <span class="ident">old_crate_version</span>: <span class="prelude-val">None</span>,
+    };
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">vec_of_reviews</span> <span class="op">=</span> <span class="ident">crev_list_my_reviews</span>(<span class="kw-2">&amp;</span><span class="prelude-val">Some</span>(<span class="ident">new_filter</span>))<span class="question-mark">?</span>;
+    <span class="kw">if</span> <span class="ident">vec_of_reviews</span>.<span class="ident">is_empty</span>() {
+        <span class="macro">anyhow::bail!</span>(<span class="string">&quot;Crate reviews for {} not found in my reviews!&quot;</span>, <span class="ident">filter</span>.<span class="ident">crate_name</span>.<span class="ident">as_str</span>());
+    }
+    <span class="ident">crev_sort_list_by_name_version</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">vec_of_reviews</span>);
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">review</span> <span class="op">=</span> <span class="ident">vec_of_reviews</span>.<span class="ident">last</span>().<span class="ident">context</span>(<span class="string">&quot;last&quot;</span>)<span class="question-mark">?</span>.<span class="ident">clone</span>();
+    <span class="ident">review</span>.<span class="ident">package</span>.<span class="ident">version</span> <span class="op">=</span> <span class="ident">filter</span>.<span class="ident">crate_version</span>.<span class="ident">context</span>(<span class="string">&quot;none version&quot;</span>)<span class="question-mark">?</span>.<span class="ident">clone</span>();
+
+    <span class="comment">// return</span>
+    <span class="prelude-val">Ok</span>(<span class="ident">review</span>)
 }
 
 <span class="doccomment">/// list the user-selected crate+version</span>
@@ -790,6 +877,29 @@
     <span class="kw">let</span> <span class="ident">output</span> <span class="op">=</span> <span class="ident">std::process::Command::new</span>(<span class="string">&quot;cargo&quot;</span>).<span class="ident">arg</span>(<span class="string">&quot;crev&quot;</span>).<span class="ident">arg</span>(<span class="string">&quot;publish&quot;</span>).<span class="ident">output</span>()<span class="question-mark">?</span>;
     <span class="kw">let</span> <span class="ident">ret_val</span> <span class="op">=</span> <span class="macro">format!</span>(<span class="string">&quot;{} {}&quot;</span>, <span class="ident">String::from_utf8</span>(<span class="ident">output</span>.<span class="ident">stdout</span>)<span class="question-mark">?</span>, <span class="ident">String::from_utf8</span>(<span class="ident">output</span>.<span class="ident">stderr</span>)<span class="question-mark">?</span>);
     <span class="prelude-val">Ok</span>(<span class="ident">ret_val</span>)
+}
+
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">verify_project</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">anyhow::Result</span><span class="op">&lt;</span><span class="ident">VerifyListData</span><span class="op">&gt;</span> {
+    <span class="kw">let</span> <span class="ident">output</span> <span class="op">=</span> <span class="ident">std::process::Command::new</span>(<span class="string">&quot;cargo&quot;</span>).<span class="ident">arg</span>(<span class="string">&quot;crev&quot;</span>).<span class="ident">arg</span>(<span class="string">&quot;verify&quot;</span>).<span class="ident">output</span>().<span class="ident">unwrap</span>();
+    <span class="kw">let</span> <span class="ident">output</span> <span class="op">=</span> <span class="macro">format!</span>(<span class="string">&quot;{} {}&quot;</span>, <span class="ident">String::from_utf8_lossy</span>(<span class="kw-2">&amp;</span><span class="ident">output</span>.<span class="ident">stdout</span>), <span class="ident">String::from_utf8_lossy</span>(<span class="kw-2">&amp;</span><span class="ident">output</span>.<span class="ident">stderr</span>));
+
+    <span class="comment">// Trust check result: pass, none, warn</span>
+    <span class="comment">// parse the result</span>
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">list_of_verify</span> <span class="op">=</span> <span class="macro">vec!</span>[];
+    <span class="kw">for</span> <span class="ident">line</span> <span class="kw">in</span> <span class="ident">output</span>.<span class="ident">lines</span>() {
+        <span class="kw">if</span> <span class="ident">line</span>.<span class="ident">starts_with</span>(<span class="string">&quot;none &quot;</span>) <span class="op">|</span><span class="op">|</span> <span class="ident">line</span>.<span class="ident">starts_with</span>(<span class="string">&quot;pass &quot;</span>) <span class="op">|</span><span class="op">|</span> <span class="ident">line</span>.<span class="ident">starts_with</span>(<span class="string">&quot;warn &quot;</span>) {
+            <span class="kw">let</span> <span class="ident">s</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">line</span>.<span class="ident">split_whitespace</span>().<span class="ident">collect</span>();
+            <span class="ident">list_of_verify</span>.<span class="ident">push</span>(<span class="ident">VerifyItemData</span> {
+                <span class="ident">status</span>: <span class="ident">s</span>[<span class="number">0</span>].<span class="ident">to_string</span>(),
+                <span class="ident">crate_name</span>: <span class="ident">s</span>[<span class="number">1</span>].<span class="ident">to_string</span>(),
+                <span class="ident">crate_version</span>: <span class="ident">s</span>[<span class="number">2</span>].<span class="ident">to_string</span>(),
+            })
+        }
+    }
+    <span class="prelude-val">Ok</span>(<span class="ident">VerifyListData</span> {
+        <span class="ident">project_dir</span>: <span class="ident">env::current_dir</span>()<span class="question-mark">?</span>.<span class="ident">to_string_lossy</span>().<span class="ident">to_string</span>(),
+        <span class="ident">list_of_verify</span>,
+    })
 }
 </pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="cargo_crev_reviews" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div><script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script></body></html>

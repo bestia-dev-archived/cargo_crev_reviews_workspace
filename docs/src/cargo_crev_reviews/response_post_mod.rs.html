@@ -58,6 +58,8 @@
 <span id="56">56</span>
 <span id="57">57</span>
 <span id="58">58</span>
+<span id="59">59</span>
+<span id="60">60</span>
 </pre><pre class="rust">
 <span class="comment">// response_post_method_mod.rs</span>
 
@@ -81,11 +83,13 @@
             <span class="ident">RequestMethod::RpcReviewNew</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">rpc_review_new</span>(<span class="ident">request_data</span>),
             <span class="ident">RequestMethod::RpcReviewSave</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">rpc_review_save</span>(<span class="ident">request_data</span>),
             <span class="ident">RequestMethod::RpcReviewEdit</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">rpc_review_edit</span>(<span class="ident">request_data</span>),
+            <span class="ident">RequestMethod::RpcReviewEditOrNew</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">rpc_review_edit_or_new</span>(<span class="ident">request_data</span>),
             <span class="ident">RequestMethod::RpcReviewNewVersion</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">rpc_review_new_version</span>(<span class="ident">request_data</span>),
             <span class="ident">RequestMethod::RpcReviewPublish</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">rpc_review_publish</span>(<span class="ident">request_data</span>),
             <span class="ident">RequestMethod::RpcUpdateRegistryIndex</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">rpc_update_registry_index</span>(<span class="ident">request_data</span>),
             <span class="ident">RequestMethod::RpcReviewOpenSourceCode</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">rpc_review_open_source_code</span>(<span class="ident">request_data</span>),
             <span class="ident">RequestMethod::RpcReviewDelete</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">rpc_review_delete</span>(<span class="ident">request_data</span>),
+            <span class="ident">RequestMethod::RpcVerifyProject</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">rpc_verify_project</span>(<span class="ident">request_data</span>),
         },
         <span class="prelude-val">Err</span>(<span class="ident">_err</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">anyhow::bail!</span>(<span class="string">&quot;unknown server method = {}&quot;</span>, <span class="ident">request_method</span>),
     }

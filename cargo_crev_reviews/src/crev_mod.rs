@@ -13,6 +13,7 @@
 // serde_yaml = "0.8.20"
 // home="0.5.3"
 
+use anyhow::Context;
 use crev_data::{
     proof::{CommonOps, ContentExt},
     Level, Rating,
@@ -177,6 +178,18 @@ pub fn crev_list_my_reviews(filter: &Option<ReviewFilterData>) -> anyhow::Result
     Ok(vec_proof)
 }
 
+pub fn crev_sort_list_by_name_version(vec_of_reviews: &mut Vec<ProofCrevForReview>) {
+    vec_of_reviews.sort_by(|a, b| match a.package.name.cmp(&b.package.name) {
+        std::cmp::Ordering::Less => std::cmp::Ordering::Less,
+        std::cmp::Ordering::Equal => {
+            let a = semver::Version::parse(&a.package.version).unwrap();
+            let b = semver::Version::parse(&b.package.version).unwrap();
+            a.cmp(&b)
+        }
+        std::cmp::Ordering::Greater => std::cmp::Ordering::Greater,
+    });
+}
+
 /// edit my reviews, find it in list
 pub fn crev_edit_review(filter: ReviewFilterData) -> anyhow::Result<ProofCrevForReview> {
     let vec = crev_list_my_reviews(&Some(filter))?;
@@ -185,6 +198,25 @@ pub fn crev_edit_review(filter: ReviewFilterData) -> anyhow::Result<ProofCrevFor
     }
     // return
     Ok(vec[0].clone())
+}
+
+/// edit or new
+pub fn crev_edit_or_new_review(filter: ReviewFilterData) -> anyhow::Result<ProofCrevForReview> {
+    let new_filter = ReviewFilterData {
+        crate_name: filter.crate_name.clone(),
+        crate_version: None,
+        old_crate_version: None,
+    };
+    let mut vec_of_reviews = crev_list_my_reviews(&Some(new_filter))?;
+    if vec_of_reviews.is_empty() {
+        anyhow::bail!("Crate reviews for {} not found in my reviews!", filter.crate_name.as_str());
+    }
+    crev_sort_list_by_name_version(&mut vec_of_reviews);
+    let mut review = vec_of_reviews.last().context("last")?.clone();
+    review.package.version = filter.crate_version.context("none version")?.clone();
+
+    // return
+    Ok(review)
 }
 
 /// list the user-selected crate+version

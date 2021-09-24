@@ -22,6 +22,7 @@ use wasm_bindgen::JsValue;
 
 mod common_mod;
 mod page_review_mod;
+mod page_verify_mod;
 mod pages_mod;
 mod utils_mod;
 mod web_sys_mod;
@@ -36,7 +37,7 @@ pub fn wasm_bindgen_start() -> Result<(), JsValue> {
     // write the app version just for debug purposes
     w::debug_write(&format!("{} v{}", env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION")));
 
-    crate::page_review_mod::request_review_list("");
+    crate::page_verify_mod::request_verify_list("");
 
     // return
     Ok(())

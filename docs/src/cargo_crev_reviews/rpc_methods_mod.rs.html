@@ -174,6 +174,35 @@
 <span id="172">172</span>
 <span id="173">173</span>
 <span id="174">174</span>
+<span id="175">175</span>
+<span id="176">176</span>
+<span id="177">177</span>
+<span id="178">178</span>
+<span id="179">179</span>
+<span id="180">180</span>
+<span id="181">181</span>
+<span id="182">182</span>
+<span id="183">183</span>
+<span id="184">184</span>
+<span id="185">185</span>
+<span id="186">186</span>
+<span id="187">187</span>
+<span id="188">188</span>
+<span id="189">189</span>
+<span id="190">190</span>
+<span id="191">191</span>
+<span id="192">192</span>
+<span id="193">193</span>
+<span id="194">194</span>
+<span id="195">195</span>
+<span id="196">196</span>
+<span id="197">197</span>
+<span id="198">198</span>
+<span id="199">199</span>
+<span id="200">200</span>
+<span id="201">201</span>
+<span id="202">202</span>
+<span id="203">203</span>
 </pre><pre class="rust">
 <span class="comment">// rpc_methods_mod.rs</span>
 
@@ -182,8 +211,8 @@
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::common_mod</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::crev_mod</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::response_post_mod::return_rpc_response</span>;
-<span class="kw">use</span> <span class="ident">::function_name::named</span>;
 <span class="kw">use</span> <span class="ident">anyhow::Context</span>;
+<span class="kw">use</span> <span class="ident">function_name::named</span>;
 <span class="kw">use</span> <span class="ident">std::str::FromStr</span>;
 <span class="kw">use</span> <span class="ident">std::time::Duration</span>;
 <span class="kw">use</span> <span class="ident">unwrap::unwrap</span>;
@@ -222,13 +251,15 @@
 }
 
 <span class="attribute">#[<span class="ident">named</span>]</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">rpc_review_new</span>(<span class="ident">_request_data</span>: <span class="ident">serde_json::Value</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">anyhow::Result</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">rpc_review_new</span>(<span class="ident">request_data</span>: <span class="ident">serde_json::Value</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">anyhow::Result</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
     <span class="macro">println!</span>(<span class="macro">function_name!</span>());
+    <span class="kw">let</span> <span class="ident">filter</span>: <span class="ident">ReviewFilterData</span> <span class="op">=</span> <span class="macro">unwrap!</span>(<span class="ident">serde_json::from_value</span>(<span class="ident">request_data</span>));
+
     <span class="kw">let</span> <span class="ident">response_method</span> <span class="op">=</span> <span class="ident">ResponseMethod::PageReviewNew</span>;
     <span class="kw">let</span> <span class="ident">response_html</span> <span class="op">=</span> <span class="kw">crate</span><span class="ident">::files_mod::review_new_html</span>();
     <span class="kw">let</span> <span class="ident">response_data</span> <span class="op">=</span> <span class="ident">ReviewItemData</span> {
-        <span class="ident">crate_name</span>: <span class="string">&quot;crate_name&quot;</span>.<span class="ident">to_string</span>(),
-        <span class="ident">crate_version</span>: <span class="string">&quot;version&quot;</span>.<span class="ident">to_string</span>(),
+        <span class="ident">crate_name</span>: <span class="ident">filter</span>.<span class="ident">crate_name</span>.<span class="ident">to_string</span>(),
+        <span class="ident">crate_version</span>: <span class="ident">filter</span>.<span class="ident">crate_version</span>.<span class="ident">context</span>(<span class="string">&quot;none version&quot;</span>)<span class="question-mark">?</span>.<span class="ident">to_string</span>(),
         <span class="ident">date</span>: <span class="string">&quot;&quot;</span>.<span class="ident">to_string</span>(),
         <span class="ident">thoroughness</span>: <span class="string">&quot;none&quot;</span>.<span class="ident">to_string</span>(),
         <span class="ident">understanding</span>: <span class="string">&quot;none&quot;</span>.<span class="ident">to_string</span>(),
@@ -291,6 +322,23 @@ alternative crates explored:
 }
 
 <span class="attribute">#[<span class="ident">named</span>]</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">rpc_review_edit_or_new</span>(<span class="ident">request_data</span>: <span class="ident">serde_json::Value</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">anyhow::Result</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
+    <span class="macro">println!</span>(<span class="macro">function_name!</span>());
+    <span class="kw">let</span> <span class="ident">filter</span>: <span class="ident">ReviewFilterData</span> <span class="op">=</span> <span class="macro">unwrap!</span>(<span class="ident">serde_json::from_value</span>(<span class="ident">request_data</span>.<span class="ident">clone</span>()));
+
+    <span class="kw">match</span> <span class="ident">crev_edit_or_new_review</span>(<span class="ident">filter</span>) {
+        <span class="prelude-val">Err</span>(<span class="ident">_err</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">rpc_review_new</span>(<span class="ident">request_data</span>),
+        <span class="prelude-val">Ok</span>(<span class="ident">p</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="kw">let</span> <span class="ident">response_method</span> <span class="op">=</span> <span class="ident">ResponseMethod::PageReviewEdit</span>;
+            <span class="kw">let</span> <span class="ident">response_data</span> <span class="op">=</span> <span class="ident">from_crev_to_item</span>(<span class="kw-2">&amp;</span><span class="ident">p</span>);
+            <span class="kw">let</span> <span class="ident">response_html</span> <span class="op">=</span> <span class="kw">crate</span><span class="ident">::files_mod::review_edit_html</span>();
+
+            <span class="prelude-val">Ok</span>(<span class="ident">return_rpc_response</span>(<span class="ident">response_method</span>, <span class="ident">response_data</span>, <span class="ident">response_html</span>))
+        }
+    }
+}
+
+<span class="attribute">#[<span class="ident">named</span>]</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">rpc_review_new_version</span>(<span class="ident">request_data</span>: <span class="ident">serde_json::Value</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">anyhow::Result</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
     <span class="macro">println!</span>(<span class="macro">function_name!</span>());
     <span class="kw">let</span> <span class="ident">filter</span>: <span class="ident">ReviewFilterData</span> <span class="op">=</span> <span class="macro">unwrap!</span>(<span class="ident">serde_json::from_value</span>(<span class="ident">request_data</span>));
@@ -348,6 +396,16 @@ alternative crates explored:
     <span class="ident">request_review_list</span>()
 }
 
+<span class="attribute">#[<span class="ident">named</span>]</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">rpc_verify_project</span>(<span class="ident">_filter_data</span>: <span class="ident">serde_json::Value</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">anyhow::Result</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
+    <span class="macro">println!</span>(<span class="macro">function_name!</span>());
+
+    <span class="kw">let</span> <span class="ident">response_data</span> <span class="op">=</span> <span class="kw">crate</span><span class="ident">::crev_mod::verify_project</span>()<span class="question-mark">?</span>;
+    <span class="kw">let</span> <span class="ident">response_method</span> <span class="op">=</span> <span class="ident">ResponseMethod::PageVerifyList</span>;
+    <span class="kw">let</span> <span class="ident">response_html</span> <span class="op">=</span> <span class="kw">crate</span><span class="ident">::files_mod::verify_list_html</span>();
+
+    <span class="prelude-val">Ok</span>(<span class="ident">return_rpc_response</span>(<span class="ident">response_method</span>, <span class="ident">response_data</span>, <span class="ident">response_html</span>))
+}
 <span class="comment">// endregion: review</span>
 </pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="cargo_crev_reviews" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div><script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script></body></html>

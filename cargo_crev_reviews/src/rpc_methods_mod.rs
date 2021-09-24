@@ -5,8 +5,8 @@
 use crate::common_mod::*;
 use crate::crev_mod::*;
 use crate::response_post_mod::return_rpc_response;
-use ::function_name::named;
 use anyhow::Context;
+use function_name::named;
 use std::str::FromStr;
 use std::time::Duration;
 use unwrap::unwrap;
@@ -45,13 +45,15 @@ pub fn rpc_reviews_list(_request_data: serde_json::Value) -> anyhow::Result<Stri
 }
 
 #[named]
-pub fn rpc_review_new(_request_data: serde_json::Value) -> anyhow::Result<String> {
+pub fn rpc_review_new(request_data: serde_json::Value) -> anyhow::Result<String> {
     println!(function_name!());
+    let filter: ReviewFilterData = unwrap!(serde_json::from_value(request_data));
+
     let response_method = ResponseMethod::PageReviewNew;
     let response_html = crate::files_mod::review_new_html();
     let response_data = ReviewItemData {
-        crate_name: "crate_name".to_string(),
-        crate_version: "version".to_string(),
+        crate_name: filter.crate_name.to_string(),
+        crate_version: filter.crate_version.context("none version")?.to_string(),
         date: "".to_string(),
         thoroughness: "none".to_string(),
         understanding: "none".to_string(),
@@ -111,6 +113,23 @@ pub fn rpc_review_edit(request_data: serde_json::Value) -> anyhow::Result<String
     let response_html = crate::files_mod::review_edit_html();
 
     Ok(return_rpc_response(response_method, response_data, response_html))
+}
+
+#[named]
+pub fn rpc_review_edit_or_new(request_data: serde_json::Value) -> anyhow::Result<String> {
+    println!(function_name!());
+    let filter: ReviewFilterData = unwrap!(serde_json::from_value(request_data.clone()));
+
+    match crev_edit_or_new_review(filter) {
+        Err(_err) => rpc_review_new(request_data),
+        Ok(p) => {
+            let response_method = ResponseMethod::PageReviewEdit;
+            let response_data = from_crev_to_item(&p);
+            let response_html = crate::files_mod::review_edit_html();
+
+            Ok(return_rpc_response(response_method, response_data, response_html))
+        }
+    }
 }
 
 #[named]

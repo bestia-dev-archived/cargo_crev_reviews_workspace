@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["inject_into_html",""],["match_response_method_and_call_function",""],["page_html",""],["post_request_await_run_response_method",""]],"trait":[["PageProcessor",""]]});
+initSidebarItems({"fn":[["inject_into_html",""],["match_response_method_and_call_function",""],["navigation_on_click",""],["page_html",""],["post_request_await_run_response_method",""]],"trait":[["PageProcessor",""]]});

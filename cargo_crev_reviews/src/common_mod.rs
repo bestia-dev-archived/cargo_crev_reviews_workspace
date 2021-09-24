@@ -33,6 +33,8 @@ pub enum RequestMethod {
     RpcReviewDelete,
     #[strum(serialize = "rpc_verify_project")]
     RpcVerifyProject,
+    #[strum(serialize = "rpc_review_edit_or_new")]
+    RpcReviewEditOrNew,
 }
 
 /// methods available on the client

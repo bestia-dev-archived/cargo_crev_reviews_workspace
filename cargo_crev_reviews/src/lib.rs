@@ -87,15 +87,15 @@
 //! rpc call with named parameters:
 //!
 //! --> {
-//! "request_method": "subtract_calculate",
+//! "request_method": "subtract_calculate", 
 //! "request_data": {
-//!     "subtrahend": 23,
-//!     "minuend": 42,
+//!     "subtrahend": 23, 
+//!     "minuend": 42, 
 //!     }
 //! }
 //!
 //! <-- {
-//! "response_method": "subtract_show",
+//! "response_method": "subtract_show", 
 //! "response_data": {
 //!     "subtracted": 19,     
 //!     },

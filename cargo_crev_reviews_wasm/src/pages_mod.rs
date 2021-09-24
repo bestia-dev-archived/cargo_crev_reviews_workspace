@@ -12,7 +12,9 @@ use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::spawn_local;
 // use function_name::named;
 
+use crate::on_click;
 use crate::page_review_mod;
+use crate::page_verify_mod;
 use crate::web_sys_mod as w;
 
 pub trait PageProcessor {
@@ -266,14 +268,15 @@ where
 
 pub async fn match_response_method_and_call_function(response: RpcResponse) {
     let response_enum = ResponseMethod::from_str(response.response_method.as_str());
+    use ResponseMethod::*;
     match response_enum {
         Ok(response_enum) => match response_enum {
-            ResponseMethod::PageReviewList => page_review_mod::page_review_list(response),
-            ResponseMethod::PageReviewNew => page_review_mod::page_review_new(response),
-            ResponseMethod::PageReviewEdit => page_review_mod::page_review_edit(response),
-            ResponseMethod::PageReviewError => page_review_mod::page_review_error(response),
-            ResponseMethod::PageReviewPublishModal => page_review_mod::page_review_publish_modal(response),
-            ResponseMethod::PageVerifyList => page_review_mod::page_verify_list(response),
+            PageReviewList => page_review_mod::page_review_list(response),
+            PageReviewNew => page_review_mod::page_review_new(response),
+            PageReviewEdit => page_review_mod::page_review_edit(response),
+            PageReviewError => page_review_mod::page_review_error(response),
+            PageReviewPublishModal => page_review_mod::page_review_publish_modal(response),
+            PageVerifyList => page_verify_mod::page_verify_list(response),
         },
         Err(_err) => w::debug_write(&format!("Error: Unrecognized response_method {}", response.response_method)),
     }
@@ -288,4 +291,14 @@ pub fn page_html(response: &RpcResponse) -> String {
 
 pub fn inject_into_html(html_after_process: &str) {
     w::set_inner_html("div_for_wasm_html_injecting", html_after_process);
+}
+
+pub fn navigation_on_click() {
+    use crate::page_review_mod::*;
+    use crate::page_verify_mod::*;
+    use wasm_bindgen::JsCast;
+    on_click!("button_review_new", request_review_new);
+    on_click!("button_review_publish", request_review_publish);
+    on_click!("button_update_registry_index", request_update_registry_index);
+    on_click!("button_verify_project", request_verify_list);
 }

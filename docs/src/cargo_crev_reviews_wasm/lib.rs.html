@@ -43,6 +43,7 @@
 <span id="41">41</span>
 <span id="42">42</span>
 <span id="43">43</span>
+<span id="44">44</span>
 </pre><pre class="rust">
 <span class="comment">// cargo_crev_reviews_wasm lib.rs</span>
 
@@ -68,6 +69,7 @@
 
 <span class="kw">mod</span> <span class="ident">common_mod</span>;
 <span class="kw">mod</span> <span class="ident">page_review_mod</span>;
+<span class="kw">mod</span> <span class="ident">page_verify_mod</span>;
 <span class="kw">mod</span> <span class="ident">pages_mod</span>;
 <span class="kw">mod</span> <span class="ident">utils_mod</span>;
 <span class="kw">mod</span> <span class="ident">web_sys_mod</span>;
@@ -82,7 +84,7 @@
     <span class="comment">// write the app version just for debug purposes</span>
     <span class="ident">w::debug_write</span>(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;{} v{}&quot;</span>, <span class="macro">env!</span>(<span class="string">&quot;CARGO_PKG_NAME&quot;</span>), <span class="macro">env!</span>(<span class="string">&quot;CARGO_PKG_VERSION&quot;</span>)));
 
-    <span class="kw">crate</span><span class="ident">::page_review_mod::request_review_list</span>(<span class="string">&quot;&quot;</span>);
+    <span class="kw">crate</span><span class="ident">::page_verify_mod::request_verify_list</span>(<span class="string">&quot;&quot;</span>);
 
     <span class="comment">// return</span>
     <span class="prelude-val">Ok</span>(())
