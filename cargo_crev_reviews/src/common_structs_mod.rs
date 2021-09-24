@@ -1,4 +1,4 @@
-// common_mod.rs
+// common_structs_mod.rs
 
 //! common structs between the backend and frontend
 //! WARNING: modify this file only in cargo_crev_reviews project.

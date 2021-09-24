@@ -127,7 +127,8 @@ pub mod rpc_server {
 }
 
 pub mod common_structs_mod {
-    // common_mod
+    // generator common_structs_mod start
+    // common_structs_mod.rs
 
     //! common structs between the backend and frontend
     //! WARNING: modify this file only in cargo_crev_reviews project.
@@ -202,4 +203,5 @@ pub mod common_structs_mod {
         pub project_dir: String,
         pub list_of_verify: Vec<VerifyItemData>,
     }
+    // generator common_structs_mod end
 }

@@ -3,6 +3,9 @@
 use cargo_auto_lib::*;
 use unwrap::unwrap;
 
+mod utils_mod;
+use utils_mod::*;
+
 /// automation_tasks_rs workspace
 fn main() {
     exit_if_not_run_in_rust_project_root_directory();
@@ -35,8 +38,8 @@ fn match_arguments_and_call_tasks(mut args: std::env::Args) {
                     task_release();
                 } else if &task == "release_and_run" {
                     task_release_and_run();
-                } else if &task == "copy_common_structs" {
-                    task_copy_common_structs();
+                } else if &task == "generated_mod" {
+                    task_generated_mod();
                 } else if &task == "docs" || &task == "doc" || &task == "d" {
                     task_docs();
                 } else if &task == "commit_and_push" {
@@ -62,7 +65,7 @@ cargo auto build - builds the crate in debug mode, fmt
 cargo auto build_and_run - build and run
 cargo auto release - builds the crate in release mode, version from date, fmt
 cargo auto release_and_run - release and run
-cargo auto copy_common_structs - copy common_mod.rs from cargo_crev_reviews to cargo_crev_reviews_wasm
+cargo auto generated_mod - modify auto_generated_mod.rs
 cargo auto docs - builds the docs, copy to docs directory
 cargo auto commit_and_push - commits with message and push with mandatory message
     if you use SSH, it is easy to start the ssh-agent in the background and ssh-add your credentials for git
@@ -78,7 +81,7 @@ fn completion() {
     let last_word = args[3].as_str();
 
     if last_word == "cargo-auto" || last_word == "auto" {
-        let sub_commands = vec!["build", "build_and_run", "release", "release_and_run","copy_common_structs", "doc", "commit_and_push","publish_to_crates_io_cargo_crev_reviews"];
+        let sub_commands = vec!["build", "build_and_run", "release", "release_and_run","generated_mod", "doc", "commit_and_push","publish_to_crates_io_cargo_crev_reviews"];
         completion_return_one_or_more_sub_commands(sub_commands, word_being_completed);
     }
 
@@ -100,7 +103,7 @@ fn completion() {
 /// for faster build I will change only the version number to members that was modified
 fn task_build() {
     auto_check_micro_xml("web_server_folder/cargo_crev_reviews");
-    task_copy_common_structs();
+    task_generated_mod();
     auto_version_increment_semver_or_date();
     run_shell_command("cargo fmt");
     run_shell_command("cd cargo_crev_reviews_wasm;wasm-pack build --target web;cd ..");
@@ -125,7 +128,7 @@ run `cargo auto release`
 /// A little slower than only build.
 fn task_release() {
     auto_check_micro_xml("web_server_folder/cargo_crev_reviews");
-    task_copy_common_structs();
+    task_generated_mod();
     auto_version_increment_semver_or_date_forced();    
     run_shell_command("cargo fmt");
 
@@ -173,10 +176,9 @@ After `cargo auto release_and_run` close the CLI with ctrl+c and close the brows
     );
 }
 
-fn task_copy_common_structs() {
-    // from cargo_crev_reviews/src/common_structs_mod.rs 
-    // to cargo_crev_reviews_wasm/src/auto_generated_mod inside common_structs module 
-    // std::fs::copy("cargo_crev_reviews/src/common_mod.rs", "cargo_crev_reviews_wasm/src/common_mod.rs").unwrap();
+/// modify auto_generated_mod.rs
+fn task_generated_mod() {
+    common_structs_copy();
 }
 
 /// example how to call a list of shell commands and combine with rust code
@@ -304,4 +306,18 @@ fn copy_web_folder_files_into_module() {
     copy_files_from_dir("web_server_folder/cargo_crev_reviews/js", &mut module_source_code);
     copy_files_from_dir("web_server_folder/cargo_crev_reviews/pkg", &mut module_source_code);
     unwrap!(std::fs::write("cargo_crev_reviews/src/files_mod.rs", module_source_code));
+}
+
+fn common_structs_copy(){
+    // 1. copy from cargo_crev_reviews/src/common_structs_mod.rs 
+    // to cargo_crev_reviews_wasm/src/auto_generated_mod inside common_structs module 
+    let code = unwrap!(std::fs::read_to_string("cargo_crev_reviews/src/common_structs_mod.rs"));
+    let old_generated = unwrap!(std::fs::read_to_string("cargo_crev_reviews_wasm/src/auto_generated_mod.rs"));
+    let range = unwrap!(find_range_between_delimiters(&old_generated,&mut 0,"// generator common_structs_mod start", "// generator common_structs_mod end"));
+    let mut new_generated = String::with_capacity(old_generated.len());
+    new_generated.push_str(&old_generated[..range.start]);
+    new_generated.push_str("\n");
+    new_generated.push_str(&code);
+    new_generated.push_str(&old_generated[range.end..]);
+    unwrap!(std::fs::write("cargo_crev_reviews_wasm/src/auto_generated_mod.rs", new_generated));
 }
