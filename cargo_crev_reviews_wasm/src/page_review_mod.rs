@@ -162,28 +162,28 @@ impl PageProcessor for ReviewItemData {
 }
 
 /// store data in static Mutex because of events like on_click
-fn store_to_review_item_data(rpc_response: RpcResponse) {
-    *REVIEW_ITEM_DATA.lock().unwrap() = unwrap!(serde_json::from_value(rpc_response.response_data));
+fn store_to_review_item_data(srv_response: RpcResponse) {
+    *REVIEW_ITEM_DATA.lock().unwrap() = unwrap!(serde_json::from_value(srv_response.response_data));
 }
 
 /// store data in static Mutex because of events like on_click
-fn store_static_review_list_data(rpc_response: RpcResponse) {
-    *REVIEW_LIST_DATA.lock().unwrap() = unwrap!(serde_json::from_value(rpc_response.response_data));
+fn store_static_review_list_data(srv_response: RpcResponse) {
+    *REVIEW_LIST_DATA.lock().unwrap() = unwrap!(serde_json::from_value(srv_response.response_data));
 }
 
 pub fn request_review_list(_element_id: &str) {
     let request_data = RpcEmptyData {};
-    rpc_server::rpc_reviews_list(request_data);
+    srv_methods::srv_reviews_list(request_data);
 }
 
-/// the code for processing the page rpc_review_list
+/// the code for processing the page srv_review_list
 /// the data is already in static Mutex REVIEW_LIST_DATA
 #[named]
-pub fn page_review_list(rpc_response: RpcResponse) {
+pub fn page_review_list(srv_response: RpcResponse) {
     w::debug_write(function_name!());
 
-    let page_html = page_html(&rpc_response);
-    store_static_review_list_data(rpc_response);
+    let page_html = page_html(&srv_response);
+    store_static_review_list_data(srv_response);
 
     // call process with functions as parameters, to use for replace attributes and text nodes
     let html_after_process = REVIEW_LIST_DATA.lock().unwrap().process_html(&page_html);
@@ -241,7 +241,7 @@ fn button_open_source_code_onclick(_element_id: &str, row_num: usize) {
         crate_version: Some(item.crate_version.clone()),
         old_crate_version: None,
     };
-    rpc_server::rpc_review_open_source_code(request_data);
+    srv_methods::srv_review_open_source_code(request_data);
 }
 
 #[named]
@@ -256,7 +256,7 @@ pub fn request_review_publish(_element_id: &str) {
 </div>"#;
     w::set_inner_html("div_for_modal", page_html);
     let request_data = RpcEmptyData {};
-    rpc_server::rpc_review_publish(request_data);
+    srv_methods::srv_review_publish(request_data);
 }
 
 #[named]
@@ -270,21 +270,21 @@ pub fn request_update_registry_index(_element_id: &str) {
     </div>"#;
     w::set_inner_html("div_for_modal", page_html);
     let request_data = RpcEmptyData {};
-    rpc_server::rpc_update_registry_index(request_data);
+    srv_methods::srv_update_registry_index(request_data);
 }
 
 #[named]
 pub fn request_review_new(_element_id: &str) {
     w::debug_write(function_name!());
     let request_data = RpcEmptyData {};
-    rpc_server::rpc_review_new(request_data);
+    srv_methods::srv_review_new(request_data);
 }
 
 #[named]
-pub fn page_review_new(rpc_response: RpcResponse) {
+pub fn page_review_new(srv_response: RpcResponse) {
     w::debug_write(function_name!());
-    let page_html = page_html(&rpc_response);
-    store_to_review_item_data(rpc_response);
+    let page_html = page_html(&srv_response);
+    store_to_review_item_data(srv_response);
     // call process with functions as parameters, to use for replace attributes and text nodes
     let data = &REVIEW_ITEM_DATA.lock().unwrap();
     let html_after_process = data.process_html(&page_html);
@@ -304,7 +304,7 @@ fn request_review_new_version(_element_id: &str, row_num: usize) {
         crate_version: Some(item.crate_version.clone()),
         old_crate_version: None,
     };
-    rpc_server::rpc_review_new_version(request_data);
+    srv_methods::srv_review_new_version(request_data);
 }
 
 /// send rpc requests
@@ -321,7 +321,7 @@ fn request_review_save(_element_id: &str) {
         rating: w::get_value_of_radio_group_by_name("rating"),
         comment_md: w::get_text_area_element_value_string_by_id("comment_md"),
     };
-    rpc_server::rpc_review_save(request_data);
+    srv_methods::srv_review_save(request_data);
 }
 
 #[named]
@@ -334,16 +334,16 @@ fn request_review_edit_from_list(_element_id: &str, row_num: usize) {
         crate_version: Some(item.crate_version.clone()),
         old_crate_version: None,
     };
-    rpc_server::rpc_review_edit(request_data);
+    srv_methods::srv_review_edit(request_data);
 }
 
 /// the code for processing the page_review_edit
 /// the data and html are already in static Mutex REVIEW_ITEM_DATA
 #[named]
-pub fn page_review_edit(rpc_response: RpcResponse) {
+pub fn page_review_edit(srv_response: RpcResponse) {
     w::debug_write(function_name!());
-    let page_html = page_html(&rpc_response);
-    store_to_review_item_data(rpc_response);
+    let page_html = page_html(&srv_response);
+    store_to_review_item_data(srv_response);
 
     // call process with functions as parameters, to use for replace attributes and text nodes
     let data = &REVIEW_ITEM_DATA.lock().unwrap();
@@ -356,11 +356,11 @@ pub fn page_review_edit(rpc_response: RpcResponse) {
 }
 
 #[named]
-pub fn page_review_error(rpc_response: RpcResponse) {
+pub fn page_review_error(srv_response: RpcResponse) {
     w::debug_write(function_name!());
-    let page_html = page_html(&rpc_response);
+    let page_html = page_html(&srv_response);
 
-    let data: RpcMessageData = unwrap!(serde_json::from_value(rpc_response.response_data));
+    let data: RpcMessageData = unwrap!(serde_json::from_value(srv_response.response_data));
     let html_after_process = data.process_html(&page_html);
 
     w::set_inner_html("div_for_modal", &html_after_process);
@@ -372,12 +372,12 @@ fn modal_close_on_click(_element_id: &str) {
 }
 
 #[named]
-pub fn page_review_publish_modal(rpc_response: RpcResponse) {
+pub fn page_review_publish_modal(srv_response: RpcResponse) {
     w::debug_write(function_name!());
-    let page_html = page_html(&rpc_response);
+    let page_html = page_html(&srv_response);
 
     // modal dialog box with error, don't change the html and data
-    let data: RpcMessageData = unwrap!(serde_json::from_value(rpc_response.response_data));
+    let data: RpcMessageData = unwrap!(serde_json::from_value(srv_response.response_data));
     let html_after_process = data.process_html(&page_html);
 
     w::set_inner_html("div_for_modal", &html_after_process);
@@ -417,5 +417,5 @@ fn request_review_delete(_element_id: &str, row_num: usize) {
         crate_version: Some(item.crate_version.clone()),
         old_crate_version: None,
     };
-    rpc_server::rpc_review_delete(request_data);
+    srv_methods::srv_review_delete(request_data);
 }

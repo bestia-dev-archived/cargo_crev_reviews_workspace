@@ -2,6 +2,19 @@
 
 use unwrap::unwrap;
 
+/// functions must be prefixed and start with pub fn
+pub fn list_methods(file_path:&str, function_prefix:&str )->Vec<String>{
+    let mut vec:Vec<String>=vec![];
+    let code = unwrap!(std::fs::read_to_string(file_path));
+    let mut cursor = 0;
+    let functions_starts_with = format!("pub fn {}", function_prefix);
+    while let Some(range) = find_range_between_delimiters(&code,&mut cursor, &functions_starts_with, "("){
+        vec.push(format!("{}{}",function_prefix, &code[range]));
+    }
+    vec
+}
+
+
 pub fn replace_delimited_segment(file_path:&str, replace_with: String, start_delimiter:&str, end_delimiter:&str ) {    
     let old_generated = unwrap!(std::fs::read_to_string(file_path));
     let range = unwrap!(find_range_between_delimiters(&old_generated,&mut 0,start_delimiter, end_delimiter));

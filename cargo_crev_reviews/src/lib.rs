@@ -148,7 +148,7 @@
 //! 1. browser request for `/cargo_crev_reviews/index.html` is GET, the response is html text file embedded in files_mod.rs in the function: `index_html()`  
 //!     This html is just an empty shell that gets the css and wasm code. There is no real content inside. This concept is [Single-page application SPA](https://en.wikipedia.org/wiki/Single-page_application).  
 //! 2. index.html requests: 3 css files, `pkg/cargo_crev_reviews.js`, `pkg/cargo_crev_reviews_bg.wasm`, "favicon" `icons/icon-032.png`. All these requests are GET and responses come from files_mod.rs functions, some are text files and others are base64 files.
-//! 3. the browser imports the wasm module and starts the init function that requests `rpc_review_list`. This responds with: method_name, page_html and data.
+//! 3. the browser imports the wasm module and starts the init function that requests `srv_review_list`. This responds with: method_name, page_html and data.
 //! 4. wasm (inside the browser) is rust code. First it matches method_name and calls the appropriate function. It processes the page_html with the data and inserts it into index.html (the empty shell).
 //! 5. the browser renders our first page. Hooray!
 //! 6. the user click on some button.
@@ -219,7 +219,7 @@ mod crev_mod;
 mod files_mod;
 mod response_get_mod;
 mod response_post_mod;
-mod rpc_methods_mod;
+mod srv_methods_mod;
 mod stdio_input_password_mod;
 mod utils_mod;
 

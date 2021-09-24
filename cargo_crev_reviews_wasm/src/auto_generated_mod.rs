@@ -11,10 +11,10 @@ use crate::web_sys_mod as w;
 pub async fn match_response_method_and_call_function(response: common_structs_mod::RpcResponse) {
     match response.response_method.as_str() {
         // generator match_response_method start
-        "page_review_list" => page_review_list(response),
-        "page_review_new" => page_review_new(response),
         "page_review_edit" => page_review_edit(response),
         "page_review_error" => page_review_error(response),
+        "page_review_list" => page_review_list(response),
+        "page_review_new" => page_review_new(response),
         "page_review_publish_modal" => page_review_publish_modal(response),
         "page_verify_list" => page_verify_list(response),
         // generator match_response_method end
@@ -23,14 +23,14 @@ pub async fn match_response_method_and_call_function(response: common_structs_mo
 }
 
 // proxy for public functions on server
-pub mod rpc_server {
+pub mod srv_methods {
     use crate::pages_mod::post_request_await_run_response_method;
     use function_name::named;
 
-    // generator rpc_server start
+    // generator srv_methods start
 
     #[named]
-    pub fn rpc_reviews_list<T>(request_data: T)
+    pub fn srv_review_delete<T>(request_data: T)
     where
         T: serde::Serialize,
     {
@@ -39,7 +39,7 @@ pub mod rpc_server {
     }
 
     #[named]
-    pub fn rpc_review_new<T>(request_data: T)
+    pub fn srv_review_edit<T>(request_data: T)
     where
         T: serde::Serialize,
     {
@@ -48,7 +48,7 @@ pub mod rpc_server {
     }
 
     #[named]
-    pub fn rpc_review_save<T>(request_data: T)
+    pub fn srv_review_edit_or_new<T>(request_data: T)
     where
         T: serde::Serialize,
     {
@@ -57,7 +57,7 @@ pub mod rpc_server {
     }
 
     #[named]
-    pub fn rpc_review_edit<T>(request_data: T)
+    pub fn srv_review_new<T>(request_data: T)
     where
         T: serde::Serialize,
     {
@@ -66,7 +66,7 @@ pub mod rpc_server {
     }
 
     #[named]
-    pub fn rpc_review_edit_or_new<T>(request_data: T)
+    pub fn srv_review_new_version<T>(request_data: T)
     where
         T: serde::Serialize,
     {
@@ -75,7 +75,7 @@ pub mod rpc_server {
     }
 
     #[named]
-    pub fn rpc_review_new_version<T>(request_data: T)
+    pub fn srv_review_open_source_code<T>(request_data: T)
     where
         T: serde::Serialize,
     {
@@ -84,7 +84,7 @@ pub mod rpc_server {
     }
 
     #[named]
-    pub fn rpc_review_publish<T>(request_data: T)
+    pub fn srv_review_publish<T>(request_data: T)
     where
         T: serde::Serialize,
     {
@@ -93,7 +93,7 @@ pub mod rpc_server {
     }
 
     #[named]
-    pub fn rpc_update_registry_index<T>(request_data: T)
+    pub fn srv_review_save<T>(request_data: T)
     where
         T: serde::Serialize,
     {
@@ -102,7 +102,7 @@ pub mod rpc_server {
     }
 
     #[named]
-    pub fn rpc_review_open_source_code<T>(request_data: T)
+    pub fn srv_reviews_list<T>(request_data: T)
     where
         T: serde::Serialize,
     {
@@ -111,7 +111,7 @@ pub mod rpc_server {
     }
 
     #[named]
-    pub fn rpc_review_delete<T>(request_data: T)
+    pub fn srv_update_registry_index<T>(request_data: T)
     where
         T: serde::Serialize,
     {
@@ -120,14 +120,14 @@ pub mod rpc_server {
     }
 
     #[named]
-    pub fn rpc_verify_project<T>(request_data: T)
+    pub fn srv_verify_project<T>(request_data: T)
     where
         T: serde::Serialize,
     {
         let request_method = function_name!();
         post_request_await_run_response_method(request_method, request_data);
     }
-    // generator rpc_server end
+    // generator srv_methods end
 }
 
 pub mod common_structs_mod {

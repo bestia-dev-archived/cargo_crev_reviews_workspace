@@ -11,7 +11,7 @@ pub fn parse_post_data_and_match_method(body: &Vec<u8>) -> anyhow::Result<String
 }
 
 // the first parameter is the Serialize trait and not a struct
-pub fn return_rpc_response<T>(response_method: &str, data: T, response_html: &str) -> String
+pub fn return_srv_response<T>(response_method: &str, data: T, response_html: &str) -> String
 where
     T: serde::Serialize,
 {
@@ -32,5 +32,5 @@ pub fn response_err_message(err: &anyhow::Error) -> anyhow::Result<String> {
 pub fn response_modal_message(msg: &str) -> anyhow::Result<String> {
     let response_data = RpcMessageData { message: msg.to_string() };
     let response_html = crate::files_mod::modal_message_html();
-    crate::auto_generated_mod::rpc_client::page_review_error(response_data, response_html)
+    crate::auto_generated_mod::cln_methods::page_review_error(response_data, response_html)
 }

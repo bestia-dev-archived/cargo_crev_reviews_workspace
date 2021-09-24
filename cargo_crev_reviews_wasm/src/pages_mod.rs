@@ -256,8 +256,8 @@ where
     spawn_local(async move {
         let rpc_request = Some(&rpc_request);
         let resp_body_text = w::fetch_post_response("submit", rpc_request).await;
-        let rpc_response: RpcResponse = unwrap!(serde_json::from_str(&resp_body_text));
-        crate::auto_generated_mod::match_response_method_and_call_function(rpc_response).await;
+        let srv_response: RpcResponse = unwrap!(serde_json::from_str(&resp_body_text));
+        crate::auto_generated_mod::match_response_method_and_call_function(srv_response).await;
     });
 }
 
