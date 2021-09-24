@@ -2,9 +2,10 @@
 
 //! rpc methods prepare the data to respond the POST rpc requests
 
+use crate::auto_generated_mod::rpc_client;
 use crate::common_mod::*;
 use crate::crev_mod::*;
-use crate::response_post_mod::return_rpc_response;
+
 use anyhow::Context;
 use function_name::named;
 use std::str::FromStr;
@@ -35,13 +36,14 @@ pub fn rpc_reviews_list(_request_data: serde_json::Value) -> anyhow::Result<Stri
     for p in vec_proof.iter().rev() {
         vec_review.push(from_crev_to_item(p));
     }
-    let response_method = ResponseMethod::PageReviewList;
+
     let response_data = ReviewListData {
         filter: "".to_string(),
         list_of_review: vec_review,
     };
     let response_html = crate::files_mod::review_list_html();
-    Ok(return_rpc_response(response_method, response_data, response_html))
+
+    rpc_client::page_review_list(response_data, response_html)
 }
 
 #[named]
@@ -49,7 +51,6 @@ pub fn rpc_review_new(request_data: serde_json::Value) -> anyhow::Result<String>
     println!(function_name!());
     let filter: ReviewFilterData = unwrap!(serde_json::from_value(request_data));
 
-    let response_method = ResponseMethod::PageReviewNew;
     let response_html = crate::files_mod::review_new_html();
     let response_data = ReviewItemData {
         crate_name: filter.crate_name.to_string(),
@@ -70,7 +71,7 @@ alternative crates explored:
         "#
         .to_string(),
     };
-    Ok(return_rpc_response(response_method, response_data, response_html))
+    rpc_client::page_review_new(response_data, response_html)
 }
 
 #[named]
@@ -87,7 +88,7 @@ pub fn rpc_review_save(request_data: serde_json::Value) -> anyhow::Result<String
         rating_parse(&p.rating)?,
         &p.comment_md,
     ) {
-        Err(err) => Ok(crate::response_post_mod::response_err_message(&err)),
+        Err(err) => crate::response_post_mod::response_err_message(&err),
         Ok(()) => request_review_list(),
     }
 }
@@ -108,11 +109,10 @@ pub fn rpc_review_edit(request_data: serde_json::Value) -> anyhow::Result<String
     let filter: ReviewFilterData = unwrap!(serde_json::from_value(request_data));
     // find the item from the list
     let p = crev_edit_review(filter)?;
-    let response_method = ResponseMethod::PageReviewEdit;
     let response_data = from_crev_to_item(&p);
     let response_html = crate::files_mod::review_edit_html();
 
-    Ok(return_rpc_response(response_method, response_data, response_html))
+    rpc_client::page_review_edit(response_data, response_html)
 }
 
 #[named]
@@ -123,11 +123,9 @@ pub fn rpc_review_edit_or_new(request_data: serde_json::Value) -> anyhow::Result
     match crev_edit_or_new_review(filter) {
         Err(_err) => rpc_review_new(request_data),
         Ok(p) => {
-            let response_method = ResponseMethod::PageReviewEdit;
             let response_data = from_crev_to_item(&p);
             let response_html = crate::files_mod::review_edit_html();
-
-            Ok(return_rpc_response(response_method, response_data, response_html))
+            rpc_client::page_review_edit(response_data, response_html)
         }
     }
 }
@@ -138,19 +136,17 @@ pub fn rpc_review_new_version(request_data: serde_json::Value) -> anyhow::Result
     let filter: ReviewFilterData = unwrap!(serde_json::from_value(request_data));
     // find the item from the list
     let p = crev_new_version(filter)?;
-    let response_method = ResponseMethod::PageReviewEdit;
     let response_data = from_crev_to_item(&p);
     let response_html = crate::files_mod::review_edit_html();
-
-    Ok(return_rpc_response(response_method, response_data, response_html))
+    rpc_client::page_review_edit(response_data, response_html)
 }
 
 #[named]
 pub fn rpc_review_publish(_request_data: serde_json::Value) -> anyhow::Result<String> {
     println!(function_name!());
     match crev_publish() {
-        Ok(ret_val) => Ok(crate::response_post_mod::response_modal_message(&ret_val)),
-        Err(err) => Ok(crate::response_post_mod::response_err_message(&err)),
+        Ok(ret_val) => crate::response_post_mod::response_modal_message(&ret_val),
+        Err(err) => crate::response_post_mod::response_err_message(&err),
     }
 }
 
@@ -158,8 +154,8 @@ pub fn rpc_review_publish(_request_data: serde_json::Value) -> anyhow::Result<St
 pub fn rpc_update_registry_index(_request_data: serde_json::Value) -> anyhow::Result<String> {
     println!(function_name!());
     match crate::cargo_mod::update_registry_index() {
-        Ok(_ret_val) => Ok(crate::response_post_mod::response_modal_message("Registry index updated.")),
-        Err(err) => Ok(crate::response_post_mod::response_err_message(&err)),
+        Ok(_ret_val) => crate::response_post_mod::response_modal_message("Registry index updated."),
+        Err(err) => crate::response_post_mod::response_err_message(&err),
     }
 }
 
@@ -176,7 +172,7 @@ pub fn rpc_review_open_source_code(request_data: serde_json::Value) -> anyhow::R
     std::thread::sleep(Duration::new(1, 0));
     child.kill()?;
 
-    Ok(crate::response_post_mod::response_modal_message("VSCode started."))
+    crate::response_post_mod::response_modal_message("VSCode started.")
 }
 
 #[named]
@@ -195,9 +191,7 @@ pub fn rpc_verify_project(_filter_data: serde_json::Value) -> anyhow::Result<Str
     println!(function_name!());
 
     let response_data = crate::crev_mod::verify_project()?;
-    let response_method = ResponseMethod::PageVerifyList;
     let response_html = crate::files_mod::verify_list_html();
-
-    Ok(return_rpc_response(response_method, response_data, response_html))
+    rpc_client::page_verify_list(response_data, response_html)
 }
 // endregion: review

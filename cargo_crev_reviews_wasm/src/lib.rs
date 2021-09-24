@@ -20,7 +20,7 @@
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsValue;
 
-mod common_mod;
+mod auto_generated_mod;
 mod page_review_mod;
 mod page_verify_mod;
 mod pages_mod;

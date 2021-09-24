@@ -7,7 +7,8 @@ use unwrap::unwrap;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 
-use crate::common_mod::*;
+use crate::auto_generated_mod::common_mod::*;
+use crate::auto_generated_mod::rpc_server;
 
 // use crate::on_click;
 use crate::pages_mod::*;
@@ -103,9 +104,8 @@ impl PageProcessor for VerifyItemData {
 #[named]
 pub fn request_verify_list(_element_id: &str) {
     w::debug_write(function_name!());
-    let empty_data = RpcEmptyData {};
-
-    post_request_await_run_response_method(RequestMethod::RpcVerifyProject, empty_data);
+    let request_data = RpcEmptyData {};
+    rpc_server::rpc_verify_project(request_data);
 }
 
 #[named]
@@ -134,13 +134,12 @@ fn request_review_edit_or_new(_element_id: &str, row_num: usize) {
     w::debug_write(function_name!());
     // from list get crate name and version
     let item = &VERIFY_LIST_DATA.lock().unwrap().list_of_verify[row_num];
-    let review_filter_data = ReviewFilterData {
+    let request_data = ReviewFilterData {
         crate_name: item.crate_name.clone(),
         crate_version: Some(item.crate_version.clone()),
         old_crate_version: None,
     };
-
-    post_request_await_run_response_method(RequestMethod::RpcReviewEditOrNew, review_filter_data);
+    rpc_server::rpc_review_edit_or_new(request_data);
 }
 
 #[named]
@@ -175,10 +174,10 @@ fn button_verify_open_source_code_onclick(_element_id: &str, row_num: usize) {
     w::debug_write(function_name!());
     // from list get crate name and version
     let item = &VERIFY_LIST_DATA.lock().unwrap().list_of_verify[row_num];
-    let review_filter_data = ReviewFilterData {
+    let request_data = ReviewFilterData {
         crate_name: item.crate_name.clone(),
         crate_version: Some(item.crate_version.clone()),
         old_crate_version: None,
     };
-    post_request_await_run_response_method(RequestMethod::RpcReviewOpenSourceCode, review_filter_data);
+    rpc_server::rpc_review_open_source_code(request_data);
 }

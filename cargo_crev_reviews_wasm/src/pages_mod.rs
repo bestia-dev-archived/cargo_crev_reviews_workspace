@@ -2,19 +2,15 @@
 
 //! generic code to process html pages
 
-use crate::common_mod::*;
-
 use reader_for_microxml::ReaderForMicroXml;
 use reader_for_microxml::Token;
-use std::str::FromStr;
 use unwrap::unwrap;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::spawn_local;
-// use function_name::named;
 
+use crate::auto_generated_mod::common_mod::*;
 use crate::on_click;
-use crate::page_review_mod;
-use crate::page_verify_mod;
+use crate::utils_mod::*;
 use crate::web_sys_mod as w;
 
 pub trait PageProcessor {
@@ -245,11 +241,10 @@ pub trait PageProcessor {
     // endregion: trait functions
 }
 
-pub fn post_request_await_run_response_method<T>(request_method: RequestMethod, request_data: T)
+pub fn post_request_await_run_response_method<T>(request_method: &str, request_data: T)
 where
     T: serde::Serialize,
 {
-    let request_method: &'static str = request_method.into();
     let data = unwrap!(serde_json::to_value(request_data));
     let rpc = RpcRequest {
         request_method: request_method.to_string(),
@@ -262,24 +257,8 @@ where
         let rpc_request = Some(&rpc_request);
         let resp_body_text = w::fetch_post_response("submit", rpc_request).await;
         let rpc_response: RpcResponse = unwrap!(serde_json::from_str(&resp_body_text));
-        match_response_method_and_call_function(rpc_response).await;
+        crate::auto_generated_mod::match_response_method_and_call_function(rpc_response).await;
     });
-}
-
-pub async fn match_response_method_and_call_function(response: RpcResponse) {
-    let response_enum = ResponseMethod::from_str(response.response_method.as_str());
-    use ResponseMethod::*;
-    match response_enum {
-        Ok(response_enum) => match response_enum {
-            PageReviewList => page_review_mod::page_review_list(response),
-            PageReviewNew => page_review_mod::page_review_new(response),
-            PageReviewEdit => page_review_mod::page_review_edit(response),
-            PageReviewError => page_review_mod::page_review_error(response),
-            PageReviewPublishModal => page_review_mod::page_review_publish_modal(response),
-            PageVerifyList => page_verify_mod::page_verify_list(response),
-        },
-        Err(_err) => w::debug_write(&format!("Error: Unrecognized response_method {}", response.response_method)),
-    }
 }
 
 pub fn page_html(response: &RpcResponse) -> String {

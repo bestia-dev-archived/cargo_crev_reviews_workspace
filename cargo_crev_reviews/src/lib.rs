@@ -87,15 +87,15 @@
 //! rpc call with named parameters:
 //!
 //! --> {
-//! "request_method": "subtract_calculate", 
+//! "request_method": "subtract_calculate",
 //! "request_data": {
-//!     "subtrahend": 23, 
-//!     "minuend": 42, 
+//!     "subtrahend": 23,
+//!     "minuend": 42,
 //!     }
 //! }
 //!
 //! <-- {
-//! "response_method": "subtract_show", 
+//! "response_method": "subtract_show",
 //! "response_data": {
 //!     "subtracted": 19,     
 //!     },
@@ -212,6 +212,7 @@
 //!
 // endregion: auto_md_to_doc_comments include README.md A //!
 
+mod auto_generated_mod;
 mod cargo_mod;
 mod common_mod;
 mod crev_mod;
@@ -220,13 +221,14 @@ mod response_get_mod;
 mod response_post_mod;
 mod rpc_methods_mod;
 mod stdio_input_password_mod;
+mod utils_mod;
 
 pub use crev_mod::unlock_crev_id_interactively;
 
 use dev_bestia_simple_server::{Method, Server};
 use lazy_static::lazy_static;
 use std::sync::Mutex;
-// use unwrap::unwrap;
+use unwrap::unwrap;
 
 lazy_static! {
     /// mutable static, because it is hard to pass variables around with async closures
@@ -257,6 +259,7 @@ lazy_static! {
 /// start the simple web server and match the GET or POST method
 pub fn start_web_server(host: &str, port: &str) {
     println!("cargo_crev_reviews server started");
+
     let server = Server::new(|request, response_builder| {
         let path = request.uri().to_string();
         // println!("Request received. {} {}", request.method(), request.uri());
@@ -275,13 +278,13 @@ pub fn start_web_server(host: &str, port: &str) {
                 match response_body {
                     Ok(response_body) => Ok(response_builder.body(response_body.into_bytes())?),
                     Err(err) => {
-                        let response_body = response_post_mod::response_err_message(&err);
+                        let response_body = unwrap!(response_post_mod::response_err_message(&err));
                         Ok(response_builder.body(response_body.into_bytes())?)
                     }
                 }
             }
             _ => {
-                let response_body = response_post_mod::response_modal_message("Unknown request method!");
+                let response_body = unwrap!(response_post_mod::response_modal_message("Unknown request method!"));
                 Ok(response_builder.body(response_body.into_bytes())?)
             }
         }

@@ -9,8 +9,8 @@ use unwrap::unwrap;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 
-use crate::common_mod::*;
-
+use crate::auto_generated_mod::common_mod::*;
+use crate::auto_generated_mod::*;
 use crate::on_click;
 use crate::pages_mod::*;
 use crate::*;
@@ -172,7 +172,8 @@ fn store_static_review_list_data(rpc_response: RpcResponse) {
 }
 
 pub fn request_review_list(_element_id: &str) {
-    post_request_await_run_response_method(RequestMethod::RpcReviewList, RpcEmptyData {});
+    let request_data = RpcEmptyData {};
+    rpc_server::rpc_review_list(request_data);
 }
 
 /// the code for processing the page rpc_review_list
@@ -235,12 +236,12 @@ fn button_open_source_code_onclick(_element_id: &str, row_num: usize) {
     w::debug_write(function_name!());
     // from list get crate name and version
     let item = &REVIEW_LIST_DATA.lock().unwrap().list_of_review[row_num];
-    let review_filter_data = ReviewFilterData {
+    let request_data = ReviewFilterData {
         crate_name: item.crate_name.clone(),
         crate_version: Some(item.crate_version.clone()),
         old_crate_version: None,
     };
-    post_request_await_run_response_method(RequestMethod::RpcReviewOpenSourceCode, review_filter_data);
+    rpc_server::rpc_review_open_source_code(request_data);
 }
 
 #[named]
@@ -254,7 +255,8 @@ pub fn request_review_publish(_element_id: &str) {
     </div>
 </div>"#;
     w::set_inner_html("div_for_modal", page_html);
-    post_request_await_run_response_method(RequestMethod::RpcReviewPublish, RpcEmptyData {});
+    let request_data = RpcEmptyData {};
+    rpc_server::rpc_review_publish(request_data);
 }
 
 #[named]
@@ -267,13 +269,15 @@ pub fn request_update_registry_index(_element_id: &str) {
         </div>
     </div>"#;
     w::set_inner_html("div_for_modal", page_html);
-    post_request_await_run_response_method(RequestMethod::RpcUpdateRegistryIndex, RpcEmptyData {});
+    let request_data = RpcEmptyData {};
+    rpc_server::rpc_update_registry_index(request_data);
 }
 
 #[named]
 pub fn request_review_new(_element_id: &str) {
     w::debug_write(function_name!());
-    post_request_await_run_response_method(RequestMethod::RpcReviewNew, RpcEmptyData {});
+    let request_data = RpcEmptyData {};
+    rpc_server::rpc_review_new(request_data);
 }
 
 #[named]
@@ -295,13 +299,12 @@ fn request_review_new_version(_element_id: &str, row_num: usize) {
     w::debug_write(function_name!());
     // from list get crate name and version
     let item = &REVIEW_LIST_DATA.lock().unwrap().list_of_review[row_num];
-    let review_filter_data = ReviewFilterData {
+    let request_data = ReviewFilterData {
         crate_name: item.crate_name.clone(),
         crate_version: Some(item.crate_version.clone()),
         old_crate_version: None,
     };
-
-    post_request_await_run_response_method(RequestMethod::RpcReviewNewVersion, review_filter_data);
+    rpc_server::rpc_review_new_version(request_data);
 }
 
 /// send rpc requests
@@ -318,7 +321,7 @@ fn request_review_save(_element_id: &str) {
         rating: w::get_value_of_radio_group_by_name("rating"),
         comment_md: w::get_text_area_element_value_string_by_id("comment_md"),
     };
-    post_request_await_run_response_method(RequestMethod::RpcReviewSave, request_data);
+    rpc_server::rpc_review_save(request_data);
 }
 
 #[named]
@@ -326,13 +329,12 @@ fn request_review_edit_from_list(_element_id: &str, row_num: usize) {
     w::debug_write(function_name!());
     // from list get crate name and version
     let item = &REVIEW_LIST_DATA.lock().unwrap().list_of_review[row_num];
-    let review_filter_data = ReviewFilterData {
+    let request_data = ReviewFilterData {
         crate_name: item.crate_name.clone(),
         crate_version: Some(item.crate_version.clone()),
         old_crate_version: None,
     };
-
-    post_request_await_run_response_method(RequestMethod::RpcReviewEdit, review_filter_data);
+    rpc_server::rpc_review_edit(request_data);
 }
 
 /// the code for processing the page_review_edit
@@ -410,11 +412,10 @@ fn request_review_delete(_element_id: &str, row_num: usize) {
 
     // from list get crate name and version
     let item = &REVIEW_LIST_DATA.lock().unwrap().list_of_review[row_num];
-    let review_filter_data = ReviewFilterData {
+    let request_data = ReviewFilterData {
         crate_name: item.crate_name.clone(),
         crate_version: Some(item.crate_version.clone()),
         old_crate_version: None,
     };
-
-    post_request_await_run_response_method(RequestMethod::RpcReviewDelete, review_filter_data);
+    rpc_server::rpc_review_delete(request_data);
 }
