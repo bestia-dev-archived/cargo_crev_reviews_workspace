@@ -66,6 +66,7 @@ pub struct VerifyItemData {
     pub status: String,
     pub crate_name: String,
     pub crate_version: String,
+    pub published_by: String,
 }
 
 #[derive(Serialize, Deserialize, Debug, Default)]

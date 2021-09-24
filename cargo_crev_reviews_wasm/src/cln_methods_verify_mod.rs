@@ -81,6 +81,7 @@ impl HtmlProcessor for VerifyItemData {
             "wt_status" => self.status.clone(),
             "wt_crate_name" => self.crate_name.clone(),
             "wt_crate_version" => self.crate_version.clone(),
+            "wt_published_by" => self.published_by.clone(),
             "wt_cargo_crev_reviews_version" => env!("CARGO_PKG_VERSION").to_string(),
             _ => {
                 let html_error = format!("Unrecognized replace_wt method {}", wt_name);

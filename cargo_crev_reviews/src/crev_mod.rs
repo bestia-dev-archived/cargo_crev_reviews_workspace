@@ -21,6 +21,7 @@ use crev_data::{
 use crev_lib::ProofStore;
 use lazy_static::lazy_static;
 use serde::Deserialize;
+use serde::Serialize;
 use std::{env, sync::Mutex};
 use std::{ops::Range, str::FromStr, vec};
 use unwrap::unwrap;
@@ -427,23 +428,101 @@ pub fn crev_publish() -> anyhow::Result<String> {
     Ok(ret_val)
 }
 
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct VersionResponse {
+    pub version: Version,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct Version {
+    #[serde(rename = "crate")]
+    pub crate_name: String,
+    pub num: String,
+    pub yanked: bool,
+    pub published_by: Option<User>,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct User {
+    pub login: String,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct VersionDataFile {
+    versions: Vec<Version>,
+}
+
 pub fn verify_project() -> anyhow::Result<VerifyListData> {
     let output = std::process::Command::new("cargo").arg("crev").arg("verify").output().unwrap();
     let output = format!("{} {}", String::from_utf8_lossy(&output.stdout), String::from_utf8_lossy(&output.stderr));
 
+    let pb = home::home_dir().context("home_dir")?.join(".config/crev/version_data.json");
+    if !pb.exists() {
+        // first create the file empty
+        let version_data = VersionDataFile { versions: vec![] };
+        let json = serde_json::to_string_pretty(&version_data)?;
+        std::fs::write(&pb, json)?;
+    }
+
+    let version_data_cache = std::fs::read_to_string(&pb)?;
+    let mut version_data: VersionDataFile = serde_json::from_str(&version_data_cache)?;
+
     // Trust check result: pass, none, warn
+
     // parse the result
     let mut list_of_verify = vec![];
     for line in output.lines() {
         if line.starts_with("none ") || line.starts_with("pass ") || line.starts_with("warn ") {
             let s: Vec<&str> = line.split_whitespace().collect();
+            let crate_name = s[1].to_string();
+            let crate_version = s[2].to_string();
+
+            // check if it is already in the cache
+            let mut published_by = "".to_string();
+            let mut is_found = false;
+            for x in version_data.versions.iter() {
+                if &x.crate_name == &crate_name && &x.num == &crate_version {
+                    is_found = true;
+                    published_by = match &x.published_by {
+                        None => "".to_string(),
+                        Some(user) => user.login.to_string(),
+                    };
+                    break;
+                }
+            }
+            if !is_found {
+                // data from crates.io
+                let url = format!("https://crates.io//api/v1/crates/{}/{}/", &crate_name, &crate_version);
+                println!("get url: {}", &url);
+                let client = reqwest::blocking::Client::new();
+                let res = client
+                    .get(url)
+                    .header("User-Agent", "cargo_crev_reviews (github.com/LucianoBestia/cargo_crev_reviews_workspace)")
+                    .send()?;
+                let resp = res.text()?;
+
+                let v: VersionResponse = serde_json::from_str(&resp)?;
+                let ver = v.version;
+
+                version_data.versions.push(ver.clone());
+
+                published_by = match ver.published_by {
+                    None => "".to_string(),
+                    Some(user) => user.login,
+                };
+            }
             list_of_verify.push(VerifyItemData {
                 status: s[0].to_string(),
-                crate_name: s[1].to_string(),
-                crate_version: s[2].to_string(),
+                crate_name,
+                crate_version,
+                published_by,
             })
         }
     }
+    // write the cache
+    let json = serde_json::to_string_pretty(&version_data)?;
+    std::fs::write(&pb, json)?;
+
     Ok(VerifyListData {
         project_dir: env::current_dir()?.to_string_lossy().to_string(),
         list_of_verify,
