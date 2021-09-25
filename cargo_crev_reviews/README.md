@@ -24,15 +24,15 @@
 
 ## Try it
 
-Warning: only one review for crate_name+crate_version is allowed. The old review will be removed before saving the new review. This project does not edit Issues or Advisories, only Reviews.  
-If you already have cargo-crev installed and configured:
+This is a GUI wrapper around [cargo](https://doc.rust-lang.org/cargo/) and [cargo-crev](https://lib.rs/crates/cargo-crev). First, install and configure cargo and cargo-crev. Then:  
 
 ```bash
 cargo install cargo_crev_reviews
+cd ~/rustprojects/your-project-name
 cargo_crev_reviews
 ```
 
-![screen_3](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/raw/main/images/screen_3.png "screen_3")  
+![screen_4](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/raw/main/images/screen_4.png "screen_4")  
 Input your passphrase for cargo-crev proof signing.  
 ![screen_1](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/raw/main/images/screen_1.png "screen_1") ![screen_2](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/raw/main/images/screen_2.png "screen_2")  
 
@@ -173,6 +173,14 @@ bc688d353fc7c7a2f3f1f5fed9a27fc1773fc710
 
 Cargo also downloads from crates.io the complete source code for every dependency in the path `~/.cargo/registry/src/github.com-1ecc6299db9ec823/`. `Crates.io` guarantees the source code for a crate+version cannot be altered or deleted. We know it will never change, so we can review exactly this local code with confidence.  
 
+## crates.io API
+
+Some data are not available locally and need to be obtained from <https://crates.io//api/v1/crates/{}/{}/>. Then I store them in `~/.config/crev/cargo_crev_reviews_versions.json`
+
+## trusted publishers
+
+There is a confusion on crates.io who is the owner, author or group that is responsible for a crate version. Lately they added a `published_by` field for a crate_version. That sounds more accurate. In the file `~/.config/crev/cargo_crev_reviews_trusted_publishers.json` is the list of your trusted publishers. You can edit this file manually.  
+
 ## cargo crev reviews and advisory
 
 We live in times of danger with [supply chain attacks](https://en.wikipedia.org/wiki/Supply_chain_attack).  
@@ -190,6 +198,6 @@ But I need also to drink. If you find my projects and tutorials helpful,
 please buy me a beer donating on my [paypal](https://www.paypal.com/paypalme/LucianoBestia).  
 You know the price of a beer in your local bar ;-)  
 So I can drink a free beer for your health :-)  
-[Na zdravje](https://translate.google.com/?hl=en&sl=sl&tl=en&text=Na%20zdravje&op=translate) ! 🍻
+[Na zdravje!](https://translate.google.com/?hl=en&sl=sl&tl=en&text=Na%20zdravje&op=translate) [Alla salute!](https://dictionary.cambridge.org/dictionary/italian-english/alla-salute) [Prost!](https://dictionary.cambridge.org/dictionary/german-english/prost) [Nazdravlje!](https://matadornetwork.com/nights/how-to-say-cheers-in-50-languages/) 🍻
 
 [comment]: # (auto_md_to_doc_comments segment end A)

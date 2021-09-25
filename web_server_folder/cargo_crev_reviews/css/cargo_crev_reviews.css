@@ -725,3 +725,16 @@ A small difference to help search and replace refactoring.
             outline: 0;
         }
         /* endregion: modal window */
+        
+        .c_pass,
+        .c_T {
+            color: var(--color_r_strong);
+        }
+        
+        .c_warn {
+            color: var(--color_r_negative);
+        }
+        
+        .c_none {
+            color: var(--color_r_neutral);
+        }

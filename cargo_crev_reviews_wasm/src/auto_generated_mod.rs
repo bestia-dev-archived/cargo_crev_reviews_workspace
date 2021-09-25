@@ -201,6 +201,7 @@ pub mod common_structs_mod {
         pub crate_name: String,
         pub crate_version: String,
         pub published_by: String,
+        pub trusted_publisher: String,
     }
 
     #[derive(Serialize, Deserialize, Debug, Default)]

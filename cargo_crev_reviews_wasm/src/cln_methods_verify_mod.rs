@@ -81,8 +81,11 @@ impl HtmlProcessor for VerifyItemData {
             "wt_status" => self.status.clone(),
             "wt_crate_name" => self.crate_name.clone(),
             "wt_crate_version" => self.crate_version.clone(),
+            "wt_crate_name_version" => format!("{} {}", self.crate_name, self.crate_version),
             "wt_published_by" => self.published_by.clone(),
             "wt_cargo_crev_reviews_version" => env!("CARGO_PKG_VERSION").to_string(),
+            "wt_status_class" => format!("review_header0_cell c_{}", &self.status),
+            "wt_published_by_class" => format!("review_header0_cell c_{}", &self.trusted_publisher),
             _ => {
                 let html_error = format!("Unrecognized replace_wt method {}", wt_name);
                 w::debug_write(&html_error);
