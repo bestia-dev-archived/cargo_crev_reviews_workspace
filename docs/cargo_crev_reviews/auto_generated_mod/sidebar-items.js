@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["match_request_method_and_call_function",""]],"mod":[["cln_methods",""]]});

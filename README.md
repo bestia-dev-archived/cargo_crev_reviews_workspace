@@ -3,14 +3,14 @@
 [comment]: # (auto_cargo_toml_to_md start)
 
 **Write cargo-crev reviews in a Graphical User Interface with a cross-platform app written in rust**  
-***[repository](https://github.com/lucianobestia/cargo_crev_reviews_workspace); version: 2021.918.1721  date: 2021-09-18 authors: Luciano Bestia***  
+***[repository](https://github.com/lucianobestia/cargo_crev_reviews_workspace); version: 2021.925.1120  date: 2021-09-25 authors: Luciano Bestia***  
 
 [comment]: # (auto_cargo_toml_to_md end)
 
 [comment]: # (auto_lines_of_code start)
-[![Lines in Rust code](https://img.shields.io/badge/Lines_in_Rust-17897-green.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
-[![Lines in Doc comments](https://img.shields.io/badge/Lines_in_Doc_comments-408-blue.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
-[![Lines in Comments](https://img.shields.io/badge/Lines_in_comments-209-purple.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
+[![Lines in Rust code](https://img.shields.io/badge/Lines_in_Rust-19065-green.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
+[![Lines in Doc comments](https://img.shields.io/badge/Lines_in_Doc_comments-413-blue.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
+[![Lines in Comments](https://img.shields.io/badge/Lines_in_comments-241-purple.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
 [![Lines in examples](https://img.shields.io/badge/Lines_in_examples-0-yellow.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
 [![Lines in tests](https://img.shields.io/badge/Lines_in_tests-0-orange.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
 
@@ -22,6 +22,9 @@ This is a rust [workspace](https://doc.rust-lang.org/book/ch14-03-cargo-workspac
 The main member project is `cargo_crev_reviews`. Continue reading the main README.md file in that member projects:  
 [cargo_crev_reviews](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/tree/main/cargo_crev_reviews)  
 [cargo_crev_reviews_wasm](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/tree/main/cargo_crev_reviews_wasm)  
+
+![screen_3](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/raw/main/images/screen_3.png "screen_3")  
+![screen_4](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/raw/main/images/screen_4.png "screen_4") ![screen_2](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/raw/main/images/screen_2.png "screen_2")  
 
 ## TODO
 

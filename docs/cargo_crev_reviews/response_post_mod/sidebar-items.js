@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["match_request_method_and_call_function",""],["parse_post_data_and_match_method",""],["response_err_message",""],["response_modal_message",""],["return_rpc_response",""]]});
+initSidebarItems({"fn":[["parse_post_data_and_match_method",""],["response_err_message",""],["response_modal_message",""],["return_srv_response",""]]});

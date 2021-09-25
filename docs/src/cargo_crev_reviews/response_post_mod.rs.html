@@ -36,71 +36,24 @@
 <span id="34">34</span>
 <span id="35">35</span>
 <span id="36">36</span>
-<span id="37">37</span>
-<span id="38">38</span>
-<span id="39">39</span>
-<span id="40">40</span>
-<span id="41">41</span>
-<span id="42">42</span>
-<span id="43">43</span>
-<span id="44">44</span>
-<span id="45">45</span>
-<span id="46">46</span>
-<span id="47">47</span>
-<span id="48">48</span>
-<span id="49">49</span>
-<span id="50">50</span>
-<span id="51">51</span>
-<span id="52">52</span>
-<span id="53">53</span>
-<span id="54">54</span>
-<span id="55">55</span>
-<span id="56">56</span>
-<span id="57">57</span>
-<span id="58">58</span>
-<span id="59">59</span>
-<span id="60">60</span>
 </pre><pre class="rust">
 <span class="comment">// response_post_method_mod.rs</span>
 
 <span class="doccomment">//! generic functions for response to the POST method</span>
 
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::common_mod</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::rpc_methods_mod</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="ident">std::str::FromStr</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::common_structs_mod</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident">unwrap::unwrap</span>;
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">parse_post_data_and_match_method</span>(<span class="ident">body</span>: <span class="kw-2">&amp;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">anyhow::Result</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">p</span>: <span class="ident">RpcRequest</span> <span class="op">=</span> <span class="macro">unwrap!</span>(<span class="ident">serde_json::from_slice</span>(<span class="ident">body</span>));
-    <span class="ident">match_request_method_and_call_function</span>(<span class="ident">p</span>.<span class="ident">request_method</span>.<span class="ident">as_str</span>(), <span class="ident">p</span>.<span class="ident">request_data</span>)
-}
-
-<span class="kw">fn</span> <span class="ident">match_request_method_and_call_function</span>(<span class="ident">request_method</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">request_data</span>: <span class="ident">serde_json::Value</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">anyhow::Result</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
-    <span class="kw">let</span> <span class="ident">request_enum</span> <span class="op">=</span> <span class="ident">RequestMethod::from_str</span>(<span class="ident">request_method</span>);
-    <span class="kw">match</span> <span class="ident">request_enum</span> {
-        <span class="prelude-val">Ok</span>(<span class="ident">request_enum</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">match</span> <span class="ident">request_enum</span> {
-            <span class="ident">RequestMethod::RpcReviewList</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">rpc_reviews_list</span>(<span class="ident">request_data</span>),
-            <span class="ident">RequestMethod::RpcReviewNew</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">rpc_review_new</span>(<span class="ident">request_data</span>),
-            <span class="ident">RequestMethod::RpcReviewSave</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">rpc_review_save</span>(<span class="ident">request_data</span>),
-            <span class="ident">RequestMethod::RpcReviewEdit</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">rpc_review_edit</span>(<span class="ident">request_data</span>),
-            <span class="ident">RequestMethod::RpcReviewEditOrNew</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">rpc_review_edit_or_new</span>(<span class="ident">request_data</span>),
-            <span class="ident">RequestMethod::RpcReviewNewVersion</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">rpc_review_new_version</span>(<span class="ident">request_data</span>),
-            <span class="ident">RequestMethod::RpcReviewPublish</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">rpc_review_publish</span>(<span class="ident">request_data</span>),
-            <span class="ident">RequestMethod::RpcUpdateRegistryIndex</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">rpc_update_registry_index</span>(<span class="ident">request_data</span>),
-            <span class="ident">RequestMethod::RpcReviewOpenSourceCode</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">rpc_review_open_source_code</span>(<span class="ident">request_data</span>),
-            <span class="ident">RequestMethod::RpcReviewDelete</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">rpc_review_delete</span>(<span class="ident">request_data</span>),
-            <span class="ident">RequestMethod::RpcVerifyProject</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">rpc_verify_project</span>(<span class="ident">request_data</span>),
-        },
-        <span class="prelude-val">Err</span>(<span class="ident">_err</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">anyhow::bail!</span>(<span class="string">&quot;unknown server method = {}&quot;</span>, <span class="ident">request_method</span>),
-    }
+    <span class="kw">crate</span><span class="ident">::auto_generated_mod::match_request_method_and_call_function</span>(<span class="ident">p</span>.<span class="ident">request_method</span>.<span class="ident">as_str</span>(), <span class="ident">p</span>.<span class="ident">request_data</span>)
 }
 
 <span class="comment">// the first parameter is the Serialize trait and not a struct</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">return_rpc_response</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">response_method</span>: <span class="ident">ResponseMethod</span>, <span class="ident">data</span>: <span class="ident">T</span>, <span class="ident">response_html</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">return_srv_response</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">response_method</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">data</span>: <span class="ident">T</span>, <span class="ident">response_html</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span>
 <span class="kw">where</span>
     <span class="ident">T</span>: <span class="ident">serde::Serialize</span>,
 {
-    <span class="kw">let</span> <span class="ident">response_method</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="ident">response_method</span>.<span class="ident">into</span>();
     <span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="macro">unwrap!</span>(<span class="ident">serde_json::to_value</span>(<span class="ident">data</span>));
     <span class="kw">let</span> <span class="ident">r</span> <span class="op">=</span> <span class="ident">RpcResponse</span> {
         <span class="ident">response_method</span>: <span class="ident">response_method</span>.<span class="ident">to_string</span>(),
@@ -111,15 +64,14 @@
     <span class="ident">body</span>
 }
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">response_err_message</span>(<span class="ident">err</span>: <span class="kw-2">&amp;</span><span class="ident">anyhow::Error</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">response_err_message</span>(<span class="ident">err</span>: <span class="kw-2">&amp;</span><span class="ident">anyhow::Error</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">anyhow::Result</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
     <span class="ident">response_modal_message</span>(<span class="ident">err</span>.<span class="ident">to_string</span>().<span class="ident">as_str</span>())
 }
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">response_modal_message</span>(<span class="ident">msg</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
-    <span class="kw">let</span> <span class="ident">response_method</span> <span class="op">=</span> <span class="ident">ResponseMethod::PageReviewError</span>;
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">response_modal_message</span>(<span class="ident">msg</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">anyhow::Result</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">response_data</span> <span class="op">=</span> <span class="ident">RpcMessageData</span> { <span class="ident">message</span>: <span class="ident">msg</span>.<span class="ident">to_string</span>() };
     <span class="kw">let</span> <span class="ident">response_html</span> <span class="op">=</span> <span class="kw">crate</span><span class="ident">::files_mod::modal_message_html</span>();
-    <span class="ident">return_rpc_response</span>(<span class="ident">response_method</span>, <span class="ident">response_data</span>, <span class="ident">response_html</span>)
+    <span class="kw">crate</span><span class="ident">::auto_generated_mod::cln_methods::cln_review_error</span>(<span class="ident">response_data</span>, <span class="ident">response_html</span>)
 }
 </pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="cargo_crev_reviews" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div><script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script></body></html>

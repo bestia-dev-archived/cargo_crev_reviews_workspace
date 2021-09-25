@@ -581,7 +581,9 @@ fn load_trusted_publishers_json() -> anyhow::Result<TrustedPublisherDataFile> {
     let pb = path_to_trusted_publishers_json()?;
     if !pb.exists() {
         // first create the file empty. I will add alexcrichton, to have an example
-        let trusted_publishers = vec![TrustedPublisher{login:"alexcrichton".to_string()}];
+        let trusted_publishers = vec![TrustedPublisher {
+            login: "alexcrichton".to_string(),
+        }];
         let trusted_publishers_data = TrustedPublisherDataFile { trusted_publishers };
         let json = serde_json::to_string_pretty(&trusted_publishers_data)?;
         std::fs::write(&pb, json)?;
