@@ -32,7 +32,7 @@ cd ~/rustprojects/your-project-name
 cargo_crev_reviews
 ```
 
-![screen_4](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/raw/main/images/screen_4.png "screen_4")  
+![screen_3](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/raw/main/images/screen_3.png "screen_3")  
 Input your passphrase for cargo-crev proof signing.  
 ![screen_1](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/raw/main/images/screen_1.png "screen_1") ![screen_2](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/raw/main/images/screen_2.png "screen_2")  
 
