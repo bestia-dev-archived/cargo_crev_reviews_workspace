@@ -19,7 +19,9 @@
 ## Workspace
 
 This is a rust [workspace](https://doc.rust-lang.org/book/ch14-03-cargo-workspaces.html) (multi-projects) that contains member projects.  
-The main member project is `cargo_crev_reviews`. Continue reading the main README.md file in that member project.
+The main member project is `cargo_crev_reviews`. Continue reading the main README.md file in that member projects:  
+[cargo_crev_reviews](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/tree/main/cargo_crev_reviews)  
+[cargo_crev_reviews_wasm](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/tree/main/cargo_crev_reviews_wasm)  
 
 ## TODO
 
