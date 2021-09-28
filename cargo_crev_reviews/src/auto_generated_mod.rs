@@ -18,6 +18,7 @@ pub fn match_request_method_and_call_function(request_method: &str, request_data
         "srv_reviews_list" => srv_reviews_list(request_data),
         "srv_update_registry_index" => srv_update_registry_index(request_data),
         "srv_verify_project" => srv_verify_project(request_data),
+        "srv_version_list" => srv_version_list(request_data),
         // generator match_response_method end
         _ => anyhow::bail!("unknown server method = {}", request_method),
     }
@@ -77,6 +78,15 @@ pub mod cln_methods {
 
     #[named]
     pub fn cln_verify_list<T>(response_data: T, response_html: &str) -> anyhow::Result<String>
+    where
+        T: serde::Serialize,
+    {
+        let response_method = function_name!();
+        Ok(return_srv_response(response_method, response_data, response_html))
+    }
+
+    #[named]
+    pub fn cln_version_list<T>(response_data: T, response_html: &str) -> anyhow::Result<String>
     where
         T: serde::Serialize,
     {

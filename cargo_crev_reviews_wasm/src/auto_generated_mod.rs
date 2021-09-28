@@ -5,6 +5,7 @@
 
 use crate::cln_methods_review_mod::*;
 use crate::cln_methods_verify_mod::*;
+use crate::cln_methods_version_mod::*;
 use crate::web_sys_mod as w;
 
 /// match the string and call a function
@@ -17,6 +18,7 @@ pub async fn match_response_method_and_call_function(response: common_structs_mo
         "cln_review_new" => cln_review_new(response),
         "cln_review_publish_modal" => cln_review_publish_modal(response),
         "cln_verify_list" => cln_verify_list(response),
+        "cln_version_list" => cln_version_list(response),
         // generator match_response_method end
         _ => w::debug_write(&format!("Error: Unrecognized response_method {}", response.response_method)),
     }
@@ -127,6 +129,15 @@ pub mod srv_methods {
         let request_method = function_name!();
         post_request_await_run_response_method(request_method, request_data);
     }
+
+    #[named]
+    pub fn srv_version_list<T>(request_data: T)
+    where
+        T: serde::Serialize,
+    {
+        let request_method = function_name!();
+        post_request_await_run_response_method(request_method, request_data);
+    }
     // generator srv_methods end
 }
 
@@ -177,7 +188,7 @@ pub mod common_structs_mod {
         pub old_crate_version: Option<String>,
     }
 
-    #[derive(Serialize, Deserialize, Debug, Default)]
+    #[derive(Serialize, Deserialize, Debug, Default, Clone)]
     pub struct ReviewItemData {
         pub crate_name: String,
         pub crate_version: String,
@@ -208,6 +219,21 @@ pub mod common_structs_mod {
     pub struct VerifyListData {
         pub project_dir: String,
         pub list_of_verify: Vec<VerifyItemData>,
+    }
+
+    #[derive(Serialize, Deserialize, Debug, Default)]
+    pub struct VersionItemData {
+        pub crate_name: String,
+        pub crate_version: String,
+        pub yanked: bool,
+        pub published_by_login: Option<String>,
+        pub is_src_cached: Option<bool>,
+        pub my_review: Option<ReviewItemData>,
+    }
+
+    #[derive(Serialize, Deserialize, Debug, Default)]
+    pub struct VersionListData {
+        pub list_of_version: Vec<VersionItemData>,
     }
     // generator common_structs_mod end
 }

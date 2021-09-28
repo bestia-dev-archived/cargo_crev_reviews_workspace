@@ -42,9 +42,7 @@ If the default browser does not open from WSL2, you can see my project `https://
         );
         unlock_crev_id_interactively()?;
 
-        let host = "127.0.0.1";
-        let port = "8182";
-        start_web_server(host, port);
+        start_web_server();
     }
     Ok(())
 }

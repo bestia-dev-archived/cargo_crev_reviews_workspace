@@ -1,14 +1,14 @@
-// cln_methods_verify_mod.rs
+// cln_methods_version_mod.rs
 
 use function_name::named;
 use lazy_static::lazy_static;
 use std::sync::Mutex;
 use unwrap::unwrap;
-use wasm_bindgen::prelude::*;
-use wasm_bindgen::JsCast;
+//use wasm_bindgen::prelude::*;
+//use wasm_bindgen::JsCast;
 
 use crate::auto_generated_mod::common_structs_mod::*;
-use crate::auto_generated_mod::srv_methods;
+//use crate::auto_generated_mod::srv_methods;
 
 // use crate::on_click;
 use crate::html_mod::*;
@@ -16,17 +16,17 @@ use crate::*;
 
 lazy_static! {
     /// mutable static, because it is hard to pass variables around with on_click events
-    static ref VERIFY_ITEM_DATA: Mutex<VerifyItemData> = Mutex::new(VerifyItemData::default());
-    static ref VERIFY_LIST_DATA: Mutex<VerifyListData> = Mutex::new(VerifyListData::default());
+    static ref VERSION_ITEM_DATA: Mutex<VersionItemData> = Mutex::new(VersionItemData::default());
+    static ref VERSION_LIST_DATA: Mutex<VersionListData> = Mutex::new(VersionListData::default());
 }
 
-impl HtmlProcessor for VerifyListData {
+impl HtmlProcessor for VersionListData {
     /// process template and push as many &str is needed
     fn process_repetitive_items(&self, name_of_repeat_segment: &str, html_repetitive_template: &str, html_new: &mut String) {
         match name_of_repeat_segment {
-            "verify" => {
+            "version" => {
                 w::debug_write(&format!("process_repetitive_items {}", name_of_repeat_segment));
-                for (row_num, data) in self.list_of_verify.iter().enumerate() {
+                for (row_num, data) in self.list_of_version.iter().enumerate() {
                     let list_item_html = data.process_html_with_item(html_repetitive_template, Some(row_num));
                     html_new.push_str(&list_item_html);
                 }
@@ -43,7 +43,6 @@ impl HtmlProcessor for VerifyListData {
     fn match_wt(&self, wt_name: &str) -> String {
         match wt_name {
             "wt_cargo_crev_reviews_version" => env!("CARGO_PKG_VERSION").to_string(),
-            "wt_project_dir" => self.project_dir.clone(),
             _ => {
                 let html_error = format!("Unrecognized replace_wt method {}", wt_name);
                 w::debug_write(&html_error);
@@ -63,7 +62,7 @@ impl HtmlProcessor for VerifyListData {
     }
 }
 
-impl HtmlProcessor for VerifyItemData {
+impl HtmlProcessor for VersionItemData {
     /// process template and push as many &str is needed
     fn process_repetitive_items(&self, name_of_repeat_segment: &str, _html_repetitive_template: &str, html_new: &mut String) {
         match name_of_repeat_segment {
@@ -78,14 +77,10 @@ impl HtmlProcessor for VerifyItemData {
     /// the use of complete string wt_xxx enables easy and exact text search around the source code
     fn match_wt(&self, wt_name: &str) -> String {
         match wt_name {
-            "wt_status" => self.status.clone(),
             "wt_crate_name" => self.crate_name.clone(),
             "wt_crate_version" => self.crate_version.clone(),
             "wt_crate_name_version" => format!("{} {}", self.crate_name, self.crate_version),
-            "wt_published_by" => self.published_by.clone(),
             "wt_cargo_crev_reviews_version" => env!("CARGO_PKG_VERSION").to_string(),
-            "wt_status_class" => format!("review_header0_cell c_{}", &self.status),
-            "wt_published_by_class" => format!("review_header0_cell c_{}", &self.trusted_publisher),
             _ => {
                 let html_error = format!("Unrecognized replace_wt method {}", wt_name);
                 w::debug_write(&html_error);
@@ -106,82 +101,13 @@ impl HtmlProcessor for VerifyItemData {
 }
 
 #[named]
-pub fn request_verify_list(_element_id: &str) {
-    w::debug_write(function_name!());
-    let request_data = RpcEmptyData {};
-    srv_methods::srv_verify_project(request_data);
-}
-
-#[named]
-pub fn cln_verify_list(srv_response: RpcResponse) {
+pub fn cln_version_list(srv_response: RpcResponse) {
     w::debug_write(function_name!());
     let html = extract_html(&srv_response);
-    *VERIFY_LIST_DATA.lock().unwrap() = unwrap!(serde_json::from_value(srv_response.response_data));
+    *VERSION_LIST_DATA.lock().unwrap() = unwrap!(serde_json::from_value(srv_response.response_data));
     // modal dialog box with error, don't change the html and data
-    let html_after_process = VERIFY_LIST_DATA.lock().unwrap().process_html(&html);
+    let html_after_process = VERSION_LIST_DATA.lock().unwrap().process_html(&html);
 
     inject_into_html(&html_after_process);
     navigation_on_click();
-
-    // on_click for every row of the list
-    for (row_num, _item) in VERIFY_LIST_DATA.lock().unwrap().list_of_verify.iter().enumerate() {
-        row_on_click!("crate_name_version", row_num, open_all_links);
-    }
-}
-
-#[named]
-pub fn request_review_edit_or_new(_element_id: &str, row_num: usize) {
-    w::debug_write(function_name!());
-    // from list get crate name and version
-    let item = &VERIFY_LIST_DATA.lock().unwrap().list_of_verify[row_num];
-    let request_data = ReviewFilterData {
-        crate_name: item.crate_name.clone(),
-        crate_version: Some(item.crate_version.clone()),
-        old_crate_version: None,
-    };
-    srv_methods::srv_review_edit_or_new(request_data);
-}
-
-#[named]
-fn open_all_links(_element_id: &str, row_num: usize) {
-    w::debug_write(function_name!());
-    let item = &VERIFY_LIST_DATA.lock().unwrap().list_of_verify[row_num];
-/*
-    let url = format!("https://web.crev.dev/rust-reviews/crate/{}/", item.crate_name);
-    unwrap!(w::window().open_with_url(&url));
-
-    let url = format!("https://lib.rs/crates/{}", item.crate_name);
-    unwrap!(w::window().open_with_url(&url));
-
-    let url = format!("https://crates.io/crates/{}/{}", item.crate_name, item.crate_version);
-    unwrap!(w::window().open_with_url(&url));
-
-    let request_data = ReviewFilterData {
-        crate_name: item.crate_name.clone(),
-        crate_version: Some(item.crate_version.clone()),
-        old_crate_version: None,
-    };
-    srv_methods::srv_review_open_source_code(request_data);
- */
-    // list versions for this crate
-    let url = format!(
-        "http://{}:{}/{}/index.html#version_list/{}",
-        SERVER_HOST.lock().unwrap(),
-        SERVER_PORT.lock().unwrap(),
-        SERVER_FIRST_FRAGMENT.lock().unwrap(),
-        item.crate_name,
-    );
-    unwrap!(w::window().open_with_url(&url));
-/*
-    // edit_or_new in a new tab
-    let url = format!(
-        "http://{}:{}/{}/index.html#edit_or_new/{}/{}",
-        SERVER_HOST.lock().unwrap(),
-        SERVER_PORT.lock().unwrap(),
-        SERVER_FIRST_FRAGMENT.lock().unwrap(),
-        item.crate_name,
-        item.crate_version,
-    );
-    unwrap!(w::window().open_with_url(&url));
-     */
 }

@@ -30,7 +30,8 @@ The main member project is `cargo_crev_reviews`. Continue reading the main READM
 
 show if there is newer version. cache it in a file.
 markdown instead of raw text
-special types for html encoded strings and attribute_value_encoded strings. So I can be sure that I did or did not encoded them.  
+special types for html encoded strings and attribute_value_encoded strings. So I can be sure that I did or did not encoded them.
+Get from crates.io in the background.  
 
 ## cargo crev reviews and advisory
 

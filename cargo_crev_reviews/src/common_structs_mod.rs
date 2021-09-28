@@ -43,7 +43,7 @@ pub struct ReviewFilterData {
     pub old_crate_version: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Default)]
+#[derive(Serialize, Deserialize, Debug, Default, Clone)]
 pub struct ReviewItemData {
     pub crate_name: String,
     pub crate_version: String,
@@ -74,4 +74,19 @@ pub struct VerifyItemData {
 pub struct VerifyListData {
     pub project_dir: String,
     pub list_of_verify: Vec<VerifyItemData>,
+}
+
+#[derive(Serialize, Deserialize, Debug, Default)]
+pub struct VersionItemData {
+    pub crate_name: String,
+    pub crate_version: String,
+    pub yanked: bool,
+    pub published_by_login: Option<String>,
+    pub is_src_cached: Option<bool>,
+    pub my_review: Option<ReviewItemData>,
+}
+
+#[derive(Serialize, Deserialize, Debug, Default)]
+pub struct VersionListData {
+    pub list_of_version: Vec<VersionItemData>,
 }

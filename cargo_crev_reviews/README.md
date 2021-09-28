@@ -28,13 +28,29 @@ This is a GUI wrapper around [cargo](https://doc.rust-lang.org/cargo/) and [carg
 
 ```bash
 cargo install cargo_crev_reviews
+```
+
+Start the program inside the directory of your rust project, where the Cargo.toml file is.
+
+```bash
 cd ~/rustprojects/your-project-name
 cargo_crev_reviews
 ```
 
 ![screen_3](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/raw/main/images/screen_3.png "screen_3")  
+
 Input your passphrase for cargo-crev proof signing.  
-![screen_4](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/raw/main/images/screen_4.png "screen_4") ![screen_2](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/raw/main/images/screen_2.png "screen_2")  
+
+![screen_4](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/raw/main/images/screen_4.png "screen_4")  
+
+The program lists all the dependencies of the project with data about reviews. It shows all the dependencies including the transient dependencies. It is easily more than 100 crates in the list.  
+Your personal reviews are the most important. Ideally, you want to personally review every crate and write something about it for your own use. You want to know that the dependencies your program is using are not malicious or unsound. To write a review you need to see the exact source code and other metadata about the crate. This program will show you more data about the crate, so you can focus on the important parts.  
+Click on the crate name in the list and it will open a few new browser tabs: crev.dev, crates.io, lib.rs, and VSCode. It will also open a tab to edit or add a new review for that crate + version. Be warned that modern browser block pop-ups and you have to allow that explicitly for this site.
+
+When you are satisfied with your own reviews, you then publish them for other developers to read.  
+In the same way, reviews from other developers help you when analyzing the dependencies. More people that write reviews, better the information we get for our decisions.  
+One crate can have many versions. Every version is separately reviewed. Often, the text will be just the same for many versions, but that is good. When a developer want to see the reviews for a specific version, he does not need to watch the reviews of other versions of the same crate.
+Personally, I think that the reputation of the author is important. For some highly visible and respected members of the Rust community I don't review the code. The reputation of the author is enough to make me feel safe. This method is not perfect, because there can be identity theft or a faulty version. But I still think that it is an efficient and effective method for me. Crates.io made a confusion with authors and owners. Lately they introduced the `published_by` field for every version. For me this is the main person responsible for any eventual issue of this specific published version.  
 
 ## Motivation
 
@@ -71,7 +87,7 @@ The rust workspace is made of members:
 The sub-directory `web_server_folder` contains all the files and folder structure for a working development web_server.  
 But this files are not used directly. Because of the way the publish to crates.io works, I will embed them inside the rust code as strings (base64 encoded if needed). I will make an automation task for that.  
 
-There is a file `auto_generated_mod.rs` where automation tasks writes boilerplate code.
+There is a file `auto_generated_mod.rs` where automation tasks generates boilerplate code. I prefer generated code to `procedural macros` because it is easy to write(generate), read and debug the code. Also the tools for auto-completion can have problems with procedural macros.  
 
 ## backend - cargo_crev_reviews
 

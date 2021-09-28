@@ -14,23 +14,23 @@ enum Cache {
 /// GET is used only to request files
 /// Files are stored in functions in the files_mod.rs module
 /// there is an automation task to copy files from web_server_folder to the module
-pub fn parse_get_uri_and_response_file(path: &str, response: dev_bestia_simple_server::Builder) -> Response<Vec<u8>> {
+pub fn parse_get_uri_and_response_file(path: &str, response_builder: dev_bestia_simple_server::Builder) -> Response<Vec<u8>> {
     println!("path: {}", path);
     match path {
-        "/cargo_crev_reviews/index.html" => response_file_text(response, index_html, path, Cache::NoStore),
-        "/cargo_crev_reviews/css/cargo_crev_reviews.css" => response_file_text(response, css_cargo_crev_reviews_css, path, Cache::Ok),
-        "/cargo_crev_reviews/css/fontawesome.css" => response_file_text(response, css_fontawesome_css, path, Cache::Ok),
-        "/cargo_crev_reviews/css/normalize.css" => response_file_text(response, css_normalize_css, path, Cache::Ok),
-        "/cargo_crev_reviews/css/Roboto-Medium.woff2" => response_file_base64(response, css_roboto_medium_woff2, path),
-        "/cargo_crev_reviews/css/fa-solid-900.woff2" => response_file_base64(response, css_fa_solid_900_woff2, path),
-        "/cargo_crev_reviews/icons/icon-032.png" => response_file_base64(response, icons_icon_032_png, path),
-        "/cargo_crev_reviews/icons/icon-128.png" => response_file_base64(response, icons_icon_128_png, path),
-        "/cargo_crev_reviews/icons/icon-192.png" => response_file_base64(response, icons_icon_192_png, path),
-        "/cargo_crev_reviews/images/Logo_02.png" => response_file_base64(response, images_logo_02_png, path),
-        "/cargo_crev_reviews/js/dropdown.js" => response_file_text(response, js_dropdown_js, path, Cache::Ok),
-        "/cargo_crev_reviews/pkg/cargo_crev_reviews_wasm.js" => response_file_text(response, pkg_cargo_crev_reviews_wasm_js, path, Cache::NoStore),
-        "/cargo_crev_reviews/pkg/cargo_crev_reviews_wasm_bg.wasm" => response_file_base64(response, pkg_cargo_crev_reviews_wasm_bg_wasm, path),
-        _ => response_404_not_found(response, path),
+        "/cargo_crev_reviews/index.html" => response_file_text(response_builder, index_html, path, Cache::NoStore),
+        "/cargo_crev_reviews/css/cargo_crev_reviews.css" => response_file_text(response_builder, css_cargo_crev_reviews_css, path, Cache::Ok),
+        "/cargo_crev_reviews/css/fontawesome.css" => response_file_text(response_builder, css_fontawesome_css, path, Cache::Ok),
+        "/cargo_crev_reviews/css/normalize.css" => response_file_text(response_builder, css_normalize_css, path, Cache::Ok),
+        "/cargo_crev_reviews/css/Roboto-Medium.woff2" => response_file_base64(response_builder, css_roboto_medium_woff2, path),
+        "/cargo_crev_reviews/css/fa-solid-900.woff2" => response_file_base64(response_builder, css_fa_solid_900_woff2, path),
+        "/cargo_crev_reviews/icons/icon-032.png" => response_file_base64(response_builder, icons_icon_032_png, path),
+        "/cargo_crev_reviews/icons/icon-128.png" => response_file_base64(response_builder, icons_icon_128_png, path),
+        "/cargo_crev_reviews/icons/icon-192.png" => response_file_base64(response_builder, icons_icon_192_png, path),
+        "/cargo_crev_reviews/images/Logo_02.png" => response_file_base64(response_builder, images_logo_02_png, path),
+        "/cargo_crev_reviews/js/dropdown.js" => response_file_text(response_builder, js_dropdown_js, path, Cache::Ok),
+        "/cargo_crev_reviews/pkg/cargo_crev_reviews_wasm.js" => response_file_text(response_builder, pkg_cargo_crev_reviews_wasm_js, path, Cache::NoStore),
+        "/cargo_crev_reviews/pkg/cargo_crev_reviews_wasm_bg.wasm" => response_file_base64(response_builder, pkg_cargo_crev_reviews_wasm_bg_wasm, path),
+        _ => return response_404_not_found(response_builder, path),
     }
 }
 

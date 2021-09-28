@@ -209,6 +209,7 @@ pub fn crev_edit_or_new_review(filter: ReviewFilterData) -> anyhow::Result<Proof
         crate_version: None,
         old_crate_version: None,
     };
+
     let mut vec_of_reviews = crev_list_my_reviews(&Some(new_filter))?;
     if vec_of_reviews.is_empty() {
         anyhow::bail!("Crate reviews for {} not found in my reviews!", filter.crate_name.as_str());
@@ -443,6 +444,17 @@ pub struct Version {
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct VersionExt {
+    #[serde(rename = "crate")]
+    pub crate_name: String,
+    pub num: String,
+    pub yanked: bool,
+    pub published_by: Option<User>,
+    pub is_src_cached: Option<bool>,
+    pub my_review: Option<ReviewItemData>,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct User {
     pub login: String,
 }
@@ -542,7 +554,7 @@ fn published_by_from_versions_json(version_data: &mut VersionDataFile, crate_nam
     }
 
     // GET data from crates.io
-    let url = format!("https://crates.io//api/v1/crates/{}/{}/", &crate_name, &crate_version);
+    let url = format!("https://crates.io/api/v1/crates/{}/{}/", &crate_name, &crate_version);
     println!("get url: {}", &url);
     let client = reqwest::blocking::Client::new();
     let res = client
@@ -570,7 +582,7 @@ fn write_versions_json(version_data: VersionDataFile) -> Result<(), anyhow::Erro
 }
 
 // endregion: cargo_crev_reviews_versions.json
-
+// region: cargo_crev_reviews_trusted_publishers.json
 fn path_to_trusted_publishers_json() -> anyhow::Result<std::path::PathBuf> {
     let pb = home::home_dir()
         .context("home_dir")?
@@ -599,4 +611,80 @@ fn is_trusted_publisher(trusted_file: &TrustedPublisherDataFile, login: &str) ->
         }
     }
     "".to_string()
+}
+// endregion: cargo_crev_reviews_trusted_publishers.json
+
+/// get all versions for one crate from registry index
+pub fn crev_crate_versions(crate_name: &str) -> anyhow::Result<Vec<VersionExt>> {
+    let mut vec_of_version_ext = vec![];
+    // vec_of_reviews for this crate
+    let new_filter = ReviewFilterData {
+        crate_name: crate_name.to_string(),
+        crate_version: None,
+        old_crate_version: None,
+    };
+    let vec_of_reviews = crev_list_my_reviews(&Some(new_filter))?;
+
+    let mut my_review = None;
+    let mut versions_json = load_versions_json()?;
+    for (crate_version, yanked) in crate::cargo_mod::all_versions_for_crate(crate_name)?.iter() {
+        // is_src_cache ?
+        let path_dir = crate::cargo_mod::cargo_registry_src_dir_for_crate(crate_name, &crate_version)?;
+        let is_src_cached = Some(path_dir.exists());
+        // my_review
+        for review in vec_of_reviews.iter() {
+            if review.package.name == crate_name && review.package.version.as_str() == crate_version {
+                my_review = Some(ReviewItemData {
+                    crate_name: review.package.name.clone(),
+                    crate_version: review.package.version.clone(),
+                    date: review.date.clone(),
+                    thoroughness: review.review.as_ref().context("review")?.thoroughness.to_string(),
+                    understanding: review.review.as_ref().context("review")?.understanding.to_string(),
+                    rating: rating_to_string(&review.review.as_ref().context("review")?.rating),
+                    comment_md: review.comment.as_ref().unwrap_or(&String::new()).clone(),
+                });
+                break;
+            }
+        }
+
+        // check if it is already in the cache or GET from crates.io API and store in cache
+        let mut exists = false;
+        for version in versions_json.versions.iter() {
+            if version.crate_name.as_str() == crate_name && &version.num.as_str() == crate_version {
+                exists = true;
+                vec_of_version_ext.push(VersionExt {
+                    crate_name: version.crate_name.clone(),
+                    num: version.num.clone(),
+                    yanked: version.yanked.clone(),
+                    published_by: version.published_by.clone(),
+                    is_src_cached,
+                    my_review: my_review.clone(),
+                });
+                break;
+            }
+        }
+        if exists == false {
+            // add to file
+            versions_json.versions.push(Version {
+                crate_name: crate_name.to_string(),
+                num: crate_version.to_string(),
+                yanked: *yanked,
+                published_by: None,
+            });
+
+            // TODO: published_by
+            // add to vector
+            let version = VersionExt {
+                crate_name: crate_name.to_string(),
+                num: crate_version.to_string(),
+                yanked: *yanked,
+                published_by: None,
+                is_src_cached,
+                my_review: my_review.clone(),
+            };
+            vec_of_version_ext.push(version.clone());
+        }
+    }
+    write_versions_json(versions_json)?;
+    Ok(vec_of_version_ext)
 }

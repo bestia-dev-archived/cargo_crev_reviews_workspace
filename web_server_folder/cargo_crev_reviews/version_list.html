@@ -3,7 +3,7 @@
 
 <head>
     <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
-    <title>list verify</title>
+    <title>list versions</title>
     <meta name="Description" content="web app for writing new reviews for cargo-crev" />
     <link rel="stylesheet" href="css/normalize.css" />
     <link rel="stylesheet" href="css/cargo_crev_reviews.css" />
@@ -26,8 +26,7 @@
                 <img src="images/Logo_02.png" style="padding: 7px;" />
             </div>
             <div class="middle">
-                <h2>Verify project</h2>
-                <p>Click on the crate name to open all links together for analyzing the crate.</p>
+                <h2>List versions for crate</h2>
             </div>
             <div class="middle right">
                 <h3>review for <a class="c_link_1" href="https://web.crev.dev/rust-reviews/crates/" target="_blank">cargo-crev</a></h3>
@@ -35,43 +34,53 @@
             <div></div>
         </div>
     </div>
+    <!--wr_start_version-->
     <div class="container_0">
-        <div class="container0_content_not_grid" style="line-height: 0.8em;">
-            <p class="small">
-                <!--wt_project_dir-->~/rustprojects/cargo_crev_reviews_workspace</p>
-        </div>
-        <div class="review_header_0" style="grid-template-columns: 10fr 10fr 30fr 10fr 30fr;">
-            <div class="review_header0_cell">act</div>
-            <div class="review_header0_cell">status</div>
-            <div class="review_header0_cell">crate</div>
-            <div class="review_header0_cell">published_by</div>
+        <div class="review_header_0" style="grid-template-columns: 35fr 15fr 15fr 25fr;">
+            <div class="review_header0_cell">
+                <!--wt_crate_name_version-->num-traits 0.2.11</div>
+            <div class="review_header0_cell">
+                <!--wt_crate_name_version-->yanked</div>
+            <div class="review_header0_cell">
+                <!--wt_crate_published_by-->publisher</div>
+            <div class="review_header0_cell">
+                <!--wt_crate_published_date-->2021</div>
         </div>
     </div>
+    <!--wb_has_review-->
     <div class="container_0">
-        <div class="review_header_0" style="grid-template-columns: 10fr 10fr 30fr 10fr 30fr;">
-            <!--wr_start_verify-->
+        <div class="review_header_0" style="grid-template-columns: 10fr 35fr 15fr 15fr 25fr;">
             <div class="review_header0_cell">
                 <div class="dropdown">
                     <div class="dropbtn"><i class="fas fa-ellipsis-h" style="pointer-events: none;"></i></div>
                     <div class="dropdown-content">
-                        <a id="button_review_edit_or_new">Add or edit review</a>
+                        <a id="button_review_edit">Edit review</a>
+                        <a id="button_review_new_version">Add new version</a>
                         <a id="button_open_crev_dev">Open crev.dev</a>
                         <a id="button_open_lib_rs">Open lib.rs</a>
                         <a id="button_open_crates_io">Open crates.io</a>
                         <a id="button_open_source_code">Open VSCode</a>
+                        <a id="button_review_delete">Delete</a>
                     </div>
                 </div>
             </div>
-            <div data-wt_status_class="class" class="review_header0_cell">
-                <!--wt_status-->pass</div>
-            <div id="crate_name_version" class="review_header0_cell c_link_1">
-                <!--wt_crate_name_version-->num-traits 1.20.1</div>
-            <div data-wt_published_by_class="class" class="review_header0_cell">
-                <!--wt_published_by-->published_by</div>
-            <div class="review_header0_cell"></div>
-            <!--wr_end_verify-->
+            <div class="review_header0_cell">
+                <!--wt_crate_name_version-->num-traits 0.2.11
+            </div>
+            <div data-wt_rating_class_color="class" class="review_header0_cell c_positive bold" title="rating">
+                <!--wt_rating-->positive</div>
+            <div class="review_header0_cell">
+                <!--wt_review_date-->2021-01-18</div>
+            <div class="review_header0_cell" title="thoroughness understanding">
+                <!--wt_crate_thoroughness_understanding-->none high</div>
+        </div>
+
+        <div class="review_comment" style="word-wrap: break-word;overflow-wrap:break-word;">
+            <!--wt_comment_md-->first we try text and then change to markdown
         </div>
     </div>
+    <!--wr_end_version-->
+
     <div>
         <div class="container0_content_not_grid" style="line-height: 0.8em;">
             <p class="small">© Luciano Bestia 2021, MIT Licence, Version:

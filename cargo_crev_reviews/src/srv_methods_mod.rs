@@ -115,6 +115,7 @@ pub fn srv_review_edit(request_data: serde_json::Value) -> anyhow::Result<String
     cln_methods::cln_review_edit(response_data, response_html)
 }
 
+/// edit the review or copy the last review to create a new review
 #[named]
 pub fn srv_review_edit_or_new(request_data: serde_json::Value) -> anyhow::Result<String> {
     println!(function_name!());
@@ -128,6 +129,39 @@ pub fn srv_review_edit_or_new(request_data: serde_json::Value) -> anyhow::Result
             cln_methods::cln_review_edit(response_data, response_html)
         }
     }
+}
+
+/// list of all versions for one crate: from registry index with data from src cached and my_reviews
+#[named]
+pub fn srv_version_list(request_data: serde_json::Value) -> anyhow::Result<String> {
+    println!(function_name!());
+    let filter: ReviewFilterData = unwrap!(serde_json::from_value(request_data.clone()));
+
+    let mut vec = crev_crate_versions(&filter.crate_name)?;
+    // descending order
+    vec.sort_by(|a, b| {
+        let a = semver::Version::parse(&a.num).unwrap();
+        let b = semver::Version::parse(&b.num).unwrap();
+        b.cmp(&a)
+    });
+    println!("{:?}", &vec);
+
+    let mut response_data = VersionListData { list_of_version: vec![] };
+    for x in vec.iter() {
+        let v = VersionItemData {
+            crate_name: x.crate_name.clone(),
+            crate_version: x.num.clone(),
+            yanked: x.yanked,
+            published_by_login: None,
+            is_src_cached: x.is_src_cached,
+            my_review: x.my_review.clone(),
+        };
+        response_data.list_of_version.push(v);
+    }
+
+    let response_html = crate::files_mod::version_list_html();
+
+    cln_methods::cln_version_list(response_data, response_html)
 }
 
 #[named]

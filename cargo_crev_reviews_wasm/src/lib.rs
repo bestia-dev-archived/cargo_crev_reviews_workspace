@@ -45,17 +45,33 @@
 //!
 // endregion: auto_md_to_doc_comments include README.md A //!
 
+use anyhow::Context;
+use lazy_static::lazy_static;
+use std::sync::Mutex;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsValue;
 
 mod auto_generated_mod;
 mod cln_methods_review_mod;
 mod cln_methods_verify_mod;
+mod cln_methods_version_mod;
 mod html_mod;
 mod utils_mod;
 mod web_sys_mod;
 
+use crate::auto_generated_mod::common_structs_mod::ReviewFilterData;
+use crate::auto_generated_mod::common_structs_mod::RpcEmptyData;
+use crate::auto_generated_mod::srv_methods;
 use crate::web_sys_mod as w;
+
+lazy_static! {
+    /// 127.0.0.1
+    static ref SERVER_HOST: Mutex<String>=Mutex::new(String::from("127.0.0.1"));
+    /// 8182
+    static ref SERVER_PORT: Mutex<String>=Mutex::new(String::from("8182"));
+    // first fragment /cargo_crev_reviews/
+    static ref SERVER_FIRST_FRAGMENT: Mutex<String>=Mutex::new(String::from("cargo_crev_reviews"));
+}
 
 #[wasm_bindgen(start)]
 /// To start the Wasm application, wasm_bindgen runs this function
@@ -65,8 +81,55 @@ pub fn wasm_bindgen_start() -> Result<(), JsValue> {
     // write the app version just for debug purposes
     w::debug_write(&format!("{} v{}", env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION")));
 
-    crate::cln_methods_verify_mod::request_verify_list("");
+    // read the url hash parameters for local routing
+    let location = w::window().location();
+    match location.hash() {
+        // if there is no url hash, show the first page: verify_list
+        Err(_err) => crate::cln_methods_verify_mod::request_verify_list(""),
+        Ok(location_hash) => {
+            if location_hash.is_empty() {
+                crate::cln_methods_verify_mod::request_verify_list("");
+            } else {
+                match get_3_url_param_from_hash(&location_hash) {
+                    Err(_err) => {
+                        let request_data = RpcEmptyData {};
+                        srv_methods::srv_verify_project(request_data);
+                    }
+                    Ok((method, crate_name, crate_version)) => match method {
+                        "edit_or_new" => {
+                            let request_data = ReviewFilterData {
+                                crate_name: crate_name.to_string(),
+                                crate_version: Some(crate_version.to_string()),
+                                old_crate_version: None,
+                            };
+                            srv_methods::srv_review_edit_or_new(request_data);
+                        }
+                        "version_list" => {
+                            let request_data = ReviewFilterData {
+                                crate_name: crate_name.to_string(),
+                                crate_version: None,
+                                old_crate_version: None,
+                            };
+                            srv_methods::srv_version_list(request_data);
+                        }
+                        _ => w::debug_write(&format!("unrecognized hash method: {}", method)),
+                    },
+                }
+            }
+        }
+    }
 
     // return
     Ok(())
+}
+
+/// get 3 param from hash
+/// example "#edit/crate_name/crate_version" -> ["edit","crate_name","crate_version"]
+pub fn get_3_url_param_from_hash(location_hash: &str) -> anyhow::Result<(&str, &str, &str)> {
+    let mut spl = location_hash.trim_start_matches("#").split('/');
+    Ok((
+        spl.next().context("first method")?,
+        spl.next().context("second crate_name")?,
+        spl.next().unwrap_or(""),
+    ))
 }

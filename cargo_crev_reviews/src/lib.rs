@@ -87,15 +87,15 @@
 //! rpc call with named parameters:
 //!
 //! --> {
-//! "request_method": "subtract_calculate", 
+//! "request_method": "subtract_calculate",
 //! "request_data": {
-//!     "subtrahend": 23, 
-//!     "minuend": 42, 
+//!     "subtrahend": 23,
+//!     "minuend": 42,
 //!     }
 //! }
 //!
 //! <-- {
-//! "response_method": "subtract_show", 
+//! "response_method": "subtract_show",
 //! "response_data": {
 //!     "subtracted": 19,     
 //!     },
@@ -211,6 +211,15 @@ use std::sync::Mutex;
 use unwrap::unwrap;
 
 lazy_static! {
+    /// 127.0.0.1
+    static ref SERVER_HOST: Mutex<String>=Mutex::new(String::from("127.0.0.1"));
+    /// 8182
+    static ref SERVER_PORT: Mutex<String>=Mutex::new(String::from("8182"));
+    // first fragment /cargo_crev_reviews/
+    static ref SERVER_FIRST_FRAGMENT: Mutex<String>=Mutex::new(String::from("cargo_crev_reviews"));
+}
+
+lazy_static! {
     /// mutable static, because it is hard to pass variables around with async closures
     static ref CREV_UNLOCKED: Mutex<Option<crev_data::id::UnlockedId>>=Mutex::new(None);
     /// crev_liv Local struct
@@ -237,13 +246,12 @@ lazy_static! {
 // region: server - parse, match
 
 /// start the simple web server and match the GET or POST method
-pub fn start_web_server(host: &str, port: &str) {
+pub fn start_web_server() {
     println!("cargo_crev_reviews server started");
-
     let server = Server::new(|request, response_builder| {
         let path = request.uri().to_string();
         // println!("Request received. {} {}", request.method(), request.uri());
-        if !request.uri().to_string().starts_with("/cargo_crev_reviews") {
+        if !request.uri().to_string().starts_with(&format!("/{}", SERVER_FIRST_FRAGMENT.lock().unwrap())) {
             return Ok(response_get_mod::response_404_not_found(response_builder, &path));
         }
         match request.method() {
@@ -272,11 +280,16 @@ pub fn start_web_server(host: &str, port: &str) {
     // open default browser in Linux
     // for WSL2 in Win10 I used my project https://crates.io/crates/wsl_open_browser
     let x = std::process::Command::new("xdg-open")
-        .arg("http://127.0.0.1:8182/cargo_crev_reviews/index.html")
+        .arg(&format!(
+            "http://{}:{}/{}/index.html",
+            SERVER_HOST.lock().unwrap(),
+            SERVER_PORT.lock().unwrap(),
+            SERVER_FIRST_FRAGMENT.lock().unwrap()
+        ))
         .spawn()
         .unwrap();
     drop(x);
-    server.listen(host, port);
+    server.listen(SERVER_HOST.lock().unwrap().as_str(), SERVER_PORT.lock().unwrap().as_str());
 }
 
 // endregion: server - parse, match

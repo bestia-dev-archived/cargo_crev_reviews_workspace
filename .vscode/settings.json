@@ -26,6 +26,7 @@
         "stylesheet",
         "termion",
         "unhide",
+        "untrusted",
         "winapi",
         "wincon",
         "wtemplate",
