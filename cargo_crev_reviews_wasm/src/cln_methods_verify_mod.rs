@@ -146,23 +146,23 @@ pub fn request_review_edit_or_new(_element_id: &str, row_num: usize) {
 fn open_all_links(_element_id: &str, row_num: usize) {
     w::debug_write(function_name!());
     let item = &VERIFY_LIST_DATA.lock().unwrap().list_of_verify[row_num];
-/*
-    let url = format!("https://web.crev.dev/rust-reviews/crate/{}/", item.crate_name);
-    unwrap!(w::window().open_with_url(&url));
+    /*
+       let url = format!("https://web.crev.dev/rust-reviews/crate/{}/", item.crate_name);
+       unwrap!(w::window().open_with_url(&url));
 
-    let url = format!("https://lib.rs/crates/{}", item.crate_name);
-    unwrap!(w::window().open_with_url(&url));
+       let url = format!("https://lib.rs/crates/{}", item.crate_name);
+       unwrap!(w::window().open_with_url(&url));
 
-    let url = format!("https://crates.io/crates/{}/{}", item.crate_name, item.crate_version);
-    unwrap!(w::window().open_with_url(&url));
+       let url = format!("https://crates.io/crates/{}/{}", item.crate_name, item.crate_version);
+       unwrap!(w::window().open_with_url(&url));
 
-    let request_data = ReviewFilterData {
-        crate_name: item.crate_name.clone(),
-        crate_version: Some(item.crate_version.clone()),
-        old_crate_version: None,
-    };
-    srv_methods::srv_review_open_source_code(request_data);
- */
+       let request_data = ReviewFilterData {
+           crate_name: item.crate_name.clone(),
+           crate_version: Some(item.crate_version.clone()),
+           old_crate_version: None,
+       };
+       srv_methods::srv_review_open_source_code(request_data);
+    */
     // list versions for this crate
     let url = format!(
         "http://{}:{}/{}/index.html#version_list/{}",
@@ -172,7 +172,7 @@ fn open_all_links(_element_id: &str, row_num: usize) {
         item.crate_name,
     );
     unwrap!(w::window().open_with_url(&url));
-/*
+    /*
     // edit_or_new in a new tab
     let url = format!(
         "http://{}:{}/{}/index.html#edit_or_new/{}/{}",

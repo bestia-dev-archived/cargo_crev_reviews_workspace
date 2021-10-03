@@ -15,14 +15,25 @@ use crate::html_mod::*;
 use crate::on_click;
 use crate::*;
 
-// this structs are in the common module: ReviewItemData, ReviewListData
-
+// region: mutable static, because it is hard to pass variables around with on_click events
 lazy_static! {
     /// mutable static, because it is hard to pass variables around with on_click events
     static ref REVIEW_ITEM_DATA: Mutex<ReviewItemData> = Mutex::new(ReviewItemData::default());
     static ref REVIEW_LIST_DATA: Mutex<ReviewListData> = Mutex::new(ReviewListData::default());
 }
 
+/// store data in static Mutex because of events like on_click
+fn store_to_review_item_data(srv_response: RpcResponse) {
+    *REVIEW_ITEM_DATA.lock().unwrap() = unwrap!(serde_json::from_value(srv_response.response_data));
+}
+
+/// store data in static Mutex because of events like on_click
+fn store_static_review_list_data(srv_response: RpcResponse) {
+    *REVIEW_LIST_DATA.lock().unwrap() = unwrap!(serde_json::from_value(srv_response.response_data));
+}
+// endregion: mutable static, because it is hard to pass variables around with on_click events
+
+// region: HtmlProcessor for data structs
 impl HtmlProcessor for RpcMessageData {
     /// process template and push as many &str is needed
     fn process_repetitive_items(&self, name_of_repeat_segment: &str, _html_repetitive_template: &str, html_new: &mut String) {
@@ -161,20 +172,9 @@ impl HtmlProcessor for ReviewItemData {
     }
 }
 
-/// store data in static Mutex because of events like on_click
-fn store_to_review_item_data(srv_response: RpcResponse) {
-    *REVIEW_ITEM_DATA.lock().unwrap() = unwrap!(serde_json::from_value(srv_response.response_data));
-}
+// endregion: HtmlProcessor for data structs
 
-/// store data in static Mutex because of events like on_click
-fn store_static_review_list_data(srv_response: RpcResponse) {
-    *REVIEW_LIST_DATA.lock().unwrap() = unwrap!(serde_json::from_value(srv_response.response_data));
-}
-
-pub fn request_review_list(_element_id: &str) {
-    let request_data = RpcEmptyData {};
-    srv_methods::srv_reviews_list(request_data);
-}
+// region: cln methods to render the page and data
 
 /// the code for processing the html srv_review_list
 /// the data is already in static Mutex REVIEW_LIST_DATA
@@ -202,6 +202,72 @@ pub fn cln_review_list(srv_response: RpcResponse) {
         row_on_click!("button_open_source_code", row_num, button_open_source_code_onclick);
         row_on_click!("button_review_delete", row_num, modal_delete);
     }
+}
+
+#[named]
+pub fn cln_review_new(srv_response: RpcResponse) {
+    w::debug_write(function_name!());
+    let html = extract_html(&srv_response);
+    store_to_review_item_data(srv_response);
+    // call process with functions as parameters, to use for replace attributes and text nodes
+    let data = &REVIEW_ITEM_DATA.lock().unwrap();
+    let html_after_process = data.process_html(&html);
+    inject_into_html(&html_after_process);
+
+    on_click!("button_review_save", request_review_save);
+    on_click!("button_review_list", request_review_list);
+}
+
+/// the code for processing the cln_review_edit
+/// the data and html are already in static Mutex REVIEW_ITEM_DATA
+#[named]
+pub fn cln_review_edit(srv_response: RpcResponse) {
+    w::debug_write(function_name!());
+    let html = extract_html(&srv_response);
+    store_to_review_item_data(srv_response);
+
+    // call process with functions as parameters, to use for replace attributes and text nodes
+    let data = &REVIEW_ITEM_DATA.lock().unwrap();
+    let html_after_process = data.process_html(&html);
+
+    inject_into_html(&html_after_process);
+
+    on_click!("button_review_save", request_review_save);
+    on_click!("button_review_list", request_review_list);
+}
+
+#[named]
+pub fn cln_review_publish_modal(srv_response: RpcResponse) {
+    w::debug_write(function_name!());
+    let html = extract_html(&srv_response);
+
+    // modal dialog box with error, don't change the html and data
+    let data: RpcMessageData = unwrap!(serde_json::from_value(srv_response.response_data));
+    let html_after_process = data.process_html(&html);
+
+    w::set_inner_html("div_for_modal", &html_after_process);
+    on_click!("modal_close", modal_close_on_click);
+}
+
+#[named]
+pub fn cln_review_error(srv_response: RpcResponse) {
+    w::debug_write(function_name!());
+    let html = extract_html(&srv_response);
+
+    let data: RpcMessageData = unwrap!(serde_json::from_value(srv_response.response_data));
+    let html_after_process = data.process_html(&html);
+
+    w::set_inner_html("div_for_modal", &html_after_process);
+    on_click!("modal_close", modal_close_on_click);
+}
+
+// endregion: cln methods to render the page and data
+
+// region: functions for event handlers (on_click)
+
+pub fn request_review_list(_element_id: &str) {
+    let request_data = RpcEmptyData {};
+    srv_methods::srv_reviews_list(request_data);
 }
 
 #[named]
@@ -281,20 +347,6 @@ pub fn request_review_new(_element_id: &str) {
 }
 
 #[named]
-pub fn cln_review_new(srv_response: RpcResponse) {
-    w::debug_write(function_name!());
-    let html = extract_html(&srv_response);
-    store_to_review_item_data(srv_response);
-    // call process with functions as parameters, to use for replace attributes and text nodes
-    let data = &REVIEW_ITEM_DATA.lock().unwrap();
-    let html_after_process = data.process_html(&html);
-    inject_into_html(&html_after_process);
-
-    on_click!("button_review_save", request_review_save);
-    on_click!("button_review_list", request_review_list);
-}
-
-#[named]
 fn request_review_new_version(_element_id: &str, row_num: usize) {
     w::debug_write(function_name!());
     // from list get crate name and version
@@ -337,51 +389,8 @@ fn request_review_edit_from_list(_element_id: &str, row_num: usize) {
     srv_methods::srv_review_edit(request_data);
 }
 
-/// the code for processing the cln_review_edit
-/// the data and html are already in static Mutex REVIEW_ITEM_DATA
-#[named]
-pub fn cln_review_edit(srv_response: RpcResponse) {
-    w::debug_write(function_name!());
-    let html = extract_html(&srv_response);
-    store_to_review_item_data(srv_response);
-
-    // call process with functions as parameters, to use for replace attributes and text nodes
-    let data = &REVIEW_ITEM_DATA.lock().unwrap();
-    let html_after_process = data.process_html(&html);
-
-    inject_into_html(&html_after_process);
-
-    on_click!("button_review_save", request_review_save);
-    on_click!("button_review_list", request_review_list);
-}
-
-#[named]
-pub fn cln_review_error(srv_response: RpcResponse) {
-    w::debug_write(function_name!());
-    let html = extract_html(&srv_response);
-
-    let data: RpcMessageData = unwrap!(serde_json::from_value(srv_response.response_data));
-    let html_after_process = data.process_html(&html);
-
-    w::set_inner_html("div_for_modal", &html_after_process);
-    on_click!("modal_close", modal_close_on_click);
-}
-
 fn modal_close_on_click(_element_id: &str) {
     w::set_inner_html("div_for_modal", "");
-}
-
-#[named]
-pub fn cln_review_publish_modal(srv_response: RpcResponse) {
-    w::debug_write(function_name!());
-    let html = extract_html(&srv_response);
-
-    // modal dialog box with error, don't change the html and data
-    let data: RpcMessageData = unwrap!(serde_json::from_value(srv_response.response_data));
-    let html_after_process = data.process_html(&html);
-
-    w::set_inner_html("div_for_modal", &html_after_process);
-    on_click!("modal_close", modal_close_on_click);
 }
 
 #[named]
@@ -419,3 +428,5 @@ fn request_review_delete(_element_id: &str, row_num: usize) {
     };
     srv_methods::srv_review_delete(request_data);
 }
+
+// region: functions for event handlers (on_click)

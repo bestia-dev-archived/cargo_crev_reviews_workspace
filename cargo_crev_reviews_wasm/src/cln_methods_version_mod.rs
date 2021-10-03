@@ -80,6 +80,22 @@ impl HtmlProcessor for VersionItemData {
             "wt_crate_name" => self.crate_name.clone(),
             "wt_crate_version" => self.crate_version.clone(),
             "wt_crate_name_version" => format!("{} {}", self.crate_name, self.crate_version),
+            "wt_crate_yanked" => {
+                if self.yanked {
+                    "yanked".to_string()
+                } else {
+                    "".to_string()
+                }
+            }
+            "wt_crate_published_by_login" => self.published_by_login.as_ref().unwrap_or(&"".to_string()).clone(),
+            "wt_is_src_cached" => {
+                if *self.is_src_cached.as_ref().unwrap_or(&false) {
+                    "cached".to_string()
+                } else {
+                    "".to_string()
+                }
+            }
+            "wt_crate_published_date" => self.published_date.clone(),
             "wt_cargo_crev_reviews_version" => env!("CARGO_PKG_VERSION").to_string(),
             _ => {
                 let html_error = format!("Unrecognized replace_wt method {}", wt_name);

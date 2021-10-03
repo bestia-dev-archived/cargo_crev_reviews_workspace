@@ -1,4 +1,4 @@
-// response_post_method_mod.rs
+// response_post_mod.rs
 
 //! generic functions for response to the POST method
 

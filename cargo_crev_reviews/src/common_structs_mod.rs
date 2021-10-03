@@ -82,6 +82,7 @@ pub struct VersionItemData {
     pub crate_version: String,
     pub yanked: bool,
     pub published_by_login: Option<String>,
+    pub published_date: String,
     pub is_src_cached: Option<bool>,
     pub my_review: Option<ReviewItemData>,
 }

@@ -26,9 +26,9 @@ use std::{env, sync::Mutex};
 use std::{ops::Range, str::FromStr, vec};
 use unwrap::unwrap;
 
-use crate::common_structs_mod::*;
 use crate::stdio_input_password_mod;
 use crate::utils_mod::*;
+use crate::{cargo_mod::split_crate_version, common_structs_mod::*};
 
 lazy_static! {
     /// mutable static, because it is hard to pass variables around with async closures
@@ -106,8 +106,6 @@ pub fn vcs_info_to_revision_string(vcs: Option<VcsInfoJson>) -> String {
 /// unlock crev_id interactively
 pub fn unlock_crev_id_interactively() -> anyhow::Result<()> {
     let crev_local = crev_lib::local::Local::auto_create_or_open()?;
-    println!("First unlock your crev-id with the passphrase. Unlocking needs 2-3 seconds after you press Enter. Holly patience...");
-    println!("Then it automatically opens the default browser.");
     let crev_unlocked = crev_local.read_current_unlocked_id(&stdio_input_password_mod::read_passphrase_interactively)?;
     println!("Unlocked.");
 
@@ -430,38 +428,14 @@ pub fn crev_publish() -> anyhow::Result<String> {
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct VersionResponse {
-    pub version: Version,
-}
-
-#[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct Version {
-    #[serde(rename = "crate")]
+pub struct VersionForGui {
     pub crate_name: String,
     pub num: String,
     pub yanked: bool,
-    pub published_by: Option<User>,
-}
-
-#[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct VersionExt {
-    #[serde(rename = "crate")]
-    pub crate_name: String,
-    pub num: String,
-    pub yanked: bool,
-    pub published_by: Option<User>,
+    pub published_by_login: Option<String>,
+    pub published_date: String,
     pub is_src_cached: Option<bool>,
     pub my_review: Option<ReviewItemData>,
-}
-
-#[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct User {
-    pub login: String,
-}
-
-#[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct VersionDataFile {
-    versions: Vec<Version>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -478,7 +452,6 @@ pub fn verify_project() -> anyhow::Result<VerifyListData> {
     let output = std::process::Command::new("cargo").arg("crev").arg("verify").output().unwrap();
     let output = format!("{} {}", String::from_utf8_lossy(&output.stdout), String::from_utf8_lossy(&output.stderr));
 
-    let mut versions_json = load_versions_json()?;
     let trusted_publisher_json = load_trusted_publishers_json()?;
 
     let mut list_of_verify = vec![];
@@ -488,7 +461,7 @@ pub fn verify_project() -> anyhow::Result<VerifyListData> {
             let crate_name = s[1].to_string();
             let crate_version = s[2].to_string();
 
-            let published_by = published_by_from_versions_json(&mut versions_json, &crate_name, &crate_version)?;
+            let published_by = published_by_login(&crate_name, &crate_version)?;
             let trusted_publisher = is_trusted_publisher(&trusted_publisher_json, &published_by);
 
             list_of_verify.push(VerifyItemData {
@@ -500,8 +473,6 @@ pub fn verify_project() -> anyhow::Result<VerifyListData> {
             })
         }
     }
-
-    write_versions_json(versions_json)?;
 
     verify_sort_list_by_name_version(&mut list_of_verify);
 
@@ -524,61 +495,13 @@ pub fn verify_sort_list_by_name_version(vec_of_verify: &mut Vec<VerifyItemData>)
 }
 // region: cargo_crev_reviews_versions.json
 
-fn path_to_versions_json() -> anyhow::Result<std::path::PathBuf> {
-    let pb = home::home_dir().context("home_dir")?.join(".config/crev/cargo_crev_reviews_versions.json");
-    Ok(pb)
-}
-
-fn load_versions_json() -> anyhow::Result<VersionDataFile> {
-    let pb = path_to_versions_json()?;
-    if !pb.exists() {
-        // first create the file empty
-        let version_data = VersionDataFile { versions: vec![] };
-        let json = serde_json::to_string_pretty(&version_data)?;
-        std::fs::write(&pb, json)?;
-    }
-    let version_data_cache = std::fs::read_to_string(&pb)?;
-    let version_data: VersionDataFile = serde_json::from_str(&version_data_cache)?;
-    Ok(version_data)
-}
-
 /// check if it is already in the cache or GET from crates.io API and store in cache
-fn published_by_from_versions_json(version_data: &mut VersionDataFile, crate_name: &String, crate_version: &String) -> anyhow::Result<String> {
-    for x in version_data.versions.iter() {
-        if &x.crate_name == crate_name && &x.num == crate_version {
-            match &x.published_by {
-                None => return Ok("".to_string()),
-                Some(user) => return Ok(user.login.to_string()),
-            };
-        }
-    }
-
-    // GET data from crates.io
-    let url = format!("https://crates.io/api/v1/crates/{}/{}/", &crate_name, &crate_version);
-    println!("get url: {}", &url);
-    let client = reqwest::blocking::Client::new();
-    let res = client
-        .get(url)
-        .header("User-Agent", "cargo_crev_reviews (github.com/LucianoBestia/cargo_crev_reviews_workspace)")
-        .send()?;
-    let resp = res.text()?;
-    let version: VersionResponse = serde_json::from_str(&resp)?;
-    let version = version.version;
-
-    version_data.versions.push(version.clone());
-
-    match version.published_by {
+fn published_by_login(crate_name: &str, crate_version: &str) -> anyhow::Result<String> {
+    let exact_version = crate::crates_io_mod::get_version(crate_name, crate_version)?;
+    match exact_version {
+        Some(exact_version) => Ok(exact_version.published_by_login.unwrap_or("".to_string())),
         None => Ok("".to_string()),
-        Some(user) => Ok(user.login),
     }
-}
-
-/// write the cache to file
-fn write_versions_json(version_data: VersionDataFile) -> Result<(), anyhow::Error> {
-    let pb = path_to_versions_json()?;
-    let json = serde_json::to_string_pretty(&version_data)?;
-    std::fs::write(&pb, json)?;
-    Ok(())
 }
 
 // endregion: cargo_crev_reviews_versions.json
@@ -614,8 +537,8 @@ fn is_trusted_publisher(trusted_file: &TrustedPublisherDataFile, login: &str) ->
 }
 // endregion: cargo_crev_reviews_trusted_publishers.json
 
-/// get all versions for one crate from registry index
-pub fn crev_crate_versions(crate_name: &str) -> anyhow::Result<Vec<VersionExt>> {
+/// get all versions for one crate
+pub fn crev_crate_versions(crate_name: &str) -> anyhow::Result<Vec<VersionForGui>> {
     let mut vec_of_version_ext = vec![];
     // vec_of_reviews for this crate
     let new_filter = ReviewFilterData {
@@ -625,15 +548,15 @@ pub fn crev_crate_versions(crate_name: &str) -> anyhow::Result<Vec<VersionExt>> 
     };
     let vec_of_reviews = crev_list_my_reviews(&Some(new_filter))?;
 
-    let mut my_review = None;
-    let mut versions_json = load_versions_json()?;
-    for (crate_version, yanked) in crate::cargo_mod::all_versions_for_crate(crate_name)?.iter() {
+    for crates_io_version in crate::crates_io_mod::get_vec_of_versions(crate_name)? {
+        let mut my_review = None;
+        let (_io_crate_name, io_crate_version) = split_crate_version(crates_io_version.crate_name_version.as_str());
         // is_src_cache ?
-        let path_dir = crate::cargo_mod::cargo_registry_src_dir_for_crate(crate_name, &crate_version)?;
+        let path_dir = crate::cargo_mod::cargo_registry_src_dir_for_crate(crate_name, &io_crate_version)?;
         let is_src_cached = Some(path_dir.exists());
         // my_review
         for review in vec_of_reviews.iter() {
-            if review.package.name == crate_name && review.package.version.as_str() == crate_version {
+            if review.package.name == crate_name && review.package.version.as_str() == &io_crate_version {
                 my_review = Some(ReviewItemData {
                     crate_name: review.package.name.clone(),
                     crate_version: review.package.version.clone(),
@@ -647,44 +570,18 @@ pub fn crev_crate_versions(crate_name: &str) -> anyhow::Result<Vec<VersionExt>> 
             }
         }
 
-        // check if it is already in the cache or GET from crates.io API and store in cache
-        let mut exists = false;
-        for version in versions_json.versions.iter() {
-            if version.crate_name.as_str() == crate_name && &version.num.as_str() == crate_version {
-                exists = true;
-                vec_of_version_ext.push(VersionExt {
-                    crate_name: version.crate_name.clone(),
-                    num: version.num.clone(),
-                    yanked: version.yanked.clone(),
-                    published_by: version.published_by.clone(),
-                    is_src_cached,
-                    my_review: my_review.clone(),
-                });
-                break;
-            }
-        }
-        if exists == false {
-            // add to file
-            versions_json.versions.push(Version {
-                crate_name: crate_name.to_string(),
-                num: crate_version.to_string(),
-                yanked: *yanked,
-                published_by: None,
-            });
-
-            // TODO: published_by
-            // add to vector
-            let version = VersionExt {
-                crate_name: crate_name.to_string(),
-                num: crate_version.to_string(),
-                yanked: *yanked,
-                published_by: None,
-                is_src_cached,
-                my_review: my_review.clone(),
-            };
-            vec_of_version_ext.push(version.clone());
-        }
+        // add to vector
+        let version_ext = VersionForGui {
+            crate_name: crate_name.to_string(),
+            num: io_crate_version.to_string(),
+            yanked: crates_io_version.yanked,
+            published_by_login: crates_io_version.published_by_login.clone(),
+            published_date: crates_io_version.published_date.clone(),
+            is_src_cached,
+            my_review: my_review.clone(),
+        };
+        vec_of_version_ext.push(version_ext.clone());
     }
-    write_versions_json(versions_json)?;
+    //write_versions_json(versions_json)?;
     Ok(vec_of_version_ext)
 }

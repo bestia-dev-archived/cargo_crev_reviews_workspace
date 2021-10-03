@@ -153,6 +153,7 @@ pub fn srv_version_list(request_data: serde_json::Value) -> anyhow::Result<Strin
             crate_version: x.num.clone(),
             yanked: x.yanked,
             published_by_login: None,
+            published_date: x.published_date.clone(),
             is_src_cached: x.is_src_cached,
             my_review: x.my_review.clone(),
         };

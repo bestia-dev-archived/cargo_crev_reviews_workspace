@@ -33,20 +33,6 @@ pub fn max_version_from_registry_index(crate_name: &str) -> anyhow::Result<Strin
     Ok(crate_version.version().to_string())
 }
 
-/// get all versions for one crate from registry index: only num and yanked
-pub fn all_versions_for_crate(crate_name: &str) -> anyhow::Result<Vec<(String, bool)>> {
-    let mut vec: Vec<(String, bool)> = vec![];
-    let index = crates_index::Index::new_cargo_default();
-    if !index.exists() {
-        anyhow::bail!("Local Registry IndexCould does not exist");
-    }
-    let crate_releases = index.crate_(crate_name).context("Cannot find crate name in registry.")?;
-    for x in crate_releases.versions().iter() {
-        vec.push((x.version().to_string(), x.is_yanked()));
-    }
-    Ok(vec)
-}
-
 /// fetch/pull the registry index from github
 pub fn update_registry_index() -> anyhow::Result<()> {
     let index = crates_index::Index::new_cargo_default();
@@ -55,4 +41,11 @@ pub fn update_registry_index() -> anyhow::Result<()> {
     }
     index.update()?;
     Ok(())
+}
+
+pub fn split_crate_version(crate_version: &str) -> (String, String) {
+    let s: Vec<&str> = crate_version.split_whitespace().collect();
+    let crate_name = s[1].to_string();
+    let crate_version = s[2].to_string();
+    (crate_name, crate_version)
 }

@@ -19,12 +19,9 @@
 ## Workspace
 
 This is a rust [workspace](https://doc.rust-lang.org/book/ch14-03-cargo-workspaces.html) (multi-projects) that contains member projects.  
-The main member project is `cargo_crev_reviews`. Continue reading the main README.md file in that member projects:  
-[cargo_crev_reviews](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/tree/main/cargo_crev_reviews)  
-[cargo_crev_reviews_wasm](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/tree/main/cargo_crev_reviews_wasm)  
+The main member project is `cargo_crev_reviews`. Continue reading the main README.md file in that member project:  
 
-![screen_3](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/raw/main/images/screen_3.png "screen_3")  
-![screen_4](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/raw/main/images/screen_4.png "screen_4") ![screen_2](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/raw/main/images/screen_2.png "screen_2")  
+## [cargo_crev_reviews/README.md](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/tree/main/cargo_crev_reviews)  
 
 ## TODO
 
@@ -50,4 +47,4 @@ But I need also to drink. If you find my projects and tutorials helpful,
 please buy me a beer donating on my [paypal](https://www.paypal.com/paypalme/LucianoBestia).  
 You know the price of a beer in your local bar ;-)  
 So I can drink a free beer for your health :-)  
-[Na zdravje](https://translate.google.com/?hl=en&sl=sl&tl=en&text=Na%20zdravje&op=translate) ! 🍻
+[Na zdravje!](https://translate.google.com/?hl=en&sl=sl&tl=en&text=Na%20zdravje&op=translate) [Alla salute!](https://dictionary.cambridge.org/dictionary/italian-english/alla-salute) [Prost!](https://dictionary.cambridge.org/dictionary/german-english/prost) [Nazdravlje!](https://matadornetwork.com/nights/how-to-say-cheers-in-50-languages/) 🍻

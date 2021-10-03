@@ -17,7 +17,10 @@ use crossterm::{
 /// The replacement character * is printed.  
 /// The result is either a `String` or a `crossterm::ErrorKind`.  
 pub fn read_passphrase_interactively() -> crossterm::Result<String> {
-    println!("Passphrase does not accept backspace or ctrl+c, just characters and Enter.");
+    println!(
+        "Passphrase does not accept backspace or ctrl+c, just characters and Enter. 
+Unlocking needs 2-3 seconds after you press Enter. Holly patience..."
+    );
     print!("Enter passphrase: ");
     let mut stdout = std::io::stdout();
     std::io::Write::flush(&mut stdout)?;

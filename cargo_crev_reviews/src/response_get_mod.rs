@@ -1,4 +1,4 @@
-// response_get_files_mod.rs
+// response_get_mod.rs
 
 //! response for the GET method. Mainly the static files, that are embedded in Rust code.
 

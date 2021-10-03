@@ -24,7 +24,26 @@
 
 ## Try it
 
-This is a GUI wrapper around [cargo](https://doc.rust-lang.org/cargo/) and [cargo-crev](https://lib.rs/crates/cargo-crev). First, install and configure cargo and cargo-crev. Then:  
+This is a GUI wrapper around [cargo](https://doc.rust-lang.org/cargo/getting-started/installation.html) and [cargo-crev](https://github.com/crev-dev/cargo-crev/blob/master/cargo-crev/src/doc/getting_started.md) and uses Github (or other remote git repository). First, install and configure them.  
+
+Fork the proof repo on Github. Just open this url:  
+<https://github.com/crev-dev/crev-proofs/fork> 
+
+Install cargo and the rust language:  
+
+```bash
+curl https://sh.rustup.rs -sSf | sh
+```
+
+Install and configure cargo-crev:  
+
+```bash
+cargo install cargo-crev
+cargo crev id new --url https://github.com/YOUR-USERNAME/crev-proofs
+cargo crev trust --level high https://github.com/dpc/crev-proofs
+```
+
+Then install cargo_crev_reviews:  
 
 ```bash
 cargo install cargo_crev_reviews
@@ -44,13 +63,37 @@ Input your passphrase for cargo-crev proof signing.
 ![screen_4](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/raw/main/images/screen_4.png "screen_4")  
 
 The program lists all the dependencies of the project with data about reviews. It shows all the dependencies including the transient dependencies. It is easily more than 100 crates in the list.  
-Your personal reviews are the most important. Ideally, you want to personally review every crate and write something about it for your own use. You want to know that the dependencies your program is using are not malicious or unsound. To write a review you need to see the exact source code and other metadata about the crate. This program will show you more data about the crate, so you can focus on the important parts.  
-Click on the crate name in the list and it will open a few new browser tabs: crev.dev, crates.io, lib.rs, and VSCode. It will also open a tab to edit or add a new review for that crate + version. Be warned that modern browser block pop-ups and you have to allow that explicitly for this site.
 
-When you are satisfied with your own reviews, you then publish them for other developers to read.  
-In the same way, reviews from other developers help you when analyzing the dependencies. More people that write reviews, better the information we get for our decisions.  
-One crate can have many versions. Every version is separately reviewed. Often, the text will be just the same for many versions, but that is good. When a developer want to see the reviews for a specific version, he does not need to watch the reviews of other versions of the same crate.
-Personally, I think that the reputation of the author is important. For some highly visible and respected members of the Rust community I don't review the code. The reputation of the author is enough to make me feel safe. This method is not perfect, because there can be identity theft or a faulty version. But I still think that it is an efficient and effective method for me. Crates.io made a confusion with authors and owners. Lately they introduced the `published_by` field for every version. For me this is the main person responsible for any eventual issue of this specific published version.  
+## your personal reviews
+
+Your personal reviews are the most important. Ideally, you want to personally review every crate, rate it and write something about it for your own use. You want to know that the dependencies your program is using are not malicious or unsound. If you have a boss, he will sooner or later ask you if you reviewed all the dependencies. With `cargo_crev_reviews` you have a basic tool to do that.  
+
+Don't panic!  
+
+To write a review you need to see the exact source code and other metadata about the crate. Click on the crate name in the list and it will open: 
+
+- VSCode with the exact source code
+- [crev.dev](https://web.crev.dev/rust-reviews/crates/) for other people reviews
+- crates.io for basic information
+- lib.rs for extended information
+- a list of all versions of that crate
+- a browser tab to write the review
+
+Be warned that modern browsers block pop-ups and you have to allow that explicitly for this site `127.0.0.1`.
+
+## Reputation vs. code review
+
+Personally, I think that the reputation of the author is important. For some highly visible and respected members of the Rust community I don't review the code. The reputation of the author is enough to make me feel safe. This method is not perfect, because there can be identity theft or a faulty version. But I still think that it is an efficient and effective method for me.  
+Crates.io made a confusion with authors and owners. Lately they introduced the `published_by` field for every version. For me this is the main person responsible for any eventual issue of this specific published version. Crates.io guarantees that published versions cannot be modified later. They are read-only, so you know that you see exactly the right code.  
+
+## Share it with the community
+
+When you are satisfied with your own reviews, you then publish them for other developers to read. In the same way, reviews from other developers help you when analyzing the dependencies. More people that write reviews, better the information we get for our decisions.  
+One crate can have many versions. Every version is separately reviewed. Often, the review will be just the same for many versions, but that is good. When a developer wants to see the reviews for a specific version, he does not need to watch the reviews of all other versions of the same crate.
+
+## TL;DR
+
+For developers that want to understand, tweak the code and contribute to the project, below is a long description of the important aspects of the project. If you are only a user of `cargo_crev_reviews`, you don't need to read all of this.  
 
 ## Motivation
 
@@ -196,6 +239,139 @@ Some data are not available locally and need to be obtained from <https://crates
 ## trusted publishers
 
 There is a confusion on crates.io who is the owner, author or group that is responsible for a crate version. Lately they added a `published_by` field for a crate_version. That sounds more accurate. In the file `~/.config/crev/cargo_crev_reviews_trusted_publishers.json` is the list of your trusted publishers. You can edit this file manually.  
+
+## Code-flow
+
+Everything is compiled into one single executable binary for Linux: `cargo_crev_reviews`.  
+First it opens the default browser with `xdg-open` on <http://127.0.0.1:8182/cargo_crev_reviews/index.html>.  
+If your WSL2 does not have yet a default browser run this:  
+
+``` bash
+ln -s "/mnt/c/Program Files/Mozilla Firefox/firefox.exe" /usr/bin/browser_in_win
+export BROWSER='/usr/bin/browser_in_win'
+```
+
+The command `ln -sf` is permanent and persistent. It makes a symbolic link file that stays there forever. But `export BROWSER=` is NOT persistent. You need to add this command to `~/.bashrc` that runs it on every start of terminal.  
+
+In the next millisecond the web server starts listening to 127.0.0.1 port 8182.  
+The first set of requests are GET and response is "static" files embedded in files_mod.rs
+
+1. browser request for `/cargo_crev_reviews/index.html` is GET, the response is html text file embedded in files_mod.rs in the function: `index_html()`  
+    This html is just an empty shell that gets the css and wasm code. There is no real content inside. This concept is [Single-page application SPA](https://en.wikipedia.org/wiki/Single-page_application).  
+2. index.html requests: 3 css files, `pkg/cargo_crev_reviews.js`, `pkg/cargo_crev_reviews_bg.wasm`, "favicon" `icons/icon-032.png`. All these requests are GET and responses come from files_mod.rs functions, some are text files and others are base64 files.
+3. the browser imports the wasm module and starts the init function that requests `srv_review_list`. This responds with: response_method_name, response_html and response_data.
+4. wasm (inside the browser) is rust code. First it matches method_name and calls the appropriate function. It processes the html with the data and inserts it into index.html (the empty shell).
+5. the browser renders our first page. Hooray!
+6. the user clicks on some button.
+7. the macro `on_click!` or `row_on_click!` hides the ugly rust code behind the definition of an event handler in web_sys and calls a function
+8. wasm creates a rpc request and sends/POST to the server
+9. the request is POST, the server first matches the method_name and calls the appropriate function. The function processes the call and prepares some data. It loads the html template.
+10. The response contains the html to be rendered and data to be inserted in this html before rendering.
+
+## How to add a page with data
+
+### Define the data structs
+
+In `common_structs_mod.rs` add the structs like:
+
+``` bash
+#[derive(Serialize, Deserialize, Debug, Default)]
+pub struct VersionItemData {
+    pub crate_name: String,
+    pub crate_version: String,
+}
+
+#[derive(Serialize, Deserialize, Debug, Default)]
+pub struct VersionListData {
+    pub list_of_version: Vec<VersionItemData>,
+}
+```
+
+### Create a "standard" html page
+
+The html page has to be MicroXml compatible, basically XHtml.  Copy for example `web_server_folder/review_list.html` to a new html file. Open this file with a browser to preview it. I use the VSCode extension [vscode-open-wsl](https://marketplace.visualstudio.com/items?itemName=NoThlnG.vscode-open-wsl) and right-click on the file and `Open with default application`. In WSL2 I use my project [wsl_open_browser](https://github.com/LucianoBestia/wsl_open_browser). Now edit the html file to your liking and reload the browser with F5 to see the changes. Use some sample text to make it look as close to what you want. These texts will be later programmatically replaced, but they are invaluable while designing a nice layout.
+
+### Add markers
+
+Inside the html you want to replace the sample texts with the data from the server. Before the text add the (invisible) marker for example `<!--wt_crate_name-->`. You can replace also an attribute if you insert an attribute before it like this `data-wt_variable_name="next_attribute_name"`.  
+Now run the automation task `cargo auto build` that will copy/embed this file into `files_mod.rs`.  
+
+### Write a server functions
+
+In `srv_methods_mod.rs` add a function like this:  
+
+```rust
+#[named]
+pub fn srv_function_name(request_data: serde_json::Value) -> anyhow::Result<String> {
+    println!(function_name!());
+    let filter: ReviewFilterData = unwrap!(serde_json::from_value(request_data));
+    let response_data  = get_some_data(filter)?;
+    let response_html = crate::files_mod::review_edit_html();
+    // cln_methods::cln_review_edit(response_data, response_html)
+}
+```
+
+Now run the automation task `cargo auto build` that generates auto_generated_mod.rs.
+
+### client module
+
+If I use a different struct for data, I must have different client modules and functions.  
+With a generic data-struct all of this could be generic.  
+
+In `cln_methods_version_mod.rs` add a client function like this:
+
+```rust
+#[named]
+pub fn cln_review_edit(srv_response: RpcResponse) {
+    w::debug_write(function_name!());
+    let html = extract_html(&srv_response);
+    store_to_review_item_data(srv_response);
+
+    // call process with functions as parameters, to use for replace attributes and text nodes
+    let data = &REVIEW_ITEM_DATA.lock().unwrap();
+    let html_after_process = data.process_html(&html);
+
+    inject_into_html(&html_after_process);
+
+    on_click!("button_review_save", request_review_save);
+    on_click!("button_review_list", request_review_list);
+}
+```
+
+## sled database
+
+I don't want to repeatedly use crates.io api for the same data. I need a disk persistent storage for this data.  
+I will have a try with the [sled](http://sled.rs/) database. A lightweight pure-rust high-performance transactional embedded database.  
+
+## plantUml
+
+<details>
+  <summary>plantuml diagram</summary>
+@startuml
+package "web server 127.0.0.1:8182" {
+  [response_get_mod] -down- [files_mod]
+  [response_post_mod] -down- [auto_generated_mod]
+  [auto_generated_mod] -down- [common_structs_mod]
+}
+package "methods" {
+  [common_structs_mod] -down- [srv_methods_mod]
+  [srv_methods_mod] -down- [crev_mod]
+[srv_methods_mod] -down- [db_version_mod]
+[srv_methods_mod] -down- [cargo_mod]
+}
+package "data_storage" {
+  [db_version_mod] -down-> [crates_io_mod]
+}
+
+@enduml
+
+</details> 
+
+![plantuml_1](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/raw/main/images/plantuml_1.png "plantuml_1")  
+
+## Some other info
+
+Cargo-crev knows also about Issues and Advisories. But for this project I focused only on Reviews. You can rate the version as Negative if there is something really broken with it.
 
 ## cargo crev reviews and advisory
 

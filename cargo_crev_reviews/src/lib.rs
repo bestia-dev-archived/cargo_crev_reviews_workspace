@@ -195,10 +195,12 @@
 mod auto_generated_mod;
 mod cargo_mod;
 mod common_structs_mod;
+mod crates_io_mod;
 mod crev_mod;
 mod files_mod;
 mod response_get_mod;
 mod response_post_mod;
+mod db_version_mod;
 mod srv_methods_mod;
 mod stdio_input_password_mod;
 mod utils_mod;
@@ -248,6 +250,7 @@ lazy_static! {
 /// start the simple web server and match the GET or POST method
 pub fn start_web_server() {
     println!("cargo_crev_reviews server started");
+
     let server = Server::new(|request, response_builder| {
         let path = request.uri().to_string();
         // println!("Request received. {} {}", request.method(), request.uri());
