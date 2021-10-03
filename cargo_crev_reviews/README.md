@@ -347,6 +347,8 @@ I will have a try with the [sled](http://sled.rs/) database. A lightweight pure-
 
 <details>
   <summary>plantuml diagram</summary>
+
+```plantuml
 @startuml
 package "web server 127.0.0.1:8182" {
   [response_get_mod] -down- [files_mod]
@@ -362,10 +364,10 @@ package "methods" {
 package "data_storage" {
   [db_version_mod] -down-> [crates_io_mod]
 }
-
 @enduml
+```
 
-</details> 
+</details>
 
 ![plantuml_1](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/raw/main/images/plantuml_1.png "plantuml_1")  
 
