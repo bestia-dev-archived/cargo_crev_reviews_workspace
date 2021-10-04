@@ -169,7 +169,7 @@
 //!
 //! ## trusted publishers
 //!
-//! There is a confusion on crates.io who is the owner, author or group that is responsible for a crate version. Lately they added a `published_by` field for a crate_version. That sounds more accurate. In the file `~/.config/crev/cargo_crev_reviews_trusted_publishers.json` is the list of your trusted publishers. You can edit this file manually.  
+//! There is a confusion on crates.io who is the owner, author or group that is responsible for a crate version. Lately they added a `published_by` field for a crate_version. That sounds more accurate. In the file `~/.config/crev/cargo_crev_reviews_data/trusted_publishers.json` is the list of your trusted publishers. You can edit this file manually.  
 //!
 //! ## cargo crev reviews and advisory
 //!
@@ -197,10 +197,10 @@ mod cargo_mod;
 mod common_structs_mod;
 mod crates_io_mod;
 mod crev_mod;
+mod db_version_mod;
 mod files_mod;
 mod response_get_mod;
 mod response_post_mod;
-mod db_version_mod;
 mod srv_methods_mod;
 mod stdio_input_password_mod;
 mod utils_mod;
@@ -214,11 +214,11 @@ use unwrap::unwrap;
 
 lazy_static! {
     /// 127.0.0.1
-    static ref SERVER_HOST: Mutex<String>=Mutex::new(String::from("127.0.0.1"));
+    static ref SERVER_HOST: String=String::from("127.0.0.1");
     /// 8182
-    static ref SERVER_PORT: Mutex<String>=Mutex::new(String::from("8182"));
-    // first fragment /cargo_crev_reviews/
-    static ref SERVER_FIRST_FRAGMENT: Mutex<String>=Mutex::new(String::from("cargo_crev_reviews"));
+    static ref SERVER_PORT: String=String::from("8182");
+    // first subdirectory /cargo_crev_reviews/
+    static ref SERVER_FIRST_SUBDIRECTORY: String=String::from("cargo_crev_reviews");
 }
 
 lazy_static! {
@@ -254,7 +254,7 @@ pub fn start_web_server() {
     let server = Server::new(|request, response_builder| {
         let path = request.uri().to_string();
         // println!("Request received. {} {}", request.method(), request.uri());
-        if !request.uri().to_string().starts_with(&format!("/{}", SERVER_FIRST_FRAGMENT.lock().unwrap())) {
+        if !request.uri().to_string().starts_with(&format!("/{}", SERVER_FIRST_SUBDIRECTORY.as_str())) {
             return Ok(response_get_mod::response_404_not_found(response_builder, &path));
         }
         match request.method() {
@@ -285,14 +285,29 @@ pub fn start_web_server() {
     let x = std::process::Command::new("xdg-open")
         .arg(&format!(
             "http://{}:{}/{}/index.html",
-            SERVER_HOST.lock().unwrap(),
-            SERVER_PORT.lock().unwrap(),
-            SERVER_FIRST_FRAGMENT.lock().unwrap()
+            SERVER_HOST.as_str(),
+            SERVER_PORT.as_str(),
+            SERVER_FIRST_SUBDIRECTORY.as_str()
         ))
         .spawn()
         .unwrap();
     drop(x);
-    server.listen(SERVER_HOST.lock().unwrap().as_str(), SERVER_PORT.lock().unwrap().as_str());
+    server.listen(SERVER_HOST.as_str(), SERVER_PORT.as_str());
 }
 
 // endregion: server - parse, match
+
+/// check that this is the only instance of this server
+/// return None if the host+port is free
+/// if the server host+port is not free, returns the String for the error message.
+pub fn host_port_is_busy() -> Option<String> {
+    let url=format!( "{}:{}", SERVER_HOST.as_str(), SERVER_PORT.as_str() );
+    let listener = std::net::TcpListener::bind(&url);
+    match listener {
+        Ok(listener) => {
+            drop(listener);
+            None
+        }
+        Err(_err) => Some(url),
+    }
+}

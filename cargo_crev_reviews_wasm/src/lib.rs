@@ -47,7 +47,6 @@
 
 use anyhow::Context;
 use lazy_static::lazy_static;
-use std::sync::Mutex;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsValue;
 
@@ -66,11 +65,11 @@ use crate::web_sys_mod as w;
 
 lazy_static! {
     /// 127.0.0.1
-    static ref SERVER_HOST: Mutex<String>=Mutex::new(String::from("127.0.0.1"));
+    static ref SERVER_HOST: String=String::from("127.0.0.1");
     /// 8182
-    static ref SERVER_PORT: Mutex<String>=Mutex::new(String::from("8182"));
-    // first fragment /cargo_crev_reviews/
-    static ref SERVER_FIRST_FRAGMENT: Mutex<String>=Mutex::new(String::from("cargo_crev_reviews"));
+    static ref SERVER_PORT: String=String::from("8182");
+    // first subdirectory /cargo_crev_reviews/
+    static ref SERVER_FIRST_SUBDIRECTORY: String=String::from("cargo_crev_reviews");
 }
 
 #[wasm_bindgen(start)]

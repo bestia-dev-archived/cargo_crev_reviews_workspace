@@ -238,7 +238,7 @@ Some data are not available locally and need to be obtained from <https://crates
 
 ## trusted publishers
 
-There is a confusion on crates.io who is the owner, author or group that is responsible for a crate version. Lately they added a `published_by` field for a crate_version. That sounds more accurate. In the file `~/.config/crev/cargo_crev_reviews_trusted_publishers.json` is the list of your trusted publishers. You can edit this file manually.  
+There is a confusion on crates.io who is the owner, author or group that is responsible for a crate version. Lately they added a `published_by` field for a crate_version. That sounds more accurate. In the file `~/.config/crev/cargo_crev_reviews_data/trusted_publishers.json` is the list of your trusted publishers. You can edit this file manually.  
 
 ## Code-flow
 

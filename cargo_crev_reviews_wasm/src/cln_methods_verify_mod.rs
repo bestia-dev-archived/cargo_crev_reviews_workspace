@@ -166,9 +166,9 @@ fn open_all_links(_element_id: &str, row_num: usize) {
     // list versions for this crate
     let url = format!(
         "http://{}:{}/{}/index.html#version_list/{}",
-        SERVER_HOST.lock().unwrap(),
-        SERVER_PORT.lock().unwrap(),
-        SERVER_FIRST_FRAGMENT.lock().unwrap(),
+        SERVER_HOST.as_str(),
+        SERVER_PORT.as_str(),
+        SERVER_FIRST_SUBDIRECTORY.as_str(),
         item.crate_name,
     );
     unwrap!(w::window().open_with_url(&url));
@@ -176,9 +176,9 @@ fn open_all_links(_element_id: &str, row_num: usize) {
     // edit_or_new in a new tab
     let url = format!(
         "http://{}:{}/{}/index.html#edit_or_new/{}/{}",
-        SERVER_HOST.lock().unwrap(),
-        SERVER_PORT.lock().unwrap(),
-        SERVER_FIRST_FRAGMENT.lock().unwrap(),
+        SERVER_HOST.as_str(),
+        SERVER_PORT.as_str(),
+        SERVER_FIRST_SUBDIRECTORY.as_str(),
         item.crate_name,
         item.crate_version,
     );

@@ -14,8 +14,9 @@ pub struct VersionForDb {
 }
 
 lazy_static! {
-    /// sled db for versions stays open all the time of the program running. Only for one process.
-    static ref VERSION_DB:sled::Db = unwrap!(sled::open(unwrap!(home::home_dir()).join(".config/crev/cargo_crev_reviews_versions.sled")));
+    /// sled db for versions stays open all the time of the program running.
+    /// TODO: Only for one process.
+    static ref VERSION_DB:sled::Db = unwrap!(sled::open(unwrap!(home::home_dir()).join(".config/crev/cargo_crev_reviews_data/versions_db")));
 }
 
 /// insert

@@ -448,6 +448,8 @@ pub struct TrustedPublisher {
     pub login: String,
 }
 
+/// verify_project should return some data quickly, but in the background start to fill the versions_db
+/// for all these crates. So the next time we have more complete data
 pub fn verify_project() -> anyhow::Result<VerifyListData> {
     let output = std::process::Command::new("cargo").arg("crev").arg("verify").output().unwrap();
     let output = format!("{} {}", String::from_utf8_lossy(&output.stdout), String::from_utf8_lossy(&output.stderr));
@@ -458,6 +460,7 @@ pub fn verify_project() -> anyhow::Result<VerifyListData> {
     for line in output.lines() {
         if line.starts_with("none ") || line.starts_with("pass ") || line.starts_with("warn ") {
             let s: Vec<&str> = line.split_whitespace().collect();
+            let status = s[0].to_string();
             let crate_name = s[1].to_string();
             let crate_version = s[2].to_string();
 
@@ -465,7 +468,7 @@ pub fn verify_project() -> anyhow::Result<VerifyListData> {
             let trusted_publisher = is_trusted_publisher(&trusted_publisher_json, &published_by);
 
             list_of_verify.push(VerifyItemData {
-                status: s[0].to_string(),
+                status,
                 crate_name,
                 crate_version,
                 published_by,
@@ -505,11 +508,11 @@ fn published_by_login(crate_name: &str, crate_version: &str) -> anyhow::Result<S
 }
 
 // endregion: cargo_crev_reviews_versions.json
-// region: cargo_crev_reviews_trusted_publishers.json
+// region: cargo_crev_reviews_data/trusted_publishers.json
 fn path_to_trusted_publishers_json() -> anyhow::Result<std::path::PathBuf> {
     let pb = home::home_dir()
         .context("home_dir")?
-        .join(".config/crev/cargo_crev_reviews_trusted_publishers.json");
+        .join(".config/crev/cargo_crev_reviews_data/trusted_publishers.json");
     Ok(pb)
 }
 fn load_trusted_publishers_json() -> anyhow::Result<TrustedPublisherDataFile> {
@@ -535,7 +538,7 @@ fn is_trusted_publisher(trusted_file: &TrustedPublisherDataFile, login: &str) ->
     }
     "".to_string()
 }
-// endregion: cargo_crev_reviews_trusted_publishers.json
+// endregion: cargo_crev_reviews_data/trusted_publishers.json
 
 /// get all versions for one crate
 pub fn crev_crate_versions(crate_name: &str) -> anyhow::Result<Vec<VersionForGui>> {
