@@ -234,7 +234,7 @@ Cargo also downloads from crates.io the complete source code for every dependenc
 
 ## crates.io API
 
-Some data are not available locally and need to be obtained from <https://crates.io//api/v1/crates/{}/{}/>. Then I store them in `~/.config/crev/cargo_crev_reviews_versions.json`
+Some data are not available locally in the cargo registry and need to be obtained from <https://crates.io//api/v1/crates/{}/{}/>. Then I store them in `~/.config/crev/cargo_crev_reviews_data/db_versions`. Data from crates.io are immutable all, except yanked. I will find in the local registry the data for yanked and new versions. That will trigger the download of data from crates.io.
 
 ## trusted publishers
 
@@ -359,7 +359,7 @@ package "methods" {
   [common_structs_mod] -down- [srv_methods_mod]
   [srv_methods_mod] -down- [crev_mod]
 [srv_methods_mod] -down- [db_version_mod]
-[srv_methods_mod] -down- [cargo_mod]
+[srv_methods_mod] -down- [cargo_registry_mod]
 }
 package "data_storage" {
   [db_version_mod] -down-> [crates_io_mod]

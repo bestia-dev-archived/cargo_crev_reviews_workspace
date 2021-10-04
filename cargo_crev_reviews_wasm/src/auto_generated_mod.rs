@@ -211,6 +211,7 @@ pub mod common_structs_mod {
         pub status: String,
         pub crate_name: String,
         pub crate_version: String,
+        pub yanked: bool,
         pub published_by: String,
         pub trusted_publisher: String,
     }

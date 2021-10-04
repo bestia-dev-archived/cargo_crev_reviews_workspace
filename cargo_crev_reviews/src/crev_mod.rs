@@ -26,9 +26,9 @@ use std::{env, sync::Mutex};
 use std::{ops::Range, str::FromStr, vec};
 use unwrap::unwrap;
 
-use crate::common_structs_mod::*;
 use crate::stdio_input_password_mod;
 use crate::utils_mod::*;
+use crate::{cargo_registry_mod::yanked_for_version, common_structs_mod::*};
 
 lazy_static! {
     /// mutable static, because it is hard to pass variables around with async closures
@@ -233,13 +233,13 @@ pub fn crev_new_version(filter: ReviewFilterData) -> anyhow::Result<ProofCrevFor
     if vec_of_reviews.is_empty() {
         anyhow::bail!("Crate reviews for {} not found in my reviews!", filter.crate_name.as_str());
     }
-    let max_version = crate::cargo_mod::max_version_from_registry_index(filter.crate_name.as_str())?;
+    let max_version = crate::cargo_registry_mod::max_version_from_registry_index(filter.crate_name.as_str())?;
 
     if let Some(version) = filter.crate_version.as_ref() {
         if version == max_version.as_str() {
             anyhow::bail!("Max version {} is already reviewed!", &max_version);
         }
-        let path_dir = crate::cargo_mod::cargo_registry_src_dir_for_crate(&filter.crate_name, &max_version)?;
+        let path_dir = crate::cargo_registry_mod::cargo_registry_src_dir_for_crate(&filter.crate_name, &max_version)?;
         if !path_dir.exists() {
             anyhow::bail!("Max version {} src is not cached on your system. It means you don't have a dependency on it in your projects. You cannot review a crate version that you don't use.", &max_version);
         }
@@ -270,7 +270,7 @@ pub fn crev_save_review(
         understanding,
         rating,
     };
-    let crate_root = crate::cargo_mod::cargo_registry_src_dir_for_crate(crate_name, crate_version_str)?;
+    let crate_root = crate::cargo_registry_mod::cargo_registry_src_dir_for_crate(crate_name, crate_version_str)?;
 
     if !crate_root.exists() {
         anyhow::bail!("The crate {}-{} does not exist in the local cargo registry cache. You must use the crate as dependency in your projects, if you want to review it. This way cargo will download the source code for the crate that you review. ", crate_name, crate_version_str);
@@ -466,11 +466,13 @@ pub fn verify_project() -> anyhow::Result<VerifyListData> {
 
             let published_by = published_by_login(&crate_name, &crate_version)?;
             let trusted_publisher = is_trusted_publisher(&trusted_publisher_json, &published_by);
+            let yanked = yanked_for_version(&crate_name, &crate_version)?;
 
             list_of_verify.push(VerifyItemData {
                 status,
                 crate_name,
                 crate_version,
+                yanked,
                 published_by,
                 trusted_publisher,
             })
@@ -496,7 +498,7 @@ pub fn verify_sort_list_by_name_version(vec_of_verify: &mut Vec<VerifyItemData>)
         std::cmp::Ordering::Greater => std::cmp::Ordering::Greater,
     });
 }
-// region: cargo_crev_reviews_versions.json
+// region: cargo_crev_reviews/db_version
 
 /// check if it is already in the cache or GET from crates.io API and store in cache
 fn published_by_login(crate_name: &str, crate_version: &str) -> anyhow::Result<String> {
@@ -508,7 +510,8 @@ fn published_by_login(crate_name: &str, crate_version: &str) -> anyhow::Result<S
     }
 }
 
-// endregion: cargo_crev_reviews_versions.json
+// endregion: cargo_crev_reviews/db_version
+
 // region: cargo_crev_reviews_data/trusted_publishers.json
 fn path_to_trusted_publishers_json() -> anyhow::Result<std::path::PathBuf> {
     let pb = home::home_dir()
@@ -550,14 +553,24 @@ pub fn crev_crate_versions(crate_name: &str) -> anyhow::Result<Vec<VersionForGui
         crate_version: None,
         old_crate_version: None,
     };
+
+    // my reviews from crev
     let vec_of_reviews = crev_list_my_reviews(&Some(new_filter))?;
 
-    for crates_io_version in crate::db_version_mod::all_versions_for_crate(crate_name)? {
+    // yanked (from cargo registry index)
+    let yanked_one_crate = crate::cargo_registry_mod::yanked_for_one_crate(crate_name)?;
+
+    // versions from db_version
+    for version_for_db in crate::db_version_mod::all_versions_for_crate(crate_name)? {
         let mut my_review = None;
-        let (_io_crate_name, io_crate_version) = split_crate_version(crates_io_version.crate_name_version.as_str());
-        // is_src_cache ?
-        let path_dir = crate::cargo_mod::cargo_registry_src_dir_for_crate(crate_name, &io_crate_version)?;
+        let (_io_crate_name, io_crate_version) = split_crate_version(version_for_db.crate_name_version.as_str());
+
+        // is_src_cache (if path exists in cargo registry src)
+        let path_dir = crate::cargo_registry_mod::cargo_registry_src_dir_for_crate(crate_name, &io_crate_version)?;
         let is_src_cached = Some(path_dir.exists());
+
+        let yanked = yanked_one_crate.iter().any(|s| s == crate_name);
+
         // my_review
         for review in vec_of_reviews.iter() {
             if review.package.name == crate_name && review.package.version.as_str() == &io_crate_version {
@@ -578,9 +591,9 @@ pub fn crev_crate_versions(crate_name: &str) -> anyhow::Result<Vec<VersionForGui
         let version_ext = VersionForGui {
             crate_name: crate_name.to_string(),
             num: io_crate_version.to_string(),
-            yanked: crates_io_version.yanked,
-            published_by_login: crates_io_version.published_by_login.clone(),
-            published_date: crates_io_version.published_date.clone(),
+            yanked,
+            published_by_login: version_for_db.published_by_login.clone(),
+            published_date: version_for_db.published_date.clone(),
             is_src_cached,
             my_review: my_review.clone(),
         };

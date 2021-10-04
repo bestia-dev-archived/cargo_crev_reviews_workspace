@@ -165,7 +165,7 @@
 //!
 //! ## crates.io API
 //!
-//! Some data are not available locally and need to be obtained from <https://crates.io//api/v1/crates/{}/{}/>. Then I store them in `~/.config/crev/cargo_crev_reviews_versions.json`
+//! Some data are not available locally and need to be obtained from <https://crates.io//api/v1/crates/{}/{}/>. Then I store them in `~/.config/crev/cargo_crev_reviews/db_version`
 //!
 //! ## trusted publishers
 //!
@@ -193,7 +193,7 @@
 // endregion: auto_md_to_doc_comments include README.md A //!
 
 mod auto_generated_mod;
-mod cargo_mod;
+mod cargo_registry_mod;
 mod common_structs_mod;
 mod crev_mod;
 mod db_version_mod;

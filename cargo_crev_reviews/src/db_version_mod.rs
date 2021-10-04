@@ -10,10 +10,12 @@ use crate::utils_mod::split_crate_version;
 
 mod crates_io_mod;
 
+// this struct will be cached in a local file
+// most of the data on crates.io is immutable and they are easy to cache
+// but yanked can change any time. Therefore yanked is not a good field for this db
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct VersionForDb {
     pub crate_name_version: String,
-    pub yanked: bool,
     pub published_by_login: Option<String>,
     pub published_date: String,
 }
@@ -58,7 +60,6 @@ pub fn download_in_background(crate_name: String) {
             let crate_name_version = join_crate_version(&crate_name, &crate_io_version.num);
             let v = VersionForDb {
                 crate_name_version,
-                yanked: crate_io_version.yanked,
                 published_by_login,
                 published_date: crate_io_version.created_at.clone(),
             };

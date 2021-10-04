@@ -144,7 +144,6 @@ pub fn srv_version_list(request_data: serde_json::Value) -> anyhow::Result<Strin
         let b = semver::Version::parse(&b.num).unwrap();
         b.cmp(&a)
     });
-    println!("{:?}", &vec);
 
     let mut response_data = VersionListData { list_of_version: vec![] };
     for x in vec.iter() {
@@ -188,7 +187,7 @@ pub fn srv_review_publish(_request_data: serde_json::Value) -> anyhow::Result<St
 #[named]
 pub fn srv_update_registry_index(_request_data: serde_json::Value) -> anyhow::Result<String> {
     println!(function_name!());
-    match crate::cargo_mod::update_registry_index() {
+    match crate::cargo_registry_mod::update_registry_index() {
         Ok(_ret_val) => crate::response_post_mod::response_modal_message("Registry index updated."),
         Err(err) => crate::response_post_mod::response_err_message(&err),
     }
@@ -199,7 +198,7 @@ pub fn srv_review_open_source_code(request_data: serde_json::Value) -> anyhow::R
     println!(function_name!());
     let filter: ReviewFilterData = unwrap!(serde_json::from_value(request_data));
     let version = filter.crate_version.context("Parameter version in None.")?;
-    let path_dir = crate::cargo_mod::cargo_registry_src_dir_for_crate(&filter.crate_name, &version)?;
+    let path_dir = crate::cargo_registry_mod::cargo_registry_src_dir_for_crate(&filter.crate_name, &version)?;
     if !path_dir.exists() {
         anyhow::bail!("Src for version {} is not cached on your system.", &version);
     }
