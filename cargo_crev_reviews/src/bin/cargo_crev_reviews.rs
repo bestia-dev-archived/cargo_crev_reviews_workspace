@@ -4,15 +4,15 @@ use std::env;
 
 use cargo_crev_reviews::*;
 
-/// check if cargo_crev is installed, 
-/// if the program is run beside Cargo.toml, 
+/// check if cargo_crev is installed,
+/// if the program is run beside Cargo.toml,
 /// if the port is TcpListener is free to bind. That means that this is the only one instance of the program running.
 /// User input the passphrase for crev signing.
 fn main() -> anyhow::Result<()> {
     // I don't need to check for `cargo` or Rust, because cargo_crev_reviews is installed with `cargo install`.
     // It means that cargo and Rust are already installed.
 
-    let host_port_already_busy =  host_port_is_busy();
+    let host_port_already_busy = host_port_is_busy();
     // check if cargo-crev is installed
     let path = home::cargo_home()?.join("bin").join("cargo-crev");
     if !path.exists() {
@@ -94,7 +94,7 @@ in the directory where the Cargo.toml file is.
     Ok(())
 }
 
-fn one_instance_of_the_program_already_running(url_not_free:&str) {
+fn one_instance_of_the_program_already_running(url_not_free: &str) {
     println!(
         r#"
 {yel}WELCOME to cargo_crev_reviews from Bestia.dev!{res}

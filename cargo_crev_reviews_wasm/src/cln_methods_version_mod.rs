@@ -12,6 +12,7 @@ use crate::auto_generated_mod::common_structs_mod::*;
 
 // use crate::on_click;
 use crate::html_mod::*;
+use crate::utils_mod::join_crate_version;
 use crate::*;
 
 lazy_static! {
@@ -79,7 +80,7 @@ impl HtmlProcessor for VersionItemData {
         match wt_name {
             "wt_crate_name" => self.crate_name.clone(),
             "wt_crate_version" => self.crate_version.clone(),
-            "wt_crate_name_version" => format!("{} {}", self.crate_name, self.crate_version),
+            "wt_crate_name_version" => join_crate_version(&self.crate_name, &self.crate_version),
             "wt_crate_yanked" => {
                 if self.yanked {
                     "yanked".to_string()

@@ -13,6 +13,7 @@ use crate::auto_generated_mod::common_structs_mod::*;
 use crate::auto_generated_mod::*;
 use crate::html_mod::*;
 use crate::on_click;
+use crate::utils_mod::join_crate_version;
 use crate::*;
 
 // region: mutable static, because it is hard to pass variables around with on_click events
@@ -130,7 +131,7 @@ impl HtmlProcessor for ReviewItemData {
             "wt_comment_md" => self.comment_md.clone(),
             "wt_crate_name" => self.crate_name.clone(),
             "wt_crate_version" => self.crate_version.clone(),
-            "wt_crate_name_version" => format!("{} {}", self.crate_name, self.crate_version),
+            "wt_crate_name_version" => join_crate_version(&self.crate_name, &self.crate_version),
             "wt_thoroughness" => self.thoroughness.clone(),
             "wt_understanding" => self.understanding.clone(),
             "wt_crate_thoroughness_understanding" => format!("{} {}", self.thoroughness, self.understanding),

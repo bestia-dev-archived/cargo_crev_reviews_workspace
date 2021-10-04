@@ -42,10 +42,3 @@ pub fn update_registry_index() -> anyhow::Result<()> {
     index.update()?;
     Ok(())
 }
-
-pub fn split_crate_version(crate_version: &str) -> (String, String) {
-    let s: Vec<&str> = crate_version.split_whitespace().collect();
-    let crate_name = s[1].to_string();
-    let crate_version = s[2].to_string();
-    (crate_name, crate_version)
-}

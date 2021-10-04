@@ -195,7 +195,6 @@
 mod auto_generated_mod;
 mod cargo_mod;
 mod common_structs_mod;
-mod crates_io_mod;
 mod crev_mod;
 mod db_version_mod;
 mod files_mod;
@@ -301,7 +300,7 @@ pub fn start_web_server() {
 /// return None if the host+port is free
 /// if the server host+port is not free, returns the String for the error message.
 pub fn host_port_is_busy() -> Option<String> {
-    let url=format!( "{}:{}", SERVER_HOST.as_str(), SERVER_PORT.as_str() );
+    let url = format!("{}:{}", SERVER_HOST.as_str(), SERVER_PORT.as_str());
     let listener = std::net::TcpListener::bind(&url);
     match listener {
         Ok(listener) => {

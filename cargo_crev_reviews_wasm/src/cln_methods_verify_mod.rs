@@ -12,6 +12,7 @@ use crate::auto_generated_mod::srv_methods;
 
 // use crate::on_click;
 use crate::html_mod::*;
+use crate::utils_mod::join_crate_version;
 use crate::*;
 
 lazy_static! {
@@ -81,7 +82,7 @@ impl HtmlProcessor for VerifyItemData {
             "wt_status" => self.status.clone(),
             "wt_crate_name" => self.crate_name.clone(),
             "wt_crate_version" => self.crate_version.clone(),
-            "wt_crate_name_version" => format!("{} {}", self.crate_name, self.crate_version),
+            "wt_crate_name_version" => join_crate_version(&self.crate_name, &self.crate_version),
             "wt_published_by" => self.published_by.clone(),
             "wt_cargo_crev_reviews_version" => env!("CARGO_PKG_VERSION").to_string(),
             "wt_status_class" => format!("review_header0_cell c_{}", &self.status),

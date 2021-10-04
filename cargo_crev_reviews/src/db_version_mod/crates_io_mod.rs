@@ -2,13 +2,11 @@
 
 // communication with crates.io api
 // I don't want to repeatedly use crates.io api for the same data.
-// I need a disk persistent data storage. I choose sled database.
+// I need a disk persistent data storage.
+// This crate will be used only to fill the database. Never directly from any other function.
 
 use serde::Deserialize;
 use serde::Serialize;
-
-use crate::db_version_mod;
-use crate::db_version_mod::VersionForDb;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct CratesIoCrateResponse {
@@ -26,8 +24,7 @@ pub struct CratesIoCrate {
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct CratesIoVersion {
-    /// primary key
-    pub crate_name_version: String,
+    pub num: String,
     pub yanked: bool,
     pub published_by: Option<CratesIoPublishedBy>,
     pub created_at: String,
@@ -39,40 +36,11 @@ pub struct CratesIoPublishedBy {
     pub login: String,
 }
 
-pub fn get_version(crate_name: &str, crate_version: &str) -> anyhow::Result<Option<VersionForDb>> {
-    fill_db_if_needed(crate_name)?;
-    let crate_name_version = format!("{} {}", crate_name, crate_version);
-    crate::db_version_mod::read(&crate_name_version)
-}
-
-/// get from cached db or GET from crates.io and stores to cache db
-pub fn get_vec_of_versions(crate_name: &str) -> anyhow::Result<Vec<VersionForDb>> {
-    // check if it is cached locally in the db file (sled)
-    fill_db_if_needed(crate_name)?;
-    let vec_version = crate::db_version_mod::all_versions_for_crate(crate_name)?;
-    Ok(vec_version)
-}
-
-fn fill_db_if_needed(crate_name: &str) -> anyhow::Result<()> {
-    // check if it is cached locally in the db file (sled)
-    if !crate::db_version_mod::exists(crate_name) {
-        let crate_resp = crate_response(crate_name)?;
-        // save to cache db
-        for v in crate_resp.versions.iter() {
-            let published_by_login = match v.published_by.as_ref() {
-                Some(published_by) => Some(published_by.login.to_string()),
-                None => None,
-            };
-            let ver = VersionForDb {
-                crate_name_version: v.crate_name_version.to_string(),
-                yanked: v.yanked,
-                published_by_login,
-                published_date: v.created_at.to_string(),
-            };
-            db_version_mod::insert(&v.crate_name_version, &ver)?;
-        }
-    }
-    Ok(())
+/// GET from crates.io
+/// It is used only to store into db_version.
+pub fn get_vec_of_versions(crate_name: &str) -> anyhow::Result<Vec<CratesIoVersion>> {
+    let crate_resp = crate_response(crate_name)?;
+    Ok(crate_resp.versions)
 }
 
 fn crate_response(crate_name: &str) -> anyhow::Result<CratesIoCrateResponse> {

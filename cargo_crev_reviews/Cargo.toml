@@ -5,7 +5,7 @@
 
 [package]
 name = "cargo_crev_reviews"
-version = "2021.1004.1148"
+version = "2021.1004.1332"
 description = "Write cargo-crev reviews in a Graphical User Interface with a cross-platform app written in rust"
 authors = ["Luciano Bestia"]
 edition = "2018"
@@ -47,3 +47,4 @@ home="0.5.3"
 semver = "1.0"
 reqwest = { version = "0.11", features = ["blocking", "json"] }
 sled = "0.34.7"
+rayon = "1.5.1"

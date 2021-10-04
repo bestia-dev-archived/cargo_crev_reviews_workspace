@@ -26,9 +26,9 @@ use std::{env, sync::Mutex};
 use std::{ops::Range, str::FromStr, vec};
 use unwrap::unwrap;
 
+use crate::common_structs_mod::*;
 use crate::stdio_input_password_mod;
 use crate::utils_mod::*;
-use crate::{cargo_mod::split_crate_version, common_structs_mod::*};
 
 lazy_static! {
     /// mutable static, because it is hard to pass variables around with async closures
@@ -448,7 +448,7 @@ pub struct TrustedPublisher {
     pub login: String,
 }
 
-/// verify_project should return some data quickly, but in the background start to fill the versions_db
+/// verify_project should return some data quickly, but in the background start to fill the db_version
 /// for all these crates. So the next time we have more complete data
 pub fn verify_project() -> anyhow::Result<VerifyListData> {
     let output = std::process::Command::new("cargo").arg("crev").arg("verify").output().unwrap();
@@ -500,7 +500,8 @@ pub fn verify_sort_list_by_name_version(vec_of_verify: &mut Vec<VerifyItemData>)
 
 /// check if it is already in the cache or GET from crates.io API and store in cache
 fn published_by_login(crate_name: &str, crate_version: &str) -> anyhow::Result<String> {
-    let exact_version = crate::crates_io_mod::get_version(crate_name, crate_version)?;
+    let crate_name_version = &join_crate_version(crate_name, crate_version);
+    let exact_version = crate::db_version_mod::read(&crate_name_version)?;
     match exact_version {
         Some(exact_version) => Ok(exact_version.published_by_login.unwrap_or("".to_string())),
         None => Ok("".to_string()),
@@ -551,7 +552,7 @@ pub fn crev_crate_versions(crate_name: &str) -> anyhow::Result<Vec<VersionForGui
     };
     let vec_of_reviews = crev_list_my_reviews(&Some(new_filter))?;
 
-    for crates_io_version in crate::crates_io_mod::get_vec_of_versions(crate_name)? {
+    for crates_io_version in crate::db_version_mod::all_versions_for_crate(crate_name)? {
         let mut my_review = None;
         let (_io_crate_name, io_crate_version) = split_crate_version(crates_io_version.crate_name_version.as_str());
         // is_src_cache ?
