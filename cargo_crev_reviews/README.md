@@ -205,7 +205,7 @@ The [cargo-crev](https://github.com/crev-dev/cargo-crev) project contains many c
 ## cargo registry
 
 The cargo application is essential for work with the rust language. It maintains a local `cargo registry cache`. The registry index is git fetched from github. Path to an index file:  
-`~\.cargo\registry\index\github.com-1ecc6299db9ec823\cache\re\ad\reader_for_microxml`  
+`~/.cargo/registry/index/github.com-1ecc6299db9ec823/cache/re/ad/reader_for_microxml`  
 The content of this file is roughly:  
 
 ```yaml
@@ -345,31 +345,10 @@ I will have a try with the [sled](http://sled.rs/) database. A lightweight pure-
 
 ## plantUml
 
-<details>
-  <summary>plantuml diagram</summary>
+Write your diagrams in code with plantUml.  
+The server modules:
 
-```plantuml
-@startuml
-package "web server 127.0.0.1:8182" {
-  [response_get_mod] -down- [files_mod]
-  [response_post_mod] -down- [auto_generated_mod]
-  [auto_generated_mod] -down- [common_structs_mod]
-}
-package "methods" {
-  [common_structs_mod] -down- [srv_methods_mod]
-  [srv_methods_mod] -down- [crev_mod]
-[srv_methods_mod] -down- [db_version_mod]
-[srv_methods_mod] -down- [cargo_registry_mod]
-}
-package "data_storage" {
-  [db_version_mod] -down-> [crates_io_mod]
-}
-@enduml
-```
-
-</details>
-
-![plantuml_1](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/raw/main/images/plantuml_1.png "plantuml_1")  
+[![plant_uml](https://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/LucianoBestia/cargo_crev_reviews_workspace/main/images/server_plantuml.txt)](https://raw.githubusercontent.com/LucianoBestia/cargo_crev_reviews_workspace/main/images/server_plantuml.txt)
 
 ## Some other info
 
