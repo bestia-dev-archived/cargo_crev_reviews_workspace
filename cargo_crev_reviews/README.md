@@ -345,10 +345,10 @@ I will have a try with the [sled](http://sled.rs/) database. A lightweight pure-
 
 ## plantUml
 
-Write your diagrams in code with plantUml.  
+Write your diagrams in code with plantUml. The language syntax is pretty easy. I have a text file `server_plantuml_v1.txt`. The I use the online service `plantuml.com/plantuml/proxy` to create a png image. Because of caching I have the version of the file in the file name. When the version changes the old cache is not in use any more.  
 The server modules:
 
-[![plant_uml](https://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/LucianoBestia/cargo_crev_reviews_workspace/main/images/server_plantuml.txt)](https://raw.githubusercontent.com/LucianoBestia/cargo_crev_reviews_workspace/main/images/server_plantuml.txt)
+[![plant_uml](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/LucianoBestia/cargo_crev_reviews_workspace/main/images/server_plantuml_v1.txt)](https://raw.githubusercontent.com/LucianoBestia/cargo_crev_reviews_workspace/main/images/server_plantuml_v1.txt)
 
 ## Some other info
 
