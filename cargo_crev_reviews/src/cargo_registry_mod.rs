@@ -40,7 +40,10 @@ pub fn yanked_for_version(crate_name: &str, crate_version: &str) -> anyhow::Resu
     let crate_info = INDEX.crate_(crate_name).context("Cannot find crate name in registry.")?;
     for x in crate_info.versions().iter() {
         if x.version() == crate_version {
-            return Ok(true);
+            if x.is_yanked() {
+                return Ok(true);
+            }
+            break;
         }
     }
     Ok(false)

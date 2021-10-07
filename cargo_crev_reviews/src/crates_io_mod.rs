@@ -38,12 +38,7 @@ pub struct CratesIoPublishedBy {
 
 /// GET from crates.io
 /// It is used only to store into db_version.
-pub fn get_vec_of_versions(crate_name: &str) -> anyhow::Result<Vec<CratesIoVersion>> {
-    let crate_resp = crate_response(crate_name)?;
-    Ok(crate_resp.versions)
-}
-
-fn crate_response(crate_name: &str) -> anyhow::Result<CratesIoCrateResponse> {
+pub fn crate_response(crate_name: &str) -> anyhow::Result<CratesIoCrateResponse> {
     let response_text = crate_responses_get(crate_name)?;
     crate_response_deserialize(response_text)
 }

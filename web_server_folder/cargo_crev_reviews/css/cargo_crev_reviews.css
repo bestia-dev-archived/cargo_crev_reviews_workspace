@@ -407,6 +407,10 @@ A small difference to help search and replace refactoring.
             text-align: right;
         }
         
+        .left {
+            text-align: left;
+        }
+        
         .under_line,
         .h2u {
             border-bottom: 1px solid var(--brd_color_container);
@@ -732,6 +736,10 @@ A small difference to help search and replace refactoring.
         }
         
         .c_warn {
+            color: var(--color_r_negative);
+        }
+        
+        .c_yanked {
             color: var(--color_r_negative);
         }
         

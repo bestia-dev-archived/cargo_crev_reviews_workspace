@@ -460,19 +460,22 @@ pub fn verify_project() -> anyhow::Result<VerifyListData> {
     for line in output.lines() {
         if line.starts_with("none ") || line.starts_with("pass ") || line.starts_with("warn ") {
             let s: Vec<&str> = line.split_whitespace().collect();
-            let status = s[0].to_string();
+            let mut status = s[0].to_string();
             let crate_name = s[1].to_string();
             let crate_version = s[2].to_string();
 
             let published_by = published_by_login(&crate_name, &crate_version)?;
             let trusted_publisher = is_trusted_publisher(&trusted_publisher_json, &published_by);
-            let yanked = yanked_for_version(&crate_name, &crate_version)?;
+            if yanked_for_version(&crate_name, &crate_version)? {
+                status = "yanked".to_string();
+            }
+            let my_review = rating_or_version(&crate_name, &crate_version)?;
 
             list_of_verify.push(VerifyItemData {
                 status,
+                my_review,
                 crate_name,
                 crate_version,
-                yanked,
                 published_by,
                 trusted_publisher,
             })
@@ -510,6 +513,25 @@ fn published_by_login(crate_name: &str, crate_version: &str) -> anyhow::Result<S
     }
 }
 
+/// if exists my review for crate version returns the rating
+/// if exists any review for this crate returns version number
+/// else return empty string
+fn rating_or_version(crate_name: &str, crate_version: &str) -> anyhow::Result<String> {
+    let filter = ReviewFilterData {
+        crate_name: crate_name.to_string(),
+        crate_version: None,
+        old_crate_version: None,
+    };
+    let vec = crev_list_my_reviews(&Some(filter))?;
+    let mut version = "".to_string();
+    for x in vec.iter() {
+        if x.package.version == crate_version {
+            return Ok(rating_to_string(&x.review.as_ref().context("Rating not exists.")?.rating));
+        }
+        version = x.package.version.clone();
+    }
+    Ok(version)
+}
 // endregion: cargo_crev_reviews/db_version
 
 // region: cargo_crev_reviews_data/trusted_publishers.json

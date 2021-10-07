@@ -25,7 +25,7 @@ impl HtmlProcessor for VerifyListData {
     /// process template and push as many &str is needed
     fn process_repetitive_items(&self, name_of_repeat_segment: &str, html_repetitive_template: &str, html_new: &mut String) {
         match name_of_repeat_segment {
-            "verify" => {
+            "VerifyItemData" => {
                 w::debug_write(&format!("process_repetitive_items {}", name_of_repeat_segment));
                 for (row_num, data) in self.list_of_verify.iter().enumerate() {
                     let list_item_html = data.process_html_with_item(html_repetitive_template, Some(row_num));
@@ -80,13 +80,14 @@ impl HtmlProcessor for VerifyItemData {
     fn match_wt(&self, wt_name: &str) -> String {
         match wt_name {
             "wt_status" => self.status.clone(),
+            "wt_my_review" => self.my_review.clone(),
             "wt_crate_name" => self.crate_name.clone(),
             "wt_crate_version" => self.crate_version.clone(),
             "wt_crate_name_version" => join_crate_version(&self.crate_name, &self.crate_version),
             "wt_published_by" => self.published_by.clone(),
             "wt_cargo_crev_reviews_version" => env!("CARGO_PKG_VERSION").to_string(),
-            "wt_status_class" => format!("review_header0_cell c_{}", &self.status),
-            "wt_published_by_class" => format!("review_header0_cell c_{}", &self.trusted_publisher),
+            "wt_status_class" => format!("review_header0_cell left c_{}", &self.status),
+            "wt_published_by_class" => format!("review_header0_cell left c_{}", &self.trusted_publisher),
             _ => {
                 let html_error = format!("Unrecognized replace_wt method {}", wt_name);
                 w::debug_write(&html_error);

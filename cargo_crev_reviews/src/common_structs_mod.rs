@@ -63,10 +63,12 @@ pub struct ReviewListData {
 // endregion: review
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct VerifyItemData {
+    /// status: none, pass, warn, yanked
     pub status: String,
+    /// rating if exists, version number if exists for crate
+    pub my_review: String,
     pub crate_name: String,
     pub crate_version: String,
-    pub yanked: bool,
     pub published_by: String,
     pub trusted_publisher: String,
 }

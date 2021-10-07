@@ -195,7 +195,10 @@
 mod auto_generated_mod;
 mod cargo_registry_mod;
 mod common_structs_mod;
+mod crates_io_mod;
 mod crev_mod;
+mod db_crate_mod;
+mod db_sled_mod;
 mod db_version_mod;
 mod files_mod;
 mod response_get_mod;

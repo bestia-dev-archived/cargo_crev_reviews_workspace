@@ -75,7 +75,7 @@ impl HtmlProcessor for ReviewListData {
     /// process template and push as many &str is needed
     fn process_repetitive_items(&self, name_of_repeat_segment: &str, html_repetitive_template: &str, html_new: &mut String) {
         match name_of_repeat_segment {
-            "review" => {
+            "ReviewItemData" => {
                 w::debug_write(&format!("process_repetitive_items {}", name_of_repeat_segment));
                 for (row_num, data) in self.list_of_review.iter().enumerate() {
                     let list_item_html = data.process_html_with_item(html_repetitive_template, Some(row_num));
