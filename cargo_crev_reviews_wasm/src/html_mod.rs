@@ -16,7 +16,7 @@ use crate::web_sys_mod as w;
 pub trait HtmlProcessor {
     // region: mandatory functions to implement
     fn process_repetitive_items(&self, name_of_repeat_segment: &str, html_repetitive_template: &str, html_new: &mut String);
-    fn match_wt(&self, wt_name: &str) -> String;
+    fn match_wt(&self, wt_name: &str, row_number: Option<usize>) -> String;
     fn match_wb(&self, wb_name: &str) -> bool;
     // endregion: mandatory functions to implement
 
@@ -47,7 +47,7 @@ pub trait HtmlProcessor {
     }
 
     /// inside the html there can be `wr_ web-browser repetitive segments`
-    /// marked with <!--wr_start_name--><!--wr_end_name-->
+    /// marked with <!--wr_repeat_name--><!--wr_end_name-->
     fn process_repetitive_html(&self, html_old: String) -> String {
         let mut html_wo_repeat = String::with_capacity(html_old.len());
         let mut cursor = 0;
@@ -55,12 +55,14 @@ pub trait HtmlProcessor {
         let mut vec_of_repeat: Vec<(String, String)> = vec![];
 
         // remove the repeat segments and store them in a vec
-        while let Some(range_name_of_segment) = find_range_between_delimiters(&html_old, &mut cursor, "<!--wr_start_", "-->") {
+        while let Some(range_name_of_segment) = find_range_between_delimiters(&html_old, &mut cursor, "<!--wr_repeat_", "-->") {
             let name_of_repeat_segment = &html_old[range_name_of_segment];
-            let start_marker = format!("<!--wr_start_{}-->", name_of_repeat_segment);
+            let start_marker = format!("<!--wr_repeat_{}-->", name_of_repeat_segment);
             let end_marker = format!("<!--wr_end_{}-->", name_of_repeat_segment);
             if let Some(range_segment) = find_range_between_delimiters(&html_old, &mut 0, &start_marker, &end_marker) {
-                vec_of_repeat.push((name_of_repeat_segment.to_string(), html_old[range_segment.clone()].to_string()));
+                // the full name is ok for quick find the name in the code
+                let full_name = format!("wr_repeat_{}", name_of_repeat_segment);
+                vec_of_repeat.push((full_name, html_old[range_segment.clone()].to_string()));
                 html_wo_repeat.push_str(&html_old[old_end..range_segment.start]);
                 old_end = range_segment.end;
             }
@@ -73,15 +75,17 @@ pub trait HtmlProcessor {
         let mut html_new = String::with_capacity(html_wo_repeat.len());
         let mut old_end = 0;
         for rep in vec_of_repeat.iter() {
-            let name_of_repeat_segment = rep.0.clone();
-            let start_marker = format!("<!--wr_start_{}-->", name_of_repeat_segment);
+            let name_of_repeat_segment = rep.0.trim_start_matches("wr_repeat_").to_string();
+            let start_marker = format!("<!--wr_repeat_{}-->", name_of_repeat_segment);
             let end_marker = format!("<!--wr_end_{}-->", name_of_repeat_segment);
             if let Some(range_segment) = find_range_including_delimiters(&html_wo_repeat, &mut 0, &start_marker, &end_marker) {
                 html_new.push_str(&html_wo_repeat[old_end..range_segment.start]);
                 old_end = range_segment.end;
             }
             let html_rep = rep.1.clone();
-            self.process_repetitive_items(&name_of_repeat_segment, &html_rep, &mut html_new);
+            // the full name is ok for quick find the name in the code
+            let full_name = format!("wr_repeat_{}", name_of_repeat_segment);
+            self.process_repetitive_items(&full_name, &html_rep, &mut html_new);
         }
         html_new.push_str(&html_wo_repeat[old_end..]);
 
@@ -91,9 +95,9 @@ pub trait HtmlProcessor {
     /// if the comment is like <!--wt_method_name-->, starts with `wt_ web-browser text`
     /// Execute the replace_method and save the result in `next_text_node_replace`.
     /// On the next text node it will use this value.    
-    fn replace_next_text_node(&self, name: &str, next_text_node_replace: &mut Option<String>) {
+    fn replace_next_text_node(&self, name: &str, next_text_node_replace: &mut Option<String>, row_number: Option<usize>) {
         // w::debug_write(&format!("{} {}", function_name!(), name));
-        let replace_text = self.match_wt(name);
+        let replace_text = self.match_wt(name, row_number);
         *next_text_node_replace = Some(replace_text);
     }
 
@@ -101,12 +105,12 @@ pub trait HtmlProcessor {
     /// if attribute starts with data-wt_ it is a replace command. Like: data-wt_width="width" width="90"
     /// the attribute value is the name of the next attribute, just for security
     /// Execute the response_method and save the result in `next_attribute_replace`, don't push attribute to string
-    fn replace_next_attribute(&self, name: &str, value: &str, next_attribute_replace: &mut Option<(String, String)>) {
+    fn replace_next_attribute(&self, name: &str, value: &str, next_attribute_replace: &mut Option<(String, String)>, row_number: Option<usize>) {
         // w::debug_write(&format!("{} {} {}", function_name!(), name, value));
         // returns mostly empty string because it is all written in next_attribute_replace
         // only in case of error it writes something in the html, to find where the error occurred
         let attribute_name = value.to_string();
-        let replace_text = self.match_wt(name.trim_start_matches("data-"));
+        let replace_text = self.match_wt(name.trim_start_matches("data-"), row_number);
         *next_attribute_replace = Some((attribute_name, replace_text));
     }
 
@@ -125,7 +129,7 @@ pub trait HtmlProcessor {
     /// If found the magic word `wt_` then run some code and push the result instead of the next element or attribute
     /// If normal element or attribute push it to the new String builder
     /// It is just strings so, that should be super fast.
-    fn process_html_with_item(&self, html_fragment: &str, row_num: Option<usize>) -> String {
+    fn process_html_with_item(&self, html_fragment: &str, row_number: Option<usize>) -> String {
         let reader_iterator = ReaderForMicroXml::new(html_fragment);
         let mut html_after_process = String::with_capacity(html_fragment.len());
         let mut next_attribute_replace: Option<(String, String)> = None;
@@ -169,7 +173,7 @@ pub trait HtmlProcessor {
                                 None => {
                                     if name.starts_with("data-wt_") {
                                         // returns nothing, it writes into `next_attribute_replace`
-                                        self.replace_next_attribute(name, value, &mut next_attribute_replace);
+                                        self.replace_next_attribute(name, value, &mut next_attribute_replace, row_number);
                                         String::new()
                                     } else if name.starts_with("data-wb_") {
                                         // returns nothing, it writes into `next_attribute_exist`
@@ -177,9 +181,9 @@ pub trait HtmlProcessor {
                                         String::new()
                                     } else {
                                         // non processed attribute,
-                                        // but `id` is special, it could have row_num in parenthesis like id="item(0)"
-                                        if name == "id" && row_num.is_some() {
-                                            format!(r#"{}="{}({})" "#, name, value, row_num.unwrap())
+                                        // but `id` is special, it could have row_number in parenthesis like id="item(0)"
+                                        if name == "id" && row_number.is_some() {
+                                            format!(r#"{}="{}({})" "#, name, value, row_number.unwrap())
                                         } else {
                                             format!(r#"{}="{}" "#, name, value)
                                         }
@@ -209,7 +213,7 @@ pub trait HtmlProcessor {
                             html_after_process.push_str(">");
                         }
                         if txt.starts_with("wt_") {
-                            self.replace_next_text_node(txt, &mut next_text_node_replace);
+                            self.replace_next_text_node(txt, &mut next_text_node_replace, row_number);
                         } else {
                             let html = format!(r#"<!--{}-->"#, txt);
                             html_after_process.push_str(&html);

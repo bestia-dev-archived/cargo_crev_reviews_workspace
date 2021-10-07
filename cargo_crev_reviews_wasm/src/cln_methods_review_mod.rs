@@ -48,7 +48,7 @@ impl HtmlProcessor for RpcMessageData {
     }
 
     /// the use of complete string wt_xxx enables easy and exact text search around the source code
-    fn match_wt(&self, wt_name: &str) -> String {
+    fn match_wt(&self, wt_name: &str, _row_num: Option<usize>) -> String {
         match wt_name {
             "wt_cargo_crev_reviews_version" => env!("CARGO_PKG_VERSION").to_string(),
             "wt_message" => self.message.to_string(),
@@ -75,10 +75,10 @@ impl HtmlProcessor for ReviewListData {
     /// process template and push as many &str is needed
     fn process_repetitive_items(&self, name_of_repeat_segment: &str, html_repetitive_template: &str, html_new: &mut String) {
         match name_of_repeat_segment {
-            "ReviewItemData" => {
+            "wr_repeat_ReviewItemData" => {
                 w::debug_write(&format!("process_repetitive_items {}", name_of_repeat_segment));
-                for (row_num, data) in self.list_of_review.iter().enumerate() {
-                    let list_item_html = data.process_html_with_item(html_repetitive_template, Some(row_num));
+                for (row_number, data) in self.list_of_review.iter().enumerate() {
+                    let list_item_html = data.process_html_with_item(html_repetitive_template, Some(row_number));
                     html_new.push_str(&list_item_html);
                 }
             }
@@ -91,7 +91,7 @@ impl HtmlProcessor for ReviewListData {
     }
 
     /// the use of complete string wt_xxx enables easy and exact text search around the source code
-    fn match_wt(&self, wt_name: &str) -> String {
+    fn match_wt(&self, wt_name: &str, _row_num: Option<usize>) -> String {
         match wt_name {
             "wt_cargo_crev_reviews_version" => env!("CARGO_PKG_VERSION").to_string(),
             _ => {
@@ -126,7 +126,7 @@ impl HtmlProcessor for ReviewItemData {
     }
 
     /// the use of complete string wt_xxx enables easy and exact text search around the source code
-    fn match_wt(&self, wt_name: &str) -> String {
+    fn match_wt(&self, wt_name: &str, _row_num: Option<usize>) -> String {
         match wt_name {
             "wt_comment_md" => self.comment_md.clone(),
             "wt_crate_name" => self.crate_name.clone(),
@@ -194,14 +194,14 @@ pub fn cln_review_list(srv_response: RpcResponse) {
     navigation_on_click();
 
     // on_click for every row of the list
-    for (row_num, _item) in REVIEW_LIST_DATA.lock().unwrap().list_of_review.iter().enumerate() {
-        row_on_click!("button_review_edit", row_num, request_review_edit_from_list);
-        row_on_click!("button_review_new_version", row_num, request_review_new_version);
-        row_on_click!("button_open_crev_dev", row_num, button_open_crev_dev_onclick);
-        row_on_click!("button_open_crates_io", row_num, button_open_crates_io_onclick);
-        row_on_click!("button_open_lib_rs", row_num, button_open_lib_rs_onclick);
-        row_on_click!("button_open_source_code", row_num, button_open_source_code_onclick);
-        row_on_click!("button_review_delete", row_num, modal_delete);
+    for (row_number, _item) in REVIEW_LIST_DATA.lock().unwrap().list_of_review.iter().enumerate() {
+        row_on_click!("button_review_edit", row_number, request_review_edit_from_list);
+        row_on_click!("button_review_new_version", row_number, request_review_new_version);
+        row_on_click!("button_open_crev_dev", row_number, button_open_crev_dev_onclick);
+        row_on_click!("button_open_crates_io", row_number, button_open_crates_io_onclick);
+        row_on_click!("button_open_lib_rs", row_number, button_open_lib_rs_onclick);
+        row_on_click!("button_open_source_code", row_number, button_open_source_code_onclick);
+        row_on_click!("button_review_delete", row_number, modal_delete);
     }
 }
 
@@ -272,37 +272,37 @@ pub fn request_review_list(_element_id: &str) {
 }
 
 #[named]
-fn button_open_crates_io_onclick(_element_id: &str, row_num: usize) {
+fn button_open_crates_io_onclick(_element_id: &str, row_number: usize) {
     w::debug_write(function_name!());
     // from list get crate name and version
-    let item = &REVIEW_LIST_DATA.lock().unwrap().list_of_review[row_num];
+    let item = &REVIEW_LIST_DATA.lock().unwrap().list_of_review[row_number];
     let url = format!("https://crates.io/crates/{}/{}", item.crate_name, item.crate_version);
     unwrap!(w::window().open_with_url(&url));
 }
 
 #[named]
-fn button_open_crev_dev_onclick(_element_id: &str, row_num: usize) {
+fn button_open_crev_dev_onclick(_element_id: &str, row_number: usize) {
     w::debug_write(function_name!());
     // from list get crate name and version
-    let item = &REVIEW_LIST_DATA.lock().unwrap().list_of_review[row_num];
+    let item = &REVIEW_LIST_DATA.lock().unwrap().list_of_review[row_number];
     let url = format!("https://web.crev.dev/rust-reviews/crate/{}/", item.crate_name);
     unwrap!(w::window().open_with_url(&url));
 }
 
 #[named]
-fn button_open_lib_rs_onclick(_element_id: &str, row_num: usize) {
+fn button_open_lib_rs_onclick(_element_id: &str, row_number: usize) {
     w::debug_write(function_name!());
     // from list get crate name and version
-    let item = &REVIEW_LIST_DATA.lock().unwrap().list_of_review[row_num];
+    let item = &REVIEW_LIST_DATA.lock().unwrap().list_of_review[row_number];
     let url = format!("https://lib.rs/crates/{}", item.crate_name);
     unwrap!(w::window().open_with_url(&url));
 }
 
 #[named]
-fn button_open_source_code_onclick(_element_id: &str, row_num: usize) {
+fn button_open_source_code_onclick(_element_id: &str, row_number: usize) {
     w::debug_write(function_name!());
     // from list get crate name and version
-    let item = &REVIEW_LIST_DATA.lock().unwrap().list_of_review[row_num];
+    let item = &REVIEW_LIST_DATA.lock().unwrap().list_of_review[row_number];
     let request_data = ReviewFilterData {
         crate_name: item.crate_name.clone(),
         crate_version: Some(item.crate_version.clone()),
@@ -348,10 +348,10 @@ pub fn request_review_new(_element_id: &str) {
 }
 
 #[named]
-fn request_review_new_version(_element_id: &str, row_num: usize) {
+fn request_review_new_version(_element_id: &str, row_number: usize) {
     w::debug_write(function_name!());
     // from list get crate name and version
-    let item = &REVIEW_LIST_DATA.lock().unwrap().list_of_review[row_num];
+    let item = &REVIEW_LIST_DATA.lock().unwrap().list_of_review[row_number];
     let request_data = ReviewFilterData {
         crate_name: item.crate_name.clone(),
         crate_version: Some(item.crate_version.clone()),
@@ -378,10 +378,10 @@ fn request_review_save(_element_id: &str) {
 }
 
 #[named]
-fn request_review_edit_from_list(_element_id: &str, row_num: usize) {
+fn request_review_edit_from_list(_element_id: &str, row_number: usize) {
     w::debug_write(function_name!());
     // from list get crate name and version
-    let item = &REVIEW_LIST_DATA.lock().unwrap().list_of_review[row_num];
+    let item = &REVIEW_LIST_DATA.lock().unwrap().list_of_review[row_number];
     let request_data = ReviewFilterData {
         crate_name: item.crate_name.clone(),
         crate_version: Some(item.crate_version.clone()),
@@ -395,7 +395,7 @@ fn modal_close_on_click(_element_id: &str) {
 }
 
 #[named]
-pub fn modal_delete(_element_id: &str, row_num: usize) {
+pub fn modal_delete(_element_id: &str, row_number: usize) {
     w::debug_write(function_name!());
     let html = format!(
         r#"
@@ -406,22 +406,22 @@ pub fn modal_delete(_element_id: &str, row_num: usize) {
             <button id="modal_close">No</button>
         </div>
     </div>"#,
-        row_num
+        row_number
     );
     w::set_inner_html("div_for_modal", &html);
 
     on_click!("modal_close", modal_close_on_click);
     // I had to add modal_yes_delete(0), because row_on_click works that way.
-    row_on_click!("modal_yes_delete", row_num, request_review_delete);
+    row_on_click!("modal_yes_delete", row_number, request_review_delete);
 }
 
 #[named]
-fn request_review_delete(_element_id: &str, row_num: usize) {
+fn request_review_delete(_element_id: &str, row_number: usize) {
     w::debug_write(function_name!());
     modal_close_on_click("");
 
     // from list get crate name and version
-    let item = &REVIEW_LIST_DATA.lock().unwrap().list_of_review[row_num];
+    let item = &REVIEW_LIST_DATA.lock().unwrap().list_of_review[row_number];
     let request_data = ReviewFilterData {
         crate_name: item.crate_name.clone(),
         crate_version: Some(item.crate_version.clone()),

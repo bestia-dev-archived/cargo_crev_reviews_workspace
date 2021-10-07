@@ -25,10 +25,10 @@ impl HtmlProcessor for VersionListData {
     /// process template and push as many &str is needed
     fn process_repetitive_items(&self, name_of_repeat_segment: &str, html_repetitive_template: &str, html_new: &mut String) {
         match name_of_repeat_segment {
-            "VersionItemData" => {
+            "wr_repeat_VersionItemData" => {
                 w::debug_write(&format!("process_repetitive_items {}", name_of_repeat_segment));
-                for (row_num, data) in self.list_of_version.iter().enumerate() {
-                    let list_item_html = data.process_html_with_item(html_repetitive_template, Some(row_num));
+                for (row_number, data) in self.list_of_version.iter().enumerate() {
+                    let list_item_html = data.process_html_with_item(html_repetitive_template, Some(row_number));
                     html_new.push_str(&list_item_html);
                 }
             }
@@ -41,7 +41,7 @@ impl HtmlProcessor for VersionListData {
     }
 
     /// the use of complete string wt_xxx enables easy and exact text search around the source code
-    fn match_wt(&self, wt_name: &str) -> String {
+    fn match_wt(&self, wt_name: &str, _row_num: Option<usize>) -> String {
         match wt_name {
             "wt_cargo_crev_reviews_version" => env!("CARGO_PKG_VERSION").to_string(),
             _ => {
@@ -76,7 +76,7 @@ impl HtmlProcessor for VersionItemData {
     }
 
     /// the use of complete string wt_xxx enables easy and exact text search around the source code
-    fn match_wt(&self, wt_name: &str) -> String {
+    fn match_wt(&self, wt_name: &str, _row_num: Option<usize>) -> String {
         match wt_name {
             "wt_crate_name" => self.crate_name.clone(),
             "wt_crate_version" => self.crate_version.clone(),

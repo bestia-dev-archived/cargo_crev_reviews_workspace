@@ -2,7 +2,7 @@
 
 [comment]: # (auto_cargo_toml_to_md start)
 
-**Write cargo-crev reviews in a Graphical User Interface with a cross-platform app written in rust**  
+**Write cargo-crev reviews in GUI with a cross-platform app written in full-stack rust**  
 ***[repository](https://github.com/lucianobestia/cargo_crev_reviews_workspace); version: 2021.925.1120  date: 2021-09-25 authors: Luciano Bestia***  
 
 [comment]: # (auto_cargo_toml_to_md end)
@@ -18,33 +18,8 @@
 
 ## Workspace
 
-This is a rust [workspace](https://doc.rust-lang.org/book/ch14-03-cargo-workspaces.html) (multi-projects) that contains member projects.  
-The main member project is `cargo_crev_reviews`. Continue reading the main README.md file in that member project:  
+This is a rust [workspace](https://doc.rust-lang.org/book/ch14-03-cargo-workspaces.html) (multi-project) that contains member projects.  
+The main member project is `cargo_crev_reviews`.  
+Please, continue reading `README.md` here:  
 
 ## [cargo_crev_reviews/README.md](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/tree/main/cargo_crev_reviews)  
-
-## TODO
-
-show if there is newer version. cache it in a file.
-markdown instead of raw text
-special types for html encoded strings and attribute_value_encoded strings. So I can be sure that I did or did not encoded them.
-Get from crates.io in the background.  
-
-## cargo crev reviews and advisory
-
-We live in times of danger with [supply chain attacks](https://en.wikipedia.org/wiki/Supply_chain_attack).  
-It is recommended to always use [cargo-crev](https://github.com/crev-dev/cargo-crev)  
-to verify the trustworthiness of each of your dependencies.  
-Please, spread this info.  
-You can also read reviews quickly on the web:  
-<https://web.crev.dev/rust-reviews/crates/>  
-
-## open-source free and free as a beer
-
-My open-source projects are free and free as a beer (MIT license).  
-I just love programming.  
-But I need also to drink. If you find my projects and tutorials helpful,  
-please buy me a beer donating on my [paypal](https://www.paypal.com/paypalme/LucianoBestia).  
-You know the price of a beer in your local bar ;-)  
-So I can drink a free beer for your health :-)  
-[Na zdravje!](https://translate.google.com/?hl=en&sl=sl&tl=en&text=Na%20zdravje&op=translate) [Alla salute!](https://dictionary.cambridge.org/dictionary/italian-english/alla-salute) [Prost!](https://dictionary.cambridge.org/dictionary/german-english/prost) [Nazdravlje!](https://matadornetwork.com/nights/how-to-say-cheers-in-50-languages/) 🍻

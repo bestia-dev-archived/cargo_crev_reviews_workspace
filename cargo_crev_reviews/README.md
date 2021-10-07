@@ -4,7 +4,7 @@
 
 [comment]: # (auto_cargo_toml_to_md start)
 
-**Write cargo-crev reviews in a Graphical User Interface with a cross-platform app written in rust**  
+**Write cargo-crev reviews in GUI with a cross-platform app written in full-stack rust**  
 ***[repository](https://github.com/lucianobestia/cargo_crev_reviews_workspace); version: 2021.925.1120  date: 2021-09-25 authors: Luciano Bestia***  
 
 [comment]: # (auto_cargo_toml_to_md end)
@@ -27,7 +27,7 @@
 This is a GUI wrapper around [cargo](https://doc.rust-lang.org/cargo/getting-started/installation.html) and [cargo-crev](https://github.com/crev-dev/cargo-crev/blob/master/cargo-crev/src/doc/getting_started.md) and uses Github (or other remote git repository). First, install and configure them.  
 
 Fork the proof repo on Github. Just open this url:  
-<https://github.com/crev-dev/crev-proofs/fork> 
+<https://github.com/crev-dev/crev-proofs/fork>
 
 Install cargo and the rust language:  
 
@@ -70,7 +70,7 @@ Your personal reviews are the most important. Ideally, you want to personally re
 
 Don't panic!  
 
-To write a review you need to see the exact source code and other metadata about the crate. Click on the crate name in the list and it will open: 
+To write a review you need to see the exact source code and other metadata about the crate. Click on the crate name in the list and it will open:
 
 - VSCode with the exact source code
 - [crev.dev](https://web.crev.dev/rust-reviews/crates/) for other people reviews
@@ -84,7 +84,7 @@ Be warned that modern browsers block pop-ups and you have to allow that explicit
 ## Reputation vs. code review
 
 Personally, I think that the reputation of the author is important. For some highly visible and respected members of the Rust community I don't review the code. The reputation of the author is enough to make me feel safe. This method is not perfect, because there can be identity theft or a faulty version. But I still think that it is an efficient and effective method for me.  
-Crates.io made a confusion with authors and owners. Lately they introduced the `published_by` field for every version. For me this is the main person responsible for any eventual issue of this specific published version. Crates.io guarantees that published versions cannot be modified later. They are read-only, so you know that you see exactly the right code.  
+Crates.io made a confusion with authors and owners. Lately they introduced the `published_by` field for every published version. For me this is the main person responsible for any eventual issue of this specific published version. Crates.io guarantees that published versions cannot be modified later. They are read-only, so you know that you see exactly the right code.  
 
 ## Share it with the community
 
@@ -341,7 +341,7 @@ pub fn cln_review_edit(srv_response: RpcResponse) {
 ## sled database
 
 I don't want to repeatedly use crates.io api for the same data. I need a disk persistent storage for this data.  
-I will have a try with the [sled](http://sled.rs/) database. A lightweight pure-rust high-performance transactional embedded database.  
+I will have a try with the [sled](http://sled.rs/) database. A lightweight pure-rust high-performance transactional embedded database. This is a key-value database. The value can be any struct. There can be multiple separate trees (keyspace).  
 
 ## plantUml
 

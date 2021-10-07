@@ -3,7 +3,7 @@
 // region: auto_md_to_doc_comments include README.md A //!
 //! # cargo_crev_reviews
 //!
-//! **Write cargo-crev reviews in a Graphical User Interface with a cross-platform app written in rust**  
+//! **Write cargo-crev reviews in GUI with a cross-platform app written in full-stack rust**  
 //! ***[repository](https://github.com/lucianobestia/cargo_crev_reviews_workspace); version: 2021.925.1120  date: 2021-09-25 authors: Luciano Bestia***  
 //!
 //! [![Lines in Rust code](https://img.shields.io/badge/Lines_in_Rust-17784-green.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)

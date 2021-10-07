@@ -12,7 +12,6 @@ use crate::auto_generated_mod::srv_methods;
 
 // use crate::on_click;
 use crate::html_mod::*;
-use crate::utils_mod::join_crate_version;
 use crate::*;
 
 lazy_static! {
@@ -25,10 +24,10 @@ impl HtmlProcessor for VerifyListData {
     /// process template and push as many &str is needed
     fn process_repetitive_items(&self, name_of_repeat_segment: &str, html_repetitive_template: &str, html_new: &mut String) {
         match name_of_repeat_segment {
-            "VerifyItemData" => {
+            "wr_repeat_VerifyItemData" => {
                 w::debug_write(&format!("process_repetitive_items {}", name_of_repeat_segment));
-                for (row_num, data) in self.list_of_verify.iter().enumerate() {
-                    let list_item_html = data.process_html_with_item(html_repetitive_template, Some(row_num));
+                for (row_number, data) in self.list_of_verify.iter().enumerate() {
+                    let list_item_html = data.process_html_with_item(html_repetitive_template, Some(row_number));
                     html_new.push_str(&list_item_html);
                 }
             }
@@ -41,7 +40,7 @@ impl HtmlProcessor for VerifyListData {
     }
 
     /// the use of complete string wt_xxx enables easy and exact text search around the source code
-    fn match_wt(&self, wt_name: &str) -> String {
+    fn match_wt(&self, wt_name: &str, _row_num: Option<usize>) -> String {
         match wt_name {
             "wt_cargo_crev_reviews_version" => env!("CARGO_PKG_VERSION").to_string(),
             "wt_project_dir" => self.project_dir.clone(),
@@ -77,16 +76,27 @@ impl HtmlProcessor for VerifyItemData {
     }
 
     /// the use of complete string wt_xxx enables easy and exact text search around the source code
-    fn match_wt(&self, wt_name: &str) -> String {
+    fn match_wt(&self, wt_name: &str, row_number: Option<usize>) -> String {
         match wt_name {
+            "wt_row_number" => match row_number {
+                Some(row_number) => format!("{}.", row_number + 1),
+                None => "".to_string(),
+            },
             "wt_status" => self.status.clone(),
             "wt_my_review" => self.my_review.clone(),
             "wt_crate_name" => self.crate_name.clone(),
             "wt_crate_version" => self.crate_version.clone(),
-            "wt_crate_name_version" => join_crate_version(&self.crate_name, &self.crate_version),
+            "wt_crate_name_version" => utils_mod::join_crate_version(&self.crate_name, &self.crate_version),
             "wt_published_by" => self.published_by.clone(),
             "wt_cargo_crev_reviews_version" => env!("CARGO_PKG_VERSION").to_string(),
             "wt_status_class" => format!("review_header0_cell left c_{}", &self.status),
+            "wt_my_review_class" => {
+                if vec!["strong", "positive", "neutral", "negative"].contains(&self.my_review.as_str()) {
+                    format!("review_header0_cell left c_{}", &self.my_review)
+                } else {
+                    "review_header0_cell left".to_string()
+                }
+            }
             "wt_published_by_class" => format!("review_header0_cell left c_{}", &self.trusted_publisher),
             _ => {
                 let html_error = format!("Unrecognized replace_wt method {}", wt_name);
@@ -126,16 +136,16 @@ pub fn cln_verify_list(srv_response: RpcResponse) {
     navigation_on_click();
 
     // on_click for every row of the list
-    for (row_num, _item) in VERIFY_LIST_DATA.lock().unwrap().list_of_verify.iter().enumerate() {
-        row_on_click!("crate_name_version", row_num, open_all_links);
+    for (row_number, _item) in VERIFY_LIST_DATA.lock().unwrap().list_of_verify.iter().enumerate() {
+        row_on_click!("crate_name_version", row_number, open_all_links);
     }
 }
 
 #[named]
-pub fn request_review_edit_or_new(_element_id: &str, row_num: usize) {
+pub fn request_review_edit_or_new(_element_id: &str, row_number: usize) {
     w::debug_write(function_name!());
     // from list get crate name and version
-    let item = &VERIFY_LIST_DATA.lock().unwrap().list_of_verify[row_num];
+    let item = &VERIFY_LIST_DATA.lock().unwrap().list_of_verify[row_number];
     let request_data = ReviewFilterData {
         crate_name: item.crate_name.clone(),
         crate_version: Some(item.crate_version.clone()),
@@ -145,9 +155,9 @@ pub fn request_review_edit_or_new(_element_id: &str, row_num: usize) {
 }
 
 #[named]
-fn open_all_links(_element_id: &str, row_num: usize) {
+fn open_all_links(_element_id: &str, row_number: usize) {
     w::debug_write(function_name!());
-    let item = &VERIFY_LIST_DATA.lock().unwrap().list_of_verify[row_num];
+    let item = &VERIFY_LIST_DATA.lock().unwrap().list_of_verify[row_number];
     /*
        let url = format!("https://web.crev.dev/rust-reviews/crate/{}/", item.crate_name);
        unwrap!(w::window().open_with_url(&url));
