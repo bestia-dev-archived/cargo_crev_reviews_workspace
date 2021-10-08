@@ -341,7 +341,7 @@ pub fn cln_review_edit(srv_response: RpcResponse) {
 ## sled database
 
 I don't want to repeatedly use crates.io api for the same data. I need a disk persistent storage for this data.  
-I will have a try with the [sled](http://sled.rs/) database. A lightweight pure-rust high-performance transactional embedded database. This is a key-value database. The value can be any struct. There can be multiple separate trees (keyspace).  
+I will have a try with the [sled](http://sled.rs/) database. A lightweight pure-rust high-performance transactional embedded database. This is a key-value database. The value can be any struct. There can be multiple separate trees/keyspaces: crates, versions, reviews, yanked,....  
 
 ## plantUml
 

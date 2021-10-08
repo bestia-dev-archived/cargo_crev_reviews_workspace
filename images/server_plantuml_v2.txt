@@ -38,6 +38,6 @@ package "data_storage" {
   [db_sled_mod] <-down- [crates_io_mod]
   [crev_mod] <-down-> (\~/.config/crev/)
   [cargo_registry_mod] <-down- (\~/.cargo/registry)
-  [crates_io_mod] <-down- (⛅crates.io/api/v1)
+  [crates_io_mod] <-down- (⛅/crates.io/api/v1)
 }
 @enduml
