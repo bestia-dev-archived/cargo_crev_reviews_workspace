@@ -135,7 +135,7 @@ checksum = "b700ce4376041dcd0a327fd0097c41095743c4c8af8887265942faf1100bd040"
 
 [[package]]
 name = "cargo_crev_reviews"
-version = "2021.1008.916"
+version = "2021.1008.1323"
 dependencies = [
  "anyhow",
  "base64",
@@ -144,6 +144,7 @@ dependencies = [
  "crev-data",
  "crev-lib",
  "crossterm",
+ "derivative",
  "dev_bestia_simple_server",
  "fnv",
  "function_name",
@@ -165,7 +166,7 @@ dependencies = [
 
 [[package]]
 name = "cargo_crev_reviews_wasm"
-version = "2021.1008.916"
+version = "2021.1008.1323"
 dependencies = [
  "anyhow",
  "chrono",
@@ -569,6 +570,17 @@ name = "default"
 version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f33853de3c94db27f825215641be74ddce259f5aec7aefae9c760ee1bb3dbaa7"
+
+[[package]]
+name = "derivative"
+version = "2.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fcc3dd5e9e9c0b295d6e1e4d811fb6f157d5ffd784b8d202fc62eac8035a770b"
+dependencies = [
+ "proc-macro2 1.0.28",
+ "quote 1.0.9",
+ "syn 1.0.75",
+]
 
 [[package]]
 name = "derive_builder"

@@ -192,6 +192,9 @@
 //!
 // endregion: auto_md_to_doc_comments include README.md A //!
 
+use lazy_static::lazy_static;
+use std::sync::Mutex;
+
 mod auto_generated_mod;
 mod cargo_registry_mod;
 mod common_structs_mod;
@@ -209,20 +212,27 @@ mod srv_methods_mod;
 mod stdio_input_password_mod;
 mod utils_mod;
 
-pub use crev_mod::unlock_crev_id_interactively;
+// region: functions and structs accessible to /bin/cargo_crev_reviews.
 
-use dev_bestia_simple_server::{Method, Server};
-use lazy_static::lazy_static;
-use std::sync::Mutex;
-use unwrap::unwrap;
+pub use crev_mod::unlock_crev_id_interactively;
+pub use response_get_mod::parse_get_uri_and_response_file;
+pub use response_get_mod::response_404_not_found;
+pub use response_get_mod::ResponseWithBytes;
+pub use response_get_mod::Status;
+pub use response_post_mod::parse_post_data_and_match_method;
+pub use response_post_mod::response_err_message;
+pub use response_post_mod::response_modal_message;
+// endregion: functions and structs accessible to /bin/cargo_crev_reviews.
+
+// region: public static variables
 
 lazy_static! {
     /// 127.0.0.1
-    static ref SERVER_HOST: String=String::from("127.0.0.1");
+    pub static ref SERVER_HOST: String=String::from("127.0.0.1");
     /// 8182
-    static ref SERVER_PORT: String=String::from("8182");
+    pub static ref SERVER_PORT: String=String::from("8182");
     // first subdirectory /cargo_crev_reviews/
-    static ref SERVER_FIRST_SUBDIRECTORY: String=String::from("cargo_crev_reviews");
+    pub static ref SERVER_FIRST_SUBDIRECTORY: String=String::from("cargo_crev_reviews");
 }
 
 lazy_static! {
@@ -248,58 +258,7 @@ lazy_static! {
     /// ansi unhide cursor
     pub static ref UNHIDE_CURSOR: String = termion::cursor::Show.to_string();
 }
-
-// region: server - parse, match
-
-/// start the simple web server and match the GET or POST method
-pub fn start_web_server() {
-    println!("cargo_crev_reviews server started");
-
-    let server = Server::new(|request, response_builder| {
-        let path = request.uri().to_string();
-        // println!("Request received. {} {}", request.method(), request.uri());
-        if !request.uri().to_string().starts_with(&format!("/{}", SERVER_FIRST_SUBDIRECTORY.as_str())) {
-            return Ok(response_get_mod::response_404_not_found(response_builder, &path));
-        }
-        match request.method() {
-            &Method::GET => {
-                // GET is used only to request files
-                let response = response_get_mod::parse_get_uri_and_response_file(&path, response_builder);
-                Ok(response)
-            }
-            &Method::POST => {
-                let request_body: &Vec<u8> = request.body();
-                let response_body = response_post_mod::parse_post_data_and_match_method(request_body);
-                match response_body {
-                    Ok(response_body) => Ok(response_builder.body(response_body.into_bytes())?),
-                    Err(err) => {
-                        let response_body = unwrap!(response_post_mod::response_err_message(&err));
-                        Ok(response_builder.body(response_body.into_bytes())?)
-                    }
-                }
-            }
-            _ => {
-                let response_body = unwrap!(response_post_mod::response_modal_message("Unknown request method!"));
-                Ok(response_builder.body(response_body.into_bytes())?)
-            }
-        }
-    });
-    // open default browser in Linux
-    // for WSL2 in Win10 I used my project https://crates.io/crates/wsl_open_browser
-    let x = std::process::Command::new("xdg-open")
-        .arg(&format!(
-            "http://{}:{}/{}/index.html",
-            SERVER_HOST.as_str(),
-            SERVER_PORT.as_str(),
-            SERVER_FIRST_SUBDIRECTORY.as_str()
-        ))
-        .spawn()
-        .unwrap();
-    drop(x);
-    server.listen(SERVER_HOST.as_str(), SERVER_PORT.as_str());
-}
-
-// endregion: server - parse, match
+// endregion: public static variables
 
 /// check that this is the only instance of this server
 /// return None if the host+port is free
@@ -314,4 +273,88 @@ pub fn host_port_is_busy() -> Option<String> {
         }
         Err(_err) => Some(url),
     }
+}
+
+/// warning that one instance is already running
+pub fn one_instance_of_the_program_already_running(url_not_free: &str) {
+    println!(
+        r#"
+{yel}WELCOME to cargo_crev_reviews from Bestia.dev!{res}
+
+{red}Error: one instance of the program is already running!{res}
+The listener to {url} returned an error.
+
+"#,
+        yel = *YELLOW,
+        red = *RED,
+        res = *RESET,
+        url = url_not_free,
+    );
+}
+
+/// warning not started in rust project
+pub fn not_started_inside_rust_project() -> anyhow::Result<()> {
+    println!(
+        r#"
+{yel}WELCOME to cargo_crev_reviews from Bestia.dev!{res}
+
+{red}Error: this program was not started inside a rust project!
+There is no Cargo.toml in the current directory: {dir}{res}
+
+Cargo_crev_reviews works best when started inside a rust project 
+in the directory where the Cargo.toml file is.
+"#,
+        dir = std::env::current_dir()?.to_string_lossy(),
+        yel = *YELLOW,
+        red = *RED,
+        res = *RESET,
+    );
+    Ok(())
+}
+
+/// warning cargo-crev not installed
+pub fn cargo_crev_not_installed() {
+    println!(
+        r#"
+{yel}WELCOME to cargo_crev_reviews from Bestia.dev!{res}
+
+{red}Error: cargo-crev is not installed!{res}
+
+Cargo_crev_reviews is a GUI wrapper around cargo-crev.
+Install and configure cargo-crev in 5 easy steps.
+1. Install cargo-crev:
+  {green}$ cargo install cargo-crev{res}
+2. Fork the crev-proof repo to your Github/Gitlab
+  {green}https://github.com/crev-dev/crev-proofs/fork{res}
+3. Create your CrevId:
+  {green}$ cargo crev id new --url https://github.com/YOUR-USERNAME/crev-proofs{res}
+Choose a passphrase. Warning: There's no way to recover your CrevID if you forget your passphrase.
+4. Trust the reviews of `dpc`, the author of cargo-crev:
+  {green}$ cargo crev trust --level high https://github.com/dpc/crev-proofs{res}
+5. Fetch existing reviews:
+  {green}$ cargo crev repo fetch trusted{res}
+Done! Easy!
+Read more here: https://github.com/crev-dev/cargo-crev/blob/master/cargo-crev/src/doc/getting_started.md
+"#,
+        yel = *YELLOW,
+        red = *RED,
+        res = *RESET,
+        green = *GREEN
+    );
+}
+
+/// print the welcome text
+pub fn welcome_print() {
+    println!(
+        r#"
+{yel}WELCOME to cargo_crev_reviews from Bestia.dev!{res}
+
+With this app you can list, edit and create your `crev` reviews inside the browser.
+Crev is a "Code REView and recommendation system` authored by `dpc` and published on `https://github.com/crev-dev/cargo-crev`. 
+Cargo-crev is the part of crev, that is specialized for the Rust language.
+First check the reviews from other developers on https://web.crev.dev/rust-reviews/crates/`.
+"#,
+        yel = *YELLOW,
+        res = *RESET
+    );
 }

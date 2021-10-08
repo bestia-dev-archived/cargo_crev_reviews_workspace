@@ -5,7 +5,7 @@
 
 [package]
 name = "cargo_crev_reviews"
-version = "2021.1008.916"
+version = "2021.1008.1323"
 description = "Write cargo-crev reviews in GUI with a cross-platform app written in full-stack rust"
 authors = ["Luciano Bestia"]
 edition = "2018"
@@ -50,3 +50,4 @@ sled = "0.34.7"
 rayon = "1.5.1"
 chrono="0.4.19"
 num-format = "0.4.0"
+derivative = "2.2.0"

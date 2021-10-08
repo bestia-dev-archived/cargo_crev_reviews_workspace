@@ -1,111 +1,115 @@
 // cargo_crev_reviews/src/bin/main.rs
 
 use std::env;
+use unwrap::unwrap;
 
 use cargo_crev_reviews::*;
 
+/// start of CLI with this main() function
 /// check if cargo_crev is installed,
-/// if the program is run beside Cargo.toml,
-/// if the port is TcpListener is free to bind. That means that this is the only one instance of the program running.
+/// if the program is run in the directory where Cargo.toml is,
+/// if the host+port TcpListener is free to bind. That means that this is the only one instance of the program running.
 /// User input the passphrase for crev signing.
+/// open browser and start server
 fn main() -> anyhow::Result<()> {
     // I don't need to check for `cargo` or Rust, because cargo_crev_reviews is installed with `cargo install`.
     // It means that cargo and Rust are already installed.
 
-    let host_port_already_busy = host_port_is_busy();
-    // check if cargo-crev is installed
-    let path = home::cargo_home()?.join("bin").join("cargo-crev");
-    if !path.exists() {
+    if let Some(host_port_already_busy) = host_port_is_busy() {
+        one_instance_of_the_program_already_running(&host_port_already_busy);
+    } else if !home::cargo_home()?.join("bin").join("cargo-crev").exists() {
+        // check if cargo-crev is installed
         cargo_crev_not_installed();
     } else if !env::current_dir()?.join("Cargo.toml").exists() {
         not_started_inside_rust_project()?;
-    } else if host_port_already_busy.is_some() {
-        one_instance_of_the_program_already_running(&host_port_already_busy.unwrap());
     } else {
+        welcome_print();
         println!(
             r#"
-{yel}WELCOME to cargo_crev_reviews from Bestia.dev!{res}
-
-With this app you can list, edit and create your `crev` reviews inside the browser.
-Crev is a "Code REView and recommendation system` authored by `dpc` and published on `https://github.com/crev-dev/cargo-crev`. 
-Cargo-crev is the part of crev, that is specialized for the Rust language.
-First check the reviews from other developers on https://web.crev.dev/rust-reviews/crates/`.
-
 The crev reviews are cryptographically signed, so you must first enter you crev passphrase to enable the signing of your crev reviews.
 Then this CLI opens the default browser. This is the frontend graphical (GUI) part of the app.
 If the default browser does not open from WSL2, you can see my project `https://github.com/LucianoBestia/wsl_open_browser`.
-"#,
-            yel = *YELLOW,
-            res = *RESET
+"#
         );
         unlock_crev_id_interactively()?;
-
+        open_browser();
+        // this must be the last command, because the server lasts
         start_web_server();
     }
     Ok(())
 }
 
-fn cargo_crev_not_installed() {
-    println!(
-        r#"
-{yel}WELCOME to cargo_crev_reviews from Bestia.dev!{res}
-
-{red}Error: cargo-crev is not installed!{res}
-
-Cargo_crev_reviews is a GUI wrapper around cargo-crev.
-Install and configure cargo-crev in 5 easy steps.
-1. Install cargo-crev:
-  {green}$ cargo install cargo-crev{res}
-2. Fork the crev-proof repo to your Github/Gitlab
-  {green}https://github.com/crev-dev/crev-proofs/fork{res}
-3. Create your CrevId:
-  {green}$ cargo crev id new --url https://github.com/YOUR-USERNAME/crev-proofs{res}
-Choose a passphrase. Warning: There's no way to recover your CrevID if you forget your passphrase.
-4. Trust the reviews of `dpc`, the author of cargo-crev:
-  {green}$ cargo crev trust --level high https://github.com/dpc/crev-proofs{res}
-5. Fetch existing reviews:
-  {green}$ cargo crev repo fetch trusted{res}
-Done! Easy!
-Read more here: https://github.com/crev-dev/cargo-crev/blob/master/cargo-crev/src/doc/getting_started.md
-"#,
-        yel = *YELLOW,
-        red = *RED,
-        res = *RESET,
-        green = *GREEN
-    );
+/// open browser with xdg-open
+pub fn open_browser() {
+    // open default browser in Linux
+    // for WSL2 in Win10 I used my project https://crates.io/crates/wsl_open_browser
+    let x = std::process::Command::new("xdg-open")
+        .arg(&format!(
+            "http://{}:{}/{}/index.html",
+            SERVER_HOST.as_str(),
+            SERVER_PORT.as_str(),
+            SERVER_FIRST_SUBDIRECTORY.as_str()
+        ))
+        .spawn()
+        .unwrap();
+    drop(x);
 }
 
-fn not_started_inside_rust_project() -> anyhow::Result<()> {
-    println!(
-        r#"
-{yel}WELCOME to cargo_crev_reviews from Bestia.dev!{res}
+/// start the simple web server and match the GET or POST method
+/// this is the only place where the web server is explicitly stated.
+/// Changing this simple function, you can use any other web server library of your choice easily.
+pub fn start_web_server() {
+    use dev_bestia_simple_server::*;
+    println!("cargo_crev_reviews server started");
+    /// nested_function: convert response structs
+    fn convert_response(
+        response_with_bytes: ResponseWithBytes,
+        builder: Builder,
+    ) -> Response<Vec<u8>> {
+        let builder = match response_with_bytes.status_code {
+            Status::NotFound => builder.status(StatusCode::NOT_FOUND),
+            Status::Ok => builder.status(StatusCode::OK),
+        };
+        let builder = builder.header(http::header::CONTENT_TYPE, response_with_bytes.mime_type.as_bytes());
+        let builder = match response_with_bytes.cache_control {
+            Some(cache_control) => builder.header(http::header::CACHE_CONTROL, cache_control.as_bytes()),
+            None => builder,
+        };
+        let response = unwrap!(builder.body(response_with_bytes.body));
+        // return
+        response
+    }
 
-{red}Error: this program was not started inside a rust project!
-There is no Cargo.toml in the current directory: {dir}{res}
-
-Cargo_crev_reviews works best when started inside a rust project 
-in the directory where the Cargo.toml file is.
-"#,
-        dir = env::current_dir()?.to_string_lossy(),
-        yel = *YELLOW,
-        red = *RED,
-        res = *RESET,
-    );
-    Ok(())
-}
-
-fn one_instance_of_the_program_already_running(url_not_free: &str) {
-    println!(
-        r#"
-{yel}WELCOME to cargo_crev_reviews from Bestia.dev!{res}
-
-{red}Error: one instance of the program is already running!{res}
-The listener to {url} returned an error.
-
-"#,
-        yel = *YELLOW,
-        red = *RED,
-        res = *RESET,
-        url = url_not_free,
-    );
+    let server = Server::new(|request, response_builder| {
+        let path = request.uri().to_string();
+        // println!("Request received. {} {}", request.method(), request.uri());
+        if !request.uri().to_string().starts_with(&format!("/{}", SERVER_FIRST_SUBDIRECTORY.as_str())) {
+            let response = convert_response(response_404_not_found(&path), response_builder);
+            return Ok(response);
+        }
+        match request.method() {
+            &Method::GET => {
+                // GET is used only to request files
+                let response_with_bytes = parse_get_uri_and_response_file(&path);
+                let response = convert_response(response_with_bytes, response_builder);
+                Ok(response)
+            }
+            &Method::POST => {
+                let request_body: &Vec<u8> = request.body();
+                let response_body = parse_post_data_and_match_method(request_body);
+                match response_body {
+                    Ok(response_body) => Ok(response_builder.body(response_body.into_bytes())?),
+                    Err(err) => {
+                        let response_body = unwrap!(response_err_message(&err));
+                        Ok(response_builder.body(response_body.into_bytes())?)
+                    }
+                }
+            }
+            _ => {
+                let response_body = unwrap!(response_modal_message("Unknown request method!"));
+                Ok(response_builder.body(response_body.into_bytes())?)
+            }
+        }
+    });
+    server.listen(SERVER_HOST.as_str(), SERVER_PORT.as_str());
 }
