@@ -1,5 +1,7 @@
 // db_version_mod.rs
 
+#![allow(dead_code)]
+
 use lazy_static::lazy_static;
 use serde::Deserialize;
 use serde::Serialize;
@@ -18,8 +20,6 @@ pub struct VersionForDb {
 }
 
 lazy_static! {
-    /// "sled" db for versions stays open all the time of the program running.
-    /// this program checks if there is an instance already running, so to guarantee only one process access the db files.
     static ref DB_VERSION: sled::Tree = crate::db_sled_mod::DB_SLED.open_tree(b"versions").unwrap();
 }
 

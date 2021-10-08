@@ -13,6 +13,8 @@
 // serde_yaml = "0.8.20"
 // home="0.5.3"
 
+#![allow(dead_code)]
+
 use anyhow::Context;
 use crev_data::{
     proof::{CommonOps, ContentExt},
@@ -26,9 +28,9 @@ use std::{env, sync::Mutex};
 use std::{ops::Range, str::FromStr, vec};
 use unwrap::unwrap;
 
+use crate::common_structs_mod::*;
 use crate::stdio_input_password_mod;
 use crate::utils_mod::*;
-use crate::{cargo_registry_mod::yanked_for_version, common_structs_mod::*};
 
 lazy_static! {
     /// mutable static, because it is hard to pass variables around with async closures
@@ -451,6 +453,10 @@ pub struct TrustedPublisher {
 /// verify_project should return some data quickly, but in the background start to fill the db_version
 /// for all these crates. So the next time we have more complete data
 pub fn verify_project() -> anyhow::Result<VerifyListData> {
+    let ns_started = crate::utils_mod::ns_start("verify_project");
+    crate::db_sled_mod::sync_in_background_reviews();
+    crate::db_sled_mod::sync_in_background_yanked();
+
     let output = std::process::Command::new("cargo").arg("crev").arg("verify").output().unwrap();
     let output = format!("{} {}", String::from_utf8_lossy(&output.stdout), String::from_utf8_lossy(&output.stderr));
 
@@ -463,12 +469,14 @@ pub fn verify_project() -> anyhow::Result<VerifyListData> {
             let mut status = s[0].to_string();
             let crate_name = s[1].to_string();
             let crate_version = s[2].to_string();
+            let crate_name_version = join_crate_version(&crate_name, &crate_version);
 
             let published_by = published_by_login(&crate_name, &crate_version)?;
             let trusted_publisher = is_trusted_publisher(&trusted_publisher_json, &published_by);
-            if yanked_for_version(&crate_name, &crate_version)? {
+            if crate::db_yanked_mod::exists(&crate_name_version) {
                 status = "yanked".to_string();
             }
+
             let my_review = rating_or_version(&crate_name, &crate_version)?;
 
             list_of_verify.push(VerifyItemData {
@@ -483,6 +491,8 @@ pub fn verify_project() -> anyhow::Result<VerifyListData> {
     }
 
     verify_sort_list_by_name_version(&mut list_of_verify);
+
+    crate::utils_mod::ns_print_ms("verify_project", ns_started);
 
     Ok(VerifyListData {
         project_dir: env::current_dir()?.to_string_lossy().to_string(),
@@ -517,18 +527,13 @@ fn published_by_login(crate_name: &str, crate_version: &str) -> anyhow::Result<S
 /// if exists any review for this crate returns version number
 /// else return empty string
 fn rating_or_version(crate_name: &str, crate_version: &str) -> anyhow::Result<String> {
-    let filter = ReviewFilterData {
-        crate_name: crate_name.to_string(),
-        crate_version: None,
-        old_crate_version: None,
-    };
-    let vec = crev_list_my_reviews(&Some(filter))?;
+    let vec = crate::db_review_mod::all_versions_for_crate(crate_name)?;
     let mut version = "".to_string();
     for x in vec.iter() {
-        if x.package.version == crate_version {
-            return Ok(rating_to_string(&x.review.as_ref().context("Rating not exists.")?.rating));
+        if x.crate_version == crate_version {
+            return Ok(x.rating.clone());
         }
-        version = x.package.version.clone();
+        version = x.crate_version.clone();
     }
     Ok(version)
 }

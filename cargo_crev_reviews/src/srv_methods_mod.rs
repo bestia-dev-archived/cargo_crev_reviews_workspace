@@ -14,18 +14,6 @@ use unwrap::unwrap;
 
 // region: review
 
-fn from_crev_to_item(p: &ProofCrevForReview) -> ReviewItemData {
-    ReviewItemData {
-        crate_name: p.package.name.clone(),
-        crate_version: p.package.version.clone(),
-        date: p.date.clone(),
-        thoroughness: p.review.as_ref().unwrap().thoroughness.to_string(),
-        understanding: p.review.as_ref().unwrap().understanding.to_string(),
-        rating: rating_to_string(&(p.review.as_ref().unwrap().rating)),
-        comment_md: p.comment.as_ref().unwrap_or(&"".to_string()).clone(),
-    }
-}
-
 /// maybe add filter for one crate_name
 #[named]
 pub fn srv_reviews_list(_request_data: serde_json::Value) -> anyhow::Result<String> {
@@ -34,7 +22,7 @@ pub fn srv_reviews_list(_request_data: serde_json::Value) -> anyhow::Result<Stri
     let vec_proof = unwrap!(crev_list_my_reviews(&None));
     // reverse, newest on top
     for p in vec_proof.iter().rev() {
-        vec_review.push(from_crev_to_item(p));
+        vec_review.push(crate::utils_mod::from_crev_to_item(p));
     }
 
     let response_data = ReviewListData {
@@ -109,7 +97,7 @@ pub fn srv_review_edit(request_data: serde_json::Value) -> anyhow::Result<String
     let filter: ReviewFilterData = unwrap!(serde_json::from_value(request_data));
     // find the item from the list
     let p = crev_edit_review(filter)?;
-    let response_data = from_crev_to_item(&p);
+    let response_data = crate::utils_mod::from_crev_to_item(&p);
     let response_html = crate::files_mod::review_edit_html();
 
     cln_methods::cln_review_edit(response_data, response_html)
@@ -124,7 +112,7 @@ pub fn srv_review_edit_or_new(request_data: serde_json::Value) -> anyhow::Result
     match crev_edit_or_new_review(filter) {
         Err(_err) => srv_review_new(request_data),
         Ok(p) => {
-            let response_data = from_crev_to_item(&p);
+            let response_data = crate::utils_mod::from_crev_to_item(&p);
             let response_html = crate::files_mod::review_edit_html();
             cln_methods::cln_review_edit(response_data, response_html)
         }
@@ -170,7 +158,7 @@ pub fn srv_review_new_version(request_data: serde_json::Value) -> anyhow::Result
     let filter: ReviewFilterData = unwrap!(serde_json::from_value(request_data));
     // find the item from the list
     let p = crev_new_version(filter)?;
-    let response_data = from_crev_to_item(&p);
+    let response_data = crate::utils_mod::from_crev_to_item(&p);
     let response_html = crate::files_mod::review_edit_html();
     cln_methods::cln_review_edit(response_data, response_html)
 }

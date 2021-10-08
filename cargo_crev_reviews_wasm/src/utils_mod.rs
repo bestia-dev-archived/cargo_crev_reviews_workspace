@@ -1,6 +1,7 @@
 // utils_mod.rs
 
 //! small utility functions
+#![allow(dead_code)]
 
 use unwrap::unwrap;
 

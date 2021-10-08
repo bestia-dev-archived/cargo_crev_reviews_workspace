@@ -1,5 +1,7 @@
 // db_crate_mod.rs
 
+#![allow(dead_code)]
+
 use lazy_static::lazy_static;
 use serde::Deserialize;
 use serde::Serialize;
@@ -13,8 +15,6 @@ pub struct CrateForDb {
 }
 
 lazy_static! {
-    /// "sled" db for versions stays open all the time of the program running.
-    /// this program checks if there is an instance already running, so to guarantee only one process access the db files.
     static ref DB_CRATES: sled::Tree = crate::db_sled_mod::DB_SLED.open_tree(b"crates").unwrap();
 }
 
@@ -44,4 +44,14 @@ pub fn delete(crate_name: &str) {
 
 pub fn exists(crate_name: &str) -> bool {
     unwrap!(DB_CRATES.contains_key(crate_name))
+}
+
+pub fn all_crates() -> anyhow::Result<Vec<CrateForDb>> {
+    let mut vec = vec![];
+    for x in DB_CRATES.iter() {
+        let (_key, value) = x?;
+        let v: CrateForDb = serde_json::from_slice(&value)?;
+        vec.push(v);
+    }
+    Ok(vec)
 }

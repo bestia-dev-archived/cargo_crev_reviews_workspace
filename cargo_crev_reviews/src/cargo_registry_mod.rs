@@ -4,6 +4,8 @@
 //! ~\.cargo\registry\index\github.com-1ecc6299db9ec823\an\yh\anyhow  
 //! ~\.cargo\registry\src\github.com-1ecc6299db9ec823\anyhow-1.0.37\  
 
+#![allow(dead_code)]
+
 use anyhow::Context;
 use lazy_static::lazy_static;
 use std::str::FromStr;
@@ -49,7 +51,7 @@ pub fn yanked_for_version(crate_name: &str, crate_version: &str) -> anyhow::Resu
     Ok(false)
 }
 
-/// yanked versions for one crate
+/// list only yanked versions for one crate
 pub fn yanked_for_one_crate(crate_name: &str) -> anyhow::Result<Vec<String>> {
     let crate_info = INDEX.crate_(crate_name).context("Cannot find crate name in registry.")?;
     let mut vec = vec![];
@@ -57,6 +59,16 @@ pub fn yanked_for_one_crate(crate_name: &str) -> anyhow::Result<Vec<String>> {
         if x.is_yanked() {
             vec.push(x.version().to_string())
         }
+    }
+    Ok(vec)
+}
+
+/// info of all versions for one crate
+pub fn info_for_one_crate(crate_name: &str) -> anyhow::Result<Vec<(String, bool)>> {
+    let crate_info = INDEX.crate_(crate_name).context("Cannot find crate name in registry.")?;
+    let mut vec = vec![];
+    for x in crate_info.versions().iter() {
+        vec.push((x.version().to_string(), x.is_yanked()));
     }
     Ok(vec)
 }
