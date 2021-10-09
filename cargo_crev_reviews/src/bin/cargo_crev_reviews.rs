@@ -62,10 +62,7 @@ pub fn start_web_server() {
     use dev_bestia_simple_server::*;
     println!("cargo_crev_reviews server started");
     /// nested_function: convert response structs
-    fn convert_response(
-        response_with_bytes: ResponseWithBytes,
-        builder: Builder,
-    ) -> Response<Vec<u8>> {
+    fn convert_response(response_with_bytes: ResponseWithBytes, builder: Builder) -> Response<Vec<u8>> {
         let builder = match response_with_bytes.status_code {
             Status::NotFound => builder.status(StatusCode::NOT_FOUND),
             Status::Ok => builder.status(StatusCode::OK),

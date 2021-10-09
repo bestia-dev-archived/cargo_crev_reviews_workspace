@@ -234,7 +234,7 @@ Cargo also downloads from crates.io the complete source code for every dependenc
 
 ## crates.io API
 
-Some data are not available locally in the cargo registry and need to be obtained from <https://crates.io//api/v1/crates/{}/{}/>. Then I store them in `~/.config/crev/cargo_crev_reviews_data/db_versions`. Data from crates.io are immutable all, except yanked. I will find in the local registry the data for yanked and new versions. That will trigger the download of data from crates.io.
+Some data are not available locally in the cargo registry and need to be obtained from <https://crates.io//api/v1/crates/{}/{}/>. Then I store them in `~/.config/crev/cargo_crev_reviews_data/db`. Data from crates.io are immutable all, except yanked. I will find in the local registry the data for yanked and new versions. That will trigger the download of data from crates.io.
 
 ## trusted publishers
 

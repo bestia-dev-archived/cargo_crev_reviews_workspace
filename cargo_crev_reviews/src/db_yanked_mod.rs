@@ -37,6 +37,18 @@ pub fn read(crate_name_version: &str) -> anyhow::Result<Option<YankedForDb>> {
     }
 }
 
+pub fn all_versions_for_crate(crate_name: &str) -> anyhow::Result<Vec<YankedForDb>> {
+    let start = format!("{} 0", crate_name);
+    let end = format!("{} z", crate_name);
+    let mut vec = vec![];
+    for x in DB_YANKED.range(start..end) {
+        let (_key, value) = x?;
+        let v: YankedForDb = serde_json::from_slice(&value)?;
+        vec.push(v);
+    }
+    Ok(vec)
+}
+
 pub fn delete(crate_name_version: &str) {
     unwrap!(DB_YANKED.remove(crate_name_version.as_bytes()));
 }

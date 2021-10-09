@@ -45,18 +45,24 @@
 //!
 // endregion: auto_md_to_doc_comments include README.md A //!
 
-use anyhow::Context;
-use lazy_static::lazy_static;
-use wasm_bindgen::prelude::*;
-use wasm_bindgen::JsValue;
-
 mod auto_generated_mod;
 mod cln_methods_review_mod;
 mod cln_methods_verify_mod;
 mod cln_methods_version_mod;
 mod html_mod;
+mod html_template_mod;
+mod macros_mod;
+mod url_utf8_mod;
 mod utils_mod;
 mod web_sys_mod;
+
+use anyhow::Context;
+use lazy_static::lazy_static;
+use wasm_bindgen::prelude::*;
+use wasm_bindgen::JsValue;
+
+pub use crate::macros_mod::*;
+pub use crate::url_utf8_mod::*;
 
 use crate::auto_generated_mod::common_structs_mod::ReviewFilterData;
 use crate::auto_generated_mod::common_structs_mod::RpcEmptyData;

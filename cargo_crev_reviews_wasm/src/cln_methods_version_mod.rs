@@ -89,8 +89,50 @@ impl HtmlProcessor for VersionItemData {
                     "".to_string()
                 }
             }
-            "wt_crate_published_date" => self.published_date.clone(),
+            "wt_crate_yanked_or_cached" => {
+                if self.yanked {
+                    "yanked".to_string()
+                } else if self.is_src_cached.unwrap_or(false) {
+                    "cached".to_string()
+                } else {
+                    "".to_string()
+                }
+            }
+            "wt_crate_yanked_or_cached_class" => {
+                if self.yanked {
+                    "review_header0_cell c_yanked".to_string()
+                } else if self.is_src_cached.unwrap_or(false) {
+                    "review_header0_cell c_cached".to_string()
+                } else {
+                    "review_header0_cell".to_string()
+                }
+            }
+            "wt_crate_published_date" => self.published_date[..10].to_string(),
             "wt_cargo_crev_reviews_version" => env!("CARGO_PKG_VERSION").to_string(),
+            // region: Option of my_review
+            "wt_rating" => match &self.my_review {
+                Some(my_review) => my_review.rating.clone(),
+                None => "".to_string(),
+            },
+            "wt_rating_class_color" => format!(
+                "review_header0_cell c_{} bold",
+                match &self.my_review {
+                    Some(my_review) => my_review.rating.clone(),
+                    None => "".to_string(),
+                }
+            ),
+            "wt_review_date" => match &self.my_review {
+                Some(my_review) => my_review.date[..10].to_string(),
+                None => "".to_string(),
+            },
+            "wt_crate_thoroughness_understanding" => match &self.my_review {
+                Some(my_review) => format!("{} {}", my_review.thoroughness, my_review.understanding),
+                None => "".to_string(),
+            },
+            "wt_comment_md" => match &self.my_review {
+                Some(my_review) => my_review.comment_md.clone(),
+                None => "".to_string(),
+            },
             _ => {
                 let html_error = format!("Unrecognized replace_wt method {}", wt_name);
                 w::debug_write(&html_error);
@@ -99,8 +141,10 @@ impl HtmlProcessor for VersionItemData {
         }
     }
     /// the use of complete string wb_xxx enables easy and exact text search around the source code
+    /// is the next node rendered or deleted
     fn match_wb(&self, wb_name: &str) -> bool {
         match wb_name {
+            "wb_has_review" => self.my_review.is_some(),
             _ => {
                 let html_error = format!("Unrecognized wb_exist_next_attribute method {}", wb_name);
                 w::debug_write(&html_error);

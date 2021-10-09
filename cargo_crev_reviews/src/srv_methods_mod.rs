@@ -119,39 +119,6 @@ pub fn srv_review_edit_or_new(request_data: serde_json::Value) -> anyhow::Result
     }
 }
 
-/// list of all versions for one crate: from registry index with data from src cached and my_reviews
-#[named]
-pub fn srv_version_list(request_data: serde_json::Value) -> anyhow::Result<String> {
-    println!(function_name!());
-    let filter: ReviewFilterData = unwrap!(serde_json::from_value(request_data.clone()));
-
-    let mut vec = crev_crate_versions(&filter.crate_name)?;
-    // descending order
-    vec.sort_by(|a, b| {
-        let a = semver::Version::parse(&a.num).unwrap();
-        let b = semver::Version::parse(&b.num).unwrap();
-        b.cmp(&a)
-    });
-
-    let mut response_data = VersionListData { list_of_version: vec![] };
-    for x in vec.iter() {
-        let v = VersionItemData {
-            crate_name: x.crate_name.clone(),
-            crate_version: x.num.clone(),
-            yanked: x.yanked,
-            published_by_login: None,
-            published_date: x.published_date.clone(),
-            is_src_cached: x.is_src_cached,
-            my_review: x.my_review.clone(),
-        };
-        response_data.list_of_version.push(v);
-    }
-
-    let response_html = crate::files_mod::version_list_html();
-
-    cln_methods::cln_version_list(response_data, response_html)
-}
-
 #[named]
 pub fn srv_review_new_version(request_data: serde_json::Value) -> anyhow::Result<String> {
     println!(function_name!());
@@ -168,15 +135,6 @@ pub fn srv_review_publish(_request_data: serde_json::Value) -> anyhow::Result<St
     println!(function_name!());
     match crev_publish() {
         Ok(ret_val) => crate::response_post_mod::response_modal_message(&ret_val),
-        Err(err) => crate::response_post_mod::response_err_message(&err),
-    }
-}
-
-#[named]
-pub fn srv_update_registry_index(_request_data: serde_json::Value) -> anyhow::Result<String> {
-    println!(function_name!());
-    match crate::cargo_registry_mod::update_registry_index() {
-        Ok(_ret_val) => crate::response_post_mod::response_modal_message("Registry index updated."),
         Err(err) => crate::response_post_mod::response_err_message(&err),
     }
 }
@@ -208,6 +166,8 @@ pub fn srv_review_delete(filter_data: serde_json::Value) -> anyhow::Result<Strin
     request_review_list()
 }
 
+// endregion: review
+
 #[named]
 pub fn srv_verify_project(_filter_data: serde_json::Value) -> anyhow::Result<String> {
     println!(function_name!());
@@ -216,4 +176,32 @@ pub fn srv_verify_project(_filter_data: serde_json::Value) -> anyhow::Result<Str
     let response_html = crate::files_mod::verify_list_html();
     cln_methods::cln_verify_list(response_data, response_html)
 }
-// endregion: review
+
+/// list of all versions for one crate: from registry index with data from src cached and my_reviews
+#[named]
+pub fn srv_version_list(request_data: serde_json::Value) -> anyhow::Result<String> {
+    println!(function_name!());
+    let filter: ReviewFilterData = unwrap!(serde_json::from_value(request_data.clone()));
+
+    let mut vec = crev_crate_versions(&filter.crate_name)?;
+    // descending order
+    vec.sort_by(|a, b| {
+        let a = semver::Version::parse(&a.crate_version).unwrap();
+        let b = semver::Version::parse(&b.crate_version).unwrap();
+        b.cmp(&a)
+    });
+
+    let response_data = VersionListData { list_of_version: vec };
+    let response_html = crate::files_mod::version_list_html();
+
+    cln_methods::cln_version_list(response_data, response_html)
+}
+
+#[named]
+pub fn srv_update_registry_index(_request_data: serde_json::Value) -> anyhow::Result<String> {
+    println!(function_name!());
+    match crate::cargo_registry_mod::update_registry_index() {
+        Ok(_ret_val) => crate::response_post_mod::response_modal_message("Registry index updated."),
+        Err(err) => crate::response_post_mod::response_err_message(&err),
+    }
+}

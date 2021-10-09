@@ -298,7 +298,6 @@ A small difference to help search and replace refactoring.
         .bold {
             font-weight: bold;
         }
-        /* links are mostly white */
         
         .c_link_1,
         .c_link_2 {
@@ -311,22 +310,25 @@ A small difference to help search and replace refactoring.
         a:visited.c_link_1,
         a:hover.c_link_1,
         a:active.c_link_1 {
+            /* links are mostly white */
             color: var(--f_color_link);
         }
-        /* dark_white */
         
         .h2u {
+            /* dark_white */
             color: var(--f_color_06);
         }
         
         .c_black {
             color: var(--f_color_07);
         }
-        /* greener */
         
         .c_strong,
         .c_high,
-        .c_low_severity {
+        .c_low_severity,
+        .c_pass,
+        .c_T {
+            /* greener */
             color: var(--color_r_strong);
         }
         
@@ -334,16 +336,16 @@ A small difference to help search and replace refactoring.
         .bc_high {
             background-color: var(--color_r_strong);
         }
-        /* green */
         
-        .c_positive {
+        .c_positive,
+        .c_cached {
+            /* green */
             color: var(--color_r_positive);
         }
         
         .bc_positive {
             background-color: var(--color_r_positive);
         }
-        /* yellow */
         
         .c_yellow,
         .c_alternative,
@@ -354,13 +356,18 @@ A small difference to help search and replace refactoring.
         a:visited.c_link_2,
         a:hover.c_link_2,
         a:active.c_link_2 {
+            /* yellow */
             color: var(--f_color_05);
         }
-        /* orange */
+        
+        .c_none {
+            color: var(--color_r_neutral);
+        }
         
         .c_medium,
         .c_neutral,
         .c_issue {
+            /* orange */
             color: var(--color_r_medium);
         }
         
@@ -368,13 +375,15 @@ A small difference to help search and replace refactoring.
         .bc_neutral {
             background-color: var(--color_r_medium);
         }
-        /* red */
         
         .c_alert,
         .c_negative,
         .c_low,
         .c_high_severity,
-        .c_advisory {
+        .c_advisory,
+        .c_warn,
+        .c_yanked {
+            /* red */
             color: var(--color_r_negative);
         }
         
@@ -729,20 +738,3 @@ A small difference to help search and replace refactoring.
             outline: 0;
         }
         /* endregion: modal window */
-        
-        .c_pass,
-        .c_T {
-            color: var(--color_r_strong);
-        }
-        
-        .c_warn {
-            color: var(--color_r_negative);
-        }
-        
-        .c_yanked {
-            color: var(--color_r_negative);
-        }
-        
-        .c_none {
-            color: var(--color_r_neutral);
-        }

@@ -430,17 +430,6 @@ pub fn crev_publish() -> anyhow::Result<String> {
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct VersionForGui {
-    pub crate_name: String,
-    pub num: String,
-    pub yanked: bool,
-    pub published_by_login: Option<String>,
-    pub published_date: String,
-    pub is_src_cached: Option<bool>,
-    pub my_review: Option<ReviewItemData>,
-}
-
-#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct TrustedPublisherDataFile {
     trusted_publishers: Vec<TrustedPublisher>,
 }
@@ -572,33 +561,34 @@ fn is_trusted_publisher(trusted_file: &TrustedPublisherDataFile, login: &str) ->
 // endregion: cargo_crev_reviews_data/trusted_publishers.json
 
 /// get all versions for one crate
-pub fn crev_crate_versions(crate_name: &str) -> anyhow::Result<Vec<VersionForGui>> {
-    let mut vec_of_version_ext = vec![];
-    // vec_of_reviews for this crate
+pub fn crev_crate_versions(crate_name: &str) -> anyhow::Result<Vec<VersionItemData>> {
+    // region: vec_of_reviews for this crate
     let new_filter = ReviewFilterData {
         crate_name: crate_name.to_string(),
         crate_version: None,
         old_crate_version: None,
     };
-
     // my reviews from crev
     let vec_of_reviews = crev_list_my_reviews(&Some(new_filter))?;
 
-    // yanked (from cargo registry index)
-    let yanked_one_crate = crate::cargo_registry_mod::yanked_for_one_crate(crate_name)?;
+    // endregion: vec_of_reviews for this crate
+
+    // yanked from db_yanked
+    let yanked_one_crate = crate::db_yanked_mod::all_versions_for_crate(crate_name)?;
 
     // versions from db_version
+    let mut vec_of_version = vec![];
     for version_for_db in crate::db_version_mod::all_versions_for_crate(crate_name)? {
-        let mut my_review = None;
         let (_io_crate_name, io_crate_version) = split_crate_version(version_for_db.crate_name_version.as_str());
 
         // is_src_cache (if path exists in cargo registry src)
         let path_dir = crate::cargo_registry_mod::cargo_registry_src_dir_for_crate(crate_name, &io_crate_version)?;
         let is_src_cached = Some(path_dir.exists());
 
-        let yanked = yanked_one_crate.iter().any(|s| s == crate_name);
+        let yanked = yanked_one_crate.iter().any(|s| s.crate_name_version == version_for_db.crate_name_version);
 
         // my_review
+        let mut my_review = None;
         for review in vec_of_reviews.iter() {
             if review.package.name == crate_name && review.package.version.as_str() == &io_crate_version {
                 my_review = Some(ReviewItemData {
@@ -615,17 +605,17 @@ pub fn crev_crate_versions(crate_name: &str) -> anyhow::Result<Vec<VersionForGui
         }
 
         // add to vector
-        let version_ext = VersionForGui {
+        let version = VersionItemData {
             crate_name: crate_name.to_string(),
-            num: io_crate_version.to_string(),
+            crate_version: io_crate_version.to_string(),
             yanked,
             published_by_login: version_for_db.published_by_login.clone(),
             published_date: version_for_db.published_date.clone(),
             is_src_cached,
             my_review: my_review.clone(),
         };
-        vec_of_version_ext.push(version_ext.clone());
+        vec_of_version.push(version);
     }
     //write_versions_json(versions_json)?;
-    Ok(vec_of_version_ext)
+    Ok(vec_of_version)
 }
