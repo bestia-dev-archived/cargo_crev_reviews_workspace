@@ -36,7 +36,7 @@ fn default_mime() -> String {
 /// Files are stored in functions in the files_mod.rs module
 /// there is an automation task to copy files from web_server_folder to the module
 pub fn parse_get_uri_and_response_file(path: &str) -> ResponseWithBytes {
-    println!("path: {}", path);
+    log::info!("path: {}", path);
     match path {
         "/cargo_crev_reviews/index.html" => response_file_text(index_html, path, Cache::NoStore),
         "/cargo_crev_reviews/css/cargo_crev_reviews.css" => response_file_text(css_cargo_crev_reviews_css, path, Cache::Ok),
@@ -56,7 +56,7 @@ pub fn parse_get_uri_and_response_file(path: &str) -> ResponseWithBytes {
 }
 
 pub fn response_404_not_found(path: &str) -> ResponseWithBytes {
-    println!("404 not found: {}", path);
+    log::warn!("404 not found: {}", path);
     let mut response_with_text = response_file_text(file_not_found_404, ".html", Cache::Ok);
     response_with_text.status_code = Status::NotFound;
     response_with_text

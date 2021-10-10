@@ -96,7 +96,7 @@ pub trait HtmlProcessor {
     /// Execute the replace_method and save the result in `next_text_node_replace`.
     /// On the next text node it will use this value.    
     fn replace_next_text_node(&self, name: &str, next_text_node_replace: &mut Option<String>, row_number: Option<usize>) {
-        // w::debug_write(&format!("{} {}", function_name!(), name));
+        // log::info!("{} {}", function_name!(), name));
         let replace_text = self.match_wt(name, row_number);
         *next_text_node_replace = Some(replace_text);
     }
@@ -106,7 +106,7 @@ pub trait HtmlProcessor {
     /// the attribute value is the name of the next attribute, just for security
     /// Execute the response_method and save the result in `next_attribute_replace`, don't push attribute to string
     fn replace_next_attribute(&self, name: &str, value: &str, next_attribute_replace: &mut Option<(String, String)>, row_number: Option<usize>) {
-        // w::debug_write(&format!("{} {} {}", function_name!(), name, value));
+        // log::info!("{} {} {}", function_name!(), name, value));
         // returns mostly empty string because it is all written in next_attribute_replace
         // only in case of error it writes something in the html, to find where the error occurred
         let attribute_name = value.to_string();
@@ -119,7 +119,7 @@ pub trait HtmlProcessor {
     /// Execute the exists_method and store in `next_attribute_exist`
     /// The next attribute will exist or not because of this bool.
     fn exist_next_attribute(&self, name: &str, _value: &str, next_attribute_exist: &mut Option<bool>) {
-        // w::debug_write(function_name!());
+        // log::info!("{}",function_name!());
         let wb_name = name.trim_start_matches("data-");
         let is_exist = self.match_wb(wb_name);
         *next_attribute_exist = Some(is_exist);
@@ -235,7 +235,7 @@ pub trait HtmlProcessor {
                     }
                 },
                 Err(err_msg) => {
-                    w::debug_write(&format!("MicroXml incorrect : {}", err_msg));
+                    log::error!("MicroXml incorrect : {}", err_msg);
                 }
             }
         }

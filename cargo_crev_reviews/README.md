@@ -303,7 +303,7 @@ In `srv_methods_mod.rs` add a function like this:
 ```rust
 #[named]
 pub fn srv_function_name(request_data: serde_json::Value) -> anyhow::Result<String> {
-    println!(function_name!());
+    log::info!(function_name!());
     let filter: ReviewFilterData = unwrap!(serde_json::from_value(request_data));
     let response_data  = get_some_data(filter)?;
     let response_html = crate::files_mod::review_edit_html();
@@ -323,7 +323,7 @@ In `cln_methods_version_mod.rs` add a client function like this:
 ```rust
 #[named]
 pub fn cln_review_edit(srv_response: RpcResponse) {
-    w::debug_write(function_name!());
+    log::info!("{}",function_name!());
     let html = extract_html(&srv_response);
     store_to_review_item_data(srv_response);
 

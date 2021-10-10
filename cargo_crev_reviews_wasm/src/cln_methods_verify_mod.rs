@@ -12,6 +12,7 @@ use crate::auto_generated_mod::srv_methods;
 
 // use crate::on_click;
 use crate::html_mod::*;
+use crate::html_template_mod::*;
 use crate::*;
 
 lazy_static! {
@@ -20,68 +21,36 @@ lazy_static! {
     static ref VERIFY_LIST_DATA: Mutex<VerifyListData> = Mutex::new(VerifyListData::default());
 }
 
-impl HtmlProcessor for VerifyListData {
-    /// process template and push as many &str is needed
-    fn process_repetitive_items(&self, name_of_repeat_segment: &str, html_repetitive_template: &str, html_new: &mut String) {
-        match name_of_repeat_segment {
-            "wr_repeat_VerifyItemData" => {
-                w::debug_write(&format!("process_repetitive_items {}", name_of_repeat_segment));
-                for (row_number, data) in self.list_of_verify.iter().enumerate() {
-                    let list_item_html = data.process_html_with_item(html_repetitive_template, Some(row_number));
-                    html_new.push_str(&list_item_html);
-                }
-            }
-            _ => {
-                let msg = format!("unrecognized name_of_repeat_segment {}", name_of_repeat_segment);
-                w::debug_write(&msg);
-                html_new.push_str(&msg);
-            }
+impl HtmlServerTemplateRender for VerifyItemData {
+    /// data model name is used for eprint
+    fn data_model_name(&self) -> String {
+        // return
+        s!("VerifyItemData")
+    }
+    /// renders the complete html file. Not a sub-template/fragment.
+    fn render_html(&self, html: &str) -> String {
+        // find node <html >, jump over <!DOCTYPE html> because it is not microXml compatible
+        // I will add <!DOCTYPE html> when the rendering ends, before returning the html.
+        if let Some(pos_html) = html.find("<html") {
+            let template_raw = &html[pos_html..];
+            let html = self.render(template_raw);
+            return html;
+        } else {
+            html.to_string()
         }
     }
-
-    /// the use of complete string wt_xxx enables easy and exact text search around the source code
-    fn match_wt(&self, wt_name: &str, _row_num: Option<usize>) -> String {
-        match wt_name {
-            "wt_cargo_crev_reviews_version" => env!("CARGO_PKG_VERSION").to_string(),
-            "wt_project_dir" => self.project_dir.clone(),
-            _ => {
-                let html_error = format!("Unrecognized replace_wt method {}", wt_name);
-                w::debug_write(&html_error);
-                html_error
-            }
+    /// boolean : is the next node rendered or not: "wb_" or "sb_"
+    fn retain_next_node_or_attribute(&self, placeholder: &str) -> bool {
+        // dbg!( &placeholder);
+        match placeholder {
+            _ => retain_next_node_or_attribute_match_else(&self.data_model_name(), placeholder),
         }
     }
-    /// the use of complete string wb_xxx enables easy and exact text search around the source code
-    fn match_wb(&self, wb_name: &str) -> bool {
-        match wb_name {
-            _ => {
-                let html_error = format!("Unrecognized wb_exist_next_attribute method {}", wb_name);
-                w::debug_write(&html_error);
-                false
-            }
-        }
-    }
-}
-
-impl HtmlProcessor for VerifyItemData {
-    /// process template and push as many &str is needed
-    fn process_repetitive_items(&self, name_of_repeat_segment: &str, _html_repetitive_template: &str, html_new: &mut String) {
-        match name_of_repeat_segment {
-            _ => {
-                let msg = format!("unrecognized name_of_repeat_segment {}", name_of_repeat_segment);
-                w::debug_write(&msg);
-                html_new.push_str(&msg);
-            }
-        }
-    }
-
-    /// the use of complete string wt_xxx enables easy and exact text search around the source code
-    fn match_wt(&self, wt_name: &str, row_number: Option<usize>) -> String {
-        match wt_name {
-            "wt_row_number" => match row_number {
-                Some(row_number) => format!("{}.", row_number + 1),
-                None => "".to_string(),
-            },
+    /// returns a String to replace the next text-node: "wt_" or "st_"
+    fn replace_with_string(&self, placeholder: &str, _subtemplate: &str, pos_cursor: usize) -> String {
+        // dbg!(&placeholder);
+        match placeholder {
+            "wt_row_number" => format!("{}.", pos_cursor + 1),
             "wt_status" => self.status.clone(),
             "wt_my_review" => self.my_review.clone(),
             "wt_crate_name" => self.crate_name.clone(),
@@ -98,39 +67,113 @@ impl HtmlProcessor for VerifyItemData {
                 }
             }
             "wt_published_by_class" => format!("review_header0_cell left c_{}", &self.trusted_publisher),
-            _ => {
-                let html_error = format!("Unrecognized replace_wt method {}", wt_name);
-                w::debug_write(&html_error);
-                html_error
-            }
+            _ => replace_with_string_match_else(&self.data_model_name(), placeholder),
         }
     }
-    /// the use of complete string wb_xxx enables easy and exact text search around the source code
-    fn match_wb(&self, wb_name: &str) -> bool {
-        match wb_name {
-            _ => {
-                let html_error = format!("Unrecognized wb_exist_next_attribute method {}", wb_name);
-                w::debug_write(&html_error);
-                false
+    /// exclusive url encoded for href and src: "wu_" or "su"
+    fn replace_with_url(&self, placeholder: &str, _subtemplate: &str, _pos_cursor: usize) -> UrlUtf8EncodedString {
+        // dbg!( &placeholder);
+        match placeholder {
+            // the href for css is good for static data. For dynamic route it must be different.
+            _ => replace_with_url_match_else(&self.data_model_name(), placeholder),
+        }
+    }
+    /// returns a vector of Nodes to replace the next Node: "wn_" or "sn"
+    fn replace_with_nodes(&self, placeholder: &str) -> Vec<Node> {
+        // dbg!(&placeholder);
+        match placeholder {
+            _ => replace_with_nodes_match_else(&self.data_model_name(), placeholder),
+        }
+    }
+    /// renders sub-template: "stmplt_" or "wtmplt_"
+    fn render_sub_template(&self, template_name: &str, _sub_templates: &Vec<SubTemplate>) -> Vec<Node> {
+        // dbg!(&placeholder);
+        match template_name {
+            _ => render_sub_template_match_else(&self.data_model_name(), template_name),
+        }
+    }
+}
+
+impl HtmlServerTemplateRender for VerifyListData {
+    /// data model name is used for eprint
+    fn data_model_name(&self) -> String {
+        // return
+        s!("VerifyListData")
+    }
+    /// renders the complete html file. Not a sub-template/fragment.
+    fn render_html(&self, html: &str) -> String {
+        let html = self.render(html);
+        // return
+        html
+    }
+    /// boolean : is the next node rendered or not: "wb_" or "sb_"
+    fn retain_next_node_or_attribute(&self, placeholder: &str) -> bool {
+        // dbg!( &placeholder);
+        match placeholder {
+            _ => retain_next_node_or_attribute_match_else(&self.data_model_name(), placeholder),
+        }
+    }
+    /// returns a String to replace the next text-node: "wt_" or "st_"
+    fn replace_with_string(&self, placeholder: &str, _subtemplate: &str, _pos_cursor: usize) -> String {
+        // dbg!(&placeholder);
+        match placeholder {
+            "wt_cargo_crev_reviews_version" => s!(env!("CARGO_PKG_VERSION")),
+            "wt_project_dir" => s!(self.project_dir),
+            _ => replace_with_string_match_else(&self.data_model_name(), placeholder),
+        }
+    }
+    /// exclusive url encoded for href and src: "wu_" or "su"
+    fn replace_with_url(&self, placeholder: &str, _subtemplate: &str, _pos_cursor: usize) -> UrlUtf8EncodedString {
+        // dbg!( &placeholder);
+        match placeholder {
+            // the href for css is good for static data. For dynamic route it must be different.
+            "su_css_route" => url_u!("/rust-reviews/css/rust-reviews.css"),
+            "su_favicon_route" => url_u!("/rust-reviews/favicon.png"),
+            "su_img_src_logo" => url_u!("/rust-reviews/images/Logo_02.png"),
+            _ => replace_with_url_match_else(&self.data_model_name(), placeholder),
+        }
+    }
+    /// returns a vector of Nodes to replace the next Node: "wn_" or "sn"
+    fn replace_with_nodes(&self, placeholder: &str) -> Vec<Node> {
+        // dbg!(&placeholder);
+        match placeholder {
+            _ => replace_with_nodes_match_else(&self.data_model_name(), placeholder),
+        }
+    }
+    /// renders sub-template: "stmplt_" or "wtmplt_"
+    fn render_sub_template(&self, template_name: &str, sub_templates: &Vec<SubTemplate>) -> Vec<Node> {
+        log::info!("{}", sub_templates[1].name.as_str());
+        // dbg!(&placeholder);
+        match template_name {
+            "wtmplt_verify_item_data" => {
+                let sub_template = unwrap!(sub_templates.iter().find(|&template| template.name == template_name));
+                let mut nodes = vec![];
+                for verify_item in &self.list_of_verify {
+                    let vec_node = unwrap!(verify_item.render_template_raw_to_nodes(&sub_template.template, HtmlOrSvg::Html, "", 0));
+                    nodes.extend_from_slice(&vec_node);
+                }
+                // return
+                nodes
             }
+            _ => render_sub_template_match_else(&self.data_model_name(), template_name),
         }
     }
 }
 
 #[named]
 pub fn request_verify_list(_element_id: &str) {
-    w::debug_write(function_name!());
+    log::info!("{}", function_name!());
     let request_data = RpcEmptyData {};
     srv_methods::srv_verify_project(request_data);
 }
 
 #[named]
 pub fn cln_verify_list(srv_response: RpcResponse) {
-    w::debug_write(function_name!());
+    log::info!("{}", function_name!());
     let html = extract_html(&srv_response);
     *VERIFY_LIST_DATA.lock().unwrap() = unwrap!(serde_json::from_value(srv_response.response_data));
     // modal dialog box with error, don't change the html and data
-    let html_after_process = VERIFY_LIST_DATA.lock().unwrap().process_html(&html);
+    let html_after_process = VERIFY_LIST_DATA.lock().unwrap().render_html(&html);
 
     inject_into_html(&html_after_process);
     navigation_on_click();
@@ -143,7 +186,7 @@ pub fn cln_verify_list(srv_response: RpcResponse) {
 
 #[named]
 pub fn request_review_edit_or_new(_element_id: &str, row_number: usize) {
-    w::debug_write(function_name!());
+    log::info!("{}", function_name!());
     // from list get crate name and version
     let item = &VERIFY_LIST_DATA.lock().unwrap().list_of_verify[row_number];
     let request_data = ReviewFilterData {
@@ -156,7 +199,7 @@ pub fn request_review_edit_or_new(_element_id: &str, row_number: usize) {
 
 #[named]
 fn open_all_links(_element_id: &str, row_number: usize) {
-    w::debug_write(function_name!());
+    log::info!("{}", function_name!());
     let item = &VERIFY_LIST_DATA.lock().unwrap().list_of_verify[row_number];
     /*
        let url = format!("https://web.crev.dev/rust-reviews/crate/{}/", item.crate_name);

@@ -14,6 +14,7 @@ use cargo_crev_reviews::*;
 fn main() -> anyhow::Result<()> {
     // I don't need to check for `cargo` or Rust, because cargo_crev_reviews is installed with `cargo install`.
     // It means that cargo and Rust are already installed.
+    pretty_env_logger::init();
 
     if let Some(host_port_already_busy) = host_port_is_busy() {
         one_instance_of_the_program_already_running(&host_port_already_busy);
@@ -60,7 +61,7 @@ pub fn open_browser() {
 /// Changing this simple function, you can use any other web server library of your choice easily.
 pub fn start_web_server() {
     use dev_bestia_simple_server::*;
-    println!("cargo_crev_reviews server started");
+    log::info!("cargo_crev_reviews server started");
     /// nested_function: convert response structs
     fn convert_response(response_with_bytes: ResponseWithBytes, builder: Builder) -> Response<Vec<u8>> {
         let builder = match response_with_bytes.status_code {
@@ -79,7 +80,7 @@ pub fn start_web_server() {
 
     let server = Server::new(|request, response_builder| {
         let path = request.uri().to_string();
-        // println!("Request received. {} {}", request.method(), request.uri());
+        // log::info!("Request received. {} {}", request.method(), request.uri());
         if !request.uri().to_string().starts_with(&format!("/{}", SERVER_FIRST_SUBDIRECTORY.as_str())) {
             let response = convert_response(response_404_not_found(&path), response_builder);
             return Ok(response);

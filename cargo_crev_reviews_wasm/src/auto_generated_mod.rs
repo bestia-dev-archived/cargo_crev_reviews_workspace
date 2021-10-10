@@ -6,7 +6,6 @@
 use crate::cln_methods_review_mod::*;
 use crate::cln_methods_verify_mod::*;
 use crate::cln_methods_version_mod::*;
-use crate::web_sys_mod as w;
 
 /// match the string and call a function
 pub async fn match_response_method_and_call_function(response: common_structs_mod::RpcResponse) {
@@ -20,7 +19,7 @@ pub async fn match_response_method_and_call_function(response: common_structs_mo
         "cln_verify_list" => cln_verify_list(response),
         "cln_version_list" => cln_version_list(response),
         // generator match_response_method end
-        _ => w::debug_write(&format!("Error: Unrecognized response_method {}", response.response_method)),
+        _ => log::error!("Error: Unrecognized response_method {}", response.response_method),
     }
 }
 

@@ -340,12 +340,12 @@ pub fn rating_to_string(rating: &Rating) -> String {
 pub fn _verify_proof(yaml: &str) -> anyhow::Result<()> {
     let proofs = crev_data::proof::Proof::parse_from(yaml.as_bytes())?;
     let proof = &proofs[0];
-    println!("signature: {}", proof.signature());
-    println!("id: {}", proof.author_public_id().id);
-    println!("body:\n{}", proof.body());
+    log::info!("signature: {}", proof.signature());
+    log::info!!("id: {}", proof.author_public_id().id);
+    log::info!!("body:\n{}", proof.body());
     proof.verify()?;
 
-    println!("Proof verified ok.");
+    log::info!!("Proof verified ok.");
     // return
     Ok(())
 }

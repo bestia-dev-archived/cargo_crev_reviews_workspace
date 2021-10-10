@@ -13,7 +13,6 @@ use crate::auto_generated_mod::common_structs_mod::*;
 // use crate::on_click;
 use crate::html_mod::*;
 use crate::utils_mod::join_crate_version;
-use crate::*;
 
 lazy_static! {
     /// mutable static, because it is hard to pass variables around with on_click events
@@ -26,7 +25,7 @@ impl HtmlProcessor for VersionListData {
     fn process_repetitive_items(&self, name_of_repeat_segment: &str, html_repetitive_template: &str, html_new: &mut String) {
         match name_of_repeat_segment {
             "wr_repeat_VersionItemData" => {
-                w::debug_write(&format!("process_repetitive_items {}", name_of_repeat_segment));
+                log::info!("process_repetitive_items {}", name_of_repeat_segment);
                 for (row_number, data) in self.list_of_version.iter().enumerate() {
                     let list_item_html = data.process_html_with_item(html_repetitive_template, Some(row_number));
                     html_new.push_str(&list_item_html);
@@ -34,7 +33,7 @@ impl HtmlProcessor for VersionListData {
             }
             _ => {
                 let msg = format!("unrecognized name_of_repeat_segment {}", name_of_repeat_segment);
-                w::debug_write(&msg);
+                log::info!("{}", &msg);
                 html_new.push_str(&msg);
             }
         }
@@ -46,7 +45,7 @@ impl HtmlProcessor for VersionListData {
             "wt_cargo_crev_reviews_version" => env!("CARGO_PKG_VERSION").to_string(),
             _ => {
                 let html_error = format!("Unrecognized replace_wt method {}", wt_name);
-                w::debug_write(&html_error);
+                log::error!("{}", &html_error);
                 html_error
             }
         }
@@ -56,7 +55,7 @@ impl HtmlProcessor for VersionListData {
         match wb_name {
             _ => {
                 let html_error = format!("Unrecognized wb_exist_next_attribute method {}", wb_name);
-                w::debug_write(&html_error);
+                log::error!("{}", &html_error);
                 false
             }
         }
@@ -69,7 +68,7 @@ impl HtmlProcessor for VersionItemData {
         match name_of_repeat_segment {
             _ => {
                 let msg = format!("unrecognized name_of_repeat_segment {}", name_of_repeat_segment);
-                w::debug_write(&msg);
+                log::info!("{}", &msg);
                 html_new.push_str(&msg);
             }
         }
@@ -135,7 +134,7 @@ impl HtmlProcessor for VersionItemData {
             },
             _ => {
                 let html_error = format!("Unrecognized replace_wt method {}", wt_name);
-                w::debug_write(&html_error);
+                log::error!("{}", &html_error);
                 html_error
             }
         }
@@ -147,7 +146,7 @@ impl HtmlProcessor for VersionItemData {
             "wb_has_review" => self.my_review.is_some(),
             _ => {
                 let html_error = format!("Unrecognized wb_exist_next_attribute method {}", wb_name);
-                w::debug_write(&html_error);
+                log::error!("{}", &html_error);
                 false
             }
         }
@@ -156,7 +155,7 @@ impl HtmlProcessor for VersionItemData {
 
 #[named]
 pub fn cln_version_list(srv_response: RpcResponse) {
-    w::debug_write(function_name!());
+    log::info!("{}", function_name!());
     let html = extract_html(&srv_response);
     *VERSION_LIST_DATA.lock().unwrap() = unwrap!(serde_json::from_value(srv_response.response_data));
     // modal dialog box with error, don't change the html and data

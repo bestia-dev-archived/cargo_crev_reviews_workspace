@@ -12,10 +12,8 @@
 //! should be compatible also with svg, because of namespaces
 
 // region: use
-// use crate::*;
 use reader_for_microxml::*;
 
-use std::fs;
 use unwrap::unwrap;
 
 use crate::s;
@@ -73,7 +71,7 @@ pub trait HtmlServerTemplateRender {
 
     /// The code for templating starts here.
     /// renders the complete html file. Not a sub-template/fragment.
-    fn render_html_file(&self, templates_folder_name: &str) -> String;
+    fn render_html(&self, html: &str) -> String;
     /// name of data model for debugging
     fn data_model_name(&self) -> String;
     /// returns a String to replace the next text-node or attribute value
@@ -97,18 +95,6 @@ pub trait HtmlServerTemplateRender {
     // region: this other methods should be private
     // but I don't know how to do it in Rust.
 
-    /// render root template (not sub-templates) from file
-    fn render_from_file(&self, template_file_name: &str) -> String {
-        //dbg!(&template_file_name);
-        let mut template_raw = unwrap!(fs::read_to_string(&template_file_name));
-        // find node <html >, jump over <!DOCTYPE html> because it is not microXml compatible
-        // I will add <!DOCTYPE html> when the rendering ends, before returning the html.
-        if let Some(pos_html) = template_raw.find("<html") {
-            template_raw.drain(..pos_html);
-        }
-
-        self.render(&template_raw)
-    }
     /// render for root template (not subtemplates) from string
     fn render(&self, html_template_raw: &str) -> String {
         let nodes = unwrap!(self.render_template_raw_to_nodes(&html_template_raw, HtmlOrSvg::Html, "", 0));
@@ -119,7 +105,7 @@ pub trait HtmlServerTemplateRender {
                 html = unwrap!(Self::root_element_node_to_html_string(temp_element_node));
             }
             _ => {
-                eprintln!("Error: render_template_raw_to_nodes() does not return one ElementNode.")
+                log::error!("Error: render_template_raw_to_nodes() does not return one ElementNode.")
             }
         }
         // return
@@ -229,7 +215,7 @@ pub trait HtmlServerTemplateRender {
                     match token {
                         Token::StartElement(tag_name) => {
                             dom_path.push(s!(tag_name));
-                            // println!("dom_path: {:?}",dom_path);
+                            // log::info!("dom_path: {:?}",dom_path);
                             // construct a child element and fill it (recursive)
                             let mut child_element = ElementNode {
                                 tag_name: s!(tag_name),
@@ -277,7 +263,7 @@ pub trait HtmlServerTemplateRender {
                         }
                         Token::Attribute(name, value) => {
                             if retain_this_node == true {
-                                if name.starts_with("data-st_") {
+                                if name.starts_with("data-st_") || name.starts_with("data-wt_") {
                                     // placeholder is in the attribute name.
                                     // the attribute value is only informative what is the next attribute name
                                     // example: data-st_placeholder="href" href="x"
@@ -287,7 +273,7 @@ pub trait HtmlServerTemplateRender {
                                     replace_attr_name = Some(s!(value));
                                     replace_attr_repl_name = Some(s!(name));
                                     replace_string = Some(repl_txt);
-                                } else if name.starts_with("data-su_") {
+                                } else if name.starts_with("data-su_") || name.starts_with("data-wu_") {
                                     // the same as data-st_, but exclusive to href and src
                                     // because they must use an url encoded string
                                     let placeholder = name.trim_start_matches("data-");
@@ -419,21 +405,21 @@ pub trait HtmlServerTemplateRender {
                                 // it must look like <!--st_get_text-->
                                 // one small exception is <textarea> because it ignores the comment syntax.
                                 // It is still working, and it is not very ugly.
-                                if txt.starts_with("st_") {
+                                if txt.starts_with("st_") || txt.starts_with("wt_") {
                                     let repl_txt = self.replace_with_string(txt, subtemplate, pos_cursor);
                                     replace_string = Some(repl_txt);
-                                } else if txt.starts_with("su_") {
+                                } else if txt.starts_with("su_") || txt.starts_with("wu_") {
                                     let repl_url = self.replace_with_url(txt, subtemplate, pos_cursor);
                                     replace_url = Some(repl_url);
-                                } else if txt.starts_with("sb_") {
+                                } else if txt.starts_with("sb_") || txt.starts_with("wb_") {
                                     // boolean if this is true than render the next node, else don't render
                                     retain_next_node_or_attribute = self.retain_next_node_or_attribute(txt);
-                                } else if txt.starts_with("stmplt_") {
+                                } else if txt.starts_with("stmplt_") || txt.starts_with("wtmplt_") {
                                     // replace exactly this placeholder for a sub-template
                                     let template_name = txt.trim_end_matches(" start");
                                     let repl_vec_nodes = self.render_sub_template(template_name, sub_templates);
                                     element.children.extend_from_slice(&repl_vec_nodes);
-                                } else if txt.starts_with("sn_") {
+                                } else if txt.starts_with("sn_") || txt.starts_with("wn_") {
                                     // nodes  (in a vector)
                                     let repl_vec_nodes = self.replace_with_nodes(txt);
                                     replace_vec_nodes = Some(repl_vec_nodes);
@@ -476,11 +462,12 @@ pub trait HtmlServerTemplateRender {
         }];
 
         // the syntax is <!--stmplt_crate_version_summary start-->, <!--stmplt_crate_version_summary end-->
+        // TODO: for server is "stmplt_" for web browser is "wtmplt_"
         // unique delimiters for start and end are great if there is nesting.
         let mut pos_for_loop = 0;
         loop {
             let mut exist_template = false;
-            if let Some(pos_start) = find_pos_before_delimiter(&sub_templates[0].template, pos_for_loop, "<!--stmplt_") {
+            if let Some(pos_start) = find_pos_before_delimiter(&sub_templates[0].template, pos_for_loop, "<!--wtmplt_") {
                 if let Some(pos_end_name) = find_pos_before_delimiter(&sub_templates[0].template, pos_start, " start-->") {
                     let sub_template_name = s!(&sub_templates[0].template[pos_start + 4..pos_end_name]);
                     // dbg!(sub_template_name);
@@ -491,7 +478,7 @@ pub trait HtmlServerTemplateRender {
                         // special name for template that will not be used at all.
                         // this happens when the graphic designer need more repetition of the
                         // same sub-template only for visual effect while editing.
-                        if sub_template_name == "stmplt_not_for_render" {
+                        if sub_template_name == "wtmplt_not_for_render" {
                             // dbg!(pos_start);
                             // dbg!(pos_end_after_tag);
                             // remove all the template
@@ -628,25 +615,25 @@ fn encode_5_xml_control_characters(input: &str) -> String {
 
 /// boilerplate
 pub fn retain_next_node_or_attribute_match_else(data_model_name: &str, placeholder: &str) -> bool {
-    eprintln!("Error: Unrecognized {} retain_next_node_or_attribute: \"{}\"", data_model_name, placeholder);
+    log::error!("Error: Unrecognized {} retain_next_node_or_attribute: \"{}\"", data_model_name, placeholder);
     true
 }
 /// boilerplate
 pub fn replace_with_string_match_else(data_model_name: &str, placeholder: &str) -> String {
     let err_msg = format!("Error: Unrecognized {} replace_with_string: \"{}\"", data_model_name, placeholder);
-    eprintln!("{}", &err_msg);
+    log::error!("{}", &err_msg);
     s!(err_msg)
 }
 /// boilerplate
 pub fn replace_with_url_match_else(data_model_name: &str, placeholder: &str) -> UrlUtf8EncodedString {
     let err_msg = format!("Error: Unrecognized {} replace_with_url: \"{}\"", data_model_name, placeholder);
-    eprintln!("{}", &err_msg);
+    log::error!("{}", &err_msg);
     url_u!(&err_msg, "")
 }
 /// boilerplate
 pub fn replace_with_nodes_match_else(data_model_name: &str, placeholder: &str) -> Vec<Node> {
     let err_msg = format!("Error: Unrecognized {} replace_with_nodes: \"{}\"", data_model_name, placeholder);
-    eprintln!("{}", &err_msg);
+    log::error!("{}", &err_msg);
     let node = Node::Element(ElementNode {
         tag_name: s!("h2"),
         children: vec![Node::Text(err_msg)],
@@ -657,7 +644,7 @@ pub fn replace_with_nodes_match_else(data_model_name: &str, placeholder: &str) -
 ///boilerplate
 pub fn render_sub_template_match_else(data_model_name: &str, template_name: &str) -> Vec<Node> {
     let err_msg = format!("Error: Unrecognized {} render_sub_template: \"{}\"", data_model_name, template_name);
-    eprintln!("{}", &err_msg);
+    log::error!("{}", &err_msg);
     let node = Node::Element(ElementNode {
         tag_name: s!("h2"),
         children: vec![Node::Text(err_msg)],

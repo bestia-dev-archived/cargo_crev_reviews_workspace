@@ -83,8 +83,10 @@ lazy_static! {
 pub fn wasm_bindgen_start() -> Result<(), JsValue> {
     // Initialize debugging for when/if something goes wrong.
     console_error_panic_hook::set_once();
+    // for global macros log::info!(), log::debug!(), log_error!(), log::warn!(), log::trace!()
+    wasm_logger::init(wasm_logger::Config::default());
     // write the app version just for debug purposes
-    w::debug_write(&format!("{} v{}", env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION")));
+    log::info!("{} v{}", env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION"));
 
     // read the url hash parameters for local routing
     let location = w::window().location();
@@ -117,7 +119,7 @@ pub fn wasm_bindgen_start() -> Result<(), JsValue> {
                             };
                             srv_methods::srv_version_list(request_data);
                         }
-                        _ => w::debug_write(&format!("unrecognized hash method: {}", method)),
+                        _ => log::info!("unrecognized hash method: {}", method),
                     },
                 }
             }

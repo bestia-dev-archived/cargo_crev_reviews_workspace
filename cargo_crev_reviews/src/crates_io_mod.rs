@@ -51,7 +51,7 @@ fn crate_response_deserialize(response_text: String) -> anyhow::Result<CratesIoC
 fn crate_responses_get(crate_name: &str) -> Result<String, anyhow::Error> {
     // trailing slash is forbidden. See sample in file crate_io_versions_for_crate.json
     let url = format!("https://crates.io/api/v1/crates/{}", &crate_name);
-    println!("get url: {}", &url);
+    log::debug!("get url: {}", &url);
     let client = reqwest::blocking::Client::new();
     let res = client
         .get(url)

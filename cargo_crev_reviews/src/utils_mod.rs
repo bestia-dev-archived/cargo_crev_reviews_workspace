@@ -125,7 +125,7 @@ pub fn join_crate_version(crate_name: &str, crate_version: &str) -> String {
 pub fn ns_start(text: &str) -> i64 {
     let now = Utc::now();
     if !text.is_empty() {
-        println!("{}{}: {}{}", *GREEN, &Local::now().format("%Y-%m-%d %H:%M:%S").to_string(), text, *RESET);
+        log::info!("{}{}: {}{}", *GREEN, &Local::now().format("%Y-%m-%d %H:%M:%S").to_string(), text, *RESET);
     }
     now.timestamp_nanos()
 }
@@ -147,7 +147,7 @@ pub fn ns_print_ms(name: &str, ns_start: i64) -> i64 {
         let mut string_duration_ns = String::new();
         unwrap!(string_duration_ns.write_formatted(&duration_ns, &Locale::en));
 
-        println!("{}{:>15} ms: {}{}", *GREEN, string_duration_ns, name, *RESET);
+        log::info!("{}{:>15} ms: {}{}", *GREEN, string_duration_ns, name, *RESET);
     }
     // return new now_ns
     Utc::now().timestamp_nanos()
@@ -162,7 +162,7 @@ pub fn ns_print_ns(name: &str, ns_start: i64) -> i64 {
         let mut string_duration_ns = String::new();
         unwrap!(string_duration_ns.write_formatted(&duration_ns, &Locale::en));
 
-        println!("{}{:>15} ns: {}{}", *GREEN, string_duration_ns, name, *RESET);
+        log::info!("{}{:>15} ns: {}{}", *GREEN, string_duration_ns, name, *RESET);
     }
     // return new now_ns
     Utc::now().timestamp_nanos()

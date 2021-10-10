@@ -1,5 +1,5 @@
 // web_sys_mod.rs
-//! helper functions for web_sys, window, document, dom, console,
+//! helper functions for web_sys, window, document, dom,
 //! local_storage, session_storage,...
 #![allow(dead_code)]
 
@@ -8,7 +8,6 @@ use chrono::NaiveDate;
 use unwrap::unwrap;
 use wasm_bindgen::{JsCast, JsValue};
 use wasm_bindgen_futures::JsFuture;
-use web_sys::console;
 use web_sys::{Request, RequestInit, Response};
 // endregion: use
 
@@ -68,7 +67,7 @@ pub fn get_element_by_id(element_id: &str) -> web_sys::Element {
     let document = unwrap!(window().document());
     let element_opt = document.get_element_by_id(element_id);
     if element_opt.is_none() {
-        debug_write(&format!("Error: element not exists: {}", element_id));
+        log::error!("Error: element not exists: {}", element_id);
     }
     unwrap!(element_opt)
 }
@@ -79,12 +78,6 @@ pub fn get_html_element_by_id(element_id: &str) -> web_sys::HtmlElement {
     let html_element: web_sys::HtmlElement = unwrap!(element.dyn_into::<web_sys::HtmlElement>());
     // return
     html_element
-}
-
-/// debug write into session_storage
-pub fn debug_write(text: &str) {
-    // writing to the console
-    console::log_1(&JsValue::from_str(text));
 }
 
 /// timestamp with milliseconds
@@ -99,7 +92,7 @@ pub fn now_performance_millisecond() -> f64 {
 /// debug write the duration of code execution
 pub fn debug_duration(text: &str, start: f64) {
     let in_milli = now_performance_millisecond() - start;
-    debug_write(&format!("{}: {} ms", text, in_milli));
+    log::info!("{}: {} ms", text, in_milli);
 }
 
 /// get text from element_id
@@ -135,7 +128,7 @@ pub async fn fetch_response(url: &str) -> String {
     // log1("before text()");
     let text_jsvalue = unwrap!(JsFuture::from(unwrap!(resp.text())).await);
     let txt_response: String = unwrap!(text_jsvalue.as_string());
-    // debug_write(&txt_response);
+    // log::info!("{}",&txt_response);
     // returns response as String
     txt_response
 }
@@ -156,7 +149,7 @@ pub async fn fetch_post_response(url: &str, json: Option<&JsValue>) -> String {
     // log1("before text()");
     let text_jsvalue = unwrap!(JsFuture::from(unwrap!(resp.text())).await);
     let txt_response: String = unwrap!(text_jsvalue.as_string());
-    // debug_write(&txt_response);
+    // log::info!("{}",&txt_response);
     // returns response as String
     txt_response
 }
@@ -209,7 +202,7 @@ pub fn show_snackbar() {
     element.set_class_name("show");
     // After 3 seconds, remove the show class from DIV
     let closure = wasm_bindgen::prelude::Closure::wrap(Box::new(move || {
-        debug_write("Timeout closure.");
+        log::info!("{}","Timeout closure.");
         let class_name = element.class_name();
         let class_name = class_name.replace("show", "");
         element.set_class_name(&class_name);

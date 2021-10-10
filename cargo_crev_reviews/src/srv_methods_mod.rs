@@ -17,7 +17,7 @@ use unwrap::unwrap;
 /// maybe add filter for one crate_name
 #[named]
 pub fn srv_reviews_list(_request_data: serde_json::Value) -> anyhow::Result<String> {
-    println!(function_name!());
+    log::info!(function_name!());
     let mut vec_review: Vec<ReviewItemData> = vec![];
     let vec_proof = unwrap!(crev_list_my_reviews(&None));
     // reverse, newest on top
@@ -36,7 +36,7 @@ pub fn srv_reviews_list(_request_data: serde_json::Value) -> anyhow::Result<Stri
 
 #[named]
 pub fn srv_review_new(request_data: serde_json::Value) -> anyhow::Result<String> {
-    println!(function_name!());
+    log::info!(function_name!());
     let filter: ReviewFilterData = unwrap!(serde_json::from_value(request_data));
 
     let response_html = crate::files_mod::review_new_html();
@@ -64,7 +64,7 @@ alternative crates explored:
 
 #[named]
 pub fn srv_review_save(request_data: serde_json::Value) -> anyhow::Result<String> {
-    println!(function_name!());
+    log::info!(function_name!());
 
     let p: ReviewItemData = unwrap!(serde_json::from_value(request_data));
 
@@ -93,7 +93,7 @@ fn request_review_list() -> anyhow::Result<String> {
 
 #[named]
 pub fn srv_review_edit(request_data: serde_json::Value) -> anyhow::Result<String> {
-    println!(function_name!());
+    log::info!(function_name!());
     let filter: ReviewFilterData = unwrap!(serde_json::from_value(request_data));
     // find the item from the list
     let p = crev_edit_review(filter)?;
@@ -106,7 +106,7 @@ pub fn srv_review_edit(request_data: serde_json::Value) -> anyhow::Result<String
 /// edit the review or copy the last review to create a new review
 #[named]
 pub fn srv_review_edit_or_new(request_data: serde_json::Value) -> anyhow::Result<String> {
-    println!(function_name!());
+    log::info!(function_name!());
     let filter: ReviewFilterData = unwrap!(serde_json::from_value(request_data.clone()));
 
     match crev_edit_or_new_review(filter) {
@@ -121,7 +121,7 @@ pub fn srv_review_edit_or_new(request_data: serde_json::Value) -> anyhow::Result
 
 #[named]
 pub fn srv_review_new_version(request_data: serde_json::Value) -> anyhow::Result<String> {
-    println!(function_name!());
+    log::info!(function_name!());
     let filter: ReviewFilterData = unwrap!(serde_json::from_value(request_data));
     // find the item from the list
     let p = crev_new_version(filter)?;
@@ -132,7 +132,7 @@ pub fn srv_review_new_version(request_data: serde_json::Value) -> anyhow::Result
 
 #[named]
 pub fn srv_review_publish(_request_data: serde_json::Value) -> anyhow::Result<String> {
-    println!(function_name!());
+    log::info!(function_name!());
     match crev_publish() {
         Ok(ret_val) => crate::response_post_mod::response_modal_message(&ret_val),
         Err(err) => crate::response_post_mod::response_err_message(&err),
@@ -141,7 +141,7 @@ pub fn srv_review_publish(_request_data: serde_json::Value) -> anyhow::Result<St
 
 #[named]
 pub fn srv_review_open_source_code(request_data: serde_json::Value) -> anyhow::Result<String> {
-    println!(function_name!());
+    log::info!(function_name!());
     let filter: ReviewFilterData = unwrap!(serde_json::from_value(request_data));
     let version = filter.crate_version.context("Parameter version in None.")?;
     let path_dir = crate::cargo_registry_mod::cargo_registry_src_dir_for_crate(&filter.crate_name, &version)?;
@@ -157,7 +157,7 @@ pub fn srv_review_open_source_code(request_data: serde_json::Value) -> anyhow::R
 
 #[named]
 pub fn srv_review_delete(filter_data: serde_json::Value) -> anyhow::Result<String> {
-    println!(function_name!());
+    log::info!(function_name!());
 
     let filter: ReviewFilterData = unwrap!(serde_json::from_value(filter_data));
     let version = filter.crate_version.context("Parameter version in None.")?;
@@ -170,7 +170,7 @@ pub fn srv_review_delete(filter_data: serde_json::Value) -> anyhow::Result<Strin
 
 #[named]
 pub fn srv_verify_project(_filter_data: serde_json::Value) -> anyhow::Result<String> {
-    println!(function_name!());
+    log::info!(function_name!());
 
     let response_data = crate::crev_mod::verify_project()?;
     let response_html = crate::files_mod::verify_list_html();
@@ -180,7 +180,7 @@ pub fn srv_verify_project(_filter_data: serde_json::Value) -> anyhow::Result<Str
 /// list of all versions for one crate: from registry index with data from src cached and my_reviews
 #[named]
 pub fn srv_version_list(request_data: serde_json::Value) -> anyhow::Result<String> {
-    println!(function_name!());
+    log::info!(function_name!());
     let filter: ReviewFilterData = unwrap!(serde_json::from_value(request_data.clone()));
 
     let mut vec = crev_crate_versions(&filter.crate_name)?;
@@ -199,7 +199,7 @@ pub fn srv_version_list(request_data: serde_json::Value) -> anyhow::Result<Strin
 
 #[named]
 pub fn srv_update_registry_index(_request_data: serde_json::Value) -> anyhow::Result<String> {
-    println!(function_name!());
+    log::info!(function_name!());
     match crate::cargo_registry_mod::update_registry_index() {
         Ok(_ret_val) => crate::response_post_mod::response_modal_message("Registry index updated."),
         Err(err) => crate::response_post_mod::response_err_message(&err),

@@ -41,7 +41,7 @@ impl HtmlProcessor for RpcMessageData {
         match name_of_repeat_segment {
             _ => {
                 let msg = format!("unrecognized name_of_repeat_segment {}", name_of_repeat_segment);
-                w::debug_write(&msg);
+                log::info!("{}", &msg);
                 html_new.push_str(&msg);
             }
         }
@@ -54,7 +54,7 @@ impl HtmlProcessor for RpcMessageData {
             "wt_message" => self.message.to_string(),
             _ => {
                 let html_error = format!("Unrecognized replace_wt method {}", wt_name);
-                w::debug_write(&html_error);
+                log::error!("{}", &html_error);
                 html_error
             }
         }
@@ -64,7 +64,7 @@ impl HtmlProcessor for RpcMessageData {
         match wb_name {
             _ => {
                 let html_error = format!("Unrecognized wb_exist_next_attribute method {}", wb_name);
-                w::debug_write(&html_error);
+                log::error!("{}", &html_error);
                 false
             }
         }
@@ -76,7 +76,7 @@ impl HtmlProcessor for ReviewListData {
     fn process_repetitive_items(&self, name_of_repeat_segment: &str, html_repetitive_template: &str, html_new: &mut String) {
         match name_of_repeat_segment {
             "wr_repeat_ReviewItemData" => {
-                w::debug_write(&format!("process_repetitive_items {}", name_of_repeat_segment));
+                log::info!("process_repetitive_items {}", name_of_repeat_segment);
                 for (row_number, data) in self.list_of_review.iter().enumerate() {
                     let list_item_html = data.process_html_with_item(html_repetitive_template, Some(row_number));
                     html_new.push_str(&list_item_html);
@@ -84,7 +84,7 @@ impl HtmlProcessor for ReviewListData {
             }
             _ => {
                 let msg = format!("unrecognized name_of_repeat_segment {}", name_of_repeat_segment);
-                w::debug_write(&msg);
+                log::info!("{}", &msg);
                 html_new.push_str(&msg);
             }
         }
@@ -96,7 +96,7 @@ impl HtmlProcessor for ReviewListData {
             "wt_cargo_crev_reviews_version" => env!("CARGO_PKG_VERSION").to_string(),
             _ => {
                 let html_error = format!("Unrecognized replace_wt method {}", wt_name);
-                w::debug_write(&html_error);
+                log::error!("{}", &html_error);
                 html_error
             }
         }
@@ -106,7 +106,7 @@ impl HtmlProcessor for ReviewListData {
         match wb_name {
             _ => {
                 let html_error = format!("Unrecognized wb_exist_next_attribute method {}", wb_name);
-                w::debug_write(&html_error);
+                log::error!("{}", &html_error);
                 false
             }
         }
@@ -119,7 +119,7 @@ impl HtmlProcessor for ReviewItemData {
         match name_of_repeat_segment {
             _ => {
                 let msg = format!("unrecognized name_of_repeat_segment {}", name_of_repeat_segment);
-                w::debug_write(&msg);
+                log::info!("{}", &msg);
                 html_new.push_str(&msg);
             }
         }
@@ -141,7 +141,7 @@ impl HtmlProcessor for ReviewItemData {
             "wt_cargo_crev_reviews_version" => env!("CARGO_PKG_VERSION").to_string(),
             _ => {
                 let html_error = format!("Unrecognized replace_wt method {}", wt_name);
-                w::debug_write(&html_error);
+                log::error!("{}", &html_error);
                 html_error
             }
         }
@@ -166,7 +166,7 @@ impl HtmlProcessor for ReviewItemData {
             "wb_checked_ra_strong" => self.rating == "strong",
             _ => {
                 let html_error = format!("Unrecognized wb_exist_next_attribute method {}", wb_name);
-                w::debug_write(&html_error);
+                log::error!("{}", &html_error);
                 false
             }
         }
@@ -181,7 +181,7 @@ impl HtmlProcessor for ReviewItemData {
 /// the data is already in static Mutex REVIEW_LIST_DATA
 #[named]
 pub fn cln_review_list(srv_response: RpcResponse) {
-    w::debug_write(function_name!());
+    log::info!("{}", function_name!());
 
     let html = extract_html(&srv_response);
     store_static_review_list_data(srv_response);
@@ -207,7 +207,7 @@ pub fn cln_review_list(srv_response: RpcResponse) {
 
 #[named]
 pub fn cln_review_new(srv_response: RpcResponse) {
-    w::debug_write(function_name!());
+    log::info!("{}", function_name!());
     let html = extract_html(&srv_response);
     store_to_review_item_data(srv_response);
     // call process with functions as parameters, to use for replace attributes and text nodes
@@ -223,7 +223,7 @@ pub fn cln_review_new(srv_response: RpcResponse) {
 /// the data and html are already in static Mutex REVIEW_ITEM_DATA
 #[named]
 pub fn cln_review_edit(srv_response: RpcResponse) {
-    w::debug_write(function_name!());
+    log::info!("{}", function_name!());
     let html = extract_html(&srv_response);
     store_to_review_item_data(srv_response);
 
@@ -239,7 +239,7 @@ pub fn cln_review_edit(srv_response: RpcResponse) {
 
 #[named]
 pub fn cln_review_publish_modal(srv_response: RpcResponse) {
-    w::debug_write(function_name!());
+    log::info!("{}", function_name!());
     let html = extract_html(&srv_response);
 
     // modal dialog box with error, don't change the html and data
@@ -252,7 +252,7 @@ pub fn cln_review_publish_modal(srv_response: RpcResponse) {
 
 #[named]
 pub fn cln_review_error(srv_response: RpcResponse) {
-    w::debug_write(function_name!());
+    log::info!("{}", function_name!());
     let html = extract_html(&srv_response);
 
     let data: RpcMessageData = unwrap!(serde_json::from_value(srv_response.response_data));
@@ -273,7 +273,7 @@ pub fn request_review_list(_element_id: &str) {
 
 #[named]
 fn button_open_crates_io_onclick(_element_id: &str, row_number: usize) {
-    w::debug_write(function_name!());
+    log::info!("{}", function_name!());
     // from list get crate name and version
     let item = &REVIEW_LIST_DATA.lock().unwrap().list_of_review[row_number];
     let url = format!("https://crates.io/crates/{}/{}", item.crate_name, item.crate_version);
@@ -282,7 +282,7 @@ fn button_open_crates_io_onclick(_element_id: &str, row_number: usize) {
 
 #[named]
 fn button_open_crev_dev_onclick(_element_id: &str, row_number: usize) {
-    w::debug_write(function_name!());
+    log::info!("{}", function_name!());
     // from list get crate name and version
     let item = &REVIEW_LIST_DATA.lock().unwrap().list_of_review[row_number];
     let url = format!("https://web.crev.dev/rust-reviews/crate/{}/", item.crate_name);
@@ -291,7 +291,7 @@ fn button_open_crev_dev_onclick(_element_id: &str, row_number: usize) {
 
 #[named]
 fn button_open_lib_rs_onclick(_element_id: &str, row_number: usize) {
-    w::debug_write(function_name!());
+    log::info!("{}", function_name!());
     // from list get crate name and version
     let item = &REVIEW_LIST_DATA.lock().unwrap().list_of_review[row_number];
     let url = format!("https://lib.rs/crates/{}", item.crate_name);
@@ -300,7 +300,7 @@ fn button_open_lib_rs_onclick(_element_id: &str, row_number: usize) {
 
 #[named]
 fn button_open_source_code_onclick(_element_id: &str, row_number: usize) {
-    w::debug_write(function_name!());
+    log::info!("{}", function_name!());
     // from list get crate name and version
     let item = &REVIEW_LIST_DATA.lock().unwrap().list_of_review[row_number];
     let request_data = ReviewFilterData {
@@ -313,7 +313,7 @@ fn button_open_source_code_onclick(_element_id: &str, row_number: usize) {
 
 #[named]
 pub fn request_review_publish(_element_id: &str) {
-    w::debug_write(function_name!());
+    log::info!("{}", function_name!());
     let html = r#"
 <div id="modal_message" class="w3_modal">
     <div class="w3_modal_content">
@@ -328,7 +328,7 @@ pub fn request_review_publish(_element_id: &str) {
 
 #[named]
 pub fn request_update_registry_index(_element_id: &str) {
-    w::debug_write(function_name!());
+    log::info!("{}", function_name!());
     let html = r#"
     <div id="modal_message" class="w3_modal">
         <div class="w3_modal_content">
@@ -342,14 +342,14 @@ pub fn request_update_registry_index(_element_id: &str) {
 
 #[named]
 pub fn request_review_new(_element_id: &str) {
-    w::debug_write(function_name!());
+    log::info!("{}", function_name!());
     let request_data = RpcEmptyData {};
     srv_methods::srv_review_new(request_data);
 }
 
 #[named]
 fn request_review_new_version(_element_id: &str, row_number: usize) {
-    w::debug_write(function_name!());
+    log::info!("{}", function_name!());
     // from list get crate name and version
     let item = &REVIEW_LIST_DATA.lock().unwrap().list_of_review[row_number];
     let request_data = ReviewFilterData {
@@ -363,7 +363,7 @@ fn request_review_new_version(_element_id: &str, row_number: usize) {
 /// send rpc requests
 #[named]
 fn request_review_save(_element_id: &str) {
-    w::debug_write(function_name!());
+    log::info!("{}", function_name!());
     // values from form
     let request_data = ReviewItemData {
         crate_name: w::get_input_element_value_string_by_id("crate_name"),
@@ -379,7 +379,7 @@ fn request_review_save(_element_id: &str) {
 
 #[named]
 fn request_review_edit_from_list(_element_id: &str, row_number: usize) {
-    w::debug_write(function_name!());
+    log::info!("{}", function_name!());
     // from list get crate name and version
     let item = &REVIEW_LIST_DATA.lock().unwrap().list_of_review[row_number];
     let request_data = ReviewFilterData {
@@ -396,7 +396,7 @@ fn modal_close_on_click(_element_id: &str) {
 
 #[named]
 pub fn modal_delete(_element_id: &str, row_number: usize) {
-    w::debug_write(function_name!());
+    log::info!("{}", function_name!());
     let html = format!(
         r#"
     <div id="modal_message" class="w3_modal">
@@ -417,7 +417,7 @@ pub fn modal_delete(_element_id: &str, row_number: usize) {
 
 #[named]
 fn request_review_delete(_element_id: &str, row_number: usize) {
-    w::debug_write(function_name!());
+    log::info!("{}", function_name!());
     modal_close_on_click("");
 
     // from list get crate name and version
