@@ -14,7 +14,8 @@ use cargo_crev_reviews::*;
 fn main() -> anyhow::Result<()> {
     // I don't need to check for `cargo` or Rust, because cargo_crev_reviews is installed with `cargo install`.
     // It means that cargo and Rust are already installed.
-    pretty_env_logger::init();
+    // priority order: error!, warn!, info!, debug! and trace!
+    pretty_env_logger::formatted_builder().filter_level(log::LevelFilter::Info).init();
 
     if let Some(host_port_already_busy) = host_port_is_busy() {
         one_instance_of_the_program_already_running(&host_port_already_busy);

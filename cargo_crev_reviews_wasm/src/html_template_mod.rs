@@ -65,6 +65,31 @@ pub struct SubTemplate {
     pub template: String,
 }
 
+/// The same html templating can be used on the server or on the client
+/// but if we want to mix it, we need to distinguish template variables with different prefixes
+/// example: "st_" for server or "wt_" for client (web browser)
+#[allow(dead_code)]
+#[derive(Clone, Copy)]
+pub enum ServerOrClient {
+    // server
+    Server,
+    /// web browser client
+    WebBrowserClient,
+}
+
+#[derive(Clone, Debug)]
+pub struct PrefixForTemplateVariables {
+    pub text: String,
+    pub url: String,
+    pub exist: String,
+    pub node: String,
+    pub subtemplate: String,
+    pub subtemplate_comment: String,
+    pub attr_text: String,
+    pub attr_url: String,
+    pub attr_exist: String,
+}
+
 pub trait HtmlServerTemplateRender {
     // region: methods must be implemented for a specific project
     // because the data model is always different and is known only to the project.
@@ -76,28 +101,52 @@ pub trait HtmlServerTemplateRender {
     fn data_model_name(&self) -> String;
     /// returns a String to replace the next text-node or attribute value
     /// use macro s!() for a normal string
-    fn replace_with_string(&self, placeholder: &str, subtemplate: &str, pos_cursor: usize) -> String;
+    fn replace_with_string(&self, placeholder: &str, subtemplate_name: &str, row_number: usize) -> String;
     /// same as replace_with_string, but return url
     /// exclusively for attributes value of href and src
     /// the url must be encoded in the beginning because it encodes segments of
     /// url prior to being composed together.
     /// use macro url_u!() to create an url, very like format!
     /// I try to avoid String here to force the developer to not forget to url_encode
-    fn replace_with_url(&self, placeholder: &str, subtemplate: &str, pos_cursor: usize) -> UrlUtf8EncodedString;
+    fn replace_with_url(&self, placeholder: &str, subtemplate_name: &str, row_number: usize) -> UrlUtf8EncodedString;
     /// boolean : is the next node rendered or not
     fn retain_next_node_or_attribute(&self, placeholder: &str) -> bool;
     /// returns a vector of Nodes to replace the next Node
     fn replace_with_nodes(&self, placeholder: &str) -> Vec<Node>;
     /// renders sub-template
-    fn render_sub_template(&self, template_name: &str, sub_templates: &Vec<SubTemplate>) -> Vec<Node>;
+    fn render_sub_template(&self, template_name: &str, sub_templates: &Vec<SubTemplate>, prefixes: &PrefixForTemplateVariables) -> Vec<Node>;
     // endregion: methods must be implemented for a specific project
 
     // region: this other methods should be private
     // but I don't know how to do it in Rust.
 
     /// render for root template (not subtemplates) from string
-    fn render(&self, html_template_raw: &str) -> String {
-        let nodes = unwrap!(self.render_template_raw_to_nodes(&html_template_raw, HtmlOrSvg::Html, "", 0));
+    fn render(&self, html_template_raw: &str, server_or_client_prefixes: ServerOrClient) -> String {
+        let prefixes = match server_or_client_prefixes {
+            ServerOrClient::Server => PrefixForTemplateVariables {
+                text: s!("st_"),
+                url: s!("su_"),
+                exist: s!("sb_"),
+                node: s!("sn_"),
+                subtemplate: s!("stmplt_"),
+                subtemplate_comment: s!("<!--stmplt_"),
+                attr_text: s!("data-st_"),
+                attr_url: s!("data-su_"),
+                attr_exist: s!("data-sb_"),
+            },
+            ServerOrClient::WebBrowserClient => PrefixForTemplateVariables {
+                text: s!("wt_"),
+                url: s!("wu_"),
+                exist: s!("wb_"),
+                node: s!("wn_"),
+                subtemplate: s!("wtmplt_"),
+                subtemplate_comment: s!("<!--wtmplt_"),
+                attr_text: s!("data-wt_"),
+                attr_url: s!("data-wu_"),
+                attr_exist: s!("data-wb_"),
+            },
+        };
+        let nodes = unwrap!(self.render_template_raw_to_nodes(&html_template_raw, HtmlOrSvg::Html, "", 0, &prefixes));
         // because this is the root template it must return one ElementNode
         let mut html = s!();
         match &nodes[0] {
@@ -119,13 +168,14 @@ pub trait HtmlServerTemplateRender {
         &self,
         html_template_raw: &str,
         html_or_svg_parent: HtmlOrSvg,
-        subtemplate: &str,
-        pos_cursor: usize,
+        subtemplate_name: &str,
+        row_number: usize,
+        prefixes: &PrefixForTemplateVariables,
     ) -> Result<Vec<Node>, &'static str> {
         // html_template_raw can be a fragment. I add the root, that will later be removed.
         let html_template_raw = &format!("<template>{}</template>", html_template_raw);
         // extract sub_templates. Only one level deep.
-        let sub_templates = Self::extract_children_sub_templates(html_template_raw);
+        let sub_templates = Self::extract_children_sub_templates(html_template_raw, prefixes);
         // the index zero is the drained main template
         let mut reader_for_microxml = ReaderForMicroXml::new(&sub_templates[0].template);
         let mut dom_path: Vec<String> = Vec::new();
@@ -158,10 +208,11 @@ pub trait HtmlServerTemplateRender {
                                 html_or_svg_local,
                                 &mut dom_path,
                                 &sub_templates,
-                                subtemplate,
-                                pos_cursor,
+                                subtemplate_name,
+                                row_number,
                                 // retain_next_node_or_attribute:
                                 true,
+                                prefixes,
                             )) {
                                 Ok(new_root_element) => root_element = new_root_element,
                                 Err(err) => {
@@ -195,9 +246,10 @@ pub trait HtmlServerTemplateRender {
         html_or_svg_parent: HtmlOrSvg,
         dom_path: &mut Vec<String>,
         sub_templates: &Vec<SubTemplate>,
-        subtemplate: &str,
-        pos_cursor: usize,
+        subtemplate_name: &str,
+        row_number: usize,
         retain_this_node: bool,
+        prefixes: &PrefixForTemplateVariables,
     ) -> Option<Result<ElementNode, &'static str>> {
         let mut replace_string: Option<String> = None;
         let mut replace_attr_name: Option<String> = None;
@@ -215,7 +267,7 @@ pub trait HtmlServerTemplateRender {
                     match token {
                         Token::StartElement(tag_name) => {
                             dom_path.push(s!(tag_name));
-                            // log::info!("dom_path: {:?}",dom_path);
+
                             // construct a child element and fill it (recursive)
                             let mut child_element = ElementNode {
                                 tag_name: s!(tag_name),
@@ -241,9 +293,10 @@ pub trait HtmlServerTemplateRender {
                                 html_or_svg_local,
                                 dom_path,
                                 sub_templates,
-                                subtemplate,
-                                pos_cursor,
+                                subtemplate_name,
+                                row_number,
                                 retain_next_node_or_attribute,
+                                prefixes,
                             )));
 
                             // ignore this node dynamic content, and don't push to result
@@ -258,30 +311,30 @@ pub trait HtmlServerTemplateRender {
                                     element.children.push(Node::Element(child_element));
                                 }
                             }
-                            // the siblings get the parents retain, until sb_
+                            // the siblings get the parents retain, until sb_ or wb_
                             retain_next_node_or_attribute = retain_this_node;
                         }
                         Token::Attribute(name, value) => {
                             if retain_this_node == true {
-                                if name.starts_with("data-st_") || name.starts_with("data-wt_") {
+                                if name.starts_with(&prefixes.attr_text) {
                                     // placeholder is in the attribute name.
                                     // the attribute value is only informative what is the next attribute name
                                     // example: data-st_placeholder="href" href="x"
                                     // The replace_string will always be applied to the next attribute. No matter the name.
                                     let placeholder = name.trim_start_matches("data-");
-                                    let repl_txt = self.replace_with_string(placeholder, subtemplate, pos_cursor);
+                                    let repl_txt = self.replace_with_string(placeholder, subtemplate_name, row_number);
                                     replace_attr_name = Some(s!(value));
                                     replace_attr_repl_name = Some(s!(name));
                                     replace_string = Some(repl_txt);
-                                } else if name.starts_with("data-su_") || name.starts_with("data-wu_") {
+                                } else if name.starts_with(&prefixes.attr_url) {
                                     // the same as data-st_, but exclusive to href and src
                                     // because they must use an url encoded string
                                     let placeholder = name.trim_start_matches("data-");
-                                    let repl_url = self.replace_with_url(placeholder, subtemplate, pos_cursor);
+                                    let repl_url = self.replace_with_url(placeholder, subtemplate_name, row_number);
                                     replace_attr_name = Some(s!(value));
                                     replace_attr_repl_name = Some(s!(name));
                                     replace_url = Some(repl_url);
-                                } else if name.starts_with("data-sb-") {
+                                } else if name.starts_with(&prefixes.attr_exist) {
                                     // the next attribute existence
                                     // if false it will not be rendered
                                     let placeholder = &value;
@@ -361,12 +414,20 @@ pub trait HtmlServerTemplateRender {
                                         replace_attr_name = None;
                                         replace_attr_repl_name = None;
                                     } else {
-                                        // Value is coming from the template that must be well-formed.
-                                        // It means that is html-encoded and we must decode it
-                                        // to push it to Node where all the strings are NOT html-encoded.
+                                        // attribute `id` is special, because it cannot be repeated in the html.
+                                        // if we have many rows of data, we add a suffix with the row number in brackets like id="item(1)"
+                                        // for the zero row (first row) it stays without suffix
+                                        let new_value = if row_number > 0 && name == "id" {
+                                            format!("{}({})", decode_5_xml_control_characters(value), row_number)
+                                        } else {
+                                            // Value is coming from the template that must be well-formed.
+                                            // It means that is html-encoded and we must decode it
+                                            // to push it to Node where all the strings are NOT html-encoded.
+                                            decode_5_xml_control_characters(value)
+                                        };
                                         element.attributes.push(Attribute {
                                             name: s!(name),
-                                            value: decode_5_xml_control_characters(value),
+                                            value: new_value,
                                         });
                                     }
                                 }
@@ -402,24 +463,25 @@ pub trait HtmlServerTemplateRender {
                             if retain_this_node == true {
                                 // the main goal of comments is to change the value of the next text node
                                 // with the result of a function
-                                // it must look like <!--st_get_text-->
+                                // it must look like <!--st_get_text--> or <!--wt_get_text-->
                                 // one small exception is <textarea> because it ignores the comment syntax.
                                 // It is still working, and it is not very ugly.
-                                if txt.starts_with("st_") || txt.starts_with("wt_") {
-                                    let repl_txt = self.replace_with_string(txt, subtemplate, pos_cursor);
+                                if txt.starts_with(&prefixes.text) {
+                                    let repl_txt = self.replace_with_string(txt, subtemplate_name, row_number);
                                     replace_string = Some(repl_txt);
-                                } else if txt.starts_with("su_") || txt.starts_with("wu_") {
-                                    let repl_url = self.replace_with_url(txt, subtemplate, pos_cursor);
+                                } else if txt.starts_with(&prefixes.url) {
+                                    let repl_url = self.replace_with_url(txt, subtemplate_name, row_number);
                                     replace_url = Some(repl_url);
-                                } else if txt.starts_with("sb_") || txt.starts_with("wb_") {
+                                } else if txt.starts_with(&prefixes.exist) {
                                     // boolean if this is true than render the next node, else don't render
                                     retain_next_node_or_attribute = self.retain_next_node_or_attribute(txt);
-                                } else if txt.starts_with("stmplt_") || txt.starts_with("wtmplt_") {
+                                } else if txt.starts_with(&prefixes.subtemplate) {
                                     // replace exactly this placeholder for a sub-template
                                     let template_name = txt.trim_end_matches(" start");
-                                    let repl_vec_nodes = self.render_sub_template(template_name, sub_templates);
+                                    let repl_vec_nodes = self.render_sub_template(template_name, sub_templates, prefixes);
+                                    // TODO: what is happening here?
                                     element.children.extend_from_slice(&repl_vec_nodes);
-                                } else if txt.starts_with("sn_") || txt.starts_with("wn_") {
+                                } else if txt.starts_with(&prefixes.node) {
                                     // nodes  (in a vector)
                                     let repl_vec_nodes = self.replace_with_nodes(txt);
                                     replace_vec_nodes = Some(repl_vec_nodes);
@@ -451,7 +513,7 @@ pub trait HtmlServerTemplateRender {
     }
 
     /// extracts and saves sub_templates only one level deep: children
-    fn extract_children_sub_templates(template_raw: &str) -> Vec<SubTemplate> {
+    fn extract_children_sub_templates(template_raw: &str, prefixes: &PrefixForTemplateVariables) -> Vec<SubTemplate> {
         // drain sub-template from main template and save into vector
         // the sub_templates[0] is the main_template
         // the main template will change with draining sub-templates
@@ -461,13 +523,12 @@ pub trait HtmlServerTemplateRender {
             placeholder: String::new(),
         }];
 
-        // the syntax is <!--stmplt_crate_version_summary start-->, <!--stmplt_crate_version_summary end-->
-        // TODO: for server is "stmplt_" for web browser is "wtmplt_"
+        // the syntax is <!--stmplt_field start-->, <!--stmplt_field end--> or <!--wtmplt_field start-->, <!--wtmplt_field end-->
         // unique delimiters for start and end are great if there is nesting.
         let mut pos_for_loop = 0;
         loop {
             let mut exist_template = false;
-            if let Some(pos_start) = find_pos_before_delimiter(&sub_templates[0].template, pos_for_loop, "<!--wtmplt_") {
+            if let Some(pos_start) = find_pos_before_delimiter(&sub_templates[0].template, pos_for_loop, &prefixes.subtemplate_comment) {
                 if let Some(pos_end_name) = find_pos_before_delimiter(&sub_templates[0].template, pos_start, " start-->") {
                     let sub_template_name = s!(&sub_templates[0].template[pos_start + 4..pos_end_name]);
                     // dbg!(sub_template_name);
@@ -507,7 +568,7 @@ pub trait HtmlServerTemplateRender {
                 break;
             }
         }
-        // dbg!(sub_templates.len());
+        // log::info!("{:?}", sub_templates);
         // return
         sub_templates
     }
@@ -522,7 +583,7 @@ pub trait HtmlServerTemplateRender {
             html.push_str(&element_node.tag_name);
             html.push_str(" ");
             dom_path.push(element_node.tag_name.to_string());
-            for attr in &element_node.attributes {
+            for attr in element_node.attributes.iter() {
                 html.push_str(&attr.name);
                 html.push_str(" = \"");
                 html.push_str(&encode_5_xml_control_characters(&attr.value));
@@ -537,7 +598,7 @@ pub trait HtmlServerTemplateRender {
             // dbg!(&html);
             } else {
                 html.push_str(">");
-                for sub_elem in &element_node.children {
+                for sub_elem in element_node.children.iter() {
                     match &sub_elem {
                         Node::Element(sub_element) => {
                             // recursion
@@ -653,6 +714,7 @@ pub fn render_sub_template_match_else(data_model_name: &str, template_name: &str
     return vec![node];
 }
 /// to string, but zero converts to empty
+#[allow(dead_code)]
 pub fn url_s_zero_to_empty(number: usize) -> String {
     if number == 0 {
         s!()

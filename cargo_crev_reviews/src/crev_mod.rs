@@ -108,11 +108,11 @@ pub fn vcs_info_to_revision_string(vcs: Option<VcsInfoJson>) -> String {
 /// unlock crev_id interactively
 pub fn unlock_crev_id_interactively() -> anyhow::Result<()> {
     let crev_local = crev_lib::local::Local::auto_create_or_open()?;
-    let crev_unlocked = crev_local.read_current_unlocked_id(&stdio_input_password_mod::read_passphrase_interactively)?;
-    println!("Unlocked.");
+    //let crev_unlocked = crev_local.read_current_unlocked_id(&stdio_input_password_mod::read_passphrase_interactively)?;
+    //println!("Unlocked.");
 
     // write to static mut
-    *CREV_UNLOCKED.lock().unwrap() = Some(crev_unlocked);
+    //*CREV_UNLOCKED.lock().unwrap() = Some(crev_unlocked);
     *CREV_LOCAL.lock().unwrap() = Some(crev_local);
 
     // return
@@ -341,11 +341,11 @@ pub fn _verify_proof(yaml: &str) -> anyhow::Result<()> {
     let proofs = crev_data::proof::Proof::parse_from(yaml.as_bytes())?;
     let proof = &proofs[0];
     log::info!("signature: {}", proof.signature());
-    log::info!!("id: {}", proof.author_public_id().id);
-    log::info!!("body:\n{}", proof.body());
+    log::info!("id: {}", proof.author_public_id().id);
+    log::info!("body:\n{}", proof.body());
     proof.verify()?;
 
-    log::info!!("Proof verified ok.");
+    log::info!("Proof verified ok.");
     // return
     Ok(())
 }

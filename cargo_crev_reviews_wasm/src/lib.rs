@@ -58,6 +58,7 @@ mod web_sys_mod;
 
 use anyhow::Context;
 use lazy_static::lazy_static;
+use log::Level;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsValue;
 
@@ -83,8 +84,8 @@ lazy_static! {
 pub fn wasm_bindgen_start() -> Result<(), JsValue> {
     // Initialize debugging for when/if something goes wrong.
     console_error_panic_hook::set_once();
-    // for global macros log::info!(), log::debug!(), log_error!(), log::warn!(), log::trace!()
-    wasm_logger::init(wasm_logger::Config::default());
+    // priority order: error!, warn!, info!, debug! and trace!
+    wasm_logger::init(wasm_logger::Config::new(Level::Trace));
     // write the app version just for debug purposes
     log::info!("{} v{}", env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION"));
 

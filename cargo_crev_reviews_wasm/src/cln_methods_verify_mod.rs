@@ -33,7 +33,7 @@ impl HtmlServerTemplateRender for VerifyItemData {
         // I will add <!DOCTYPE html> when the rendering ends, before returning the html.
         if let Some(pos_html) = html.find("<html") {
             let template_raw = &html[pos_html..];
-            let html = self.render(template_raw);
+            let html = self.render(template_raw, ServerOrClient::WebBrowserClient);
             return html;
         } else {
             html.to_string()
@@ -47,7 +47,7 @@ impl HtmlServerTemplateRender for VerifyItemData {
         }
     }
     /// returns a String to replace the next text-node: "wt_" or "st_"
-    fn replace_with_string(&self, placeholder: &str, _subtemplate: &str, pos_cursor: usize) -> String {
+    fn replace_with_string(&self, placeholder: &str, _subtemplate_name: &str, pos_cursor: usize) -> String {
         // dbg!(&placeholder);
         match placeholder {
             "wt_row_number" => format!("{}.", pos_cursor + 1),
@@ -71,7 +71,7 @@ impl HtmlServerTemplateRender for VerifyItemData {
         }
     }
     /// exclusive url encoded for href and src: "wu_" or "su"
-    fn replace_with_url(&self, placeholder: &str, _subtemplate: &str, _pos_cursor: usize) -> UrlUtf8EncodedString {
+    fn replace_with_url(&self, placeholder: &str, _subtemplate_name: &str, _pos_cursor: usize) -> UrlUtf8EncodedString {
         // dbg!( &placeholder);
         match placeholder {
             // the href for css is good for static data. For dynamic route it must be different.
@@ -86,7 +86,7 @@ impl HtmlServerTemplateRender for VerifyItemData {
         }
     }
     /// renders sub-template: "stmplt_" or "wtmplt_"
-    fn render_sub_template(&self, template_name: &str, _sub_templates: &Vec<SubTemplate>) -> Vec<Node> {
+    fn render_sub_template(&self, template_name: &str, _sub_templates: &Vec<SubTemplate>, _prefixes: &PrefixForTemplateVariables) -> Vec<Node> {
         // dbg!(&placeholder);
         match template_name {
             _ => render_sub_template_match_else(&self.data_model_name(), template_name),
@@ -102,7 +102,7 @@ impl HtmlServerTemplateRender for VerifyListData {
     }
     /// renders the complete html file. Not a sub-template/fragment.
     fn render_html(&self, html: &str) -> String {
-        let html = self.render(html);
+        let html = self.render(html, ServerOrClient::WebBrowserClient);
         // return
         html
     }
@@ -114,7 +114,7 @@ impl HtmlServerTemplateRender for VerifyListData {
         }
     }
     /// returns a String to replace the next text-node: "wt_" or "st_"
-    fn replace_with_string(&self, placeholder: &str, _subtemplate: &str, _pos_cursor: usize) -> String {
+    fn replace_with_string(&self, placeholder: &str, _subtemplate_name: &str, _pos_cursor: usize) -> String {
         // dbg!(&placeholder);
         match placeholder {
             "wt_cargo_crev_reviews_version" => s!(env!("CARGO_PKG_VERSION")),
@@ -123,7 +123,7 @@ impl HtmlServerTemplateRender for VerifyListData {
         }
     }
     /// exclusive url encoded for href and src: "wu_" or "su"
-    fn replace_with_url(&self, placeholder: &str, _subtemplate: &str, _pos_cursor: usize) -> UrlUtf8EncodedString {
+    fn replace_with_url(&self, placeholder: &str, _subtemplate_name: &str, _pos_cursor: usize) -> UrlUtf8EncodedString {
         // dbg!( &placeholder);
         match placeholder {
             // the href for css is good for static data. For dynamic route it must be different.
@@ -141,15 +141,14 @@ impl HtmlServerTemplateRender for VerifyListData {
         }
     }
     /// renders sub-template: "stmplt_" or "wtmplt_"
-    fn render_sub_template(&self, template_name: &str, sub_templates: &Vec<SubTemplate>) -> Vec<Node> {
-        log::info!("{}", sub_templates[1].name.as_str());
-        // dbg!(&placeholder);
+    fn render_sub_template(&self, template_name: &str, sub_templates: &Vec<SubTemplate>, prefixes: &PrefixForTemplateVariables) -> Vec<Node> {
+        log::info!("{}", template_name);
         match template_name {
             "wtmplt_verify_item_data" => {
                 let sub_template = unwrap!(sub_templates.iter().find(|&template| template.name == template_name));
                 let mut nodes = vec![];
-                for verify_item in &self.list_of_verify {
-                    let vec_node = unwrap!(verify_item.render_template_raw_to_nodes(&sub_template.template, HtmlOrSvg::Html, "", 0));
+                for (row_number, verify_item) in self.list_of_verify.iter().enumerate() {
+                    let vec_node = unwrap!(verify_item.render_template_raw_to_nodes(&sub_template.template, HtmlOrSvg::Html, "", row_number, prefixes));
                     nodes.extend_from_slice(&vec_node);
                 }
                 // return
@@ -179,9 +178,9 @@ pub fn cln_verify_list(srv_response: RpcResponse) {
     navigation_on_click();
 
     // on_click for every row of the list
-    for (row_number, _item) in VERIFY_LIST_DATA.lock().unwrap().list_of_verify.iter().enumerate() {
+    /*   for (row_number, _item) in VERIFY_LIST_DATA.lock().unwrap().list_of_verify.iter().enumerate() {
         row_on_click!("crate_name_version", row_number, open_all_links);
-    }
+    } */
 }
 
 #[named]

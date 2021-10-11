@@ -35,8 +35,15 @@ macro_rules! row_on_click {
         let closure = Closure::wrap(Box::new(move || {
             $function_ident($element_prefix, $row_number);
         }) as Box<dyn FnMut()>);
-
-        let html_element = crate::web_sys_mod::get_html_element_by_id(&format!("{}({})", $element_prefix, $row_number));
+        // The attribute "id" is special, because it must be unique in the html.
+        // If there is more rows, "id" gets the suffix like name(99).
+        // For the zero (first) row there is no suffix.
+        let name = if $row_number > 0 {
+            format!("{}({})", $element_prefix, $row_number)
+        } else {
+            $element_prefix.to_string()
+        };
+        let html_element = crate::web_sys_mod::get_html_element_by_id(&name);
         html_element.set_onclick(Some(closure.as_ref().unchecked_ref()));
         closure.forget();
     }};
@@ -202,7 +209,7 @@ pub fn show_snackbar() {
     element.set_class_name("show");
     // After 3 seconds, remove the show class from DIV
     let closure = wasm_bindgen::prelude::Closure::wrap(Box::new(move || {
-        log::info!("{}","Timeout closure.");
+        log::info!("{}", "Timeout closure.");
         let class_name = element.class_name();
         let class_name = class_name.replace("show", "");
         element.set_class_name(&class_name);
