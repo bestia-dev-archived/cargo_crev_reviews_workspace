@@ -10,8 +10,10 @@ use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 
 use crate::auto_generated_mod::common_structs_mod::*;
-use crate::auto_generated_mod::*;
+use crate::auto_generated_mod::srv_methods;
+
 use crate::html_mod::*;
+use crate::html_template_mod::*;
 use crate::on_click;
 use crate::utils_mod::join_crate_version;
 use crate::*;
@@ -34,100 +36,79 @@ fn store_static_review_list_data(srv_response: RpcResponse) {
 }
 // endregion: mutable static, because it is hard to pass variables around with on_click events
 
-// region: HtmlProcessor for data structs
-impl HtmlProcessor for RpcMessageData {
-    /// process template and push as many &str is needed
-    fn process_repetitive_items(&self, name_of_repeat_segment: &str, _html_repetitive_template: &str, html_new: &mut String) {
-        match name_of_repeat_segment {
-            _ => {
-                let msg = format!("unrecognized name_of_repeat_segment {}", name_of_repeat_segment);
-                log::info!("{}", &msg);
-                html_new.push_str(&msg);
-            }
-        }
+// region: HtmlServerTemplateRender for data structs
+impl HtmlServerTemplateRender for RpcMessageData {
+    /// data model name is used for eprint
+    fn data_model_name(&self) -> String {
+        // return
+        s!("RpcMessageData")
     }
 
-    /// the use of complete string wt_xxx enables easy and exact text search around the source code
-    fn match_wt(&self, wt_name: &str, _row_num: Option<usize>) -> String {
-        match wt_name {
-            "wt_cargo_crev_reviews_version" => env!("CARGO_PKG_VERSION").to_string(),
-            "wt_message" => self.message.to_string(),
-            _ => {
-                let html_error = format!("Unrecognized replace_wt method {}", wt_name);
-                log::error!("{}", &html_error);
-                html_error
-            }
-        }
-    }
-    /// the use of complete string wb_xxx enables easy and exact text search around the source code
-    fn match_wb(&self, wb_name: &str) -> bool {
-        match wb_name {
-            _ => {
-                let html_error = format!("Unrecognized wb_exist_next_attribute method {}", wb_name);
-                log::error!("{}", &html_error);
-                false
-            }
+    /// returns a String to replace the next text-node: "wt_" or "st_"
+    fn replace_with_string(&self, placeholder: &str, _subtemplate_name: &str, _pos_cursor: usize) -> String {
+        // dbg!(&placeholder);
+        match placeholder {
+            "wt_cargo_crev_reviews_version" => s!(env!("CARGO_PKG_VERSION")),
+            "wt_message" => s!(self.message),
+            _ => replace_with_string_match_else(&self.data_model_name(), placeholder),
         }
     }
 }
 
-impl HtmlProcessor for ReviewListData {
-    /// process template and push as many &str is needed
-    fn process_repetitive_items(&self, name_of_repeat_segment: &str, html_repetitive_template: &str, html_new: &mut String) {
-        match name_of_repeat_segment {
-            "wr_repeat_ReviewItemData" => {
-                log::info!("process_repetitive_items {}", name_of_repeat_segment);
-                for (row_number, data) in self.list_of_review.iter().enumerate() {
-                    let list_item_html = data.process_html_with_item(html_repetitive_template, Some(row_number));
-                    html_new.push_str(&list_item_html);
+impl HtmlServerTemplateRender for ReviewListData {
+    /// data model name is used for eprint
+    fn data_model_name(&self) -> String {
+        // return
+        s!("ReviewListData")
+    }
+
+    /// renders sub-template: "stmplt_" or "wtmplt_"
+    fn render_sub_template(&self, template_name: &str, sub_templates: &Vec<SubTemplate>, prefixes: &PrefixForTemplateVariables) -> Vec<Node> {
+        log::info!("{}", template_name);
+        match template_name {
+            "wtmplt_ReviewItemData" => {
+                let sub_template = unwrap!(sub_templates.iter().find(|&template| template.name == template_name));
+                let mut nodes = vec![];
+                for (row_number, review_item) in self.list_of_review.iter().enumerate() {
+                    let vec_node = unwrap!(crate::html_template_mod::render_template_raw_to_nodes(
+                        review_item,
+                        &sub_template.template,
+                        HtmlOrSvg::Html,
+                        "",
+                        row_number,
+                        prefixes
+                    ));
+                    nodes.extend_from_slice(&vec_node);
                 }
+                // return
+                nodes
             }
-            _ => {
-                let msg = format!("unrecognized name_of_repeat_segment {}", name_of_repeat_segment);
-                log::info!("{}", &msg);
-                html_new.push_str(&msg);
-            }
+            _ => render_sub_template_match_else(&self.data_model_name(), template_name),
         }
     }
 
     /// the use of complete string wt_xxx enables easy and exact text search around the source code
-    fn match_wt(&self, wt_name: &str, _row_num: Option<usize>) -> String {
-        match wt_name {
-            "wt_cargo_crev_reviews_version" => env!("CARGO_PKG_VERSION").to_string(),
-            _ => {
-                let html_error = format!("Unrecognized replace_wt method {}", wt_name);
-                log::error!("{}", &html_error);
-                html_error
-            }
-        }
-    }
-    /// the use of complete string wb_xxx enables easy and exact text search around the source code
-    fn match_wb(&self, wb_name: &str) -> bool {
-        match wb_name {
-            _ => {
-                let html_error = format!("Unrecognized wb_exist_next_attribute method {}", wb_name);
-                log::error!("{}", &html_error);
-                false
-            }
+    /// returns a String to replace the next text-node: "wt_" or "st_"
+    fn replace_with_string(&self, placeholder: &str, _subtemplate_name: &str, _pos_cursor: usize) -> String {
+        // dbg!(&placeholder);
+        match placeholder {
+            "wt_cargo_crev_reviews_version" => s!(env!("CARGO_PKG_VERSION")),
+            _ => replace_with_string_match_else(&self.data_model_name(), placeholder),
         }
     }
 }
 
-impl HtmlProcessor for ReviewItemData {
-    /// process template and push as many &str is needed
-    fn process_repetitive_items(&self, name_of_repeat_segment: &str, _html_repetitive_template: &str, html_new: &mut String) {
-        match name_of_repeat_segment {
-            _ => {
-                let msg = format!("unrecognized name_of_repeat_segment {}", name_of_repeat_segment);
-                log::info!("{}", &msg);
-                html_new.push_str(&msg);
-            }
-        }
+impl HtmlServerTemplateRender for ReviewItemData {
+    /// data model name is used for eprint
+    fn data_model_name(&self) -> String {
+        // return
+        s!("ReviewItemData")
     }
 
-    /// the use of complete string wt_xxx enables easy and exact text search around the source code
-    fn match_wt(&self, wt_name: &str, _row_num: Option<usize>) -> String {
-        match wt_name {
+    /// returns a String to replace the next text-node: "wt_" or "st_"
+    fn replace_with_string(&self, placeholder: &str, _subtemplate_name: &str, _pos_cursor: usize) -> String {
+        // dbg!(&placeholder);
+        match placeholder {
             "wt_comment_md" => self.comment_md.clone(),
             "wt_crate_name" => self.crate_name.clone(),
             "wt_crate_version" => self.crate_version.clone(),
@@ -139,16 +120,14 @@ impl HtmlProcessor for ReviewItemData {
             "wt_review_date" => self.date[..10].to_string(),
             "wt_rating_class_color" => format!("review_header0_cell c_{} bold", self.rating),
             "wt_cargo_crev_reviews_version" => env!("CARGO_PKG_VERSION").to_string(),
-            _ => {
-                let html_error = format!("Unrecognized replace_wt method {}", wt_name);
-                log::error!("{}", &html_error);
-                html_error
-            }
+
+            _ => replace_with_string_match_else(&self.data_model_name(), placeholder),
         }
     }
-    /// the use of complete string wb_xxx enables easy and exact text search around the source code
-    fn match_wb(&self, wb_name: &str) -> bool {
-        match wb_name {
+    /// boolean : is the next node rendered or not: "wb_" or "sb_"
+    fn retain_next_node_or_attribute(&self, placeholder: &str) -> bool {
+        // dbg!( &placeholder);
+        match placeholder {
             "wb_checked_th_none" => self.thoroughness == "none",
             "wb_checked_th_low" => self.thoroughness == "low",
             "wb_checked_th_medium" => self.thoroughness == "medium",
@@ -164,16 +143,12 @@ impl HtmlProcessor for ReviewItemData {
             "wb_checked_ra_neutral" => self.rating == "neutral",
             "wb_checked_ra_positive" => self.rating == "positive",
             "wb_checked_ra_strong" => self.rating == "strong",
-            _ => {
-                let html_error = format!("Unrecognized wb_exist_next_attribute method {}", wb_name);
-                log::error!("{}", &html_error);
-                false
-            }
+            _ => retain_next_node_or_attribute_match_else(&self.data_model_name(), placeholder),
         }
     }
 }
 
-// endregion: HtmlProcessor for data structs
+// endregion: HtmlServerTemplateRender for data structs
 
 // region: cln methods to render the page and data
 
@@ -187,7 +162,7 @@ pub fn cln_review_list(srv_response: RpcResponse) {
     store_static_review_list_data(srv_response);
 
     // call process with functions as parameters, to use for replace attributes and text nodes
-    let html_after_process = REVIEW_LIST_DATA.lock().unwrap().process_html(&html);
+    let html_after_process = REVIEW_LIST_DATA.lock().unwrap().render_html(&html);
 
     inject_into_html(&html_after_process);
 
@@ -212,7 +187,7 @@ pub fn cln_review_new(srv_response: RpcResponse) {
     store_to_review_item_data(srv_response);
     // call process with functions as parameters, to use for replace attributes and text nodes
     let data = &REVIEW_ITEM_DATA.lock().unwrap();
-    let html_after_process = data.process_html(&html);
+    let html_after_process = data.render_html(&html);
     inject_into_html(&html_after_process);
 
     on_click!("button_review_save", request_review_save);
@@ -229,7 +204,7 @@ pub fn cln_review_edit(srv_response: RpcResponse) {
 
     // call process with functions as parameters, to use for replace attributes and text nodes
     let data = &REVIEW_ITEM_DATA.lock().unwrap();
-    let html_after_process = data.process_html(&html);
+    let html_after_process = data.render_html(&html);
 
     inject_into_html(&html_after_process);
 
@@ -244,7 +219,7 @@ pub fn cln_review_publish_modal(srv_response: RpcResponse) {
 
     // modal dialog box with error, don't change the html and data
     let data: RpcMessageData = unwrap!(serde_json::from_value(srv_response.response_data));
-    let html_after_process = data.process_html(&html);
+    let html_after_process = data.render_html(&html);
 
     w::set_inner_html("div_for_modal", &html_after_process);
     on_click!("modal_close", modal_close_on_click);
@@ -256,7 +231,7 @@ pub fn cln_review_error(srv_response: RpcResponse) {
     let html = extract_html(&srv_response);
 
     let data: RpcMessageData = unwrap!(serde_json::from_value(srv_response.response_data));
-    let html_after_process = data.process_html(&html);
+    let html_after_process = data.render_html(&html);
 
     w::set_inner_html("div_for_modal", &html_after_process);
     on_click!("modal_close", modal_close_on_click);

@@ -27,25 +27,7 @@ impl HtmlServerTemplateRender for VerifyItemData {
         // return
         s!("VerifyItemData")
     }
-    /// renders the complete html file. Not a sub-template/fragment.
-    fn render_html(&self, html: &str) -> String {
-        // find node <html >, jump over <!DOCTYPE html> because it is not microXml compatible
-        // I will add <!DOCTYPE html> when the rendering ends, before returning the html.
-        if let Some(pos_html) = html.find("<html") {
-            let template_raw = &html[pos_html..];
-            let html = self.render(template_raw, ServerOrClient::WebBrowserClient);
-            return html;
-        } else {
-            html.to_string()
-        }
-    }
-    /// boolean : is the next node rendered or not: "wb_" or "sb_"
-    fn retain_next_node_or_attribute(&self, placeholder: &str) -> bool {
-        // dbg!( &placeholder);
-        match placeholder {
-            _ => retain_next_node_or_attribute_match_else(&self.data_model_name(), placeholder),
-        }
-    }
+
     /// returns a String to replace the next text-node: "wt_" or "st_"
     fn replace_with_string(&self, placeholder: &str, _subtemplate_name: &str, pos_cursor: usize) -> String {
         // dbg!(&placeholder);
@@ -70,28 +52,6 @@ impl HtmlServerTemplateRender for VerifyItemData {
             _ => replace_with_string_match_else(&self.data_model_name(), placeholder),
         }
     }
-    /// exclusive url encoded for href and src: "wu_" or "su"
-    fn replace_with_url(&self, placeholder: &str, _subtemplate_name: &str, _pos_cursor: usize) -> UrlUtf8EncodedString {
-        // dbg!( &placeholder);
-        match placeholder {
-            // the href for css is good for static data. For dynamic route it must be different.
-            _ => replace_with_url_match_else(&self.data_model_name(), placeholder),
-        }
-    }
-    /// returns a vector of Nodes to replace the next Node: "wn_" or "sn"
-    fn replace_with_nodes(&self, placeholder: &str) -> Vec<Node> {
-        // dbg!(&placeholder);
-        match placeholder {
-            _ => replace_with_nodes_match_else(&self.data_model_name(), placeholder),
-        }
-    }
-    /// renders sub-template: "stmplt_" or "wtmplt_"
-    fn render_sub_template(&self, template_name: &str, _sub_templates: &Vec<SubTemplate>, _prefixes: &PrefixForTemplateVariables) -> Vec<Node> {
-        // dbg!(&placeholder);
-        match template_name {
-            _ => render_sub_template_match_else(&self.data_model_name(), template_name),
-        }
-    }
 }
 
 impl HtmlServerTemplateRender for VerifyListData {
@@ -102,16 +62,9 @@ impl HtmlServerTemplateRender for VerifyListData {
     }
     /// renders the complete html file. Not a sub-template/fragment.
     fn render_html(&self, html: &str) -> String {
-        let html = self.render(html, ServerOrClient::WebBrowserClient);
+        let html = crate::html_template_mod::render(self, html, ServerOrClient::WebBrowserClient);
         // return
         html
-    }
-    /// boolean : is the next node rendered or not: "wb_" or "sb_"
-    fn retain_next_node_or_attribute(&self, placeholder: &str) -> bool {
-        // dbg!( &placeholder);
-        match placeholder {
-            _ => retain_next_node_or_attribute_match_else(&self.data_model_name(), placeholder),
-        }
     }
     /// returns a String to replace the next text-node: "wt_" or "st_"
     fn replace_with_string(&self, placeholder: &str, _subtemplate_name: &str, _pos_cursor: usize) -> String {
@@ -122,24 +75,7 @@ impl HtmlServerTemplateRender for VerifyListData {
             _ => replace_with_string_match_else(&self.data_model_name(), placeholder),
         }
     }
-    /// exclusive url encoded for href and src: "wu_" or "su"
-    fn replace_with_url(&self, placeholder: &str, _subtemplate_name: &str, _pos_cursor: usize) -> UrlUtf8EncodedString {
-        // dbg!( &placeholder);
-        match placeholder {
-            // the href for css is good for static data. For dynamic route it must be different.
-            "su_css_route" => url_u!("/rust-reviews/css/rust-reviews.css"),
-            "su_favicon_route" => url_u!("/rust-reviews/favicon.png"),
-            "su_img_src_logo" => url_u!("/rust-reviews/images/Logo_02.png"),
-            _ => replace_with_url_match_else(&self.data_model_name(), placeholder),
-        }
-    }
-    /// returns a vector of Nodes to replace the next Node: "wn_" or "sn"
-    fn replace_with_nodes(&self, placeholder: &str) -> Vec<Node> {
-        // dbg!(&placeholder);
-        match placeholder {
-            _ => replace_with_nodes_match_else(&self.data_model_name(), placeholder),
-        }
-    }
+
     /// renders sub-template: "stmplt_" or "wtmplt_"
     fn render_sub_template(&self, template_name: &str, sub_templates: &Vec<SubTemplate>, prefixes: &PrefixForTemplateVariables) -> Vec<Node> {
         log::info!("{}", template_name);
@@ -148,7 +84,14 @@ impl HtmlServerTemplateRender for VerifyListData {
                 let sub_template = unwrap!(sub_templates.iter().find(|&template| template.name == template_name));
                 let mut nodes = vec![];
                 for (row_number, verify_item) in self.list_of_verify.iter().enumerate() {
-                    let vec_node = unwrap!(verify_item.render_template_raw_to_nodes(&sub_template.template, HtmlOrSvg::Html, "", row_number, prefixes));
+                    let vec_node = unwrap!(render_template_raw_to_nodes(
+                        verify_item,
+                        &sub_template.template,
+                        HtmlOrSvg::Html,
+                        "",
+                        row_number,
+                        prefixes
+                    ));
                     nodes.extend_from_slice(&vec_node);
                 }
                 // return
@@ -178,9 +121,9 @@ pub fn cln_verify_list(srv_response: RpcResponse) {
     navigation_on_click();
 
     // on_click for every row of the list
-    /*   for (row_number, _item) in VERIFY_LIST_DATA.lock().unwrap().list_of_verify.iter().enumerate() {
+    for (row_number, _item) in VERIFY_LIST_DATA.lock().unwrap().list_of_verify.iter().enumerate() {
         row_on_click!("crate_name_version", row_number, open_all_links);
-    } */
+    }
 }
 
 #[named]
