@@ -155,7 +155,7 @@ checksum = "b700ce4376041dcd0a327fd0097c41095743c4c8af8887265942faf1100bd040"
 
 [[package]]
 name = "cargo_crev_reviews"
-version = "2021.1012.1828"
+version = "2021.1014.615"
 dependencies = [
  "anyhow",
  "base64",
@@ -188,11 +188,12 @@ dependencies = [
 
 [[package]]
 name = "cargo_crev_reviews_wasm"
-version = "2021.1012.1828"
+version = "2021.1014.615"
 dependencies = [
  "anyhow",
  "chrono",
  "console_error_panic_hook",
+ "dev_bestia_html_templating",
  "function_name",
  "js-sys",
  "lazy_static",
@@ -636,6 +637,17 @@ checksum = "58a94ace95092c5acb1e97a7e846b310cfbd499652f72297da7493f618a98d73"
 dependencies = [
  "derive_builder_core",
  "syn 1.0.75",
+]
+
+[[package]]
+name = "dev_bestia_html_templating"
+version = "2021.1012.1828"
+dependencies = [
+ "anyhow",
+ "log",
+ "percent-encoding",
+ "reader_for_microxml",
+ "unwrap",
 ]
 
 [[package]]

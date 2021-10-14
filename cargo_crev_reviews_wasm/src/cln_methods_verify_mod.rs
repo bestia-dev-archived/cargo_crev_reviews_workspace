@@ -7,12 +7,13 @@ use unwrap::unwrap;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 
+use dev_bestia_html_templating::html_template_mod::*;
+
 use crate::auto_generated_mod::common_structs_mod::*;
 use crate::auto_generated_mod::srv_methods;
 
 // use crate::on_click;
 use crate::html_mod::*;
-use crate::html_template_mod::*;
 use crate::*;
 
 lazy_static! {
@@ -62,7 +63,7 @@ impl HtmlServerTemplateRender for VerifyListData {
     }
     /// renders the complete html file. Not a sub-template/fragment.
     fn render_html(&self, html: &str) -> String {
-        let html = crate::html_template_mod::render(self, html, ServerOrClient::WebBrowserClient);
+        let html = render(self, html, ServerOrClient::WebBrowserClient);
         // return
         html
     }

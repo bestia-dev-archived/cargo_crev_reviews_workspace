@@ -7,12 +7,13 @@ use unwrap::unwrap;
 // use wasm_bindgen::prelude::*;
 // use wasm_bindgen::JsCast;
 
+use dev_bestia_html_templating::html_template_mod::*;
+
 use crate::auto_generated_mod::common_structs_mod::*;
 //use crate::auto_generated_mod::srv_methods;
 
 // use crate::on_click;
 use crate::html_mod::*;
-use crate::html_template_mod::*;
 use crate::utils_mod::join_crate_version;
 use crate::*;
 

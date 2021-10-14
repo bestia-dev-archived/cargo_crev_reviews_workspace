@@ -50,7 +50,6 @@ mod cln_methods_review_mod;
 mod cln_methods_verify_mod;
 mod cln_methods_version_mod;
 mod html_mod;
-mod html_template_mod;
 mod macros_mod;
 mod url_utf8_mod;
 mod utils_mod;

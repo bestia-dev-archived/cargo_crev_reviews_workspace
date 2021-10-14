@@ -9,11 +9,12 @@ use unwrap::unwrap;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 
+use dev_bestia_html_templating::html_template_mod::*;
+
 use crate::auto_generated_mod::common_structs_mod::*;
 use crate::auto_generated_mod::srv_methods;
 
 use crate::html_mod::*;
-use crate::html_template_mod::*;
 use crate::on_click;
 use crate::utils_mod::join_crate_version;
 use crate::*;
@@ -70,7 +71,7 @@ impl HtmlServerTemplateRender for ReviewListData {
                 let sub_template = unwrap!(sub_templates.iter().find(|&template| template.name == template_name));
                 let mut nodes = vec![];
                 for (row_number, review_item) in self.list_of_review.iter().enumerate() {
-                    let vec_node = unwrap!(crate::html_template_mod::render_template_raw_to_nodes(
+                    let vec_node = unwrap!(render_template_raw_to_nodes(
                         review_item,
                         &sub_template.template,
                         HtmlOrSvg::Html,
