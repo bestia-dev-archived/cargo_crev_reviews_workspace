@@ -18,7 +18,9 @@
 
 [comment]: # (auto_lines_of_code end)
 
-[comment]: # (auto_badges end)
+[comment]: # (auto_badges start)
+
+[![crates.io](https://img.shields.io/crates/v/cargo_crev_reviews.svg)](https://crates.io/crates/cargo_crev_reviews) [![Documentation](https://docs.rs/cargo_crev_reviews/badge.svg)](https://docs.rs/cargo_crev_reviews/) [![crev reviews](https://web.crev.dev/rust-reviews/badge/crev_count/cargo_crev_reviews.svg)](https://web.crev.dev/rust-reviews/crate/cargo_crev_reviews/) [![Lib.rs](https://img.shields.io/badge/Lib.rs-rust-orange.svg)](https://lib.rs/crates/cargo_crev_reviews/) [![Licence](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/LucianoBestia/cargo_crev_reviews/blob/master/LICENSE) [![Rust](https://github.com/LucianoBestia/cargo_crev_reviews/workflows/RustAction/badge.svg)](https://github.com/LucianoBestia/cargo_crev_reviews/actions)  
 
 [comment]: # (auto_badges end)
 
@@ -327,9 +329,11 @@ pub fn cln_review_edit(srv_response: RpcResponse) {
     let html = extract_html(&srv_response);
     store_to_review_item_data(srv_response);
 
-    // call process with functions as parameters, to use for replace attributes and text nodes
-    let data = &REVIEW_ITEM_DATA.lock().unwrap();
-    let html_after_process = data.process_html(&html);
+    // the mutex is locked inside a scope. When this structure falls out of scope, the lock will be unlocked.
+    let html_after_process = {
+        let data = REVIEW_ITEM_DATA.lock().unwrap().deref();
+        process_html(data, &html)
+    };
 
     inject_into_html(&html_after_process);
 

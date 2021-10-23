@@ -18,7 +18,18 @@
 
 [comment]: # (auto_lines_of_code end)
 
+[comment]: # (auto_badges start)
+
+[![Licence](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/LucianoBestia/dev_bestia_string_utils/blob/master/LICENSE)
+
+[comment]: # (auto_badges end)
+
 This is a member of the workspace.
 It is the wasm frontend for the GUI application.  
+The main member project is `cargo_crev_reviews`.  
+Please, continue reading `README.md` here:  
+
+## [cargo_crev_reviews/README.md](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/tree/main/cargo_crev_reviews)  
+
 
 [comment]: # (auto_md_to_doc_comments segment end A)

@@ -155,7 +155,7 @@ checksum = "b700ce4376041dcd0a327fd0097c41095743c4c8af8887265942faf1100bd040"
 
 [[package]]
 name = "cargo_crev_reviews"
-version = "2021.1014.615"
+version = "2021.1022.1013"
 dependencies = [
  "anyhow",
  "base64",
@@ -188,7 +188,7 @@ dependencies = [
 
 [[package]]
 name = "cargo_crev_reviews_wasm"
-version = "2021.1014.615"
+version = "2021.1022.1013"
 dependencies = [
  "anyhow",
  "chrono",
@@ -641,9 +641,12 @@ dependencies = [
 
 [[package]]
 name = "dev_bestia_html_templating"
-version = "2021.1012.1828"
+version = "0.1.31"
 dependencies = [
  "anyhow",
+ "dev_bestia_string_utils",
+ "dev_bestia_url_utf8",
+ "lazy_static",
  "log",
  "percent-encoding",
  "reader_for_microxml",
@@ -662,6 +665,29 @@ dependencies = [
  "num_cpus",
  "scoped_threadpool",
  "time 0.3.1",
+ "unwrap",
+]
+
+[[package]]
+name = "dev_bestia_string_utils"
+version = "0.1.19"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "eef727a8c7e522923050e241ab4fefad06d05b7ed009964c0b154dfb8b65f308"
+dependencies = [
+ "log",
+ "unwrap",
+]
+
+[[package]]
+name = "dev_bestia_url_utf8"
+version = "0.1.28"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9ce046a088378f487882555013ea3b536ed225aa5205e1cb636169aab987ff17"
+dependencies = [
+ "dev_bestia_string_utils",
+ "log",
+ "percent-encoding",
+ "thiserror",
  "unwrap",
 ]
 
@@ -2079,18 +2105,18 @@ dependencies = [
 
 [[package]]
 name = "thiserror"
-version = "1.0.29"
+version = "1.0.30"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "602eca064b2d83369e2b2f34b09c70b605402801927c65c11071ac911d299b88"
+checksum = "854babe52e4df1653706b98fcfc05843010039b406875930a70e4d9644e5c417"
 dependencies = [
  "thiserror-impl",
 ]
 
 [[package]]
 name = "thiserror-impl"
-version = "1.0.29"
+version = "1.0.30"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bad553cc2c78e8de258400763a647e80e6d1b31ee237275d756f6836d204494c"
+checksum = "aa32fd3f627f367fe16f893e2597ae3c05020f8bba2666a4e6ea73d377e5714b"
 dependencies = [
  "proc-macro2 1.0.28",
  "quote 1.0.9",

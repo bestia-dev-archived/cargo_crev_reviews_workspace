@@ -1,16 +1,18 @@
 // cln_methods_verify_mod.rs
 
 use function_name::named;
+use lazy_static::__Deref;
 use lazy_static::lazy_static;
 use std::sync::Mutex;
 use unwrap::unwrap;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 
-use dev_bestia_html_templating::html_template_mod::*;
-
 use crate::auto_generated_mod::common_structs_mod::*;
 use crate::auto_generated_mod::srv_methods;
+
+use dev_bestia_html_templating as tmplt;
+use tmplt::s;
 
 // use crate::on_click;
 use crate::html_mod::*;
@@ -22,7 +24,7 @@ lazy_static! {
     static ref VERIFY_LIST_DATA: Mutex<VerifyListData> = Mutex::new(VerifyListData::default());
 }
 
-impl HtmlServerTemplateRender for VerifyItemData {
+impl tmplt::HtmlTemplatingDataTrait for VerifyItemData {
     /// data model name is used for eprint
     fn data_model_name(&self) -> String {
         // return
@@ -50,22 +52,16 @@ impl HtmlServerTemplateRender for VerifyItemData {
                 }
             }
             "wt_published_by_class" => format!("review_header0_cell left c_{}", &self.trusted_publisher),
-            _ => replace_with_string_match_else(&self.data_model_name(), placeholder),
+            _ => tmplt::utils::match_else_for_replace_with_string(&self.data_model_name(), placeholder),
         }
     }
 }
 
-impl HtmlServerTemplateRender for VerifyListData {
+impl tmplt::HtmlTemplatingDataTrait for VerifyListData {
     /// data model name is used for eprint
     fn data_model_name(&self) -> String {
         // return
         s!("VerifyListData")
-    }
-    /// renders the complete html file. Not a sub-template/fragment.
-    fn render_html(&self, html: &str) -> String {
-        let html = render(self, html, ServerOrClient::WebBrowserClient);
-        // return
-        html
     }
     /// returns a String to replace the next text-node: "wt_" or "st_"
     fn replace_with_string(&self, placeholder: &str, _subtemplate_name: &str, _pos_cursor: usize) -> String {
@@ -73,32 +69,31 @@ impl HtmlServerTemplateRender for VerifyListData {
         match placeholder {
             "wt_cargo_crev_reviews_version" => s!(env!("CARGO_PKG_VERSION")),
             "wt_project_dir" => s!(self.project_dir),
-            _ => replace_with_string_match_else(&self.data_model_name(), placeholder),
+            _ => tmplt::utils::match_else_for_replace_with_string(&self.data_model_name(), placeholder),
         }
     }
 
     /// renders sub-template: "stmplt_" or "wtmplt_"
-    fn render_sub_template(&self, template_name: &str, sub_templates: &Vec<SubTemplate>, prefixes: &PrefixForTemplateVariables) -> Vec<Node> {
+    fn process_sub_template(&self, template_name: &str, sub_templates: &Vec<tmplt::utils::SubTemplate>) -> Vec<tmplt::utils::Node> {
         log::info!("{}", template_name);
         match template_name {
             "wtmplt_verify_item_data" => {
                 let sub_template = unwrap!(sub_templates.iter().find(|&template| template.name == template_name));
                 let mut nodes = vec![];
                 for (row_number, verify_item) in self.list_of_verify.iter().enumerate() {
-                    let vec_node = unwrap!(render_template_raw_to_nodes(
+                    let vec_node = unwrap!(tmplt::utils::process_template_raw_to_nodes(
                         verify_item,
                         &sub_template.template,
-                        HtmlOrSvg::Html,
+                        tmplt::utils::HtmlOrSvg::Html,
                         "",
                         row_number,
-                        prefixes
                     ));
                     nodes.extend_from_slice(&vec_node);
                 }
                 // return
                 nodes
             }
-            _ => render_sub_template_match_else(&self.data_model_name(), template_name),
+            _ => tmplt::utils::match_else_for_process_sub_template(&self.data_model_name(), template_name),
         }
     }
 }
@@ -115,8 +110,11 @@ pub fn cln_verify_list(srv_response: RpcResponse) {
     log::info!("{}", function_name!());
     let html = extract_html(&srv_response);
     *VERIFY_LIST_DATA.lock().unwrap() = unwrap!(serde_json::from_value(srv_response.response_data));
-    // modal dialog box with error, don't change the html and data
-    let html_after_process = VERIFY_LIST_DATA.lock().unwrap().render_html(&html);
+    // the mutex is locked inside a scope. When this structure falls out of scope, the lock will be unlocked.
+    let html_after_process = {
+        let data = VERIFY_LIST_DATA.lock().unwrap();
+        tmplt::process_html(data.deref(), &html)
+    };
 
     inject_into_html(&html_after_process);
     navigation_on_click();

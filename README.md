@@ -16,6 +16,12 @@
 
 [comment]: # (auto_lines_of_code end)
 
+[comment]: # (auto_badges start)
+
+[![Licence](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/blob/master/LICENSE)
+
+[comment]: # (auto_badges end)
+
 ## Workspace
 
 This is a rust [workspace](https://doc.rust-lang.org/book/ch14-03-cargo-workspaces.html) (multi-project) that contains member projects.  

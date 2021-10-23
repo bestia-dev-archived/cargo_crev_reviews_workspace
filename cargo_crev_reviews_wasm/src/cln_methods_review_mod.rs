@@ -3,19 +3,21 @@
 //! functions to render the html for reviews
 
 use function_name::named;
+use lazy_static::__Deref;
 use lazy_static::lazy_static;
+
 use std::sync::Mutex;
 use unwrap::unwrap;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 
-use dev_bestia_html_templating::html_template_mod::*;
+use dev_bestia_html_templating as tmplt;
+use tmplt::s;
 
 use crate::auto_generated_mod::common_structs_mod::*;
 use crate::auto_generated_mod::srv_methods;
 
 use crate::html_mod::*;
-use crate::on_click;
 use crate::utils_mod::join_crate_version;
 use crate::*;
 
@@ -37,8 +39,8 @@ fn store_static_review_list_data(srv_response: RpcResponse) {
 }
 // endregion: mutable static, because it is hard to pass variables around with on_click events
 
-// region: HtmlServerTemplateRender for data structs
-impl HtmlServerTemplateRender for RpcMessageData {
+// region: HtmlTemplatingDataTrait for data structs
+impl tmplt::HtmlTemplatingDataTrait for RpcMessageData {
     /// data model name is used for eprint
     fn data_model_name(&self) -> String {
         // return
@@ -51,12 +53,12 @@ impl HtmlServerTemplateRender for RpcMessageData {
         match placeholder {
             "wt_cargo_crev_reviews_version" => s!(env!("CARGO_PKG_VERSION")),
             "wt_message" => s!(self.message),
-            _ => replace_with_string_match_else(&self.data_model_name(), placeholder),
+            _ => tmplt::utils::match_else_for_replace_with_string(&self.data_model_name(), placeholder),
         }
     }
 }
 
-impl HtmlServerTemplateRender for ReviewListData {
+impl tmplt::HtmlTemplatingDataTrait for ReviewListData {
     /// data model name is used for eprint
     fn data_model_name(&self) -> String {
         // return
@@ -64,27 +66,26 @@ impl HtmlServerTemplateRender for ReviewListData {
     }
 
     /// renders sub-template: "stmplt_" or "wtmplt_"
-    fn render_sub_template(&self, template_name: &str, sub_templates: &Vec<SubTemplate>, prefixes: &PrefixForTemplateVariables) -> Vec<Node> {
+    fn process_sub_template(&self, template_name: &str, sub_templates: &Vec<tmplt::utils::SubTemplate>) -> Vec<tmplt::utils::Node> {
         log::info!("{}", template_name);
         match template_name {
             "wtmplt_ReviewItemData" => {
                 let sub_template = unwrap!(sub_templates.iter().find(|&template| template.name == template_name));
                 let mut nodes = vec![];
                 for (row_number, review_item) in self.list_of_review.iter().enumerate() {
-                    let vec_node = unwrap!(render_template_raw_to_nodes(
+                    let vec_node = unwrap!(tmplt::utils::process_template_raw_to_nodes(
                         review_item,
                         &sub_template.template,
-                        HtmlOrSvg::Html,
+                        tmplt::utils::HtmlOrSvg::Html,
                         "",
                         row_number,
-                        prefixes
                     ));
                     nodes.extend_from_slice(&vec_node);
                 }
                 // return
                 nodes
             }
-            _ => render_sub_template_match_else(&self.data_model_name(), template_name),
+            _ => tmplt::utils::match_else_for_process_sub_template(&self.data_model_name(), template_name),
         }
     }
 
@@ -94,12 +95,12 @@ impl HtmlServerTemplateRender for ReviewListData {
         // dbg!(&placeholder);
         match placeholder {
             "wt_cargo_crev_reviews_version" => s!(env!("CARGO_PKG_VERSION")),
-            _ => replace_with_string_match_else(&self.data_model_name(), placeholder),
+            _ => tmplt::utils::match_else_for_replace_with_string(&self.data_model_name(), placeholder),
         }
     }
 }
 
-impl HtmlServerTemplateRender for ReviewItemData {
+impl tmplt::HtmlTemplatingDataTrait for ReviewItemData {
     /// data model name is used for eprint
     fn data_model_name(&self) -> String {
         // return
@@ -122,11 +123,11 @@ impl HtmlServerTemplateRender for ReviewItemData {
             "wt_rating_class_color" => format!("review_header0_cell c_{} bold", self.rating),
             "wt_cargo_crev_reviews_version" => env!("CARGO_PKG_VERSION").to_string(),
 
-            _ => replace_with_string_match_else(&self.data_model_name(), placeholder),
+            _ => tmplt::utils::match_else_for_replace_with_string(&self.data_model_name(), placeholder),
         }
     }
     /// boolean : is the next node rendered or not: "wb_" or "sb_"
-    fn retain_next_node_or_attribute(&self, placeholder: &str) -> bool {
+    fn exists_next_node_or_attribute(&self, placeholder: &str) -> bool {
         // dbg!( &placeholder);
         match placeholder {
             "wb_checked_th_none" => self.thoroughness == "none",
@@ -144,12 +145,12 @@ impl HtmlServerTemplateRender for ReviewItemData {
             "wb_checked_ra_neutral" => self.rating == "neutral",
             "wb_checked_ra_positive" => self.rating == "positive",
             "wb_checked_ra_strong" => self.rating == "strong",
-            _ => retain_next_node_or_attribute_match_else(&self.data_model_name(), placeholder),
+            _ => tmplt::utils::match_else_for_exists_next_node_or_attribute(&self.data_model_name(), placeholder),
         }
     }
 }
 
-// endregion: HtmlServerTemplateRender for data structs
+// endregion: HtmlTemplatingDataTrait for data structs
 
 // region: cln methods to render the page and data
 
@@ -162,8 +163,11 @@ pub fn cln_review_list(srv_response: RpcResponse) {
     let html = extract_html(&srv_response);
     store_static_review_list_data(srv_response);
 
-    // call process with functions as parameters, to use for replace attributes and text nodes
-    let html_after_process = REVIEW_LIST_DATA.lock().unwrap().render_html(&html);
+    // the mutex is locked inside a scope. When this structure falls out of scope, the lock will be unlocked.
+    let html_after_process = {
+        let data = REVIEW_LIST_DATA.lock().unwrap();
+        tmplt::process_html(data.deref(), &html)
+    };
 
     inject_into_html(&html_after_process);
 
@@ -186,9 +190,11 @@ pub fn cln_review_new(srv_response: RpcResponse) {
     log::info!("{}", function_name!());
     let html = extract_html(&srv_response);
     store_to_review_item_data(srv_response);
-    // call process with functions as parameters, to use for replace attributes and text nodes
-    let data = &REVIEW_ITEM_DATA.lock().unwrap();
-    let html_after_process = data.render_html(&html);
+    // the mutex is locked inside a scope. When this structure falls out of scope, the lock will be unlocked.
+    let html_after_process = {
+        let data = REVIEW_ITEM_DATA.lock().unwrap();
+        tmplt::process_html(data.deref(), &html)
+    };
     inject_into_html(&html_after_process);
 
     on_click!("button_review_save", request_review_save);
@@ -202,10 +208,11 @@ pub fn cln_review_edit(srv_response: RpcResponse) {
     log::info!("{}", function_name!());
     let html = extract_html(&srv_response);
     store_to_review_item_data(srv_response);
-
-    // call process with functions as parameters, to use for replace attributes and text nodes
-    let data = &REVIEW_ITEM_DATA.lock().unwrap();
-    let html_after_process = data.render_html(&html);
+    // the mutex is locked inside a scope. When this structure falls out of scope, the lock will be unlocked.
+    let html_after_process = {
+        let data = REVIEW_ITEM_DATA.lock().unwrap();
+        tmplt::process_html(data.deref(), &html)
+    };
 
     inject_into_html(&html_after_process);
 
@@ -217,11 +224,8 @@ pub fn cln_review_edit(srv_response: RpcResponse) {
 pub fn cln_review_publish_modal(srv_response: RpcResponse) {
     log::info!("{}", function_name!());
     let html = extract_html(&srv_response);
-
-    // modal dialog box with error, don't change the html and data
     let data: RpcMessageData = unwrap!(serde_json::from_value(srv_response.response_data));
-    let html_after_process = data.render_html(&html);
-
+    let html_after_process = tmplt::process_html(&data, &html);
     w::set_inner_html("div_for_modal", &html_after_process);
     on_click!("modal_close", modal_close_on_click);
 }
@@ -230,10 +234,8 @@ pub fn cln_review_publish_modal(srv_response: RpcResponse) {
 pub fn cln_review_error(srv_response: RpcResponse) {
     log::info!("{}", function_name!());
     let html = extract_html(&srv_response);
-
     let data: RpcMessageData = unwrap!(serde_json::from_value(srv_response.response_data));
-    let html_after_process = data.render_html(&html);
-
+    let html_after_process = tmplt::process_html(&data, &html);
     w::set_inner_html("div_for_modal", &html_after_process);
     on_click!("modal_close", modal_close_on_click);
 }
