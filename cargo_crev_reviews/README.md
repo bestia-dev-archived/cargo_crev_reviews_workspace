@@ -208,6 +208,19 @@ The [cargo-crev](https://github.com/crev-dev/cargo-crev) project contains many c
 
 The cargo application is essential for work with the rust language. It maintains a local `cargo registry cache`. The registry index is git fetched from github. Path to an index file:  
 `~/.cargo/registry/index/github.com-1ecc6299db9ec823/cache/re/ad/reader_for_microxml`  
+
+```bash
+cd ~/.cargo/registry/index/github.com-1ecc6299db9ec823
+git remote add origin https://github.com/rust-lang/crates.io-index
+git pull
+# if this does not work, I deleted the old directory and cloned it fresh
+# I am experimenting, maybe this is not the best approach ?
+rmdir ~/.cargo/registry/index/github.com-1ecc6299db9ec823
+cd ~/.cargo/registry/index
+git clone https://github.com/rust-lang/crates.io-index github.com-1ecc6299db9ec823
+
+```
+
 The content of this file is roughly:  
 
 ```yaml

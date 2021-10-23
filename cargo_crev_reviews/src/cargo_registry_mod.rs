@@ -39,7 +39,9 @@ fn open_index() -> anyhow::Result<crates_index::Index> {
 
 /// yanked
 pub fn yanked_for_version(crate_name: &str, crate_version: &str) -> anyhow::Result<bool> {
-    let crate_info = INDEX.crate_(crate_name).context("Cannot find crate name in registry.")?;
+    let crate_info = INDEX
+        .crate_(crate_name)
+        .context(format!("Cannot find crate name in registry: {}", crate_name))?;
     for x in crate_info.versions().iter() {
         if x.version() == crate_version {
             if x.is_yanked() {
@@ -53,7 +55,9 @@ pub fn yanked_for_version(crate_name: &str, crate_version: &str) -> anyhow::Resu
 
 /// list only yanked versions for one crate
 pub fn yanked_for_one_crate(crate_name: &str) -> anyhow::Result<Vec<String>> {
-    let crate_info = INDEX.crate_(crate_name).context("Cannot find crate name in registry.")?;
+    let crate_info = INDEX
+        .crate_(crate_name)
+        .context(format!("Cannot find crate name in registry: {}", crate_name))?;
     let mut vec = vec![];
     for x in crate_info.versions().iter() {
         if x.is_yanked() {
@@ -65,7 +69,9 @@ pub fn yanked_for_one_crate(crate_name: &str) -> anyhow::Result<Vec<String>> {
 
 /// info of all versions for one crate
 pub fn info_for_one_crate(crate_name: &str) -> anyhow::Result<Vec<(String, bool)>> {
-    let crate_info = INDEX.crate_(crate_name).context("Cannot find crate name in registry.")?;
+    let crate_info = INDEX
+        .crate_(crate_name)
+        .context(format!("Cannot find crate name in registry: {}", crate_name))?;
     let mut vec = vec![];
     for x in crate_info.versions().iter() {
         vec.push((x.version().to_string(), x.is_yanked()));
@@ -75,7 +81,9 @@ pub fn info_for_one_crate(crate_name: &str) -> anyhow::Result<Vec<(String, bool)
 
 /// max version from registry index cache
 pub fn max_version_from_registry_index(crate_name: &str) -> anyhow::Result<String> {
-    let crate_info = INDEX.crate_(crate_name).context("Cannot find crate name in registry.")?;
+    let crate_info = INDEX
+        .crate_(crate_name)
+        .context(format!("Cannot find crate name in registry: {}", crate_name))?;
     // max version by semver
     let crate_version = crate_info.highest_version();
     Ok(crate_version.version().to_string())

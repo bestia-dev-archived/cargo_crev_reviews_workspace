@@ -21,6 +21,7 @@ use crev_data::{
     Level, Rating,
 };
 use crev_lib::ProofStore;
+use dev_bestia_string_utils::*;
 use lazy_static::lazy_static;
 use serde::Deserialize;
 use serde::Serialize;

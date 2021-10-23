@@ -65,6 +65,7 @@ pub fn sync_in_background_yanked() {
     POOL.spawn(move || {
         let ns_started = crate::utils_mod::ns_start("sync_in_background_yanked");
         for x in unwrap!(crate::db_crate_mod::all_crates()).iter() {
+            println!("registry crate: {}", &x.crate_name);
             for (crate_version, yanked) in unwrap!(crate::cargo_registry_mod::info_for_one_crate(&x.crate_name)).iter() {
                 let crate_name_version = join_crate_version(&x.crate_name, crate_version);
                 if crate::db_yanked_mod::exists(&crate_name_version) && *yanked == false {

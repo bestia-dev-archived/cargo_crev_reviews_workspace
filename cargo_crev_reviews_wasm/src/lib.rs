@@ -50,7 +50,6 @@ mod cln_methods_review_mod;
 mod cln_methods_verify_mod;
 mod cln_methods_version_mod;
 mod html_mod;
-mod url_utf8_mod;
 mod utils_mod;
 mod web_sys_mod;
 
@@ -60,7 +59,7 @@ use log::Level;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsValue;
 
-pub use crate::url_utf8_mod::*;
+pub use dev_bestia_url_utf8::*;
 
 use crate::auto_generated_mod::common_structs_mod::ReviewFilterData;
 use crate::auto_generated_mod::common_structs_mod::RpcEmptyData;

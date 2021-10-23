@@ -8,7 +8,7 @@ use unwrap::unwrap;
 // use wasm_bindgen::JsCast;
 
 use dev_bestia_html_templating as tmplt;
-use tmplt::s;
+use dev_bestia_string_utils::*;
 
 use crate::auto_generated_mod::common_structs_mod::*;
 //use crate::auto_generated_mod::srv_methods;
