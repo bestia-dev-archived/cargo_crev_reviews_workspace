@@ -1,8 +1,7 @@
 // common_structs_mod.rs
 
 //! common structs between the backend and frontend
-//! WARNING: modify this file only in cargo_crev_reviews project.
-//! One automation task will copy it over to cargo_crev_reviews_wasm !
+//! One automation task will copy it over to cargo_crev_reviews_wasm/auto_generated_mod.rs !
 
 use serde::{Deserialize, Serialize};
 

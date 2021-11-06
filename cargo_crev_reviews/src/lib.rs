@@ -200,11 +200,7 @@ mod cargo_registry_mod;
 mod common_structs_mod;
 mod crates_io_mod;
 mod crev_mod;
-mod db_crate_mod;
-mod db_review_mod;
 mod db_sled_mod;
-mod db_version_mod;
-mod db_yanked_mod;
 mod files_mod;
 mod response_get_mod;
 mod response_post_mod;
@@ -350,7 +346,7 @@ pub fn welcome_print() {
 {yel}WELCOME to cargo_crev_reviews from Bestia.dev!{res}
 
 With this app you can list, edit and create your `crev` reviews inside the browser.
-Crev is a "Code REView and recommendation system` authored by `dpc` and published on `https://github.com/crev-dev/cargo-crev`. 
+Crev is a "Code REView and recommendation system` created by `dpc` and published on `https://github.com/crev-dev/cargo-crev`. 
 Cargo-crev is the part of crev, that is specialized for the Rust language.
 First check the reviews from other developers on https://web.crev.dev/rust-reviews/crates/`.
 "#,

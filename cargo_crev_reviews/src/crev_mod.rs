@@ -463,7 +463,7 @@ pub fn verify_project() -> anyhow::Result<VerifyListData> {
 
             let published_by = published_by_login(&crate_name, &crate_version)?;
             let trusted_publisher = is_trusted_publisher(&trusted_publisher_json, &published_by);
-            if crate::db_yanked_mod::exists(&crate_name_version) {
+            if crate::db_sled_mod::db_yanked_mod::exists(&crate_name_version) {
                 status = "yanked".to_string();
             }
 
@@ -506,7 +506,7 @@ pub fn verify_sort_list_by_name_version(vec_of_verify: &mut Vec<VerifyItemData>)
 /// check if it is already in the cache or GET from crates.io API and store in cache
 fn published_by_login(crate_name: &str, crate_version: &str) -> anyhow::Result<String> {
     let crate_name_version = &join_crate_version(crate_name, crate_version);
-    let exact_version = crate::db_version_mod::read(&crate_name_version)?;
+    let exact_version = crate::db_sled_mod::db_version_mod::read(&crate_name_version)?;
     match exact_version {
         Some(exact_version) => Ok(exact_version.published_by_login.unwrap_or("".to_string())),
         None => Ok("".to_string()),
@@ -517,7 +517,7 @@ fn published_by_login(crate_name: &str, crate_version: &str) -> anyhow::Result<S
 /// if exists any review for this crate returns version number
 /// else return empty string
 fn rating_or_version(crate_name: &str, crate_version: &str) -> anyhow::Result<String> {
-    let vec = crate::db_review_mod::all_versions_for_crate(crate_name)?;
+    let vec = crate::db_sled_mod::db_review_mod::all_versions_for_crate(crate_name)?;
     let mut version = "".to_string();
     for x in vec.iter() {
         if x.crate_version == crate_version {
@@ -575,11 +575,11 @@ pub fn crev_crate_versions(crate_name: &str) -> anyhow::Result<Vec<VersionItemDa
     // endregion: vec_of_reviews for this crate
 
     // yanked from db_yanked
-    let yanked_one_crate = crate::db_yanked_mod::all_versions_for_crate(crate_name)?;
+    let yanked_one_crate = crate::db_sled_mod::db_yanked_mod::all_versions_for_crate(crate_name)?;
 
     // versions from db_version
     let mut vec_of_version = vec![];
-    for version_for_db in crate::db_version_mod::all_versions_for_crate(crate_name)? {
+    for version_for_db in crate::db_sled_mod::db_version_mod::all_versions_for_crate(crate_name)? {
         let (_io_crate_name, io_crate_version) = split_crate_version(version_for_db.crate_name_version.as_str());
 
         // is_src_cache (if path exists in cargo registry src)

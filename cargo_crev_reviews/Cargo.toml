@@ -5,7 +5,7 @@
 
 [package]
 name = "cargo_crev_reviews"
-version = "2021.1023.1508"
+version = "2021.1106.1028"
 description = "Write cargo-crev reviews in GUI with a cross-platform app written in full-stack rust"
 authors = ["Luciano Bestia"]
 edition = "2018"
