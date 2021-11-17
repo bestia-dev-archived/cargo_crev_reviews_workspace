@@ -114,7 +114,7 @@ pub fn unlock_crev_id_interactively() -> anyhow::Result<()> {
 
     // write to static mut
     *CREV_UNLOCKED.lock().unwrap() = Some(crev_unlocked);
-    // only for debugging: *CREV_LOCAL.lock().unwrap() = Some(crev_local);
+    *CREV_LOCAL.lock().unwrap() = Some(crev_local);
 
     // return
     Ok(())

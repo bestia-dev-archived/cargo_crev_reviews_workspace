@@ -739,7 +739,7 @@
 
     <span class="comment">// write to static mut</span>
     <span class="kw-2">*</span><span class="ident">CREV_UNLOCKED</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>() <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">crev_unlocked</span>);
-    <span class="comment">// only for debugging: *CREV_LOCAL.lock().unwrap() = Some(crev_local);</span>
+    <span class="kw-2">*</span><span class="ident">CREV_LOCAL</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>() <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">crev_local</span>);
 
     <span class="comment">// return</span>
     <span class="prelude-val">Ok</span>(())
