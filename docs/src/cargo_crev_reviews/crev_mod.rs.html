@@ -734,12 +734,12 @@
 <span class="doccomment">/// unlock crev_id interactively</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">unlock_crev_id_interactively</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">anyhow::Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">crev_local</span> <span class="op">=</span> <span class="ident">crev_lib::local::Local::auto_create_or_open</span>()<span class="question-mark">?</span>;
-    <span class="comment">//let crev_unlocked = crev_local.read_current_unlocked_id(&amp;stdio_input_password_mod::read_passphrase_interactively)?;</span>
-    <span class="comment">//println!(&quot;Unlocked.&quot;);</span>
+    <span class="kw">let</span> <span class="ident">crev_unlocked</span> <span class="op">=</span> <span class="ident">crev_local</span>.<span class="ident">read_current_unlocked_id</span>(<span class="kw-2">&amp;</span><span class="ident">stdio_input_password_mod::read_passphrase_interactively</span>)<span class="question-mark">?</span>;
+    <span class="macro">println!</span>(<span class="string">&quot;Unlocked.&quot;</span>);
 
     <span class="comment">// write to static mut</span>
-    <span class="comment">//*CREV_UNLOCKED.lock().unwrap() = Some(crev_unlocked);</span>
-    <span class="kw-2">*</span><span class="ident">CREV_LOCAL</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>() <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">crev_local</span>);
+    <span class="kw-2">*</span><span class="ident">CREV_UNLOCKED</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>() <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">crev_unlocked</span>);
+    <span class="comment">// only for debugging: *CREV_LOCAL.lock().unwrap() = Some(crev_local);</span>
 
     <span class="comment">// return</span>
     <span class="prelude-val">Ok</span>(())
