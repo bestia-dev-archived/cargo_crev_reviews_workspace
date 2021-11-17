@@ -224,7 +224,7 @@
 <span id="222">222</span>
 </pre><pre class="rust">
 <span class="comment">// web_sys_mod.rs</span>
-<span class="doccomment">//! helper functions for web_sys, window, document, dom, console,</span>
+<span class="doccomment">//! helper functions for web_sys, window, document, dom,</span>
 <span class="doccomment">//! local_storage, session_storage,...</span>
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">dead_code</span>)]</span>
 
@@ -233,7 +233,6 @@
 <span class="kw">use</span> <span class="ident">unwrap::unwrap</span>;
 <span class="kw">use</span> <span class="ident">wasm_bindgen</span>::{<span class="ident">JsCast</span>, <span class="ident">JsValue</span>};
 <span class="kw">use</span> <span class="ident">wasm_bindgen_futures::JsFuture</span>;
-<span class="kw">use</span> <span class="ident">web_sys::console</span>;
 <span class="kw">use</span> <span class="ident">web_sys</span>::{<span class="ident">Request</span>, <span class="ident">RequestInit</span>, <span class="ident">Response</span>};
 <span class="comment">// endregion: use</span>
 
@@ -261,8 +260,15 @@
         <span class="kw">let</span> <span class="ident">closure</span> <span class="op">=</span> <span class="ident">Closure::wrap</span>(<span class="ident">Box::new</span>(<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> {
             <span class="macro-nonterminal">$</span><span class="macro-nonterminal">function_ident</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">element_prefix</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">row_number</span>);
         }) <span class="kw">as</span> <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">FnMut</span>()<span class="op">&gt;</span>);
-
-        <span class="kw">let</span> <span class="ident">html_element</span> <span class="op">=</span> <span class="kw">crate</span><span class="ident">::web_sys_mod::get_html_element_by_id</span>(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;{}({})&quot;</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">element_prefix</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">row_number</span>));
+        <span class="comment">// The attribute &quot;id&quot; is special, because it must be unique in the html.</span>
+        <span class="comment">// If there is more rows, &quot;id&quot; gets the suffix like name(99).</span>
+        <span class="comment">// For the zero (first) row there is no suffix.</span>
+        <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="kw">if</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">row_number</span> <span class="op">&gt;</span> <span class="number">0</span> {
+            <span class="macro">format!</span>(<span class="string">&quot;{}({})&quot;</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">element_prefix</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">row_number</span>)
+        } <span class="kw">else</span> {
+            <span class="macro-nonterminal">$</span><span class="macro-nonterminal">element_prefix</span>.<span class="ident">to_string</span>()
+        };
+        <span class="kw">let</span> <span class="ident">html_element</span> <span class="op">=</span> <span class="kw">crate</span><span class="ident">::web_sys_mod::get_html_element_by_id</span>(<span class="kw-2">&amp;</span><span class="ident">name</span>);
         <span class="ident">html_element</span>.<span class="ident">set_onclick</span>(<span class="prelude-val">Some</span>(<span class="ident">closure</span>.<span class="ident">as_ref</span>().<span class="ident">unchecked_ref</span>()));
         <span class="ident">closure</span>.<span class="ident">forget</span>();
     }};
@@ -293,7 +299,7 @@
     <span class="kw">let</span> <span class="ident">document</span> <span class="op">=</span> <span class="macro">unwrap!</span>(<span class="ident">window</span>().<span class="ident">document</span>());
     <span class="kw">let</span> <span class="ident">element_opt</span> <span class="op">=</span> <span class="ident">document</span>.<span class="ident">get_element_by_id</span>(<span class="ident">element_id</span>);
     <span class="kw">if</span> <span class="ident">element_opt</span>.<span class="ident">is_none</span>() {
-        <span class="ident">debug_write</span>(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;Error: element not exists: {}&quot;</span>, <span class="ident">element_id</span>));
+        <span class="macro">log::error!</span>(<span class="string">&quot;Error: element not exists: {}&quot;</span>, <span class="ident">element_id</span>);
     }
     <span class="macro">unwrap!</span>(<span class="ident">element_opt</span>)
 }
@@ -304,12 +310,6 @@
     <span class="kw">let</span> <span class="ident">html_element</span>: <span class="ident">web_sys::HtmlElement</span> <span class="op">=</span> <span class="macro">unwrap!</span>(<span class="ident">element</span>.<span class="ident">dyn_into</span>::<span class="op">&lt;</span><span class="ident">web_sys::HtmlElement</span><span class="op">&gt;</span>());
     <span class="comment">// return</span>
     <span class="ident">html_element</span>
-}
-
-<span class="doccomment">/// debug write into session_storage</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">debug_write</span>(<span class="ident">text</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) {
-    <span class="comment">// writing to the console</span>
-    <span class="ident">console::log_1</span>(<span class="kw-2">&amp;</span><span class="ident">JsValue::from_str</span>(<span class="ident">text</span>));
 }
 
 <span class="doccomment">/// timestamp with milliseconds</span>
@@ -324,7 +324,7 @@
 <span class="doccomment">/// debug write the duration of code execution</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">debug_duration</span>(<span class="ident">text</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">start</span>: <span class="ident">f64</span>) {
     <span class="kw">let</span> <span class="ident">in_milli</span> <span class="op">=</span> <span class="ident">now_performance_millisecond</span>() <span class="op">-</span> <span class="ident">start</span>;
-    <span class="ident">debug_write</span>(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;{}: {} ms&quot;</span>, <span class="ident">text</span>, <span class="ident">in_milli</span>));
+    <span class="macro">log::info!</span>(<span class="string">&quot;{}: {} ms&quot;</span>, <span class="ident">text</span>, <span class="ident">in_milli</span>);
 }
 
 <span class="doccomment">/// get text from element_id</span>
@@ -360,7 +360,7 @@
     <span class="comment">// log1(&quot;before text()&quot;);</span>
     <span class="kw">let</span> <span class="ident">text_jsvalue</span> <span class="op">=</span> <span class="macro">unwrap!</span>(<span class="ident">JsFuture::from</span>(<span class="macro">unwrap!</span>(<span class="ident">resp</span>.<span class="ident">text</span>())).<span class="kw">await</span>);
     <span class="kw">let</span> <span class="ident">txt_response</span>: <span class="ident">String</span> <span class="op">=</span> <span class="macro">unwrap!</span>(<span class="ident">text_jsvalue</span>.<span class="ident">as_string</span>());
-    <span class="comment">// debug_write(&amp;txt_response);</span>
+    <span class="comment">// log::info!(&quot;{}&quot;,&amp;txt_response);</span>
     <span class="comment">// returns response as String</span>
     <span class="ident">txt_response</span>
 }
@@ -381,7 +381,7 @@
     <span class="comment">// log1(&quot;before text()&quot;);</span>
     <span class="kw">let</span> <span class="ident">text_jsvalue</span> <span class="op">=</span> <span class="macro">unwrap!</span>(<span class="ident">JsFuture::from</span>(<span class="macro">unwrap!</span>(<span class="ident">resp</span>.<span class="ident">text</span>())).<span class="kw">await</span>);
     <span class="kw">let</span> <span class="ident">txt_response</span>: <span class="ident">String</span> <span class="op">=</span> <span class="macro">unwrap!</span>(<span class="ident">text_jsvalue</span>.<span class="ident">as_string</span>());
-    <span class="comment">// debug_write(&amp;txt_response);</span>
+    <span class="comment">// log::info!(&quot;{}&quot;,&amp;txt_response);</span>
     <span class="comment">// returns response as String</span>
     <span class="ident">txt_response</span>
 }
@@ -434,7 +434,7 @@
     <span class="ident">element</span>.<span class="ident">set_class_name</span>(<span class="string">&quot;show&quot;</span>);
     <span class="comment">// After 3 seconds, remove the show class from DIV</span>
     <span class="kw">let</span> <span class="ident">closure</span> <span class="op">=</span> <span class="ident">wasm_bindgen::prelude::Closure::wrap</span>(<span class="ident">Box::new</span>(<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> {
-        <span class="ident">debug_write</span>(<span class="string">&quot;Timeout closure.&quot;</span>);
+        <span class="macro">log::info!</span>(<span class="string">&quot;{}&quot;</span>, <span class="string">&quot;Timeout closure.&quot;</span>);
         <span class="kw">let</span> <span class="ident">class_name</span> <span class="op">=</span> <span class="ident">element</span>.<span class="ident">class_name</span>();
         <span class="kw">let</span> <span class="ident">class_name</span> <span class="op">=</span> <span class="ident">class_name</span>.<span class="ident">replace</span>(<span class="string">&quot;show&quot;</span>, <span class="string">&quot;&quot;</span>);
         <span class="ident">element</span>.<span class="ident">set_class_name</span>(<span class="kw-2">&amp;</span><span class="ident">class_name</span>);

@@ -1,1 +1,0 @@
-initSidebarItems({"fn":[["cargo_registry_src_dir_for_crate","cargo registry src directory for a crate"],["max_version_from_registry_index","max version from registry index cache"],["update_registry_index","fetch/pull the registry index from github"]]});

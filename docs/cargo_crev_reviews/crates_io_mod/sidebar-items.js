@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["crate_response","GET from crates.io It is used only to store into db_version."],["crate_response_deserialize",""],["crate_responses_get",""]],"struct":[["CratesIoCrate",""],["CratesIoCrateResponse",""],["CratesIoPublishedBy",""],["CratesIoVersion",""]]});

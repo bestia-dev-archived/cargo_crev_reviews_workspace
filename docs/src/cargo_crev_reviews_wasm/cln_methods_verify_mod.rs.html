@@ -183,14 +183,11 @@
 <span id="181">181</span>
 <span id="182">182</span>
 <span id="183">183</span>
-<span id="184">184</span>
-<span id="185">185</span>
-<span id="186">186</span>
-<span id="187">187</span>
 </pre><pre class="rust">
 <span class="comment">// cln_methods_verify_mod.rs</span>
 
 <span class="kw">use</span> <span class="ident">function_name::named</span>;
+<span class="kw">use</span> <span class="ident">lazy_static::__Deref</span>;
 <span class="kw">use</span> <span class="ident">lazy_static::lazy_static</span>;
 <span class="kw">use</span> <span class="ident">std::sync::Mutex</span>;
 <span class="kw">use</span> <span class="ident">unwrap::unwrap</span>;
@@ -199,6 +196,9 @@
 
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::auto_generated_mod::common_structs_mod</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::auto_generated_mod::srv_methods</span>;
+
+<span class="kw">use</span> <span class="ident">dev_bestia_html_templating</span> <span class="kw">as</span> <span class="ident">tmplt</span>;
+<span class="kw">use</span> <span class="ident">dev_bestia_string_utils</span>::<span class="kw-2">*</span>;
 
 <span class="comment">// use crate::on_click;</span>
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::html_mod</span>::<span class="kw-2">*</span>;
@@ -210,124 +210,112 @@
     <span class="kw">static</span> <span class="kw-2">ref</span> <span class="ident">VERIFY_LIST_DATA</span>: <span class="ident">Mutex</span><span class="op">&lt;</span><span class="ident">VerifyListData</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Mutex::new</span>(<span class="ident">VerifyListData::default</span>());
 }
 
-<span class="kw">impl</span> <span class="ident">HtmlProcessor</span> <span class="kw">for</span> <span class="ident">VerifyListData</span> {
-    <span class="doccomment">/// process template and push as many &amp;str is needed</span>
-    <span class="kw">fn</span> <span class="ident">process_repetitive_items</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">name_of_repeat_segment</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">html_repetitive_template</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">html_new</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">String</span>) {
-        <span class="kw">match</span> <span class="ident">name_of_repeat_segment</span> {
-            <span class="string">&quot;verify&quot;</span> <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="ident">w::debug_write</span>(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;process_repetitive_items {}&quot;</span>, <span class="ident">name_of_repeat_segment</span>));
-                <span class="kw">for</span> (<span class="ident">row_num</span>, <span class="ident">data</span>) <span class="kw">in</span> <span class="self">self</span>.<span class="ident">list_of_verify</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
-                    <span class="kw">let</span> <span class="ident">list_item_html</span> <span class="op">=</span> <span class="ident">data</span>.<span class="ident">process_html_with_item</span>(<span class="ident">html_repetitive_template</span>, <span class="prelude-val">Some</span>(<span class="ident">row_num</span>));
-                    <span class="ident">html_new</span>.<span class="ident">push_str</span>(<span class="kw-2">&amp;</span><span class="ident">list_item_html</span>);
-                }
-            }
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="kw">let</span> <span class="ident">msg</span> <span class="op">=</span> <span class="macro">format!</span>(<span class="string">&quot;unrecognized name_of_repeat_segment {}&quot;</span>, <span class="ident">name_of_repeat_segment</span>);
-                <span class="ident">w::debug_write</span>(<span class="kw-2">&amp;</span><span class="ident">msg</span>);
-                <span class="ident">html_new</span>.<span class="ident">push_str</span>(<span class="kw-2">&amp;</span><span class="ident">msg</span>);
-            }
-        }
+<span class="kw">impl</span> <span class="ident">tmplt::HtmlTemplatingDataTrait</span> <span class="kw">for</span> <span class="ident">VerifyItemData</span> {
+    <span class="doccomment">/// data model name is used for eprint</span>
+    <span class="kw">fn</span> <span class="ident">data_model_name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+        <span class="comment">// return</span>
+        <span class="macro">s!</span>(<span class="string">&quot;VerifyItemData&quot;</span>)
     }
 
-    <span class="doccomment">/// the use of complete string wt_xxx enables easy and exact text search around the source code</span>
-    <span class="kw">fn</span> <span class="ident">match_wt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">wt_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
-        <span class="kw">match</span> <span class="ident">wt_name</span> {
+    <span class="doccomment">/// returns a String to replace the next text-node: &quot;wt_&quot; or &quot;st_&quot;</span>
+    <span class="kw">fn</span> <span class="ident">replace_with_string</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">placeholder</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">_subtemplate_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">pos_cursor</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+        <span class="comment">// dbg!(&amp;placeholder);</span>
+        <span class="kw">match</span> <span class="ident">placeholder</span> {
+            <span class="string">&quot;wt_row_number&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">format!</span>(<span class="string">&quot;{}.&quot;</span>, <span class="ident">pos_cursor</span> <span class="op">+</span> <span class="number">1</span>),
+            <span class="string">&quot;wt_status&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">status</span>.<span class="ident">clone</span>(),
+            <span class="string">&quot;wt_my_review&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">my_review</span>.<span class="ident">clone</span>(),
+            <span class="string">&quot;wt_crate_name&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">crate_name</span>.<span class="ident">clone</span>(),
+            <span class="string">&quot;wt_crate_version&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">crate_version</span>.<span class="ident">clone</span>(),
+            <span class="string">&quot;wt_crate_name_version&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">utils_mod::join_crate_version</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">crate_name</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">crate_version</span>),
+            <span class="string">&quot;wt_published_by&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">published_by</span>.<span class="ident">clone</span>(),
             <span class="string">&quot;wt_cargo_crev_reviews_version&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">env!</span>(<span class="string">&quot;CARGO_PKG_VERSION&quot;</span>).<span class="ident">to_string</span>(),
-            <span class="string">&quot;wt_project_dir&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">project_dir</span>.<span class="ident">clone</span>(),
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="kw">let</span> <span class="ident">html_error</span> <span class="op">=</span> <span class="macro">format!</span>(<span class="string">&quot;Unrecognized replace_wt method {}&quot;</span>, <span class="ident">wt_name</span>);
-                <span class="ident">w::debug_write</span>(<span class="kw-2">&amp;</span><span class="ident">html_error</span>);
-                <span class="ident">html_error</span>
+            <span class="string">&quot;wt_status_class&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">format!</span>(<span class="string">&quot;review_header0_cell left c_{}&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">status</span>),
+            <span class="string">&quot;wt_my_review_class&quot;</span> <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="kw">if</span> <span class="macro">vec!</span>[<span class="string">&quot;strong&quot;</span>, <span class="string">&quot;positive&quot;</span>, <span class="string">&quot;neutral&quot;</span>, <span class="string">&quot;negative&quot;</span>].<span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">my_review</span>.<span class="ident">as_str</span>()) {
+                    <span class="macro">format!</span>(<span class="string">&quot;review_header0_cell left c_{}&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">my_review</span>)
+                } <span class="kw">else</span> {
+                    <span class="string">&quot;review_header0_cell left&quot;</span>.<span class="ident">to_string</span>()
+                }
             }
-        }
-    }
-    <span class="doccomment">/// the use of complete string wb_xxx enables easy and exact text search around the source code</span>
-    <span class="kw">fn</span> <span class="ident">match_wb</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">wb_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
-        <span class="kw">match</span> <span class="ident">wb_name</span> {
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="kw">let</span> <span class="ident">html_error</span> <span class="op">=</span> <span class="macro">format!</span>(<span class="string">&quot;Unrecognized wb_exist_next_attribute method {}&quot;</span>, <span class="ident">wb_name</span>);
-                <span class="ident">w::debug_write</span>(<span class="kw-2">&amp;</span><span class="ident">html_error</span>);
-                <span class="bool-val">false</span>
-            }
+            <span class="string">&quot;wt_published_by_class&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">format!</span>(<span class="string">&quot;review_header0_cell left c_{}&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">trusted_publisher</span>),
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">tmplt::utils::match_else_for_replace_with_string</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">data_model_name</span>(), <span class="ident">placeholder</span>),
         }
     }
 }
 
-<span class="kw">impl</span> <span class="ident">HtmlProcessor</span> <span class="kw">for</span> <span class="ident">VerifyItemData</span> {
-    <span class="doccomment">/// process template and push as many &amp;str is needed</span>
-    <span class="kw">fn</span> <span class="ident">process_repetitive_items</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">name_of_repeat_segment</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">_html_repetitive_template</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">html_new</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">String</span>) {
-        <span class="kw">match</span> <span class="ident">name_of_repeat_segment</span> {
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="kw">let</span> <span class="ident">msg</span> <span class="op">=</span> <span class="macro">format!</span>(<span class="string">&quot;unrecognized name_of_repeat_segment {}&quot;</span>, <span class="ident">name_of_repeat_segment</span>);
-                <span class="ident">w::debug_write</span>(<span class="kw-2">&amp;</span><span class="ident">msg</span>);
-                <span class="ident">html_new</span>.<span class="ident">push_str</span>(<span class="kw-2">&amp;</span><span class="ident">msg</span>);
-            }
+<span class="kw">impl</span> <span class="ident">tmplt::HtmlTemplatingDataTrait</span> <span class="kw">for</span> <span class="ident">VerifyListData</span> {
+    <span class="doccomment">/// data model name is used for eprint</span>
+    <span class="kw">fn</span> <span class="ident">data_model_name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+        <span class="comment">// return</span>
+        <span class="macro">s!</span>(<span class="string">&quot;VerifyListData&quot;</span>)
+    }
+    <span class="doccomment">/// returns a String to replace the next text-node: &quot;wt_&quot; or &quot;st_&quot;</span>
+    <span class="kw">fn</span> <span class="ident">replace_with_string</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">placeholder</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">_subtemplate_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">_pos_cursor</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+        <span class="comment">// dbg!(&amp;placeholder);</span>
+        <span class="kw">match</span> <span class="ident">placeholder</span> {
+            <span class="string">&quot;wt_cargo_crev_reviews_version&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">s!</span>(<span class="macro">env!</span>(<span class="string">&quot;CARGO_PKG_VERSION&quot;</span>)),
+            <span class="string">&quot;wt_project_dir&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">s!</span>(<span class="self">self</span>.<span class="ident">project_dir</span>),
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">tmplt::utils::match_else_for_replace_with_string</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">data_model_name</span>(), <span class="ident">placeholder</span>),
         }
     }
 
-    <span class="doccomment">/// the use of complete string wt_xxx enables easy and exact text search around the source code</span>
-    <span class="kw">fn</span> <span class="ident">match_wt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">wt_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
-        <span class="kw">match</span> <span class="ident">wt_name</span> {
-            <span class="string">&quot;wt_status&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">status</span>.<span class="ident">clone</span>(),
-            <span class="string">&quot;wt_crate_name&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">crate_name</span>.<span class="ident">clone</span>(),
-            <span class="string">&quot;wt_crate_version&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">crate_version</span>.<span class="ident">clone</span>(),
-            <span class="string">&quot;wt_crate_name_version&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">format!</span>(<span class="string">&quot;{} {}&quot;</span>, <span class="self">self</span>.<span class="ident">crate_name</span>, <span class="self">self</span>.<span class="ident">crate_version</span>),
-            <span class="string">&quot;wt_published_by&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">published_by</span>.<span class="ident">clone</span>(),
-            <span class="string">&quot;wt_cargo_crev_reviews_version&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">env!</span>(<span class="string">&quot;CARGO_PKG_VERSION&quot;</span>).<span class="ident">to_string</span>(),
-            <span class="string">&quot;wt_status_class&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">format!</span>(<span class="string">&quot;review_header0_cell c_{}&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">status</span>),
-            <span class="string">&quot;wt_published_by_class&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">format!</span>(<span class="string">&quot;review_header0_cell c_{}&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">trusted_publisher</span>),
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="kw">let</span> <span class="ident">html_error</span> <span class="op">=</span> <span class="macro">format!</span>(<span class="string">&quot;Unrecognized replace_wt method {}&quot;</span>, <span class="ident">wt_name</span>);
-                <span class="ident">w::debug_write</span>(<span class="kw-2">&amp;</span><span class="ident">html_error</span>);
-                <span class="ident">html_error</span>
+    <span class="doccomment">/// renders sub-template: &quot;stmplt_&quot; or &quot;wtmplt_&quot;</span>
+    <span class="kw">fn</span> <span class="ident">process_sub_template</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">template_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">sub_templates</span>: <span class="kw-2">&amp;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">tmplt::utils::SubTemplate</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">tmplt::utils::Node</span><span class="op">&gt;</span> {
+        <span class="macro">log::info!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">template_name</span>);
+        <span class="kw">match</span> <span class="ident">template_name</span> {
+            <span class="string">&quot;wtmplt_VerifyItemData&quot;</span> <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="kw">let</span> <span class="ident">sub_template</span> <span class="op">=</span> <span class="macro">unwrap!</span>(<span class="ident">sub_templates</span>.<span class="ident">iter</span>().<span class="ident">find</span>(<span class="op">|</span><span class="kw-2">&amp;</span><span class="ident">template</span><span class="op">|</span> <span class="ident">template</span>.<span class="ident">name</span> <span class="op">=</span><span class="op">=</span> <span class="ident">template_name</span>));
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">nodes</span> <span class="op">=</span> <span class="macro">vec!</span>[];
+                <span class="kw">for</span> (<span class="ident">row_number</span>, <span class="ident">verify_item</span>) <span class="kw">in</span> <span class="self">self</span>.<span class="ident">list_of_verify</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
+                    <span class="kw">let</span> <span class="ident">vec_node</span> <span class="op">=</span> <span class="macro">unwrap!</span>(<span class="ident">tmplt::utils::process_template_raw_to_nodes</span>(
+                        <span class="ident">verify_item</span>,
+                        <span class="kw-2">&amp;</span><span class="ident">sub_template</span>.<span class="ident">template</span>,
+                        <span class="ident">tmplt::utils::HtmlOrSvg::Html</span>,
+                        <span class="string">&quot;&quot;</span>,
+                        <span class="ident">row_number</span>,
+                    ));
+                    <span class="ident">nodes</span>.<span class="ident">extend_from_slice</span>(<span class="kw-2">&amp;</span><span class="ident">vec_node</span>);
+                }
+                <span class="comment">// return</span>
+                <span class="ident">nodes</span>
             }
-        }
-    }
-    <span class="doccomment">/// the use of complete string wb_xxx enables easy and exact text search around the source code</span>
-    <span class="kw">fn</span> <span class="ident">match_wb</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">wb_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
-        <span class="kw">match</span> <span class="ident">wb_name</span> {
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="kw">let</span> <span class="ident">html_error</span> <span class="op">=</span> <span class="macro">format!</span>(<span class="string">&quot;Unrecognized wb_exist_next_attribute method {}&quot;</span>, <span class="ident">wb_name</span>);
-                <span class="ident">w::debug_write</span>(<span class="kw-2">&amp;</span><span class="ident">html_error</span>);
-                <span class="bool-val">false</span>
-            }
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">tmplt::utils::match_else_for_process_sub_template</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">data_model_name</span>(), <span class="ident">template_name</span>),
         }
     }
 }
 
 <span class="attribute">#[<span class="ident">named</span>]</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">request_verify_list</span>(<span class="ident">_element_id</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) {
-    <span class="ident">w::debug_write</span>(<span class="macro">function_name!</span>());
+    <span class="macro">log::info!</span>(<span class="string">&quot;{}&quot;</span>, <span class="macro">function_name!</span>());
     <span class="kw">let</span> <span class="ident">request_data</span> <span class="op">=</span> <span class="ident">RpcEmptyData</span> {};
     <span class="ident">srv_methods::srv_verify_project</span>(<span class="ident">request_data</span>);
 }
 
 <span class="attribute">#[<span class="ident">named</span>]</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cln_verify_list</span>(<span class="ident">srv_response</span>: <span class="ident">RpcResponse</span>) {
-    <span class="ident">w::debug_write</span>(<span class="macro">function_name!</span>());
+    <span class="macro">log::info!</span>(<span class="string">&quot;{}&quot;</span>, <span class="macro">function_name!</span>());
     <span class="kw">let</span> <span class="ident">html</span> <span class="op">=</span> <span class="ident">extract_html</span>(<span class="kw-2">&amp;</span><span class="ident">srv_response</span>);
     <span class="kw-2">*</span><span class="ident">VERIFY_LIST_DATA</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>() <span class="op">=</span> <span class="macro">unwrap!</span>(<span class="ident">serde_json::from_value</span>(<span class="ident">srv_response</span>.<span class="ident">response_data</span>));
-    <span class="comment">// modal dialog box with error, don&#39;t change the html and data</span>
-    <span class="kw">let</span> <span class="ident">html_after_process</span> <span class="op">=</span> <span class="ident">VERIFY_LIST_DATA</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>().<span class="ident">process_html</span>(<span class="kw-2">&amp;</span><span class="ident">html</span>);
+    <span class="comment">// the mutex is locked inside a scope. When this structure falls out of scope, the lock will be unlocked.</span>
+    <span class="kw">let</span> <span class="ident">html_after_process</span> <span class="op">=</span> {
+        <span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="ident">VERIFY_LIST_DATA</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>();
+        <span class="ident">tmplt::process_html</span>(<span class="ident">data</span>.<span class="ident">deref</span>(), <span class="kw-2">&amp;</span><span class="ident">html</span>)
+    };
 
     <span class="ident">inject_into_html</span>(<span class="kw-2">&amp;</span><span class="ident">html_after_process</span>);
     <span class="ident">navigation_on_click</span>();
 
     <span class="comment">// on_click for every row of the list</span>
-    <span class="kw">for</span> (<span class="ident">row_num</span>, <span class="ident">_item</span>) <span class="kw">in</span> <span class="ident">VERIFY_LIST_DATA</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>().<span class="ident">list_of_verify</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
-        <span class="macro">row_on_click!</span>(<span class="string">&quot;button_review_edit_or_new&quot;</span>, <span class="ident">row_num</span>, <span class="ident">request_review_edit_or_new</span>);
-        <span class="macro">row_on_click!</span>(<span class="string">&quot;button_open_crev_dev&quot;</span>, <span class="ident">row_num</span>, <span class="ident">button_verify_open_crev_dev_onclick</span>);
-        <span class="macro">row_on_click!</span>(<span class="string">&quot;button_open_crates_io&quot;</span>, <span class="ident">row_num</span>, <span class="ident">button_verify_open_crates_io_onclick</span>);
-        <span class="macro">row_on_click!</span>(<span class="string">&quot;button_open_lib_rs&quot;</span>, <span class="ident">row_num</span>, <span class="ident">button_verify_open_lib_rs_onclick</span>);
-        <span class="macro">row_on_click!</span>(<span class="string">&quot;button_open_source_code&quot;</span>, <span class="ident">row_num</span>, <span class="ident">button_verify_open_source_code_onclick</span>);
+    <span class="kw">for</span> (<span class="ident">row_number</span>, <span class="ident">_item</span>) <span class="kw">in</span> <span class="ident">VERIFY_LIST_DATA</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>().<span class="ident">list_of_verify</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
+        <span class="macro">row_on_click!</span>(<span class="string">&quot;crate_name_version&quot;</span>, <span class="ident">row_number</span>, <span class="ident">open_all_links</span>);
     }
 }
 
 <span class="attribute">#[<span class="ident">named</span>]</span>
-<span class="kw">fn</span> <span class="ident">request_review_edit_or_new</span>(<span class="ident">_element_id</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">row_num</span>: <span class="ident">usize</span>) {
-    <span class="ident">w::debug_write</span>(<span class="macro">function_name!</span>());
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">request_review_edit_or_new</span>(<span class="ident">_element_id</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">row_number</span>: <span class="ident">usize</span>) {
+    <span class="macro">log::info!</span>(<span class="string">&quot;{}&quot;</span>, <span class="macro">function_name!</span>());
     <span class="comment">// from list get crate name and version</span>
-    <span class="kw">let</span> <span class="ident">item</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">VERIFY_LIST_DATA</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>().<span class="ident">list_of_verify</span>[<span class="ident">row_num</span>];
+    <span class="kw">let</span> <span class="ident">item</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">VERIFY_LIST_DATA</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>().<span class="ident">list_of_verify</span>[<span class="ident">row_number</span>];
     <span class="kw">let</span> <span class="ident">request_data</span> <span class="op">=</span> <span class="ident">ReviewFilterData</span> {
         <span class="ident">crate_name</span>: <span class="ident">item</span>.<span class="ident">crate_name</span>.<span class="ident">clone</span>(),
         <span class="ident">crate_version</span>: <span class="prelude-val">Some</span>(<span class="ident">item</span>.<span class="ident">crate_version</span>.<span class="ident">clone</span>()),
@@ -337,43 +325,47 @@
 }
 
 <span class="attribute">#[<span class="ident">named</span>]</span>
-<span class="kw">fn</span> <span class="ident">button_verify_open_crev_dev_onclick</span>(<span class="ident">_element_id</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">row_num</span>: <span class="ident">usize</span>) {
-    <span class="ident">w::debug_write</span>(<span class="macro">function_name!</span>());
-    <span class="comment">// from list get crate name and version</span>
-    <span class="kw">let</span> <span class="ident">item</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">VERIFY_LIST_DATA</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>().<span class="ident">list_of_verify</span>[<span class="ident">row_num</span>];
-    <span class="kw">let</span> <span class="ident">url</span> <span class="op">=</span> <span class="macro">format!</span>(<span class="string">&quot;https://web.crev.dev/rust-reviews/crate/{}/&quot;</span>, <span class="ident">item</span>.<span class="ident">crate_name</span>);
-    <span class="macro">unwrap!</span>(<span class="ident">w::window</span>().<span class="ident">open_with_url</span>(<span class="kw-2">&amp;</span><span class="ident">url</span>));
-}
+<span class="kw">fn</span> <span class="ident">open_all_links</span>(<span class="ident">_element_id</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">row_number</span>: <span class="ident">usize</span>) {
+    <span class="macro">log::info!</span>(<span class="string">&quot;{}&quot;</span>, <span class="macro">function_name!</span>());
+    <span class="kw">let</span> <span class="ident">item</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">VERIFY_LIST_DATA</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>().<span class="ident">list_of_verify</span>[<span class="ident">row_number</span>];
+    <span class="comment">/*
+       let url = format!(&quot;https://web.crev.dev/rust-reviews/crate/{}/&quot;, item.crate_name);
+       unwrap!(w::window().open_with_url(&amp;url));
 
-<span class="attribute">#[<span class="ident">named</span>]</span>
-<span class="kw">fn</span> <span class="ident">button_verify_open_lib_rs_onclick</span>(<span class="ident">_element_id</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">row_num</span>: <span class="ident">usize</span>) {
-    <span class="ident">w::debug_write</span>(<span class="macro">function_name!</span>());
-    <span class="comment">// from list get crate name and version</span>
-    <span class="kw">let</span> <span class="ident">item</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">VERIFY_LIST_DATA</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>().<span class="ident">list_of_verify</span>[<span class="ident">row_num</span>];
-    <span class="kw">let</span> <span class="ident">url</span> <span class="op">=</span> <span class="macro">format!</span>(<span class="string">&quot;https://lib.rs/crates/{}&quot;</span>, <span class="ident">item</span>.<span class="ident">crate_name</span>);
-    <span class="macro">unwrap!</span>(<span class="ident">w::window</span>().<span class="ident">open_with_url</span>(<span class="kw-2">&amp;</span><span class="ident">url</span>));
-}
+       let url = format!(&quot;https://lib.rs/crates/{}&quot;, item.crate_name);
+       unwrap!(w::window().open_with_url(&amp;url));
 
-<span class="attribute">#[<span class="ident">named</span>]</span>
-<span class="kw">fn</span> <span class="ident">button_verify_open_crates_io_onclick</span>(<span class="ident">_element_id</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">row_num</span>: <span class="ident">usize</span>) {
-    <span class="ident">w::debug_write</span>(<span class="macro">function_name!</span>());
-    <span class="comment">// from list get crate name and version</span>
-    <span class="kw">let</span> <span class="ident">item</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">VERIFY_LIST_DATA</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>().<span class="ident">list_of_verify</span>[<span class="ident">row_num</span>];
-    <span class="kw">let</span> <span class="ident">url</span> <span class="op">=</span> <span class="macro">format!</span>(<span class="string">&quot;https://crates.io/crates/{}/{}&quot;</span>, <span class="ident">item</span>.<span class="ident">crate_name</span>, <span class="ident">item</span>.<span class="ident">crate_version</span>);
-    <span class="macro">unwrap!</span>(<span class="ident">w::window</span>().<span class="ident">open_with_url</span>(<span class="kw-2">&amp;</span><span class="ident">url</span>));
-}
+       let url = format!(&quot;https://crates.io/crates/{}/{}&quot;, item.crate_name, item.crate_version);
+       unwrap!(w::window().open_with_url(&amp;url));
 
-<span class="attribute">#[<span class="ident">named</span>]</span>
-<span class="kw">fn</span> <span class="ident">button_verify_open_source_code_onclick</span>(<span class="ident">_element_id</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">row_num</span>: <span class="ident">usize</span>) {
-    <span class="ident">w::debug_write</span>(<span class="macro">function_name!</span>());
-    <span class="comment">// from list get crate name and version</span>
-    <span class="kw">let</span> <span class="ident">item</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">VERIFY_LIST_DATA</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>().<span class="ident">list_of_verify</span>[<span class="ident">row_num</span>];
-    <span class="kw">let</span> <span class="ident">request_data</span> <span class="op">=</span> <span class="ident">ReviewFilterData</span> {
-        <span class="ident">crate_name</span>: <span class="ident">item</span>.<span class="ident">crate_name</span>.<span class="ident">clone</span>(),
-        <span class="ident">crate_version</span>: <span class="prelude-val">Some</span>(<span class="ident">item</span>.<span class="ident">crate_version</span>.<span class="ident">clone</span>()),
-        <span class="ident">old_crate_version</span>: <span class="prelude-val">None</span>,
-    };
-    <span class="ident">srv_methods::srv_review_open_source_code</span>(<span class="ident">request_data</span>);
+       let request_data = ReviewFilterData {
+           crate_name: item.crate_name.clone(),
+           crate_version: Some(item.crate_version.clone()),
+           old_crate_version: None,
+       };
+       srv_methods::srv_review_open_source_code(request_data);
+    */</span>
+    <span class="comment">// list versions for this crate</span>
+    <span class="kw">let</span> <span class="ident">url</span> <span class="op">=</span> <span class="macro">format!</span>(
+        <span class="string">&quot;http://{}:{}/{}/index.html#version_list/{}&quot;</span>,
+        <span class="ident">SERVER_HOST</span>.<span class="ident">as_str</span>(),
+        <span class="ident">SERVER_PORT</span>.<span class="ident">as_str</span>(),
+        <span class="ident">SERVER_FIRST_SUBDIRECTORY</span>.<span class="ident">as_str</span>(),
+        <span class="ident">item</span>.<span class="ident">crate_name</span>,
+    );
+    <span class="macro">unwrap!</span>(<span class="ident">w::window</span>().<span class="ident">open_with_url</span>(<span class="kw-2">&amp;</span><span class="ident">url</span>));
+    <span class="comment">/*
+    // edit_or_new in a new tab
+    let url = format!(
+        &quot;http://{}:{}/{}/index.html#edit_or_new/{}/{}&quot;,
+        SERVER_HOST.as_str(),
+        SERVER_PORT.as_str(),
+        SERVER_FIRST_SUBDIRECTORY.as_str(),
+        item.crate_name,
+        item.crate_version,
+    );
+    unwrap!(w::window().open_with_url(&amp;url));
+     */</span>
 }
 </pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="cargo_crev_reviews_wasm" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div><script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script></body></html>

@@ -213,6 +213,34 @@
 <span id="211">211</span>
 <span id="212">212</span>
 <span id="213">213</span>
+<span id="214">214</span>
+<span id="215">215</span>
+<span id="216">216</span>
+<span id="217">217</span>
+<span id="218">218</span>
+<span id="219">219</span>
+<span id="220">220</span>
+<span id="221">221</span>
+<span id="222">222</span>
+<span id="223">223</span>
+<span id="224">224</span>
+<span id="225">225</span>
+<span id="226">226</span>
+<span id="227">227</span>
+<span id="228">228</span>
+<span id="229">229</span>
+<span id="230">230</span>
+<span id="231">231</span>
+<span id="232">232</span>
+<span id="233">233</span>
+<span id="234">234</span>
+<span id="235">235</span>
+<span id="236">236</span>
+<span id="237">237</span>
+<span id="238">238</span>
+<span id="239">239</span>
+<span id="240">240</span>
+<span id="241">241</span>
 </pre><pre class="rust">
 <span class="comment">// auto_generated_mod.rs</span>
 
@@ -221,20 +249,21 @@
 
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::cln_methods_review_mod</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::cln_methods_verify_mod</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::web_sys_mod</span> <span class="kw">as</span> <span class="ident">w</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::cln_methods_version_mod</span>::<span class="kw-2">*</span>;
 
 <span class="doccomment">/// match the string and call a function</span>
 <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">match_response_method_and_call_function</span>(<span class="ident">response</span>: <span class="ident">common_structs_mod::RpcResponse</span>) {
     <span class="kw">match</span> <span class="ident">response</span>.<span class="ident">response_method</span>.<span class="ident">as_str</span>() {
-        <span class="comment">// generator match_response_method start</span>
+        <span class="comment">// region: generated match_response_method</span>
         <span class="string">&quot;cln_review_edit&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">cln_review_edit</span>(<span class="ident">response</span>),
         <span class="string">&quot;cln_review_error&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">cln_review_error</span>(<span class="ident">response</span>),
         <span class="string">&quot;cln_review_list&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">cln_review_list</span>(<span class="ident">response</span>),
         <span class="string">&quot;cln_review_new&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">cln_review_new</span>(<span class="ident">response</span>),
         <span class="string">&quot;cln_review_publish_modal&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">cln_review_publish_modal</span>(<span class="ident">response</span>),
         <span class="string">&quot;cln_verify_list&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">cln_verify_list</span>(<span class="ident">response</span>),
-        <span class="comment">// generator match_response_method end</span>
-        <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">w::debug_write</span>(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;Error: Unrecognized response_method {}&quot;</span>, <span class="ident">response</span>.<span class="ident">response_method</span>)),
+        <span class="string">&quot;cln_version_list&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">cln_version_list</span>(<span class="ident">response</span>),
+        <span class="comment">// endregion: generated match_response_method</span>
+        <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">log::error!</span>(<span class="string">&quot;Error: Unrecognized response_method {}&quot;</span>, <span class="ident">response</span>.<span class="ident">response_method</span>),
     }
 }
 
@@ -243,7 +272,7 @@
     <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::html_mod::post_request_await_run_response_method</span>;
     <span class="kw">use</span> <span class="ident">function_name::named</span>;
 
-    <span class="comment">// generator srv_methods start</span>
+    <span class="comment">// region: generated srv_methods</span>
 
     <span class="attribute">#[<span class="ident">named</span>]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">srv_review_delete</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">request_data</span>: <span class="ident">T</span>)
@@ -343,16 +372,24 @@
         <span class="kw">let</span> <span class="ident">request_method</span> <span class="op">=</span> <span class="macro">function_name!</span>();
         <span class="ident">post_request_await_run_response_method</span>(<span class="ident">request_method</span>, <span class="ident">request_data</span>);
     }
-    <span class="comment">// generator srv_methods end</span>
+
+    <span class="attribute">#[<span class="ident">named</span>]</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">srv_version_list</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">request_data</span>: <span class="ident">T</span>)
+    <span class="kw">where</span>
+        <span class="ident">T</span>: <span class="ident">serde::Serialize</span>,
+    {
+        <span class="kw">let</span> <span class="ident">request_method</span> <span class="op">=</span> <span class="macro">function_name!</span>();
+        <span class="ident">post_request_await_run_response_method</span>(<span class="ident">request_method</span>, <span class="ident">request_data</span>);
+    }
+    <span class="comment">// endregion: generated srv_methods</span>
 }
 
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">common_structs_mod</span> {
-    <span class="comment">// generator common_structs_mod start</span>
+    <span class="comment">// region: generated common_structs_mod</span>
     <span class="comment">// common_structs_mod.rs</span>
 
     <span class="doccomment">//! common structs between the backend and frontend</span>
-    <span class="doccomment">//! WARNING: modify this file only in cargo_crev_reviews project.</span>
-    <span class="doccomment">//! One automation task will copy it over to cargo_crev_reviews_wasm !</span>
+    <span class="doccomment">//! One automation task will copy it over to cargo_crev_reviews_wasm/auto_generated_mod.rs !</span>
 
     <span class="kw">use</span> <span class="ident">serde</span>::{<span class="ident">Deserialize</span>, <span class="ident">Serialize</span>};
 
@@ -393,7 +430,7 @@
         <span class="kw">pub</span> <span class="ident">old_crate_version</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
     }
 
-    <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Debug</span>, <span class="ident">Default</span>)]</span>
+    <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Debug</span>, <span class="ident">Default</span>, <span class="ident">Clone</span>)]</span>
     <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ReviewItemData</span> {
         <span class="kw">pub</span> <span class="ident">crate_name</span>: <span class="ident">String</span>,
         <span class="kw">pub</span> <span class="ident">crate_version</span>: <span class="ident">String</span>,
@@ -413,7 +450,10 @@
     <span class="comment">// endregion: review</span>
     <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Debug</span>, <span class="ident">Default</span>)]</span>
     <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">VerifyItemData</span> {
+        <span class="doccomment">/// status: none, pass, warn, yanked</span>
         <span class="kw">pub</span> <span class="ident">status</span>: <span class="ident">String</span>,
+        <span class="doccomment">/// rating if exists, version number if exists for crate</span>
+        <span class="kw">pub</span> <span class="ident">my_review</span>: <span class="ident">String</span>,
         <span class="kw">pub</span> <span class="ident">crate_name</span>: <span class="ident">String</span>,
         <span class="kw">pub</span> <span class="ident">crate_version</span>: <span class="ident">String</span>,
         <span class="kw">pub</span> <span class="ident">published_by</span>: <span class="ident">String</span>,
@@ -425,7 +465,23 @@
         <span class="kw">pub</span> <span class="ident">project_dir</span>: <span class="ident">String</span>,
         <span class="kw">pub</span> <span class="ident">list_of_verify</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">VerifyItemData</span><span class="op">&gt;</span>,
     }
-    <span class="comment">// generator common_structs_mod end</span>
+
+    <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Debug</span>, <span class="ident">Default</span>)]</span>
+    <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">VersionItemData</span> {
+        <span class="kw">pub</span> <span class="ident">crate_name</span>: <span class="ident">String</span>,
+        <span class="kw">pub</span> <span class="ident">crate_version</span>: <span class="ident">String</span>,
+        <span class="kw">pub</span> <span class="ident">yanked</span>: <span class="ident">bool</span>,
+        <span class="kw">pub</span> <span class="ident">published_by_login</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
+        <span class="kw">pub</span> <span class="ident">published_date</span>: <span class="ident">String</span>,
+        <span class="kw">pub</span> <span class="ident">is_src_cached</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span>,
+        <span class="kw">pub</span> <span class="ident">my_review</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ReviewItemData</span><span class="op">&gt;</span>,
+    }
+
+    <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Debug</span>, <span class="ident">Default</span>)]</span>
+    <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">VersionListData</span> {
+        <span class="kw">pub</span> <span class="ident">list_of_version</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">VersionItemData</span><span class="op">&gt;</span>,
+    }
+    <span class="comment">// endregion: generated common_structs_mod</span>
 }
 </pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="cargo_crev_reviews_wasm" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div><script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script></body></html>

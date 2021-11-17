@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["cln_version_list",""]],"struct":[["VERSION_ITEM_DATA","mutable static, because it is hard to pass variables around with on_click events"],["VERSION_LIST_DATA",""]]});

@@ -602,6 +602,26 @@
 <span id="600">600</span>
 <span id="601">601</span>
 <span id="602">602</span>
+<span id="603">603</span>
+<span id="604">604</span>
+<span id="605">605</span>
+<span id="606">606</span>
+<span id="607">607</span>
+<span id="608">608</span>
+<span id="609">609</span>
+<span id="610">610</span>
+<span id="611">611</span>
+<span id="612">612</span>
+<span id="613">613</span>
+<span id="614">614</span>
+<span id="615">615</span>
+<span id="616">616</span>
+<span id="617">617</span>
+<span id="618">618</span>
+<span id="619">619</span>
+<span id="620">620</span>
+<span id="621">621</span>
+<span id="622">622</span>
 </pre><pre class="rust">
 <span class="comment">// crev_mod.rs</span>
 
@@ -618,12 +638,15 @@
 <span class="comment">// serde_yaml = &quot;0.8.20&quot;</span>
 <span class="comment">// home=&quot;0.5.3&quot;</span>
 
+<span class="attribute">#![<span class="ident">allow</span>(<span class="ident">dead_code</span>)]</span>
+
 <span class="kw">use</span> <span class="ident">anyhow::Context</span>;
 <span class="kw">use</span> <span class="ident">crev_data</span>::{
     <span class="ident">proof</span>::{<span class="ident">CommonOps</span>, <span class="ident">ContentExt</span>},
     <span class="ident">Level</span>, <span class="ident">Rating</span>,
 };
 <span class="kw">use</span> <span class="ident">crev_lib::ProofStore</span>;
+<span class="kw">use</span> <span class="ident">dev_bestia_string_utils</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident">lazy_static::lazy_static</span>;
 <span class="kw">use</span> <span class="ident">serde::Deserialize</span>;
 <span class="kw">use</span> <span class="ident">serde::Serialize</span>;
@@ -711,13 +734,11 @@
 <span class="doccomment">/// unlock crev_id interactively</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">unlock_crev_id_interactively</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">anyhow::Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">crev_local</span> <span class="op">=</span> <span class="ident">crev_lib::local::Local::auto_create_or_open</span>()<span class="question-mark">?</span>;
-    <span class="macro">println!</span>(<span class="string">&quot;First unlock your crev-id with the passphrase. Unlocking needs 2-3 seconds after you press Enter. Holly patience...&quot;</span>);
-    <span class="macro">println!</span>(<span class="string">&quot;Then it automatically opens the default browser.&quot;</span>);
-    <span class="kw">let</span> <span class="ident">crev_unlocked</span> <span class="op">=</span> <span class="ident">crev_local</span>.<span class="ident">read_current_unlocked_id</span>(<span class="kw-2">&amp;</span><span class="ident">stdio_input_password_mod::read_passphrase_interactively</span>)<span class="question-mark">?</span>;
-    <span class="macro">println!</span>(<span class="string">&quot;Unlocked.&quot;</span>);
+    <span class="comment">//let crev_unlocked = crev_local.read_current_unlocked_id(&amp;stdio_input_password_mod::read_passphrase_interactively)?;</span>
+    <span class="comment">//println!(&quot;Unlocked.&quot;);</span>
 
     <span class="comment">// write to static mut</span>
-    <span class="kw-2">*</span><span class="ident">CREV_UNLOCKED</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>() <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">crev_unlocked</span>);
+    <span class="comment">//*CREV_UNLOCKED.lock().unwrap() = Some(crev_unlocked);</span>
     <span class="kw-2">*</span><span class="ident">CREV_LOCAL</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>() <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">crev_local</span>);
 
     <span class="comment">// return</span>
@@ -814,6 +835,7 @@
         <span class="ident">crate_version</span>: <span class="prelude-val">None</span>,
         <span class="ident">old_crate_version</span>: <span class="prelude-val">None</span>,
     };
+
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">vec_of_reviews</span> <span class="op">=</span> <span class="ident">crev_list_my_reviews</span>(<span class="kw-2">&amp;</span><span class="prelude-val">Some</span>(<span class="ident">new_filter</span>))<span class="question-mark">?</span>;
     <span class="kw">if</span> <span class="ident">vec_of_reviews</span>.<span class="ident">is_empty</span>() {
         <span class="macro">anyhow::bail!</span>(<span class="string">&quot;Crate reviews for {} not found in my reviews!&quot;</span>, <span class="ident">filter</span>.<span class="ident">crate_name</span>.<span class="ident">as_str</span>());
@@ -839,13 +861,13 @@
     <span class="kw">if</span> <span class="ident">vec_of_reviews</span>.<span class="ident">is_empty</span>() {
         <span class="macro">anyhow::bail!</span>(<span class="string">&quot;Crate reviews for {} not found in my reviews!&quot;</span>, <span class="ident">filter</span>.<span class="ident">crate_name</span>.<span class="ident">as_str</span>());
     }
-    <span class="kw">let</span> <span class="ident">max_version</span> <span class="op">=</span> <span class="kw">crate</span><span class="ident">::cargo_mod::max_version_from_registry_index</span>(<span class="ident">filter</span>.<span class="ident">crate_name</span>.<span class="ident">as_str</span>())<span class="question-mark">?</span>;
+    <span class="kw">let</span> <span class="ident">max_version</span> <span class="op">=</span> <span class="kw">crate</span><span class="ident">::cargo_registry_mod::max_version_from_registry_index</span>(<span class="ident">filter</span>.<span class="ident">crate_name</span>.<span class="ident">as_str</span>())<span class="question-mark">?</span>;
 
     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">version</span>) <span class="op">=</span> <span class="ident">filter</span>.<span class="ident">crate_version</span>.<span class="ident">as_ref</span>() {
         <span class="kw">if</span> <span class="ident">version</span> <span class="op">=</span><span class="op">=</span> <span class="ident">max_version</span>.<span class="ident">as_str</span>() {
             <span class="macro">anyhow::bail!</span>(<span class="string">&quot;Max version {} is already reviewed!&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">max_version</span>);
         }
-        <span class="kw">let</span> <span class="ident">path_dir</span> <span class="op">=</span> <span class="kw">crate</span><span class="ident">::cargo_mod::cargo_registry_src_dir_for_crate</span>(<span class="kw-2">&amp;</span><span class="ident">filter</span>.<span class="ident">crate_name</span>, <span class="kw-2">&amp;</span><span class="ident">max_version</span>)<span class="question-mark">?</span>;
+        <span class="kw">let</span> <span class="ident">path_dir</span> <span class="op">=</span> <span class="kw">crate</span><span class="ident">::cargo_registry_mod::cargo_registry_src_dir_for_crate</span>(<span class="kw-2">&amp;</span><span class="ident">filter</span>.<span class="ident">crate_name</span>, <span class="kw-2">&amp;</span><span class="ident">max_version</span>)<span class="question-mark">?</span>;
         <span class="kw">if</span> <span class="op">!</span><span class="ident">path_dir</span>.<span class="ident">exists</span>() {
             <span class="macro">anyhow::bail!</span>(<span class="string">&quot;Max version {} src is not cached on your system. It means you don&#39;t have a dependency on it in your projects. You cannot review a crate version that you don&#39;t use.&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">max_version</span>);
         }
@@ -876,7 +898,7 @@
         <span class="ident">understanding</span>,
         <span class="ident">rating</span>,
     };
-    <span class="kw">let</span> <span class="ident">crate_root</span> <span class="op">=</span> <span class="kw">crate</span><span class="ident">::cargo_mod::cargo_registry_src_dir_for_crate</span>(<span class="ident">crate_name</span>, <span class="ident">crate_version_str</span>)<span class="question-mark">?</span>;
+    <span class="kw">let</span> <span class="ident">crate_root</span> <span class="op">=</span> <span class="kw">crate</span><span class="ident">::cargo_registry_mod::cargo_registry_src_dir_for_crate</span>(<span class="ident">crate_name</span>, <span class="ident">crate_version_str</span>)<span class="question-mark">?</span>;
 
     <span class="kw">if</span> <span class="op">!</span><span class="ident">crate_root</span>.<span class="ident">exists</span>() {
         <span class="macro">anyhow::bail!</span>(<span class="string">&quot;The crate {}-{} does not exist in the local cargo registry cache. You must use the crate as dependency in your projects, if you want to review it. This way cargo will download the source code for the crate that you review. &quot;</span>, <span class="ident">crate_name</span>, <span class="ident">crate_version_str</span>);
@@ -944,12 +966,12 @@
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">_verify_proof</span>(<span class="ident">yaml</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">anyhow::Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">proofs</span> <span class="op">=</span> <span class="ident">crev_data::proof::Proof::parse_from</span>(<span class="ident">yaml</span>.<span class="ident">as_bytes</span>())<span class="question-mark">?</span>;
     <span class="kw">let</span> <span class="ident">proof</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">proofs</span>[<span class="number">0</span>];
-    <span class="macro">println!</span>(<span class="string">&quot;signature: {}&quot;</span>, <span class="ident">proof</span>.<span class="ident">signature</span>());
-    <span class="macro">println!</span>(<span class="string">&quot;id: {}&quot;</span>, <span class="ident">proof</span>.<span class="ident">author_public_id</span>().<span class="ident">id</span>);
-    <span class="macro">println!</span>(<span class="string">&quot;body:\n{}&quot;</span>, <span class="ident">proof</span>.<span class="ident">body</span>());
+    <span class="macro">log::info!</span>(<span class="string">&quot;signature: {}&quot;</span>, <span class="ident">proof</span>.<span class="ident">signature</span>());
+    <span class="macro">log::info!</span>(<span class="string">&quot;id: {}&quot;</span>, <span class="ident">proof</span>.<span class="ident">author_public_id</span>().<span class="ident">id</span>);
+    <span class="macro">log::info!</span>(<span class="string">&quot;body:\n{}&quot;</span>, <span class="ident">proof</span>.<span class="ident">body</span>());
     <span class="ident">proof</span>.<span class="ident">verify</span>()<span class="question-mark">?</span>;
 
-    <span class="macro">println!</span>(<span class="string">&quot;Proof verified ok.&quot;</span>);
+    <span class="macro">log::info!</span>(<span class="string">&quot;Proof verified ok.&quot;</span>);
     <span class="comment">// return</span>
     <span class="prelude-val">Ok</span>(())
 }
@@ -1034,30 +1056,6 @@
 }
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">VersionResponse</span> {
-    <span class="kw">pub</span> <span class="ident">version</span>: <span class="ident">Version</span>,
-}
-
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Version</span> {
-    <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">rename</span> <span class="op">=</span> <span class="string">&quot;crate&quot;</span>)]</span>
-    <span class="kw">pub</span> <span class="ident">crate_name</span>: <span class="ident">String</span>,
-    <span class="kw">pub</span> <span class="ident">num</span>: <span class="ident">String</span>,
-    <span class="kw">pub</span> <span class="ident">yanked</span>: <span class="ident">bool</span>,
-    <span class="kw">pub</span> <span class="ident">published_by</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">User</span><span class="op">&gt;</span>,
-}
-
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">User</span> {
-    <span class="kw">pub</span> <span class="ident">login</span>: <span class="ident">String</span>,
-}
-
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">VersionDataFile</span> {
-    <span class="ident">versions</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Version</span><span class="op">&gt;</span>,
-}
-
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">TrustedPublisherDataFile</span> {
     <span class="ident">trusted_publishers</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">TrustedPublisher</span><span class="op">&gt;</span>,
 }
@@ -1067,25 +1065,38 @@
     <span class="kw">pub</span> <span class="ident">login</span>: <span class="ident">String</span>,
 }
 
+<span class="doccomment">/// verify_project should return some data quickly, but in the background start to fill the db_version</span>
+<span class="doccomment">/// for all these crates. So the next time we have more complete data</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">verify_project</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">anyhow::Result</span><span class="op">&lt;</span><span class="ident">VerifyListData</span><span class="op">&gt;</span> {
+    <span class="kw">let</span> <span class="ident">ns_started</span> <span class="op">=</span> <span class="kw">crate</span><span class="ident">::utils_mod::ns_start</span>(<span class="string">&quot;verify_project&quot;</span>);
+    <span class="kw">crate</span><span class="ident">::db_sled_mod::sync_in_background_reviews</span>();
+    <span class="kw">crate</span><span class="ident">::db_sled_mod::sync_in_background_yanked</span>();
+
     <span class="kw">let</span> <span class="ident">output</span> <span class="op">=</span> <span class="ident">std::process::Command::new</span>(<span class="string">&quot;cargo&quot;</span>).<span class="ident">arg</span>(<span class="string">&quot;crev&quot;</span>).<span class="ident">arg</span>(<span class="string">&quot;verify&quot;</span>).<span class="ident">output</span>().<span class="ident">unwrap</span>();
     <span class="kw">let</span> <span class="ident">output</span> <span class="op">=</span> <span class="macro">format!</span>(<span class="string">&quot;{} {}&quot;</span>, <span class="ident">String::from_utf8_lossy</span>(<span class="kw-2">&amp;</span><span class="ident">output</span>.<span class="ident">stdout</span>), <span class="ident">String::from_utf8_lossy</span>(<span class="kw-2">&amp;</span><span class="ident">output</span>.<span class="ident">stderr</span>));
 
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">versions_json</span> <span class="op">=</span> <span class="ident">load_versions_json</span>()<span class="question-mark">?</span>;
     <span class="kw">let</span> <span class="ident">trusted_publisher_json</span> <span class="op">=</span> <span class="ident">load_trusted_publishers_json</span>()<span class="question-mark">?</span>;
 
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">list_of_verify</span> <span class="op">=</span> <span class="macro">vec!</span>[];
     <span class="kw">for</span> <span class="ident">line</span> <span class="kw">in</span> <span class="ident">output</span>.<span class="ident">lines</span>() {
         <span class="kw">if</span> <span class="ident">line</span>.<span class="ident">starts_with</span>(<span class="string">&quot;none &quot;</span>) <span class="op">|</span><span class="op">|</span> <span class="ident">line</span>.<span class="ident">starts_with</span>(<span class="string">&quot;pass &quot;</span>) <span class="op">|</span><span class="op">|</span> <span class="ident">line</span>.<span class="ident">starts_with</span>(<span class="string">&quot;warn &quot;</span>) {
             <span class="kw">let</span> <span class="ident">s</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">line</span>.<span class="ident">split_whitespace</span>().<span class="ident">collect</span>();
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">status</span> <span class="op">=</span> <span class="ident">s</span>[<span class="number">0</span>].<span class="ident">to_string</span>();
             <span class="kw">let</span> <span class="ident">crate_name</span> <span class="op">=</span> <span class="ident">s</span>[<span class="number">1</span>].<span class="ident">to_string</span>();
             <span class="kw">let</span> <span class="ident">crate_version</span> <span class="op">=</span> <span class="ident">s</span>[<span class="number">2</span>].<span class="ident">to_string</span>();
+            <span class="kw">let</span> <span class="ident">crate_name_version</span> <span class="op">=</span> <span class="ident">join_crate_version</span>(<span class="kw-2">&amp;</span><span class="ident">crate_name</span>, <span class="kw-2">&amp;</span><span class="ident">crate_version</span>);
 
-            <span class="kw">let</span> <span class="ident">published_by</span> <span class="op">=</span> <span class="ident">published_by_from_versions_json</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">versions_json</span>, <span class="kw-2">&amp;</span><span class="ident">crate_name</span>, <span class="kw-2">&amp;</span><span class="ident">crate_version</span>)<span class="question-mark">?</span>;
+            <span class="kw">let</span> <span class="ident">published_by</span> <span class="op">=</span> <span class="ident">published_by_login</span>(<span class="kw-2">&amp;</span><span class="ident">crate_name</span>, <span class="kw-2">&amp;</span><span class="ident">crate_version</span>)<span class="question-mark">?</span>;
             <span class="kw">let</span> <span class="ident">trusted_publisher</span> <span class="op">=</span> <span class="ident">is_trusted_publisher</span>(<span class="kw-2">&amp;</span><span class="ident">trusted_publisher_json</span>, <span class="kw-2">&amp;</span><span class="ident">published_by</span>);
+            <span class="kw">if</span> <span class="kw">crate</span><span class="ident">::db_sled_mod::db_yanked_mod::exists</span>(<span class="kw-2">&amp;</span><span class="ident">crate_name_version</span>) {
+                <span class="ident">status</span> <span class="op">=</span> <span class="string">&quot;yanked&quot;</span>.<span class="ident">to_string</span>();
+            }
+
+            <span class="kw">let</span> <span class="ident">my_review</span> <span class="op">=</span> <span class="ident">rating_or_version</span>(<span class="kw-2">&amp;</span><span class="ident">crate_name</span>, <span class="kw-2">&amp;</span><span class="ident">crate_version</span>)<span class="question-mark">?</span>;
 
             <span class="ident">list_of_verify</span>.<span class="ident">push</span>(<span class="ident">VerifyItemData</span> {
-                <span class="ident">status</span>: <span class="ident">s</span>[<span class="number">0</span>].<span class="ident">to_string</span>(),
+                <span class="ident">status</span>,
+                <span class="ident">my_review</span>,
                 <span class="ident">crate_name</span>,
                 <span class="ident">crate_version</span>,
                 <span class="ident">published_by</span>,
@@ -1094,9 +1105,9 @@
         }
     }
 
-    <span class="ident">write_versions_json</span>(<span class="ident">versions_json</span>)<span class="question-mark">?</span>;
-
     <span class="ident">verify_sort_list_by_name_version</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">list_of_verify</span>);
+
+    <span class="kw">crate</span><span class="ident">::utils_mod::ns_print_ms</span>(<span class="string">&quot;verify_project&quot;</span>, <span class="ident">ns_started</span>);
 
     <span class="prelude-val">Ok</span>(<span class="ident">VerifyListData</span> {
         <span class="ident">project_dir</span>: <span class="ident">env::current_dir</span>()<span class="question-mark">?</span>.<span class="ident">to_string_lossy</span>().<span class="ident">to_string</span>(),
@@ -1115,71 +1126,39 @@
         <span class="ident">std::cmp::Ordering::Greater</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">std::cmp::Ordering::Greater</span>,
     });
 }
-<span class="comment">// region: cargo_crev_reviews_versions.json</span>
-
-<span class="kw">fn</span> <span class="ident">path_to_versions_json</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">anyhow::Result</span><span class="op">&lt;</span><span class="ident">std::path::PathBuf</span><span class="op">&gt;</span> {
-    <span class="kw">let</span> <span class="ident">pb</span> <span class="op">=</span> <span class="ident">home::home_dir</span>().<span class="ident">context</span>(<span class="string">&quot;home_dir&quot;</span>)<span class="question-mark">?</span>.<span class="ident">join</span>(<span class="string">&quot;.config/crev/cargo_crev_reviews_versions.json&quot;</span>);
-    <span class="prelude-val">Ok</span>(<span class="ident">pb</span>)
-}
-
-<span class="kw">fn</span> <span class="ident">load_versions_json</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">anyhow::Result</span><span class="op">&lt;</span><span class="ident">VersionDataFile</span><span class="op">&gt;</span> {
-    <span class="kw">let</span> <span class="ident">pb</span> <span class="op">=</span> <span class="ident">path_to_versions_json</span>()<span class="question-mark">?</span>;
-    <span class="kw">if</span> <span class="op">!</span><span class="ident">pb</span>.<span class="ident">exists</span>() {
-        <span class="comment">// first create the file empty</span>
-        <span class="kw">let</span> <span class="ident">version_data</span> <span class="op">=</span> <span class="ident">VersionDataFile</span> { <span class="ident">versions</span>: <span class="macro">vec!</span>[] };
-        <span class="kw">let</span> <span class="ident">json</span> <span class="op">=</span> <span class="ident">serde_json::to_string_pretty</span>(<span class="kw-2">&amp;</span><span class="ident">version_data</span>)<span class="question-mark">?</span>;
-        <span class="ident">std::fs::write</span>(<span class="kw-2">&amp;</span><span class="ident">pb</span>, <span class="ident">json</span>)<span class="question-mark">?</span>;
-    }
-    <span class="kw">let</span> <span class="ident">version_data_cache</span> <span class="op">=</span> <span class="ident">std::fs::read_to_string</span>(<span class="kw-2">&amp;</span><span class="ident">pb</span>)<span class="question-mark">?</span>;
-    <span class="kw">let</span> <span class="ident">version_data</span>: <span class="ident">VersionDataFile</span> <span class="op">=</span> <span class="ident">serde_json::from_str</span>(<span class="kw-2">&amp;</span><span class="ident">version_data_cache</span>)<span class="question-mark">?</span>;
-    <span class="prelude-val">Ok</span>(<span class="ident">version_data</span>)
-}
+<span class="comment">// region: cargo_crev_reviews/db_version</span>
 
 <span class="doccomment">/// check if it is already in the cache or GET from crates.io API and store in cache</span>
-<span class="kw">fn</span> <span class="ident">published_by_from_versions_json</span>(<span class="ident">version_data</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VersionDataFile</span>, <span class="ident">crate_name</span>: <span class="kw-2">&amp;</span><span class="ident">String</span>, <span class="ident">crate_version</span>: <span class="kw-2">&amp;</span><span class="ident">String</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">anyhow::Result</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
-    <span class="kw">for</span> <span class="ident">x</span> <span class="kw">in</span> <span class="ident">version_data</span>.<span class="ident">versions</span>.<span class="ident">iter</span>() {
-        <span class="kw">if</span> <span class="kw-2">&amp;</span><span class="ident">x</span>.<span class="ident">crate_name</span> <span class="op">=</span><span class="op">=</span> <span class="ident">crate_name</span> <span class="op">&amp;&amp;</span> <span class="kw-2">&amp;</span><span class="ident">x</span>.<span class="ident">num</span> <span class="op">=</span><span class="op">=</span> <span class="ident">crate_version</span> {
-            <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="ident">x</span>.<span class="ident">published_by</span> {
-                <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="string">&quot;&quot;</span>.<span class="ident">to_string</span>()),
-                <span class="prelude-val">Some</span>(<span class="ident">user</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">user</span>.<span class="ident">login</span>.<span class="ident">to_string</span>()),
-            };
-        }
-    }
-
-    <span class="comment">// GET data from crates.io</span>
-    <span class="kw">let</span> <span class="ident">url</span> <span class="op">=</span> <span class="macro">format!</span>(<span class="string">&quot;https://crates.io//api/v1/crates/{}/{}/&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">crate_name</span>, <span class="kw-2">&amp;</span><span class="ident">crate_version</span>);
-    <span class="macro">println!</span>(<span class="string">&quot;get url: {}&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">url</span>);
-    <span class="kw">let</span> <span class="ident">client</span> <span class="op">=</span> <span class="ident">reqwest::blocking::Client::new</span>();
-    <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">client</span>
-        .<span class="ident">get</span>(<span class="ident">url</span>)
-        .<span class="ident">header</span>(<span class="string">&quot;User-Agent&quot;</span>, <span class="string">&quot;cargo_crev_reviews (github.com/LucianoBestia/cargo_crev_reviews_workspace)&quot;</span>)
-        .<span class="ident">send</span>()<span class="question-mark">?</span>;
-    <span class="kw">let</span> <span class="ident">resp</span> <span class="op">=</span> <span class="ident">res</span>.<span class="ident">text</span>()<span class="question-mark">?</span>;
-    <span class="kw">let</span> <span class="ident">version</span>: <span class="ident">VersionResponse</span> <span class="op">=</span> <span class="ident">serde_json::from_str</span>(<span class="kw-2">&amp;</span><span class="ident">resp</span>)<span class="question-mark">?</span>;
-    <span class="kw">let</span> <span class="ident">version</span> <span class="op">=</span> <span class="ident">version</span>.<span class="ident">version</span>;
-
-    <span class="ident">version_data</span>.<span class="ident">versions</span>.<span class="ident">push</span>(<span class="ident">version</span>.<span class="ident">clone</span>());
-
-    <span class="kw">match</span> <span class="ident">version</span>.<span class="ident">published_by</span> {
+<span class="kw">fn</span> <span class="ident">published_by_login</span>(<span class="ident">crate_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">crate_version</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">anyhow::Result</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
+    <span class="kw">let</span> <span class="ident">crate_name_version</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">join_crate_version</span>(<span class="ident">crate_name</span>, <span class="ident">crate_version</span>);
+    <span class="kw">let</span> <span class="ident">exact_version</span> <span class="op">=</span> <span class="kw">crate</span><span class="ident">::db_sled_mod::db_version_mod::read</span>(<span class="kw-2">&amp;</span><span class="ident">crate_name_version</span>)<span class="question-mark">?</span>;
+    <span class="kw">match</span> <span class="ident">exact_version</span> {
+        <span class="prelude-val">Some</span>(<span class="ident">exact_version</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">exact_version</span>.<span class="ident">published_by_login</span>.<span class="ident">unwrap_or</span>(<span class="string">&quot;&quot;</span>.<span class="ident">to_string</span>())),
         <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="string">&quot;&quot;</span>.<span class="ident">to_string</span>()),
-        <span class="prelude-val">Some</span>(<span class="ident">user</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">user</span>.<span class="ident">login</span>),
     }
 }
 
-<span class="doccomment">/// write the cache to file</span>
-<span class="kw">fn</span> <span class="ident">write_versions_json</span>(<span class="ident">version_data</span>: <span class="ident">VersionDataFile</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">anyhow::Error</span><span class="op">&gt;</span> {
-    <span class="kw">let</span> <span class="ident">pb</span> <span class="op">=</span> <span class="ident">path_to_versions_json</span>()<span class="question-mark">?</span>;
-    <span class="kw">let</span> <span class="ident">json</span> <span class="op">=</span> <span class="ident">serde_json::to_string_pretty</span>(<span class="kw-2">&amp;</span><span class="ident">version_data</span>)<span class="question-mark">?</span>;
-    <span class="ident">std::fs::write</span>(<span class="kw-2">&amp;</span><span class="ident">pb</span>, <span class="ident">json</span>)<span class="question-mark">?</span>;
-    <span class="prelude-val">Ok</span>(())
+<span class="doccomment">/// if exists my review for crate version returns the rating</span>
+<span class="doccomment">/// if exists any review for this crate returns version number</span>
+<span class="doccomment">/// else return empty string</span>
+<span class="kw">fn</span> <span class="ident">rating_or_version</span>(<span class="ident">crate_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">crate_version</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">anyhow::Result</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
+    <span class="kw">let</span> <span class="ident">vec</span> <span class="op">=</span> <span class="kw">crate</span><span class="ident">::db_sled_mod::db_review_mod::all_versions_for_crate</span>(<span class="ident">crate_name</span>)<span class="question-mark">?</span>;
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">version</span> <span class="op">=</span> <span class="string">&quot;&quot;</span>.<span class="ident">to_string</span>();
+    <span class="kw">for</span> <span class="ident">x</span> <span class="kw">in</span> <span class="ident">vec</span>.<span class="ident">iter</span>() {
+        <span class="kw">if</span> <span class="ident">x</span>.<span class="ident">crate_version</span> <span class="op">=</span><span class="op">=</span> <span class="ident">crate_version</span> {
+            <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">x</span>.<span class="ident">rating</span>.<span class="ident">clone</span>());
+        }
+        <span class="ident">version</span> <span class="op">=</span> <span class="ident">x</span>.<span class="ident">crate_version</span>.<span class="ident">clone</span>();
+    }
+    <span class="prelude-val">Ok</span>(<span class="ident">version</span>)
 }
+<span class="comment">// endregion: cargo_crev_reviews/db_version</span>
 
-<span class="comment">// endregion: cargo_crev_reviews_versions.json</span>
-
+<span class="comment">// region: cargo_crev_reviews_data/trusted_publishers.json</span>
 <span class="kw">fn</span> <span class="ident">path_to_trusted_publishers_json</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">anyhow::Result</span><span class="op">&lt;</span><span class="ident">std::path::PathBuf</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">pb</span> <span class="op">=</span> <span class="ident">home::home_dir</span>()
         .<span class="ident">context</span>(<span class="string">&quot;home_dir&quot;</span>)<span class="question-mark">?</span>
-        .<span class="ident">join</span>(<span class="string">&quot;.config/crev/cargo_crev_reviews_trusted_publishers.json&quot;</span>);
+        .<span class="ident">join</span>(<span class="string">&quot;.config/crev/cargo_crev_reviews_data/trusted_publishers.json&quot;</span>);
     <span class="prelude-val">Ok</span>(<span class="ident">pb</span>)
 }
 <span class="kw">fn</span> <span class="ident">load_trusted_publishers_json</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">anyhow::Result</span><span class="op">&lt;</span><span class="ident">TrustedPublisherDataFile</span><span class="op">&gt;</span> {
@@ -1204,6 +1183,67 @@
         }
     }
     <span class="string">&quot;&quot;</span>.<span class="ident">to_string</span>()
+}
+<span class="comment">// endregion: cargo_crev_reviews_data/trusted_publishers.json</span>
+
+<span class="doccomment">/// get all versions for one crate</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">crev_crate_versions</span>(<span class="ident">crate_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">anyhow::Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">VersionItemData</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+    <span class="comment">// region: vec_of_reviews for this crate</span>
+    <span class="kw">let</span> <span class="ident">new_filter</span> <span class="op">=</span> <span class="ident">ReviewFilterData</span> {
+        <span class="ident">crate_name</span>: <span class="ident">crate_name</span>.<span class="ident">to_string</span>(),
+        <span class="ident">crate_version</span>: <span class="prelude-val">None</span>,
+        <span class="ident">old_crate_version</span>: <span class="prelude-val">None</span>,
+    };
+    <span class="comment">// my reviews from crev</span>
+    <span class="kw">let</span> <span class="ident">vec_of_reviews</span> <span class="op">=</span> <span class="ident">crev_list_my_reviews</span>(<span class="kw-2">&amp;</span><span class="prelude-val">Some</span>(<span class="ident">new_filter</span>))<span class="question-mark">?</span>;
+
+    <span class="comment">// endregion: vec_of_reviews for this crate</span>
+
+    <span class="comment">// yanked from db_yanked</span>
+    <span class="kw">let</span> <span class="ident">yanked_one_crate</span> <span class="op">=</span> <span class="kw">crate</span><span class="ident">::db_sled_mod::db_yanked_mod::all_versions_for_crate</span>(<span class="ident">crate_name</span>)<span class="question-mark">?</span>;
+
+    <span class="comment">// versions from db_version</span>
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">vec_of_version</span> <span class="op">=</span> <span class="macro">vec!</span>[];
+    <span class="kw">for</span> <span class="ident">version_for_db</span> <span class="kw">in</span> <span class="kw">crate</span><span class="ident">::db_sled_mod::db_version_mod::all_versions_for_crate</span>(<span class="ident">crate_name</span>)<span class="question-mark">?</span> {
+        <span class="kw">let</span> (<span class="ident">_io_crate_name</span>, <span class="ident">io_crate_version</span>) <span class="op">=</span> <span class="ident">split_crate_version</span>(<span class="ident">version_for_db</span>.<span class="ident">crate_name_version</span>.<span class="ident">as_str</span>());
+
+        <span class="comment">// is_src_cache (if path exists in cargo registry src)</span>
+        <span class="kw">let</span> <span class="ident">path_dir</span> <span class="op">=</span> <span class="kw">crate</span><span class="ident">::cargo_registry_mod::cargo_registry_src_dir_for_crate</span>(<span class="ident">crate_name</span>, <span class="kw-2">&amp;</span><span class="ident">io_crate_version</span>)<span class="question-mark">?</span>;
+        <span class="kw">let</span> <span class="ident">is_src_cached</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">path_dir</span>.<span class="ident">exists</span>());
+
+        <span class="kw">let</span> <span class="ident">yanked</span> <span class="op">=</span> <span class="ident">yanked_one_crate</span>.<span class="ident">iter</span>().<span class="ident">any</span>(<span class="op">|</span><span class="ident">s</span><span class="op">|</span> <span class="ident">s</span>.<span class="ident">crate_name_version</span> <span class="op">=</span><span class="op">=</span> <span class="ident">version_for_db</span>.<span class="ident">crate_name_version</span>);
+
+        <span class="comment">// my_review</span>
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">my_review</span> <span class="op">=</span> <span class="prelude-val">None</span>;
+        <span class="kw">for</span> <span class="ident">review</span> <span class="kw">in</span> <span class="ident">vec_of_reviews</span>.<span class="ident">iter</span>() {
+            <span class="kw">if</span> <span class="ident">review</span>.<span class="ident">package</span>.<span class="ident">name</span> <span class="op">=</span><span class="op">=</span> <span class="ident">crate_name</span> <span class="op">&amp;&amp;</span> <span class="ident">review</span>.<span class="ident">package</span>.<span class="ident">version</span>.<span class="ident">as_str</span>() <span class="op">=</span><span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">io_crate_version</span> {
+                <span class="ident">my_review</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">ReviewItemData</span> {
+                    <span class="ident">crate_name</span>: <span class="ident">review</span>.<span class="ident">package</span>.<span class="ident">name</span>.<span class="ident">clone</span>(),
+                    <span class="ident">crate_version</span>: <span class="ident">review</span>.<span class="ident">package</span>.<span class="ident">version</span>.<span class="ident">clone</span>(),
+                    <span class="ident">date</span>: <span class="ident">review</span>.<span class="ident">date</span>.<span class="ident">clone</span>(),
+                    <span class="ident">thoroughness</span>: <span class="ident">review</span>.<span class="ident">review</span>.<span class="ident">as_ref</span>().<span class="ident">context</span>(<span class="string">&quot;review&quot;</span>)<span class="question-mark">?</span>.<span class="ident">thoroughness</span>.<span class="ident">to_string</span>(),
+                    <span class="ident">understanding</span>: <span class="ident">review</span>.<span class="ident">review</span>.<span class="ident">as_ref</span>().<span class="ident">context</span>(<span class="string">&quot;review&quot;</span>)<span class="question-mark">?</span>.<span class="ident">understanding</span>.<span class="ident">to_string</span>(),
+                    <span class="ident">rating</span>: <span class="ident">rating_to_string</span>(<span class="kw-2">&amp;</span><span class="ident">review</span>.<span class="ident">review</span>.<span class="ident">as_ref</span>().<span class="ident">context</span>(<span class="string">&quot;review&quot;</span>)<span class="question-mark">?</span>.<span class="ident">rating</span>),
+                    <span class="ident">comment_md</span>: <span class="ident">review</span>.<span class="ident">comment</span>.<span class="ident">as_ref</span>().<span class="ident">unwrap_or</span>(<span class="kw-2">&amp;</span><span class="ident">String::new</span>()).<span class="ident">clone</span>(),
+                });
+                <span class="kw">break</span>;
+            }
+        }
+
+        <span class="comment">// add to vector</span>
+        <span class="kw">let</span> <span class="ident">version</span> <span class="op">=</span> <span class="ident">VersionItemData</span> {
+            <span class="ident">crate_name</span>: <span class="ident">crate_name</span>.<span class="ident">to_string</span>(),
+            <span class="ident">crate_version</span>: <span class="ident">io_crate_version</span>.<span class="ident">to_string</span>(),
+            <span class="ident">yanked</span>,
+            <span class="ident">published_by_login</span>: <span class="ident">version_for_db</span>.<span class="ident">published_by_login</span>.<span class="ident">clone</span>(),
+            <span class="ident">published_date</span>: <span class="ident">version_for_db</span>.<span class="ident">published_date</span>.<span class="ident">clone</span>(),
+            <span class="ident">is_src_cached</span>,
+            <span class="ident">my_review</span>: <span class="ident">my_review</span>.<span class="ident">clone</span>(),
+        };
+        <span class="ident">vec_of_version</span>.<span class="ident">push</span>(<span class="ident">version</span>);
+    }
+    <span class="comment">//write_versions_json(versions_json)?;</span>
+    <span class="prelude-val">Ok</span>(<span class="ident">vec_of_version</span>)
 }
 </pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="cargo_crev_reviews" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div><script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script></body></html>

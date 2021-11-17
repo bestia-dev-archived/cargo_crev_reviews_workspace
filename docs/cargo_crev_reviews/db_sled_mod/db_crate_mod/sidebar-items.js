@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["all_crates",""],["delete",""],["exists",""],["insert","insert"],["read",""]],"struct":[["CrateForDb",""],["DB_CRATES",""]]});
