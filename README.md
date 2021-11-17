@@ -18,7 +18,7 @@
 
 [comment]: # (auto_badges start)
 
-[![Licence](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/blob/master/LICENSE)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/blob/master/LICENSE)
 
 [comment]: # (auto_badges end)
 

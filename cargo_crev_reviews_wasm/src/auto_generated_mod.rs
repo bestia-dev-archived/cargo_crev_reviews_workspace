@@ -10,7 +10,7 @@ use crate::cln_methods_version_mod::*;
 /// match the string and call a function
 pub async fn match_response_method_and_call_function(response: common_structs_mod::RpcResponse) {
     match response.response_method.as_str() {
-        // generator match_response_method start
+        // region: generated match_response_method
         "cln_review_edit" => cln_review_edit(response),
         "cln_review_error" => cln_review_error(response),
         "cln_review_list" => cln_review_list(response),
@@ -18,7 +18,7 @@ pub async fn match_response_method_and_call_function(response: common_structs_mo
         "cln_review_publish_modal" => cln_review_publish_modal(response),
         "cln_verify_list" => cln_verify_list(response),
         "cln_version_list" => cln_version_list(response),
-        // generator match_response_method end
+        // endregion: generated match_response_method
         _ => log::error!("Error: Unrecognized response_method {}", response.response_method),
     }
 }
@@ -28,7 +28,7 @@ pub mod srv_methods {
     use crate::html_mod::post_request_await_run_response_method;
     use function_name::named;
 
-    // generator srv_methods start
+    // region: generated srv_methods
 
     #[named]
     pub fn srv_review_delete<T>(request_data: T)
@@ -137,11 +137,11 @@ pub mod srv_methods {
         let request_method = function_name!();
         post_request_await_run_response_method(request_method, request_data);
     }
-    // generator srv_methods end
+    // endregion: generated srv_methods
 }
 
 pub mod common_structs_mod {
-    // generator common_structs_mod start
+    // region: generated common_structs_mod
     // common_structs_mod.rs
 
     //! common structs between the backend and frontend
@@ -237,5 +237,5 @@ pub mod common_structs_mod {
     pub struct VersionListData {
         pub list_of_version: Vec<VersionItemData>,
     }
-    // generator common_structs_mod end
+    // endregion: generated common_structs_mod
 }

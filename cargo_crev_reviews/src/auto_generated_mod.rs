@@ -6,7 +6,7 @@ use crate::srv_methods_mod::*;
 
 pub fn match_request_method_and_call_function(request_method: &str, request_data: serde_json::Value) -> anyhow::Result<String> {
     match request_method {
-        // generator match_response_method start
+        // region: generated match_response_method
         "srv_review_delete" => srv_review_delete(request_data),
         "srv_review_edit" => srv_review_edit(request_data),
         "srv_review_edit_or_new" => srv_review_edit_or_new(request_data),
@@ -19,7 +19,7 @@ pub fn match_request_method_and_call_function(request_method: &str, request_data
         "srv_update_registry_index" => srv_update_registry_index(request_data),
         "srv_verify_project" => srv_verify_project(request_data),
         "srv_version_list" => srv_version_list(request_data),
-        // generator match_response_method end
+        // endregion: generated match_response_method
         _ => anyhow::bail!("unknown server method = {}", request_method),
     }
 }
@@ -29,7 +29,7 @@ pub mod cln_methods {
     use crate::response_post_mod::return_srv_response;
     use function_name::named;
 
-    // generator cln_methods start
+    // region: generated cln_methods
 
     #[named]
     pub fn cln_review_edit<T>(response_data: T, response_html: &str) -> anyhow::Result<String>
@@ -93,5 +93,5 @@ pub mod cln_methods {
         let response_method = function_name!();
         Ok(return_srv_response(response_method, response_data, response_html))
     }
-    // generator cln_methods end
+    // endregion: generated cln_methods
 }

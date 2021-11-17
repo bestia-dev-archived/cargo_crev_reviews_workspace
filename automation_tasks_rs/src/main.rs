@@ -317,7 +317,7 @@ fn common_structs_copy(){
     // to cargo_crev_reviews_wasm/src/auto_generated_mod inside common_structs module 
     let code = unwrap!(std::fs::read_to_string("cargo_crev_reviews/src/common_structs_mod.rs"));
     let old_generated = unwrap!(std::fs::read_to_string("cargo_crev_reviews_wasm/src/auto_generated_mod.rs"));
-    let range = unwrap!(find_range_between_delimiters(&old_generated,&mut 0,"// generator common_structs_mod start", "// generator common_structs_mod end"));
+    let range = unwrap!(find_range_between_delimiters(&old_generated,&mut 0,"// region: generated common_structs_mod", "// endregion: generated common_structs_mod"));
     let mut new_generated = String::with_capacity(old_generated.len());
     new_generated.push_str(&old_generated[..range.start]);
     new_generated.push_str("\n");
@@ -346,7 +346,7 @@ where
         code.push_str(&temp);
     }
     
-    replace_delimited_segment("cargo_crev_reviews_wasm/src/auto_generated_mod.rs",code,"// generator srv_methods start", "// generator srv_methods end");   
+    replace_delimited_segment("cargo_crev_reviews_wasm/src/auto_generated_mod.rs",code,"// region: generated srv_methods", "// endregion: generated srv_methods");   
 }
 
 fn generate_client_match_response_method(){
@@ -361,7 +361,7 @@ fn generate_client_match_response_method(){
         code.push_str(&temp);
     }
     code.push_str("\n");
-    replace_delimited_segment("cargo_crev_reviews_wasm/src/auto_generated_mod.rs",code,"// generator match_response_method start", "// generator match_response_method end");   
+    replace_delimited_segment("cargo_crev_reviews_wasm/src/auto_generated_mod.rs",code,"// region: generated match_response_method", "// endregion: generated match_response_method");   
 }
 
 fn generate_client_methods(){    
@@ -383,7 +383,7 @@ where
         code.push_str(&temp);
     }
     
-    replace_delimited_segment("cargo_crev_reviews/src/auto_generated_mod.rs",code,"// generator cln_methods start", "// generator cln_methods end");   
+    replace_delimited_segment("cargo_crev_reviews/src/auto_generated_mod.rs",code,"// region: generated cln_methods", "// endregion: generated cln_methods");   
 }
 
 fn generate_server_match_response_method(){
@@ -397,5 +397,5 @@ fn generate_server_match_response_method(){
         code.push_str(&temp);
     }
     code.push_str("\n");
-    replace_delimited_segment("cargo_crev_reviews/src/auto_generated_mod.rs",code,"// generator match_response_method start", "// generator match_response_method end");   
+    replace_delimited_segment("cargo_crev_reviews/src/auto_generated_mod.rs",code,"// region: generated match_response_method", "// endregion: generated match_response_method");   
 }

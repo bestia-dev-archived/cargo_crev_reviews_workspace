@@ -45,8 +45,10 @@ impl tmplt::HtmlTemplatingDataTrait for VersionListData {
                         "",
                         row_number,
                     ));
+                    // log::debug!("vec_node {:?}", &vec_node);
                     nodes.extend_from_slice(&vec_node);
                 }
+
                 // return
                 nodes
             }
@@ -150,8 +152,8 @@ pub fn cln_version_list(srv_response: RpcResponse) {
     *VERSION_LIST_DATA.lock().unwrap() = unwrap!(serde_json::from_value(srv_response.response_data));
     // the mutex is locked inside a scope. When this structure falls out of scope, the lock will be unlocked.
     let html_after_process = {
-        let ver = VERSION_LIST_DATA.lock().unwrap();
-        tmplt::process_html(ver.deref(), &html)
+        let data = VERSION_LIST_DATA.lock().unwrap();
+        tmplt::process_html(data.deref(), &html)
     };
 
     inject_into_html(&html_after_process);

@@ -77,7 +77,7 @@ impl tmplt::HtmlTemplatingDataTrait for VerifyListData {
     fn process_sub_template(&self, template_name: &str, sub_templates: &Vec<tmplt::utils::SubTemplate>) -> Vec<tmplt::utils::Node> {
         log::info!("{}", template_name);
         match template_name {
-            "wtmplt_verify_item_data" => {
+            "wtmplt_VerifyItemData" => {
                 let sub_template = unwrap!(sub_templates.iter().find(|&template| template.name == template_name));
                 let mut nodes = vec![];
                 for (row_number, verify_item) in self.list_of_verify.iter().enumerate() {
