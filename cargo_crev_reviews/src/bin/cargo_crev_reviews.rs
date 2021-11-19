@@ -53,7 +53,7 @@ pub fn open_browser() {
             SERVER_FIRST_SUBDIRECTORY.as_str()
         ))
         .spawn()
-        .expect("Failed to open browser using `xdg-open`. Probably it is not installed on your system. Try to instal it with `xdg-utils`.");
+        .expect("Failed to open default browser using `xdg-open`. Probably it is not preinstalled on your Linux distro. Try to instal it with `xdg-utils`.");
     drop(x);
 }
 

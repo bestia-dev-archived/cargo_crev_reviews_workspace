@@ -1,21 +1,22 @@
 // cln_methods_version_mod.rs
 
+use crate::web_sys_mod as w;
 use function_name::named;
 use lazy_static::{__Deref, lazy_static};
 use std::sync::Mutex;
 use unwrap::unwrap;
-// use wasm_bindgen::prelude::*;
-// use wasm_bindgen::JsCast;
+use wasm_bindgen::prelude::*;
+use wasm_bindgen::JsCast;
 
 use dev_bestia_html_templating as tmplt;
 use dev_bestia_string_utils::*;
 
-use crate::auto_generated_mod::common_structs_mod::*;
+use crate::auto_generated_mod::{common_structs_mod::*, srv_methods};
 //use crate::auto_generated_mod::srv_methods;
 
 // use crate::on_click;
-use crate::html_mod::*;
 use crate::utils_mod::join_crate_version;
+use crate::{html_mod::*, on_click, row_on_click};
 
 lazy_static! {
     /// mutable static, because it is hard to pass variables around with on_click events
@@ -158,4 +159,123 @@ pub fn cln_version_list(srv_response: RpcResponse) {
 
     inject_into_html(&html_after_process);
     navigation_on_click();
+
+    // on_click for every row of the list
+    for (row_number, item) in VERSION_LIST_DATA.lock().unwrap().list_of_version.iter().enumerate() {
+        if item.my_review.is_some() {
+            row_on_click!("button_review_edit", row_number, request_review_edit_from_list);
+            row_on_click!("button_review_new_version", row_number, request_review_new_version);
+            row_on_click!("button_open_crev_dev", row_number, button_open_crev_dev_onclick);
+            row_on_click!("button_open_crates_io", row_number, button_open_crates_io_onclick);
+            row_on_click!("button_open_lib_rs", row_number, button_open_lib_rs_onclick);
+            row_on_click!("button_open_source_code", row_number, button_open_source_code_onclick);
+            row_on_click!("button_review_delete", row_number, modal_delete);
+        }
+    }
+}
+
+#[named]
+fn request_review_edit_from_list(_element_id: &str, row_number: usize) {
+    log::info!("{}", function_name!());
+    // from list get crate name and version
+    let item = &VERSION_LIST_DATA.lock().unwrap().list_of_version[row_number];
+    let request_data = ReviewFilterData {
+        crate_name: item.crate_name.clone(),
+        crate_version: Some(item.crate_version.clone()),
+        old_crate_version: None,
+    };
+    srv_methods::srv_review_edit(request_data);
+}
+
+#[named]
+fn request_review_new_version(_element_id: &str, row_number: usize) {
+    log::info!("{}", function_name!());
+    // from list get crate name and version
+    let item = &VERSION_LIST_DATA.lock().unwrap().list_of_version[row_number];
+    let request_data = ReviewFilterData {
+        crate_name: item.crate_name.clone(),
+        crate_version: Some(item.crate_version.clone()),
+        old_crate_version: None,
+    };
+    srv_methods::srv_review_new_version(request_data);
+}
+
+#[named]
+fn button_open_crev_dev_onclick(_element_id: &str, row_number: usize) {
+    log::info!("{}", function_name!());
+    // from list get crate name and version
+    let item = &VERSION_LIST_DATA.lock().unwrap().list_of_version[row_number];
+    let url = format!("https://web.crev.dev/rust-reviews/crate/{}/", item.crate_name);
+    unwrap!(w::window().open_with_url(&url));
+}
+
+#[named]
+fn button_open_crates_io_onclick(_element_id: &str, row_number: usize) {
+    log::info!("{}", function_name!());
+    // from list get crate name and version
+    let item = &VERSION_LIST_DATA.lock().unwrap().list_of_version[row_number];
+    let url = format!("https://crates.io/crates/{}/{}", item.crate_name, item.crate_version);
+    unwrap!(w::window().open_with_url(&url));
+}
+
+#[named]
+fn button_open_lib_rs_onclick(_element_id: &str, row_number: usize) {
+    log::info!("{}", function_name!());
+    // from list get crate name and version
+    let item = &VERSION_LIST_DATA.lock().unwrap().list_of_version[row_number];
+    let url = format!("https://lib.rs/crates/{}", item.crate_name);
+    unwrap!(w::window().open_with_url(&url));
+}
+
+#[named]
+fn button_open_source_code_onclick(_element_id: &str, row_number: usize) {
+    log::info!("{}", function_name!());
+    // from list get crate name and version
+    let item = &VERSION_LIST_DATA.lock().unwrap().list_of_version[row_number];
+    let request_data = ReviewFilterData {
+        crate_name: item.crate_name.clone(),
+        crate_version: Some(item.crate_version.clone()),
+        old_crate_version: None,
+    };
+    srv_methods::srv_review_open_source_code(request_data);
+}
+
+#[named]
+pub fn modal_delete(_element_id: &str, row_number: usize) {
+    log::info!("{}", function_name!());
+    let html = format!(
+        r#"
+    <div id="modal_message" class="w3_modal">
+        <div class="w3_modal_content">
+            <div>Do you really want to delete?</div>        
+            <button id="modal_yes_delete({})">Yes</button>
+            <button id="modal_close">No</button>
+        </div>
+    </div>"#,
+        row_number
+    );
+    w::set_inner_html("div_for_modal", &html);
+
+    on_click!("modal_close", modal_close_on_click);
+    // I had to add modal_yes_delete(0), because row_on_click works that way.
+    row_on_click!("modal_yes_delete", row_number, request_review_delete);
+}
+
+fn modal_close_on_click(_element_id: &str) {
+    w::set_inner_html("div_for_modal", "");
+}
+
+#[named]
+fn request_review_delete(_element_id: &str, row_number: usize) {
+    log::info!("{}", function_name!());
+    modal_close_on_click("");
+
+    // from list get crate name and version
+    let item = &VERSION_LIST_DATA.lock().unwrap().list_of_version[row_number];
+    let request_data = ReviewFilterData {
+        crate_name: item.crate_name.clone(),
+        crate_version: Some(item.crate_version.clone()),
+        old_crate_version: None,
+    };
+    srv_methods::srv_review_delete(request_data);
 }
