@@ -4,10 +4,10 @@
 //! # cargo_crev_reviews
 //!
 //! **Write cargo-crev reviews in GUI with a cross-platform app written in full-stack rust**  
-//! ***[repository](https://github.com/lucianobestia/cargo_crev_reviews_workspace); version: 2021.1119.1254  date: 2021-11-19 authors: Luciano Bestia***  
+//! ***[repository](https://github.com/lucianobestia/cargo_crev_reviews_workspace); version: 2021.1119.1338  date: 2021-11-19 authors: Luciano Bestia***  
 //!
-//! [![Lines in Rust code](https://img.shields.io/badge/Lines_in_Rust-20101-green.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
-//! [![Lines in Doc comments](https://img.shields.io/badge/Lines_in_Doc_comments-499-blue.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
+//! [![Lines in Rust code](https://img.shields.io/badge/Lines_in_Rust-20295-green.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
+//! [![Lines in Doc comments](https://img.shields.io/badge/Lines_in_Doc_comments-498-blue.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
 //! [![Lines in Comments](https://img.shields.io/badge/Lines_in_comments-173-purple.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
 //! [![Lines in examples](https://img.shields.io/badge/Lines_in_examples-0-yellow.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
 //! [![Lines in tests](https://img.shields.io/badge/Lines_in_tests-16-orange.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
@@ -148,15 +148,15 @@
 //! rpc call with named parameters:
 //!
 //! --> {
-//! "request_method": "subtract_calculate",
+//! "request_method": "subtract_calculate", 
 //! "request_data": {
-//!     "subtrahend": 23,
-//!     "minuend": 42,
+//!     "subtrahend": 23, 
+//!     "minuend": 42, 
 //!     }
 //! }
 //!
 //! <-- {
-//! "response_method": "subtract_show",
+//! "response_method": "subtract_show", 
 //! "response_data": {
 //!     "subtracted": 19,     
 //!     },

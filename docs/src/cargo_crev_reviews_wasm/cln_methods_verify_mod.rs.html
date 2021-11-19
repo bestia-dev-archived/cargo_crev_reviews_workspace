@@ -328,23 +328,23 @@
 <span class="kw">fn</span> <span class="ident">open_all_links</span>(<span class="ident">_element_id</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">row_number</span>: <span class="ident">usize</span>) {
     <span class="macro">log::info!</span>(<span class="string">&quot;{}&quot;</span>, <span class="macro">function_name!</span>());
     <span class="kw">let</span> <span class="ident">item</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">VERIFY_LIST_DATA</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>().<span class="ident">list_of_verify</span>[<span class="ident">row_number</span>];
-    <span class="comment">/*
-       let url = format!(&quot;https://web.crev.dev/rust-reviews/crate/{}/&quot;, item.crate_name);
-       unwrap!(w::window().open_with_url(&amp;url));
 
-       let url = format!(&quot;https://lib.rs/crates/{}&quot;, item.crate_name);
-       unwrap!(w::window().open_with_url(&amp;url));
+    <span class="kw">let</span> <span class="ident">url</span> <span class="op">=</span> <span class="macro">format!</span>(<span class="string">&quot;https://web.crev.dev/rust-reviews/crate/{}/&quot;</span>, <span class="ident">item</span>.<span class="ident">crate_name</span>);
+    <span class="macro">unwrap!</span>(<span class="ident">w::window</span>().<span class="ident">open_with_url</span>(<span class="kw-2">&amp;</span><span class="ident">url</span>));
 
-       let url = format!(&quot;https://crates.io/crates/{}/{}&quot;, item.crate_name, item.crate_version);
-       unwrap!(w::window().open_with_url(&amp;url));
+    <span class="kw">let</span> <span class="ident">url</span> <span class="op">=</span> <span class="macro">format!</span>(<span class="string">&quot;https://lib.rs/crates/{}&quot;</span>, <span class="ident">item</span>.<span class="ident">crate_name</span>);
+    <span class="macro">unwrap!</span>(<span class="ident">w::window</span>().<span class="ident">open_with_url</span>(<span class="kw-2">&amp;</span><span class="ident">url</span>));
 
-       let request_data = ReviewFilterData {
-           crate_name: item.crate_name.clone(),
-           crate_version: Some(item.crate_version.clone()),
-           old_crate_version: None,
-       };
-       srv_methods::srv_review_open_source_code(request_data);
-    */</span>
+    <span class="kw">let</span> <span class="ident">url</span> <span class="op">=</span> <span class="macro">format!</span>(<span class="string">&quot;https://crates.io/crates/{}/{}&quot;</span>, <span class="ident">item</span>.<span class="ident">crate_name</span>, <span class="ident">item</span>.<span class="ident">crate_version</span>);
+    <span class="macro">unwrap!</span>(<span class="ident">w::window</span>().<span class="ident">open_with_url</span>(<span class="kw-2">&amp;</span><span class="ident">url</span>));
+
+    <span class="kw">let</span> <span class="ident">request_data</span> <span class="op">=</span> <span class="ident">ReviewFilterData</span> {
+        <span class="ident">crate_name</span>: <span class="ident">item</span>.<span class="ident">crate_name</span>.<span class="ident">clone</span>(),
+        <span class="ident">crate_version</span>: <span class="prelude-val">Some</span>(<span class="ident">item</span>.<span class="ident">crate_version</span>.<span class="ident">clone</span>()),
+        <span class="ident">old_crate_version</span>: <span class="prelude-val">None</span>,
+    };
+    <span class="ident">srv_methods::srv_review_open_source_code</span>(<span class="ident">request_data</span>);
+
     <span class="comment">// list versions for this crate</span>
     <span class="kw">let</span> <span class="ident">url</span> <span class="op">=</span> <span class="macro">format!</span>(
         <span class="string">&quot;http://{}:{}/{}/index.html#version_list/{}&quot;</span>,
