@@ -76,8 +76,8 @@ pub fn srv_review_save(request_data: serde_json::Value) -> anyhow::Result<String
         rating_parse(&p.rating)?,
         &p.comment_md,
     ) {
-        Err(err) => crate::response_post_mod::response_err_message(&err),
-        Ok(()) => request_review_list(),
+        Err(err) => Err(err),
+        Ok(()) => crate::response_post_mod::response_modal_message("Review saved."),
     }
 }
 
@@ -135,7 +135,7 @@ pub fn srv_review_publish(_request_data: serde_json::Value) -> anyhow::Result<St
     log::info!(function_name!());
     match crev_publish() {
         Ok(ret_val) => crate::response_post_mod::response_modal_message(&ret_val),
-        Err(err) => crate::response_post_mod::response_err_message(&err),
+        Err(err) => Err(err),
     }
 }
 
@@ -151,7 +151,7 @@ pub fn srv_review_open_source_code(request_data: serde_json::Value) -> anyhow::R
     let mut child = std::process::Command::new("code").arg(path_dir).spawn()?;
     std::thread::sleep(Duration::new(1, 0));
     child.kill()?;
-
+    // TODO: return nothing
     crate::response_post_mod::response_modal_message("VSCode started.")
 }
 

@@ -24,7 +24,8 @@
 // endregion: auto_md_to_doc_comments include README.md A //!
 
 mod auto_generated_mod;
-mod cln_methods_review_mod;
+mod cln_methods_review_item_mod;
+mod cln_methods_review_list_mod;
 mod cln_methods_verify_mod;
 mod cln_methods_version_mod;
 mod html_mod;

@@ -43,11 +43,31 @@ pub fn inject_into_html(html_after_process: &str) {
 }
 
 pub fn navigation_on_click() {
-    use crate::cln_methods_review_mod::*;
+    use crate::cln_methods_review_item_mod::*;
     use crate::cln_methods_verify_mod::*;
     use wasm_bindgen::JsCast;
     on_click!("button_review_new", request_review_new);
     on_click!("button_review_publish", request_review_publish);
     on_click!("button_update_registry_index", request_update_registry_index);
     on_click!("button_verify_project", request_verify_list);
+}
+
+use dev_bestia_html_templating as tmplt;
+// region: HtmlTemplatingDataTrait for data structs
+impl tmplt::HtmlTemplatingDataTrait for RpcMessageData {
+    /// data model name is used for eprint
+    fn data_model_name(&self) -> String {
+        // return
+        s!("RpcMessageData")
+    }
+
+    /// returns a String to replace the next text-node: "wt_" or "st_"
+    fn replace_with_string(&self, placeholder: &str, _subtemplate_name: &str, _pos_cursor: usize) -> String {
+        // dbg!(&placeholder);
+        match placeholder {
+            "wt_cargo_crev_reviews_version" => s!(env!("CARGO_PKG_VERSION")),
+            "wt_message" => s!(self.message),
+            _ => tmplt::utils::match_else_for_replace_with_string(&self.data_model_name(), placeholder),
+        }
+    }
 }

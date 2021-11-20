@@ -168,16 +168,4 @@ fn open_all_links(_element_id: &str, row_number: usize) {
         item.crate_name,
     );
     unwrap!(w::window().open_with_url(&url));
-    /*
-    // edit_or_new in a new tab
-    let url = format!(
-        "http://{}:{}/{}/index.html#edit_or_new/{}/{}",
-        SERVER_HOST.as_str(),
-        SERVER_PORT.as_str(),
-        SERVER_FIRST_SUBDIRECTORY.as_str(),
-        item.crate_name,
-        item.crate_version,
-    );
-    unwrap!(w::window().open_with_url(&url));
-     */
 }

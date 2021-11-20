@@ -81,9 +81,15 @@ impl tmplt::HtmlTemplatingDataTrait for VersionItemData {
             "wt_crate_version" => self.crate_version.clone(),
             "wt_crate_name_version" => join_crate_version(&self.crate_name, &self.crate_version),
             "wt_crate_published_by_login" => self.published_by_login.as_ref().unwrap_or(&"".to_string()).clone(),
-            "wt_is_src_cached" => {
-                if *self.is_src_cached.as_ref().unwrap_or(&false) {
-                    "cached".to_string()
+            "wt_edit_or_new" => {
+                if self.yanked {
+                    "".to_string()
+                } else if self.is_src_cached.unwrap_or(false) {
+                    if self.my_review.is_some() {
+                        "Edit".to_string()
+                    } else {
+                        "New".to_string()
+                    }
                 } else {
                     "".to_string()
                 }
@@ -163,8 +169,7 @@ pub fn cln_version_list(srv_response: RpcResponse) {
     // on_click for every row of the list
     for (row_number, item) in VERSION_LIST_DATA.lock().unwrap().list_of_version.iter().enumerate() {
         if item.my_review.is_some() {
-            row_on_click!("button_review_edit", row_number, request_review_edit_from_list);
-            row_on_click!("button_review_new_version", row_number, request_review_new_version);
+            row_on_click!("button_review_edit_or_new", row_number, request_review_edit_or_new);
             row_on_click!("button_open_crev_dev", row_number, button_open_crev_dev_onclick);
             row_on_click!("button_open_crates_io", row_number, button_open_crates_io_onclick);
             row_on_click!("button_open_lib_rs", row_number, button_open_lib_rs_onclick);
@@ -175,29 +180,12 @@ pub fn cln_version_list(srv_response: RpcResponse) {
 }
 
 #[named]
-fn request_review_edit_from_list(_element_id: &str, row_number: usize) {
+fn request_review_edit_or_new(_element_id: &str, row_number: usize) {
     log::info!("{}", function_name!());
     // from list get crate name and version
     let item = &VERSION_LIST_DATA.lock().unwrap().list_of_version[row_number];
-    let request_data = ReviewFilterData {
-        crate_name: item.crate_name.clone(),
-        crate_version: Some(item.crate_version.clone()),
-        old_crate_version: None,
-    };
-    srv_methods::srv_review_edit(request_data);
-}
-
-#[named]
-fn request_review_new_version(_element_id: &str, row_number: usize) {
-    log::info!("{}", function_name!());
-    // from list get crate name and version
-    let item = &VERSION_LIST_DATA.lock().unwrap().list_of_version[row_number];
-    let request_data = ReviewFilterData {
-        crate_name: item.crate_name.clone(),
-        crate_version: Some(item.crate_version.clone()),
-        old_crate_version: None,
-    };
-    srv_methods::srv_review_new_version(request_data);
+    let url = format!("index.html#edit_or_new/{}/{}", item.crate_name, item.crate_version);
+    unwrap!(w::window().open_with_url(&url));
 }
 
 #[named]
@@ -247,7 +235,7 @@ pub fn modal_delete(_element_id: &str, row_number: usize) {
         r#"
     <div id="modal_message" class="w3_modal">
         <div class="w3_modal_content">
-            <div>Do you really want to delete?</div>        
+            <div>Do you really want to delete your review?</div>        
             <button id="modal_yes_delete({})">Yes</button>
             <button id="modal_close">No</button>
         </div>

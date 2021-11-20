@@ -220,3 +220,8 @@ pub fn show_snackbar() {
         .unwrap();
     closure.forget();
 }
+
+/// close the windows/tab in the browser. It works only if it was opened in script wit window.open().
+pub fn close_tab() {
+    unwrap!(window().close());
+}
