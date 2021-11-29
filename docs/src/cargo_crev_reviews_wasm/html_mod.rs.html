@@ -53,6 +53,26 @@
 <span id="51">51</span>
 <span id="52">52</span>
 <span id="53">53</span>
+<span id="54">54</span>
+<span id="55">55</span>
+<span id="56">56</span>
+<span id="57">57</span>
+<span id="58">58</span>
+<span id="59">59</span>
+<span id="60">60</span>
+<span id="61">61</span>
+<span id="62">62</span>
+<span id="63">63</span>
+<span id="64">64</span>
+<span id="65">65</span>
+<span id="66">66</span>
+<span id="67">67</span>
+<span id="68">68</span>
+<span id="69">69</span>
+<span id="70">70</span>
+<span id="71">71</span>
+<span id="72">72</span>
+<span id="73">73</span>
 </pre><pre class="rust">
 <span class="comment">// cln_methods_mod.rs</span>
 
@@ -99,13 +119,33 @@
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">navigation_on_click</span>() {
-    <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::cln_methods_review_mod</span>::<span class="kw-2">*</span>;
+    <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::cln_methods_review_item_mod</span>::<span class="kw-2">*</span>;
     <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::cln_methods_verify_mod</span>::<span class="kw-2">*</span>;
     <span class="kw">use</span> <span class="ident">wasm_bindgen::JsCast</span>;
     <span class="macro">on_click!</span>(<span class="string">&quot;button_review_new&quot;</span>, <span class="ident">request_review_new</span>);
     <span class="macro">on_click!</span>(<span class="string">&quot;button_review_publish&quot;</span>, <span class="ident">request_review_publish</span>);
     <span class="macro">on_click!</span>(<span class="string">&quot;button_update_registry_index&quot;</span>, <span class="ident">request_update_registry_index</span>);
     <span class="macro">on_click!</span>(<span class="string">&quot;button_verify_project&quot;</span>, <span class="ident">request_verify_list</span>);
+}
+
+<span class="kw">use</span> <span class="ident">dev_bestia_html_templating</span> <span class="kw">as</span> <span class="ident">tmplt</span>;
+<span class="comment">// region: HtmlTemplatingDataTrait for data structs</span>
+<span class="kw">impl</span> <span class="ident">tmplt::HtmlTemplatingDataTrait</span> <span class="kw">for</span> <span class="ident">RpcMessageData</span> {
+    <span class="doccomment">/// data model name is used for eprint</span>
+    <span class="kw">fn</span> <span class="ident">data_model_name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+        <span class="comment">// return</span>
+        <span class="macro">s!</span>(<span class="string">&quot;RpcMessageData&quot;</span>)
+    }
+
+    <span class="doccomment">/// returns a String to replace the next text-node: &quot;wt_&quot; or &quot;st_&quot;</span>
+    <span class="kw">fn</span> <span class="ident">replace_with_string</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">placeholder</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">_subtemplate_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">_pos_cursor</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+        <span class="comment">// log::debug!(&amp;placeholder);</span>
+        <span class="kw">match</span> <span class="ident">placeholder</span> {
+            <span class="string">&quot;wt_cargo_crev_reviews_version&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">s!</span>(<span class="macro">env!</span>(<span class="string">&quot;CARGO_PKG_VERSION&quot;</span>)),
+            <span class="string">&quot;wt_message&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">s!</span>(<span class="self">self</span>.<span class="ident">message</span>),
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">tmplt::utils::match_else_for_replace_with_string</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">data_model_name</span>(), <span class="ident">placeholder</span>),
+        }
+    }
 }
 </pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="cargo_crev_reviews_wasm" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div><script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script></body></html>

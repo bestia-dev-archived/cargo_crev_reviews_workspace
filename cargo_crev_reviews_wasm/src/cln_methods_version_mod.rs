@@ -59,7 +59,7 @@ impl tmplt::HtmlTemplatingDataTrait for VersionListData {
 
     /// returns a String to replace the next text-node: "wt_" or "st_"
     fn replace_with_string(&self, placeholder: &str, _subtemplate_name: &str, _pos_cursor: usize) -> String {
-        // dbg!(&placeholder);
+        // log::debug!(&placeholder);
         match placeholder {
             "wt_cargo_crev_reviews_version" => s!(env!("CARGO_PKG_VERSION")),
             _ => tmplt::utils::match_else_for_replace_with_string(&self.data_model_name(), placeholder),
@@ -75,7 +75,7 @@ impl tmplt::HtmlTemplatingDataTrait for VersionItemData {
     }
     /// returns a String to replace the next text-node: "wt_" or "st_"
     fn replace_with_string(&self, placeholder: &str, _subtemplate_name: &str, _pos_cursor: usize) -> String {
-        // dbg!(&placeholder);
+        // log::debug!(&placeholder);
         match placeholder {
             "wt_crate_name" => self.crate_name.clone(),
             "wt_crate_version" => self.crate_version.clone(),
@@ -144,7 +144,7 @@ impl tmplt::HtmlTemplatingDataTrait for VersionItemData {
 
     /// boolean : is the next node rendered or not: "wb_" or "sb_"
     fn exists_next_node_or_attribute(&self, placeholder: &str) -> bool {
-        // dbg!( &placeholder);
+        // log::debug!( &placeholder);
         match placeholder {
             "wb_has_review" => self.my_review.is_some(),
             _ => tmplt::utils::match_else_for_exists_next_node_or_attribute(&self.data_model_name(), placeholder),

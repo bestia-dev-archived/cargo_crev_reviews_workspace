@@ -286,8 +286,8 @@ alternative crates explored:
         <span class="ident">rating_parse</span>(<span class="kw-2">&amp;</span><span class="ident">p</span>.<span class="ident">rating</span>)<span class="question-mark">?</span>,
         <span class="kw-2">&amp;</span><span class="ident">p</span>.<span class="ident">comment_md</span>,
     ) {
-        <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">crate</span><span class="ident">::response_post_mod::response_err_message</span>(<span class="kw-2">&amp;</span><span class="ident">err</span>),
-        <span class="prelude-val">Ok</span>(()) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">request_review_list</span>(),
+        <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>),
+        <span class="prelude-val">Ok</span>(()) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">crate</span><span class="ident">::response_post_mod::response_modal_message</span>(<span class="string">&quot;Review saved.&quot;</span>),
     }
 }
 
@@ -345,7 +345,7 @@ alternative crates explored:
     <span class="macro">log::info!</span>(<span class="macro">function_name!</span>());
     <span class="kw">match</span> <span class="ident">crev_publish</span>() {
         <span class="prelude-val">Ok</span>(<span class="ident">ret_val</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">crate</span><span class="ident">::response_post_mod::response_modal_message</span>(<span class="kw-2">&amp;</span><span class="ident">ret_val</span>),
-        <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">crate</span><span class="ident">::response_post_mod::response_err_message</span>(<span class="kw-2">&amp;</span><span class="ident">err</span>),
+        <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>),
     }
 }
 
@@ -361,7 +361,7 @@ alternative crates explored:
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">child</span> <span class="op">=</span> <span class="ident">std::process::Command::new</span>(<span class="string">&quot;code&quot;</span>).<span class="ident">arg</span>(<span class="ident">path_dir</span>).<span class="ident">spawn</span>()<span class="question-mark">?</span>;
     <span class="ident">std::thread::sleep</span>(<span class="ident">Duration::new</span>(<span class="number">1</span>, <span class="number">0</span>));
     <span class="ident">child</span>.<span class="ident">kill</span>()<span class="question-mark">?</span>;
-
+    <span class="comment">// TODO: return nothing</span>
     <span class="kw">crate</span><span class="ident">::response_post_mod::response_modal_message</span>(<span class="string">&quot;VSCode started.&quot;</span>)
 }
 

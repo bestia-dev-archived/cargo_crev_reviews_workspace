@@ -171,18 +171,6 @@
 <span id="169">169</span>
 <span id="170">170</span>
 <span id="171">171</span>
-<span id="172">172</span>
-<span id="173">173</span>
-<span id="174">174</span>
-<span id="175">175</span>
-<span id="176">176</span>
-<span id="177">177</span>
-<span id="178">178</span>
-<span id="179">179</span>
-<span id="180">180</span>
-<span id="181">181</span>
-<span id="182">182</span>
-<span id="183">183</span>
 </pre><pre class="rust">
 <span class="comment">// cln_methods_verify_mod.rs</span>
 
@@ -219,7 +207,7 @@
 
     <span class="doccomment">/// returns a String to replace the next text-node: &quot;wt_&quot; or &quot;st_&quot;</span>
     <span class="kw">fn</span> <span class="ident">replace_with_string</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">placeholder</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">_subtemplate_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">pos_cursor</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
-        <span class="comment">// dbg!(&amp;placeholder);</span>
+        <span class="comment">// log::debug!(&amp;placeholder);</span>
         <span class="kw">match</span> <span class="ident">placeholder</span> {
             <span class="string">&quot;wt_row_number&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">format!</span>(<span class="string">&quot;{}.&quot;</span>, <span class="ident">pos_cursor</span> <span class="op">+</span> <span class="number">1</span>),
             <span class="string">&quot;wt_status&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">status</span>.<span class="ident">clone</span>(),
@@ -251,7 +239,7 @@
     }
     <span class="doccomment">/// returns a String to replace the next text-node: &quot;wt_&quot; or &quot;st_&quot;</span>
     <span class="kw">fn</span> <span class="ident">replace_with_string</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">placeholder</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">_subtemplate_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">_pos_cursor</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
-        <span class="comment">// dbg!(&amp;placeholder);</span>
+        <span class="comment">// log::debug!(&amp;placeholder);</span>
         <span class="kw">match</span> <span class="ident">placeholder</span> {
             <span class="string">&quot;wt_cargo_crev_reviews_version&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">s!</span>(<span class="macro">env!</span>(<span class="string">&quot;CARGO_PKG_VERSION&quot;</span>)),
             <span class="string">&quot;wt_project_dir&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">s!</span>(<span class="self">self</span>.<span class="ident">project_dir</span>),
@@ -354,18 +342,6 @@
         <span class="ident">item</span>.<span class="ident">crate_name</span>,
     );
     <span class="macro">unwrap!</span>(<span class="ident">w::window</span>().<span class="ident">open_with_url</span>(<span class="kw-2">&amp;</span><span class="ident">url</span>));
-    <span class="comment">/*
-    // edit_or_new in a new tab
-    let url = format!(
-        &quot;http://{}:{}/{}/index.html#edit_or_new/{}/{}&quot;,
-        SERVER_HOST.as_str(),
-        SERVER_PORT.as_str(),
-        SERVER_FIRST_SUBDIRECTORY.as_str(),
-        item.crate_name,
-        item.crate_version,
-    );
-    unwrap!(w::window().open_with_url(&amp;url));
-     */</span>
 }
 </pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="cargo_crev_reviews_wasm" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div><script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script></body></html>

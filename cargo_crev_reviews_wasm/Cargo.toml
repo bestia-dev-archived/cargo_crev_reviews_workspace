@@ -1,6 +1,6 @@
 [package]
 name = "cargo_crev_reviews_wasm"
-version = "2021.1120.1019"
+version = "2021.1129.1554"
 authors = ["Luciano Bestia <Luciano.Bestia@gmail.com>"]
 edition = "2018"
 description = "Wasm web app that is the frontend of the application cargo_crev_reviews"
@@ -19,8 +19,8 @@ crate-type = ["cdylib"]
 [dependencies]
 dev_bestia_string_utils = "0.1.19"
 dev_bestia_url_utf8 = "0.1.28"
-#dev_bestia_html_templating = { path = "../../dev_bestia_html_templating" }
-dev_bestia_html_templating = "0.1.38"
+# dev_bestia_html_templating = { path = "../../dev_bestia_html_templating" }
+dev_bestia_html_templating = "0.1.41"
 
 reader_for_microxml="2.0.1"
 unwrap = "1.2.1"

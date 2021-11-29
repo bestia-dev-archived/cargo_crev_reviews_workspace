@@ -49,9 +49,9 @@ pub fn replace_delimited_segment(file_path:&str, replace_with: String, start_del
 /// the error to apply the range to the wrong vector.
 pub fn find_range_between_delimiters(source_str: &str, pos_cursor: &mut usize, start_delimiter: &str, end_delimiter: &str) -> Option<std::ops::Range<usize>> {
     if let Some(pos_start) = find_pos_after_delimiter(source_str, *pos_cursor, start_delimiter) {
-        // dbg!(&pos_start);
+        // log::debug!(&pos_start);
         if let Some(pos_end) = find_pos_before_delimiter(source_str, pos_start, end_delimiter) {
-            // dbg!(&pos_end);
+            // log::debug!(&pos_end);
             *pos_cursor = pos_end + end_delimiter.len();
             return Some(pos_start..pos_end);
         }

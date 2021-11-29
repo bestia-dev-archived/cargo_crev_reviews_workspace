@@ -67,7 +67,7 @@ impl tmplt::HtmlTemplatingDataTrait for ReviewListData {
     /// the use of complete string wt_xxx enables easy and exact text search around the source code
     /// returns a String to replace the next text-node: "wt_" or "st_"
     fn replace_with_string(&self, placeholder: &str, _subtemplate_name: &str, _pos_cursor: usize) -> String {
-        // dbg!(&placeholder);
+        // log::debug!(&placeholder);
         match placeholder {
             "wt_cargo_crev_reviews_version" => s!(env!("CARGO_PKG_VERSION")),
             _ => tmplt::utils::match_else_for_replace_with_string(&self.data_model_name(), placeholder),

@@ -222,6 +222,11 @@
 <span id="220">220</span>
 <span id="221">221</span>
 <span id="222">222</span>
+<span id="223">223</span>
+<span id="224">224</span>
+<span id="225">225</span>
+<span id="226">226</span>
+<span id="227">227</span>
 </pre><pre class="rust">
 <span class="comment">// web_sys_mod.rs</span>
 <span class="doccomment">//! helper functions for web_sys, window, document, dom,</span>
@@ -444,6 +449,11 @@
         .<span class="ident">set_timeout_with_callback_and_timeout_and_arguments_0</span>(<span class="ident">closure</span>.<span class="ident">as_ref</span>().<span class="ident">unchecked_ref</span>(), <span class="number">3000</span>)
         .<span class="ident">unwrap</span>();
     <span class="ident">closure</span>.<span class="ident">forget</span>();
+}
+
+<span class="doccomment">/// close the windows/tab in the browser. It works only if it was opened in script wit window.open().</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">close_tab</span>() {
+    <span class="macro">unwrap!</span>(<span class="ident">window</span>().<span class="ident">close</span>());
 }
 </pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="cargo_crev_reviews_wasm" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div><script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script></body></html>

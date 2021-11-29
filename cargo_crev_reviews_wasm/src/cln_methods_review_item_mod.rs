@@ -43,7 +43,7 @@ impl tmplt::HtmlTemplatingDataTrait for ReviewItemData {
 
     /// returns a String to replace the next text-node: "wt_" or "st_"
     fn replace_with_string(&self, placeholder: &str, _subtemplate_name: &str, _pos_cursor: usize) -> String {
-        // dbg!(&placeholder);
+        // log::debug!(&placeholder);
         match placeholder {
             "wt_comment_md" => self.comment_md.clone(),
             "wt_crate_name" => self.crate_name.clone(),
@@ -62,7 +62,7 @@ impl tmplt::HtmlTemplatingDataTrait for ReviewItemData {
     }
     /// boolean : is the next node rendered or not: "wb_" or "sb_"
     fn exists_next_node_or_attribute(&self, placeholder: &str) -> bool {
-        // dbg!( &placeholder);
+        log::debug!("exists_next_node_or_attribute: {}", &placeholder);
         match placeholder {
             "wb_checked_th_none" => self.thoroughness == "none",
             "wb_checked_th_low" => self.thoroughness == "low",

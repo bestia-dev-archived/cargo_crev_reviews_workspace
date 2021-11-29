@@ -155,7 +155,7 @@ checksum = "c4872d67bab6358e59559027aa3b9157c53d9358c51423c17554809a8858e0f8"
 
 [[package]]
 name = "cargo_crev_reviews"
-version = "2021.1120.1019"
+version = "2021.1129.1554"
 dependencies = [
  "anyhow",
  "base64",
@@ -189,7 +189,7 @@ dependencies = [
 
 [[package]]
 name = "cargo_crev_reviews_wasm"
-version = "2021.1120.1019"
+version = "2021.1129.1554"
 dependencies = [
  "anyhow",
  "chrono",
@@ -629,9 +629,9 @@ dependencies = [
 
 [[package]]
 name = "dev_bestia_html_templating"
-version = "0.1.38"
+version = "0.1.41"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "97b99c47942ba798092ed839d3913e832d922ccbf95cd90f96336cc38ba6791c"
+checksum = "b0199698211a6f1f5d96637a2b69fcfb8a101588e8666faf10de008a624ceffa"
 dependencies = [
  "anyhow",
  "dev_bestia_string_utils",

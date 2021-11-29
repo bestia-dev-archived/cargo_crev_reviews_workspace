@@ -63,7 +63,7 @@ impl tmplt::HtmlTemplatingDataTrait for RpcMessageData {
 
     /// returns a String to replace the next text-node: "wt_" or "st_"
     fn replace_with_string(&self, placeholder: &str, _subtemplate_name: &str, _pos_cursor: usize) -> String {
-        // dbg!(&placeholder);
+        // log::debug!(&placeholder);
         match placeholder {
             "wt_cargo_crev_reviews_version" => s!(env!("CARGO_PKG_VERSION")),
             "wt_message" => s!(self.message),
