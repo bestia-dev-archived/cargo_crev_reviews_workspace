@@ -32,6 +32,15 @@ pub mod cln_methods {
     // region: generated cln_methods
 
     #[named]
+    pub fn cln_no_action<T>(response_data: T, response_html: &str) -> anyhow::Result<String>
+    where
+        T: serde::Serialize,
+    {
+        let response_method = function_name!();
+        Ok(return_srv_response(response_method, response_data, response_html))
+    }
+
+    #[named]
     pub fn cln_review_edit<T>(response_data: T, response_html: &str) -> anyhow::Result<String>
     where
         T: serde::Serialize,

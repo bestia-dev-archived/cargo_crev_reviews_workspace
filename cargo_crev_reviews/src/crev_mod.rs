@@ -39,14 +39,14 @@ lazy_static! {
     static ref CREV_LOCAL: Mutex<Option<crev_lib::Local>>=Mutex::new(None);
 }
 
-#[derive(Deserialize, Clone, Default)]
+#[derive(Deserialize, Clone, Default, Debug)]
 pub struct PackageSegment {
     pub name: String,
     pub version: String,
     pub version_for_sorting: Option<String>,
 }
 
-#[derive(Deserialize, Clone, Default)]
+#[derive(Deserialize, Clone, Default, Debug)]
 pub struct ReviewSegment {
     pub thoroughness: Level,
     pub understanding: Level,
@@ -54,7 +54,7 @@ pub struct ReviewSegment {
 }
 
 /// only the fields I care about for Review
-#[derive(Deserialize, Clone)]
+#[derive(Deserialize, Clone, Debug)]
 pub struct ProofCrevForReview {
     pub date: String,
     pub package: PackageSegment,

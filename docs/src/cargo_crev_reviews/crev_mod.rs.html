@@ -664,14 +664,14 @@
     <span class="kw">static</span> <span class="kw-2">ref</span> <span class="ident">CREV_LOCAL</span>: <span class="ident">Mutex</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">crev_lib::Local</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">=</span><span class="ident">Mutex::new</span>(<span class="prelude-val">None</span>);
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Deserialize</span>, <span class="ident">Clone</span>, <span class="ident">Default</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Deserialize</span>, <span class="ident">Clone</span>, <span class="ident">Default</span>, <span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">PackageSegment</span> {
     <span class="kw">pub</span> <span class="ident">name</span>: <span class="ident">String</span>,
     <span class="kw">pub</span> <span class="ident">version</span>: <span class="ident">String</span>,
     <span class="kw">pub</span> <span class="ident">version_for_sorting</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Deserialize</span>, <span class="ident">Clone</span>, <span class="ident">Default</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Deserialize</span>, <span class="ident">Clone</span>, <span class="ident">Default</span>, <span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ReviewSegment</span> {
     <span class="kw">pub</span> <span class="ident">thoroughness</span>: <span class="ident">Level</span>,
     <span class="kw">pub</span> <span class="ident">understanding</span>: <span class="ident">Level</span>,
@@ -679,7 +679,7 @@
 }
 
 <span class="doccomment">/// only the fields I care about for Review</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Deserialize</span>, <span class="ident">Clone</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Deserialize</span>, <span class="ident">Clone</span>, <span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ProofCrevForReview</span> {
     <span class="kw">pub</span> <span class="ident">date</span>: <span class="ident">String</span>,
     <span class="kw">pub</span> <span class="ident">package</span>: <span class="ident">PackageSegment</span>,

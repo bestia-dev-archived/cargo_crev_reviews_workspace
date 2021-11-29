@@ -34,3 +34,7 @@ pub fn response_modal_message(msg: &str) -> anyhow::Result<String> {
     let response_html = crate::files_mod::modal_message_html();
     crate::auto_generated_mod::cln_methods::cln_review_error(response_data, response_html)
 }
+
+pub fn response_no_action() -> anyhow::Result<String> {
+    crate::auto_generated_mod::cln_methods::cln_no_action("", "")
+}

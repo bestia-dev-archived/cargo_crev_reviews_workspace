@@ -133,6 +133,11 @@ pub fn cln_review_error(srv_response: RpcResponse) {
     on_click!("modal_close", modal_close_on_click);
 }
 
+#[named]
+pub fn cln_no_action(_srv_response: RpcResponse) {
+    log::info!("{}", function_name!());
+}
+
 // endregion: cln methods to render the page and data
 
 // region: functions for event handlers (on_click)

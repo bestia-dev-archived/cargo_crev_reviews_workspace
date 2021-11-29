@@ -242,6 +242,7 @@
 <span id="240">240</span>
 <span id="241">241</span>
 <span id="242">242</span>
+<span id="243">243</span>
 </pre><pre class="rust">
 <span class="comment">// auto_generated_mod.rs</span>
 
@@ -257,6 +258,7 @@
 <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">match_response_method_and_call_function</span>(<span class="ident">response</span>: <span class="ident">common_structs_mod::RpcResponse</span>) {
     <span class="kw">match</span> <span class="ident">response</span>.<span class="ident">response_method</span>.<span class="ident">as_str</span>() {
         <span class="comment">// region: generated match_response_method</span>
+        <span class="string">&quot;cln_no_action&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">cln_no_action</span>(<span class="ident">response</span>),
         <span class="string">&quot;cln_review_edit&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">cln_review_edit</span>(<span class="ident">response</span>),
         <span class="string">&quot;cln_review_error&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">cln_review_error</span>(<span class="ident">response</span>),
         <span class="string">&quot;cln_review_list&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">cln_review_list</span>(<span class="ident">response</span>),

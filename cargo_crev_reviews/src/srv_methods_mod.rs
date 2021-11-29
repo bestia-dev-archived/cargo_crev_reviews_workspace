@@ -152,7 +152,7 @@ pub fn srv_review_open_source_code(request_data: serde_json::Value) -> anyhow::R
     std::thread::sleep(Duration::new(1, 0));
     child.kill()?;
     // TODO: return nothing
-    crate::response_post_mod::response_modal_message("VSCode started.")
+    crate::response_post_mod::response_no_action()
 }
 
 #[named]

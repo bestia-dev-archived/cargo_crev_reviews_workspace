@@ -12,6 +12,7 @@ use crate::cln_methods_version_mod::*;
 pub async fn match_response_method_and_call_function(response: common_structs_mod::RpcResponse) {
     match response.response_method.as_str() {
         // region: generated match_response_method
+        "cln_no_action" => cln_no_action(response),
         "cln_review_edit" => cln_review_edit(response),
         "cln_review_error" => cln_review_error(response),
         "cln_review_list" => cln_review_list(response),

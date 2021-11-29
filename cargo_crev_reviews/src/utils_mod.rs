@@ -67,13 +67,27 @@ pub fn ns_print_ns(name: &str, ns_start: i64) -> i64 {
 
 /// convert ProofCrevForReview into ReviewItemData
 pub fn from_crev_to_item(p: &crev_mod::ProofCrevForReview) -> common_structs_mod::ReviewItemData {
+    // log::debug!("from_crev_to_item {:?}", p);
+    // it is possible that `review` is not defined in the proof. Then use some defaults.
+    let thoroughness = match p.review.as_ref() {
+        None => "None".to_string(),
+        Some(review) => review.thoroughness.to_string(),
+    };
+    let understanding = match p.review.as_ref() {
+        None => "None".to_string(),
+        Some(review) => review.understanding.to_string(),
+    };
+    let rating = match p.review.as_ref() {
+        None => "Neutral".to_string(),
+        Some(review) => crev_mod::rating_to_string(&review.rating),
+    };
     common_structs_mod::ReviewItemData {
         crate_name: p.package.name.clone(),
         crate_version: p.package.version.clone(),
         date: p.date.clone(),
-        thoroughness: p.review.as_ref().unwrap().thoroughness.to_string(),
-        understanding: p.review.as_ref().unwrap().understanding.to_string(),
-        rating: crev_mod::rating_to_string(&(p.review.as_ref().unwrap().rating)),
+        thoroughness,
+        understanding,
+        rating,
         comment_md: p.comment.as_ref().unwrap_or(&"".to_string()).clone(),
     }
 }

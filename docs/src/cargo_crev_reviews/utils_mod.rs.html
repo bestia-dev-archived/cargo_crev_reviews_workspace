@@ -79,6 +79,20 @@
 <span id="77">77</span>
 <span id="78">78</span>
 <span id="79">79</span>
+<span id="80">80</span>
+<span id="81">81</span>
+<span id="82">82</span>
+<span id="83">83</span>
+<span id="84">84</span>
+<span id="85">85</span>
+<span id="86">86</span>
+<span id="87">87</span>
+<span id="88">88</span>
+<span id="89">89</span>
+<span id="90">90</span>
+<span id="91">91</span>
+<span id="92">92</span>
+<span id="93">93</span>
 </pre><pre class="rust">
 <span class="comment">// utils_mod.rs</span>
 
@@ -149,13 +163,27 @@
 
 <span class="doccomment">/// convert ProofCrevForReview into ReviewItemData</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_crev_to_item</span>(<span class="ident">p</span>: <span class="kw-2">&amp;</span><span class="ident">crev_mod::ProofCrevForReview</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">common_structs_mod::ReviewItemData</span> {
+    <span class="comment">// log::debug!(&quot;from_crev_to_item {:?}&quot;, p);</span>
+    <span class="comment">// it is possible that `review` is not defined in the proof. Then use some defaults.</span>
+    <span class="kw">let</span> <span class="ident">thoroughness</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">p</span>.<span class="ident">review</span>.<span class="ident">as_ref</span>() {
+        <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;None&quot;</span>.<span class="ident">to_string</span>(),
+        <span class="prelude-val">Some</span>(<span class="ident">review</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">review</span>.<span class="ident">thoroughness</span>.<span class="ident">to_string</span>(),
+    };
+    <span class="kw">let</span> <span class="ident">understanding</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">p</span>.<span class="ident">review</span>.<span class="ident">as_ref</span>() {
+        <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;None&quot;</span>.<span class="ident">to_string</span>(),
+        <span class="prelude-val">Some</span>(<span class="ident">review</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">review</span>.<span class="ident">understanding</span>.<span class="ident">to_string</span>(),
+    };
+    <span class="kw">let</span> <span class="ident">rating</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">p</span>.<span class="ident">review</span>.<span class="ident">as_ref</span>() {
+        <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;Neutral&quot;</span>.<span class="ident">to_string</span>(),
+        <span class="prelude-val">Some</span>(<span class="ident">review</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">crev_mod::rating_to_string</span>(<span class="kw-2">&amp;</span><span class="ident">review</span>.<span class="ident">rating</span>),
+    };
     <span class="ident">common_structs_mod::ReviewItemData</span> {
         <span class="ident">crate_name</span>: <span class="ident">p</span>.<span class="ident">package</span>.<span class="ident">name</span>.<span class="ident">clone</span>(),
         <span class="ident">crate_version</span>: <span class="ident">p</span>.<span class="ident">package</span>.<span class="ident">version</span>.<span class="ident">clone</span>(),
         <span class="ident">date</span>: <span class="ident">p</span>.<span class="ident">date</span>.<span class="ident">clone</span>(),
-        <span class="ident">thoroughness</span>: <span class="ident">p</span>.<span class="ident">review</span>.<span class="ident">as_ref</span>().<span class="ident">unwrap</span>().<span class="ident">thoroughness</span>.<span class="ident">to_string</span>(),
-        <span class="ident">understanding</span>: <span class="ident">p</span>.<span class="ident">review</span>.<span class="ident">as_ref</span>().<span class="ident">unwrap</span>().<span class="ident">understanding</span>.<span class="ident">to_string</span>(),
-        <span class="ident">rating</span>: <span class="ident">crev_mod::rating_to_string</span>(<span class="kw-2">&amp;</span>(<span class="ident">p</span>.<span class="ident">review</span>.<span class="ident">as_ref</span>().<span class="ident">unwrap</span>().<span class="ident">rating</span>)),
+        <span class="ident">thoroughness</span>,
+        <span class="ident">understanding</span>,
+        <span class="ident">rating</span>,
         <span class="ident">comment_md</span>: <span class="ident">p</span>.<span class="ident">comment</span>.<span class="ident">as_ref</span>().<span class="ident">unwrap_or</span>(<span class="kw-2">&amp;</span><span class="string">&quot;&quot;</span>.<span class="ident">to_string</span>()).<span class="ident">clone</span>(),
     }
 }

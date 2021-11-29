@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["cln_review_edit",""],["cln_review_error",""],["cln_review_list",""],["cln_review_new",""],["cln_review_publish_modal",""],["cln_verify_list",""],["cln_version_list",""]]});
+initSidebarItems({"fn":[["cln_no_action",""],["cln_review_edit",""],["cln_review_error",""],["cln_review_list",""],["cln_review_new",""],["cln_review_publish_modal",""],["cln_verify_list",""],["cln_version_list",""]]});
