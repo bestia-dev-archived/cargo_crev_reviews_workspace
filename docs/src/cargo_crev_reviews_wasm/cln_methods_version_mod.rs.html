@@ -269,6 +269,12 @@
 <span id="267">267</span>
 <span id="268">268</span>
 <span id="269">269</span>
+<span id="270">270</span>
+<span id="271">271</span>
+<span id="272">272</span>
+<span id="273">273</span>
+<span id="274">274</span>
+<span id="275">275</span>
 </pre><pre class="rust">
 <span class="comment">// cln_methods_version_mod.rs</span>
 
@@ -440,8 +446,14 @@
 
     <span class="comment">// on_click for every row of the list</span>
     <span class="kw">for</span> (<span class="ident">row_number</span>, <span class="ident">item</span>) <span class="kw">in</span> <span class="ident">VERSION_LIST_DATA</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>().<span class="ident">list_of_version</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
+        <span class="comment">// button New or Edit</span>
         <span class="kw">if</span> <span class="ident">item</span>.<span class="ident">my_review</span>.<span class="ident">is_some</span>() {
             <span class="macro">row_on_click!</span>(<span class="string">&quot;button_review_edit_or_new&quot;</span>, <span class="ident">row_number</span>, <span class="ident">request_review_edit_or_new</span>);
+        } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">item</span>.<span class="ident">is_src_cached</span> <span class="op">=</span><span class="op">=</span> <span class="prelude-val">Some</span>(<span class="bool-val">true</span>) {
+            <span class="macro">row_on_click!</span>(<span class="string">&quot;button_review_edit_or_new&quot;</span>, <span class="ident">row_number</span>, <span class="ident">request_review_edit_or_new</span>);
+        }
+        <span class="comment">// sub-menu</span>
+        <span class="kw">if</span> <span class="ident">item</span>.<span class="ident">my_review</span>.<span class="ident">is_some</span>() {
             <span class="macro">row_on_click!</span>(<span class="string">&quot;button_open_crev_dev&quot;</span>, <span class="ident">row_number</span>, <span class="ident">button_open_crev_dev_onclick</span>);
             <span class="macro">row_on_click!</span>(<span class="string">&quot;button_open_crates_io&quot;</span>, <span class="ident">row_number</span>, <span class="ident">button_open_crates_io_onclick</span>);
             <span class="macro">row_on_click!</span>(<span class="string">&quot;button_open_lib_rs&quot;</span>, <span class="ident">row_number</span>, <span class="ident">button_open_lib_rs_onclick</span>);

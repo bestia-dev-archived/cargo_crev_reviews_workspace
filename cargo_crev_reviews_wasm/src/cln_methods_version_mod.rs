@@ -168,8 +168,14 @@ pub fn cln_version_list(srv_response: RpcResponse) {
 
     // on_click for every row of the list
     for (row_number, item) in VERSION_LIST_DATA.lock().unwrap().list_of_version.iter().enumerate() {
+        // button New or Edit
         if item.my_review.is_some() {
             row_on_click!("button_review_edit_or_new", row_number, request_review_edit_or_new);
+        } else if item.is_src_cached == Some(true) {
+            row_on_click!("button_review_edit_or_new", row_number, request_review_edit_or_new);
+        }
+        // sub-menu
+        if item.my_review.is_some() {
             row_on_click!("button_open_crev_dev", row_number, button_open_crev_dev_onclick);
             row_on_click!("button_open_crates_io", row_number, button_open_crates_io_onclick);
             row_on_click!("button_open_lib_rs", row_number, button_open_lib_rs_onclick);
