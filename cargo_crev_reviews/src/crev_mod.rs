@@ -443,15 +443,9 @@ pub struct TrustedPublisher {
 /// verify_project should return some data quickly, but in the background start to fill the db_version
 /// for all these crates. So the next time we have more complete data
 pub fn verify_project() -> anyhow::Result<VerifyListData> {
-    let ns_started = crate::utils_mod::ns_start("verify_project");
-
     let output = std::process::Command::new("cargo").arg("crev").arg("verify").output().unwrap();
-    crate::utils_mod::ns_print_ms("after cargo crev verify", ns_started);
-
     let output = format!("{} {}", String::from_utf8_lossy(&output.stdout), String::from_utf8_lossy(&output.stderr));
-
     let trusted_publisher_json = load_trusted_publishers_json()?;
-    crate::utils_mod::ns_print_ms("after load_trusted_publishers_json", ns_started);
 
     let mut list_of_verify = vec![];
     for line in output.lines() {
@@ -480,10 +474,7 @@ pub fn verify_project() -> anyhow::Result<VerifyListData> {
             })
         }
     }
-    crate::utils_mod::ns_print_ms("after list_of_verify", ns_started);
     verify_sort_list_by_name_version(&mut list_of_verify);
-
-    crate::utils_mod::ns_print_ms("verify_project", ns_started);
 
     Ok(VerifyListData {
         project_dir: env::current_dir()?.to_string_lossy().to_string(),
