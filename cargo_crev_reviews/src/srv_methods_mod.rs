@@ -29,9 +29,9 @@ pub fn srv_reviews_list(_request_data: serde_json::Value) -> anyhow::Result<Stri
         filter: "".to_string(),
         list_of_review: vec_review,
     };
-    let response_html = crate::files_mod::review_list_html();
+    let response_html = crate::html_mod::process_include(crate::files_mod::review_list_html());
 
-    cln_methods::cln_review_list(response_data, response_html)
+    cln_methods::cln_review_list(response_data, &response_html)
 }
 
 #[named]
@@ -39,7 +39,7 @@ pub fn srv_review_new(request_data: serde_json::Value) -> anyhow::Result<String>
     log::info!(function_name!());
     let filter: ReviewFilterData = unwrap!(serde_json::from_value(request_data));
 
-    let response_html = crate::files_mod::review_new_html();
+    let response_html = crate::html_mod::process_include(crate::files_mod::review_new_html());
     let response_data = ReviewItemData {
         crate_name: filter.crate_name.to_string(),
         crate_version: filter.crate_version.context("none version")?.to_string(),
@@ -53,13 +53,13 @@ file-read/write: explanation
 macro_rules: explanation
 lines of code: 6 dependencies: 6 
 NONE: unsafe, FFI, asm!, no_mangle, network-access, build.rs, proc_macro, process::command
-owners (in crates.io) reputation: unknown / rust team / active in rust community
+owners (in crates.io) reputation: unknown / Rust team / active in Rust community
 used in projects:  
 alternative crates explored:
         "#
         .to_string(),
     };
-    cln_methods::cln_review_new(response_data, response_html)
+    cln_methods::cln_review_new(response_data, &response_html)
 }
 
 #[named]
@@ -98,9 +98,9 @@ pub fn srv_review_edit(request_data: serde_json::Value) -> anyhow::Result<String
     // find the item from the list
     let p = crev_edit_review(filter)?;
     let response_data = crate::utils_mod::from_crev_to_item(&p);
-    let response_html = crate::files_mod::review_edit_html();
+    let response_html = crate::html_mod::process_include(crate::files_mod::review_edit_html());
 
-    cln_methods::cln_review_edit(response_data, response_html)
+    cln_methods::cln_review_edit(response_data, &response_html)
 }
 
 /// edit the review or copy the last review to create a new review
@@ -113,8 +113,8 @@ pub fn srv_review_edit_or_new(request_data: serde_json::Value) -> anyhow::Result
         Err(_err) => srv_review_new(request_data),
         Ok(p) => {
             let response_data = crate::utils_mod::from_crev_to_item(&p);
-            let response_html = crate::files_mod::review_edit_html();
-            cln_methods::cln_review_edit(response_data, response_html)
+            let response_html = crate::html_mod::process_include(crate::files_mod::review_edit_html());
+            cln_methods::cln_review_edit(response_data, &response_html)
         }
     }
 }
@@ -126,8 +126,8 @@ pub fn srv_review_new_version(request_data: serde_json::Value) -> anyhow::Result
     // find the item from the list
     let p = crev_new_version(filter)?;
     let response_data = crate::utils_mod::from_crev_to_item(&p);
-    let response_html = crate::files_mod::review_edit_html();
-    cln_methods::cln_review_edit(response_data, response_html)
+    let response_html = crate::html_mod::process_include(crate::files_mod::review_edit_html());
+    cln_methods::cln_review_edit(response_data, &response_html)
 }
 
 #[named]
@@ -151,7 +151,7 @@ pub fn srv_review_open_source_code(request_data: serde_json::Value) -> anyhow::R
     let mut child = std::process::Command::new("code").arg(path_dir).spawn()?;
     std::thread::sleep(Duration::new(1, 0));
     child.kill()?;
-    // TODO: return nothing
+    // return nothing
     crate::response_post_mod::response_no_action()
 }
 
@@ -173,8 +173,19 @@ pub fn srv_verify_project(_filter_data: serde_json::Value) -> anyhow::Result<Str
     log::info!(function_name!());
 
     let response_data = crate::crev_mod::verify_project()?;
-    let response_html = crate::files_mod::verify_list_html();
-    cln_methods::cln_verify_list(response_data, response_html)
+    let response_html = crate::html_mod::process_include(crate::files_mod::verify_list_html());
+    cln_methods::cln_verify_list(response_data, &response_html)
+}
+
+#[named]
+
+pub fn srv_cargo_tree_project(_filter_data: serde_json::Value) -> anyhow::Result<String> {
+    log::info!(function_name!());
+
+    let response_data = crate::cargo_tree_mod::cargo_tree_project()?;
+    let response_html = crate::html_mod::process_include(crate::files_mod::cargo_tree_html());
+
+    cln_methods::cln_cargo_tree_list(response_data, &response_html)
 }
 
 /// list of all versions for one crate: from registry index with data from src cached and my_reviews
@@ -192,9 +203,9 @@ pub fn srv_version_list(request_data: serde_json::Value) -> anyhow::Result<Strin
     });
 
     let response_data = VersionListData { list_of_version: vec };
-    let response_html = crate::files_mod::version_list_html();
+    let response_html = crate::html_mod::process_include(crate::files_mod::version_list_html());
 
-    cln_methods::cln_version_list(response_data, response_html)
+    cln_methods::cln_version_list(response_data, &response_html)
 }
 
 #[named]

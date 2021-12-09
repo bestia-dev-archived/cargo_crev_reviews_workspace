@@ -33,8 +33,12 @@ where
 
 // extract only the html inside the <body> </body>
 pub fn extract_html(response: &RpcResponse) -> String {
-    let response_html = &response.response_html;
-    let (html_fragment, _new_pos_cursor) = get_delimited_text(response_html, 0, "<body>", "</body>").unwrap();
+    extract_body_inner(&response.response_html)
+}
+
+// extract only the html inside the <body> </body>
+pub fn extract_body_inner(html: &str) -> String {
+    let (html_fragment, _new_pos_cursor) = get_delimited_text(html, 0, "<body>", "</body>").unwrap();
     html_fragment
 }
 

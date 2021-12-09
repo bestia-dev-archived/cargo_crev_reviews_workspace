@@ -60,6 +60,18 @@ pub struct ReviewListData {
 }
 
 // endregion: review
+
+#[derive(Serialize, Deserialize, Debug, Default)]
+pub struct CargoTreeItemData {
+    pub cargo_tree_line: String,
+}
+
+#[derive(Serialize, Deserialize, Debug, Default)]
+pub struct CargoTreeListData {
+    pub project_dir: String,
+    pub list_of_cargo_tree: Vec<CargoTreeItemData>,
+}
+
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct VerifyItemData {
     /// status: none, pass, warn, yanked

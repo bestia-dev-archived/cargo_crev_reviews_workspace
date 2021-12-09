@@ -22,7 +22,7 @@ comment: |-
   network-access:0 build.rs:0 macro_rules:0 proc_macro:0 process::command:0
   line of code:0 dependencies:0 
   malicious potential:0
-  owners (in crates.io) reputation: unknown/rust team/active in rust community
+  owners (in crates.io) reputation: unknown/Rust team/active in Rust community
   used in your projects:  
   alternative crates you explored:
 ----- SIGN CREV PROOF -----

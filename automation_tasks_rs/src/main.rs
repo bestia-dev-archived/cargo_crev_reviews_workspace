@@ -185,7 +185,7 @@ fn task_generated_mod() {
     generate_server_match_response_method();
 }
 
-/// example how to call a list of shell commands and combine with rust code
+/// example how to call a list of shell commands and combine with Rust code
 fn task_docs() {
     auto_md_to_doc_comments();
     let cargo_toml = CargoToml::read();
@@ -251,7 +251,7 @@ and try it `cargo_crev_reviews`
 
 /// copy all files in the web_server_folder as strings to the module `files_mod.rs`
 fn copy_web_folder_files_into_module() {
-    /// read all files and push rust code into module
+    /// read all files and push Rust code into module
     /// nested function or inner function, cannot capture environment as closures. Good.
     fn copy_files_from_dir(root_directory: &str, module_source_code: &mut String) {
         let path = std::path::Path::new(root_directory);
@@ -279,11 +279,11 @@ fn copy_web_folder_files_into_module() {
                         module_source_code.push_str(&start);
 
                         // binary files are encoded base64
-                        let body = if ps.ends_with(".png") || ps.ends_with(".woff2") || ps.ends_with(".wasm") {
+                        let body = if ps.ends_with(".png") || ps.ends_with(".ico") || ps.ends_with(".woff2") || ps.ends_with(".wasm") {
                             let e = base64::encode(unwrap!(std::fs::read(p)));
-                            // it is much easier to have lines of 76 characters in rust source code.
+                            // it is much easier to have lines of 76 characters in Rust source code.
                             // before decoding base64 I will eliminate \n
-                            // rust string is utf8, but base64 is strictly ascii.
+                            // Rust string is utf8, but base64 is strictly ascii.
                             // So I have the guarantee 100% that 1 byte = 1 char
                             let multi_line = e.as_bytes().chunks(76).collect::<Vec<_>>().join(&b'\n');
                             unwrap!(String::from_utf8(multi_line))
@@ -302,7 +302,7 @@ fn copy_web_folder_files_into_module() {
 
     let mut module_source_code = String::new();
     module_source_code.push_str("// files_mod.rs\n\n");
-    module_source_code.push_str("//! embedded files as rust code\n\n");
+    module_source_code.push_str("//! embedded files as Rust code\n\n");
     copy_files_from_dir("web_server_folder/cargo_crev_reviews", &mut module_source_code);
     copy_files_from_dir("web_server_folder/cargo_crev_reviews/css", &mut module_source_code);
     copy_files_from_dir("web_server_folder/cargo_crev_reviews/icons", &mut module_source_code);

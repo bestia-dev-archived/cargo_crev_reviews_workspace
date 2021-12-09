@@ -31,7 +31,7 @@ This is a GUI wrapper around [cargo](https://doc.rust-lang.org/cargo/getting-sta
 Fork the proof repo on Github. Just open this url:  
 <https://github.com/crev-dev/crev-proofs/fork>
 
-Install cargo and the rust language:  
+Install cargo and the Rust language:  
 
 ```bash
 curl https://sh.rustup.rs -sSf | sh
@@ -51,7 +51,7 @@ Then install cargo_crev_reviews:
 cargo install cargo_crev_reviews
 ```
 
-Start the program inside the directory of your rust project, where the Cargo.toml file is.
+Start the program inside the directory of your Rust project, where the Cargo.toml file is.
 
 ```bash
 cd ~/rustprojects/your-project-name
@@ -65,6 +65,11 @@ Input your passphrase for cargo-crev proof signing.
 ![screen_4](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/raw/main/images/screen_4.png "screen_4")  
 
 The program lists all the dependencies of the project with data about reviews. It shows all the dependencies including the transient dependencies. It is easily more than 100 crates in the list.  
+
+## cargo tree
+
+Cargo-tree is a Rust utility that shows all the ramification of dependencies in your Rust project.
+
 
 ## your personal reviews
 
@@ -99,38 +104,38 @@ For developers that want to understand, tweak the code and contribute to the pro
 
 ## Motivation
 
-I think [cargo-crev](https://lib.rs/crates/cargo-crev) is a great tool to express trustworthiness in the open-source community, especially for the [rust programming language](https://www.rust-lang.org/).  I fear so much of [supply chain attacks](https://en.wikipedia.org/wiki/Supply_chain_attack) using dependencies from [crates.io](https://crates.io/). For the smallest project you can get 100 dependencies easily. How to trust them all? To review them all manually? It is just crazy.  
+I think [cargo-crev](https://lib.rs/crates/cargo-crev) is a great tool to express trustworthiness in the open-source community, especially for the [Rust programming language](https://www.rust-lang.org/).  I fear so much of [supply chain attacks](https://en.wikipedia.org/wiki/Supply_chain_attack) using dependencies from [crates.io](https://crates.io/). For the smallest project you can get 100 dependencies easily. How to trust them all? To review them all manually? It is just crazy.  
 But if enough people write reviews, it will be so much easier to trust the code. It is the same principle as [booking.com](https://www.booking.com/) or [air-bnb](https://www.airbnb.com/). Guests of a hotel write a review about their actual experience in the hotel. And you can read a hopefully truthful review and can understand if the hotel is good or bad. Sometimes can happen to find a fake review, but if there is enough people, most of them will be sincere.  
 Sadly, writing reviews in `cargo-crev` is hard. Let's make a [GUI](https://en.wikipedia.org/wiki/Graphical_user_interface) wrapper around `cargo-crev` to make write reviews easier.  
 We will see walking the path what obstacles we must overcome.  
 
 ## Technical decisions
 
-Rust does not have a true GUI story. It is mostly for [CLI](https://en.wikipedia.org/wiki/Command-line_interface) and libraries. Because GUI is mostly non cross-platform. But rust is the best language for [Wasm/Webassembly](https://webassembly.org/). So let's combine this.  
-I will make a rust [workspace](https://doc.rust-lang.org/book/ch14-03-cargo-workspaces.html) (multi-projects):
+Rust does not have a true GUI story. It is mostly for [CLI](https://en.wikipedia.org/wiki/Command-line_interface) and libraries. Because GUI is mostly non cross-platform. But Rust is the best language for [Wasm/Webassembly](https://webassembly.org/). So let's combine this.  
+I will make a Rust [workspace](https://doc.rust-lang.org/book/ch14-03-cargo-workspaces.html) (multi-projects):
 
 1. CLI for a web server (local micro-server)
 2. Wasm for the browser (chrome and similar)
 
-The web server CLI will access files, commands, libraries and the network. This will work only in [Linux](https://en.wikipedia.org/wiki/Linux), but today Win10 has integrated Linux with [WSL2](https://en.wikipedia.org/wiki/Windows_Subsystem_for_Linux). It will work just fine on all the operating systems sensible for rust development.  
+The web server CLI will access files, commands, libraries and the network. This will work only in [Linux](https://en.wikipedia.org/wiki/Linux), but today Win10 has integrated Linux with [WSL2](https://en.wikipedia.org/wiki/Windows_Subsystem_for_Linux). It will work just fine on all the operating systems sensible for Rust development.  
 Wasm in browser will just access the local micro web server. This is gonna be the GUI and because the browser works in every [OS](https://en.wikipedia.org/wiki/Operating_system), this is [cross-platform](https://en.wikipedia.org/wiki/Cross-platform_software) development.  
 
-I want the simplest [web server](https://en.wikipedia.org/wiki/Web_server) ever. It will be used exclusively locally from one super simple [web-application](https://en.wikipedia.org/wiki/Web_application), so  don't need to care much about security. I choose [simple server](https://crates.io/crates/simple-server) from the [rust book](https://doc.rust-lang.org/1.30.0/book/second-edition/ch20-01-single-threaded.html). I don't care about [multi-threading](https://en.wikipedia.org/wiki/Multithreading_(computer_architecture)) or [async](https://en.wikipedia.org/wiki/Asynchrony_(computer_programming)) , because it will be used by only one browser. The example from the book evolved into the github repository of the author of the book [github.com/steveklabnik](https://github.com/steveklabnik/simple-server). I cloned it and update the dependencies and consequently fixed some broken code. I published it as dev_bestia_simple_server on crates.io.  
+I want the simplest [web server](https://en.wikipedia.org/wiki/Web_server) ever. It will be used exclusively locally from one super simple [web-application](https://en.wikipedia.org/wiki/Web_application), so  don't need to care much about security. I choose [simple server](https://crates.io/crates/simple-server) from the [Rust book](https://doc.rust-lang.org/1.30.0/book/second-edition/ch20-01-single-threaded.html). I don't care about [multi-threading](https://en.wikipedia.org/wiki/Multithreading_(computer_architecture)) or [async](https://en.wikipedia.org/wiki/Asynchrony_(computer_programming)) , because it will be used by only one browser. The example from the book evolved into the github repository of the author of the book [github.com/steveklabnik](https://github.com/steveklabnik/simple-server). I cloned it and update the dependencies and consequently fixed some broken code. I published it as dev_bestia_simple_server on crates.io.  
 
-For the browser I will create a simple web app. All the code will be in rust, I will avoid javascript. The GUI will be in [HTML5](https://en.wikipedia.org/wiki/HTML5) and [CSS3](https://en.wikipedia.org/wiki/CSS#CSS_3). This is all supported by all [modern browsers](https://www.bopdesign.com/bop-blog/2012/01/why-use-a-modern-web-browser/).  
+For the browser I will create a simple web app. All the code will be in Rust, I will avoid javascript. The GUI will be in [HTML5](https://en.wikipedia.org/wiki/HTML5) and [CSS3](https://en.wikipedia.org/wiki/CSS#CSS_3). This is all supported by all [modern browsers](https://www.bopdesign.com/bop-blog/2012/01/why-use-a-modern-web-browser/).  
 
 ## Development
 
 I will use [cargo-auto](https://crates.io/crates/cargo-auto) to automate the tasks needed to build the project.  
-The sub-directory `automation_tasks_rs` is the rust project for [cargo-auto](https://crates.io/crates/cargo-auto).  
+The sub-directory `automation_tasks_rs` is the Rust project for [cargo-auto](https://crates.io/crates/cargo-auto).  
 
-The rust workspace is made of members:
+The Rust workspace is made of members:
 
 - backend CLI (this will be the main and only project to be published on crates.io)
 - GUI frontend
 
 The sub-directory `web_server_folder` contains all the files and folder structure for a working development web_server.  
-But this files are not used directly. Because of the way the publish to crates.io works, I will embed them inside the rust code as strings (base64 encoded if needed). I will make an automation task for that.  
+But this files are not used directly. Because of the way the publish to crates.io works, I will embed them inside the Rust code as strings (base64 encoded if needed). I will make an automation task for that.  
 
 There is a file `auto_generated_mod.rs` where automation tasks generates boilerplate code. I prefer generated code to `procedural macros` because it is easy to write(generate), read and debug the code. Also the tools for auto-completion can have problems with procedural macros.  
 
@@ -143,9 +148,9 @@ They share some structs for communication that are defined in the `common_struct
 The only URL the server operates is: <http://127.0.0.1:8182/cargo_crev_reviews>
 
 If I want to publish this on crates.io it must all be inside one binary executable file.  
-It means that all the static files: css, html, icons, images, ... must be inside the rust code.  
+It means that all the static files: css, html, icons, images, ... must be inside the Rust code.  
 For developing it is practical to have all this files as files.  
-But before release an automation task converts this files to strings and put them into the rust code.  
+But before release an automation task converts this files to strings and put them into the Rust code.  
 
 The micro-server will accept mostly [POST](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/POST) with json similar to  [json-rpc](https://www.jsonrpc.org/specification). But sure I had to modify it to something more adequate for my use-case. I think in the future I will change that even more to something even more adequate.  
 
@@ -197,7 +202,7 @@ The html template must be microXml compatible. The wasm code reads element by el
 ## common structs - common_structs_mod.rs
 
 Common structures between backend and frontend. It is kind of a contract for communication.  
-All in 100% rust language. One automation task keeps in sync the backend and frontend module.  
+All in 100% Rust language. One automation task keeps in sync the backend and frontend module.  
 TODO: Using structs is not generic enough. Most of the time I need then name of a field. Because with the name I can bind in different scenarios. Using structs I don't have the name of the field at runtime. I think I will ditch most of the structs to have just a plain old flat text with QVS21. Inside that text every field will have a slice and a name. And I can then use that in runtime for bindings.  
 
 ## cargo-crev integration
@@ -206,7 +211,7 @@ The [cargo-crev](https://github.com/crev-dev/cargo-crev) project contains many c
 
 ## cargo registry
 
-The cargo application is essential for work with the rust language. It maintains a local `cargo registry cache`. The registry index is git fetched from github. Path to an index file:  
+The cargo application is essential for work with the Rust language. It maintains a local `cargo registry cache`. The registry index is git fetched from github. Path to an index file:  
 `~/.cargo/registry/index/github.com-1ecc6299db9ec823/cache/re/ad/reader_for_microxml`  
 
 ```bash
@@ -277,10 +282,10 @@ The first set of requests are GET and response is "static" files embedded in fil
     This html is just an empty shell that gets the css and wasm code. There is no real content inside. This concept is [Single-page application SPA](https://en.wikipedia.org/wiki/Single-page_application).  
 2. index.html requests: 3 css files, `pkg/cargo_crev_reviews.js`, `pkg/cargo_crev_reviews_bg.wasm`, "favicon" `icons/icon-032.png`. All these requests are GET and responses come from files_mod.rs functions, some are text files and others are base64 files.
 3. the browser imports the wasm module and starts the init function that requests `srv_review_list`. This responds with: response_method_name, response_html and response_data.
-4. wasm (inside the browser) is rust code. First it matches method_name and calls the appropriate function. It processes the html with the data and inserts it into index.html (the empty shell).
+4. wasm (inside the browser) is Rust code. First it matches method_name and calls the appropriate function. It processes the html with the data and inserts it into index.html (the empty shell).
 5. the browser renders our first page. Hooray!
 6. the user clicks on some button.
-7. the macro `on_click!` or `row_on_click!` hides the ugly rust code behind the definition of an event handler in web_sys and calls a function
+7. the macro `on_click!` or `row_on_click!` hides the ugly Rust code behind the definition of an event handler in web_sys and calls a function
 8. wasm creates a rpc request and sends/POST to the server
 9. the request is POST, the server first matches the method_name and calls the appropriate function. The function processes the call and prepares some data. It loads the html template.
 10. The response contains the html to be rendered and data to be inserted in this html before rendering.
@@ -360,7 +365,7 @@ pub fn cln_review_edit(srv_response: RpcResponse) {
 ## sled database
 
 I don't want to repeatedly use crates.io api for the same data. I need a disk persistent storage for this data.  
-I will have a try with the [sled](http://sled.rs/) database. A lightweight pure-rust high-performance transactional embedded database. This is a key-value database. The value can be any struct. There can be multiple separate trees/keyspaces: crates, versions, reviews, yanked,....  
+I will have a try with the [sled](http://sled.rs/) database. A lightweight pure-Rust high-performance transactional embedded database. This is a key-value database. The value can be any struct. There can be multiple separate trees/keyspaces: crates, versions, reviews, yanked,....  
 
 ## plantUml
 

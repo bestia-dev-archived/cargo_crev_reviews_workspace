@@ -39,6 +39,8 @@ pub fn parse_get_uri_and_response_file(path: &str) -> ResponseWithBytes {
     log::info!("path: {}", path);
     match path {
         "/cargo_crev_reviews/index.html" => response_file_text(index_html, path, Cache::NoStore),
+        "/cargo_crev_reviews/favicon.png" => response_file_base64(favicon_png, path),
+        "/cargo_crev_reviews/favicon.ico" => response_file_base64(favicon_ico, path),
         "/cargo_crev_reviews/css/cargo_crev_reviews.css" => response_file_text(css_cargo_crev_reviews_css, path, Cache::Ok),
         "/cargo_crev_reviews/css/fontawesome.css" => response_file_text(css_fontawesome_css, path, Cache::Ok),
         "/cargo_crev_reviews/css/normalize.css" => response_file_text(css_normalize_css, path, Cache::Ok),
@@ -47,6 +49,7 @@ pub fn parse_get_uri_and_response_file(path: &str) -> ResponseWithBytes {
         "/cargo_crev_reviews/icons/icon-032.png" => response_file_base64(icons_icon_032_png, path),
         "/cargo_crev_reviews/icons/icon-128.png" => response_file_base64(icons_icon_128_png, path),
         "/cargo_crev_reviews/icons/icon-192.png" => response_file_base64(icons_icon_192_png, path),
+        "/cargo_crev_reviews/icons/icon-512.png" => response_file_base64(icons_icon_512_png, path),
         "/cargo_crev_reviews/images/Logo_02.png" => response_file_base64(images_logo_02_png, path),
         "/cargo_crev_reviews/js/dropdown.js" => response_file_text(js_dropdown_js, path, Cache::Ok),
         "/cargo_crev_reviews/pkg/cargo_crev_reviews_wasm.js" => response_file_text(pkg_cargo_crev_reviews_wasm_js, path, Cache::NoStore),

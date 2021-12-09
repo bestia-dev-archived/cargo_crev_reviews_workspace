@@ -3,7 +3,7 @@
 
 <head>
     <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
-    <title>list verify</title>
+    <title>cargo_tree</title>
     <meta name="Description" content="web app for writing new reviews for cargo-crev" />
     <link rel="stylesheet" href="css/normalize.css" />
     <link rel="stylesheet" href="css/cargo_crev_reviews.css" />
@@ -21,12 +21,12 @@
             <li id="button_review_publish">Publish to git remote repository</li>
             <li id="button_update_registry_index">Update cargo registry index</li>
         </ul>
-        <div style="display: grid;grid-template-columns: 20% 80% ;">
+        <div style="display: grid;grid-template-columns: 30% 70% ;">
             <div>
                 <img src="images/Logo_02.png" style="padding: 7px;width:60%;max-width:300px;min-width:150px;" alt="logo" />
             </div>
             <div class="middle">
-                <h2>Verify Rust project</h2>
+                <h2>Cargo tree</h2>
                 <p>
                     <!--wt_project_dir-->~/rustprojects/cargo_crev_reviews_workspace</p>
             </div>
@@ -39,30 +39,17 @@
                 <br/>On first run, the data in this list is not complete. It will gather more data in the background.
                 <br/>After few minutes, reload to see the newest data.</p>
         </div>
-        <div class="review_header_0" style="grid-template-columns: 4fr 5fr 10fr 35fr 10fr 25fr;">
-            <div class="review_header0_cell left">num</div>
-            <div class="review_header0_cell left">status</div>
-            <div class="review_header0_cell left">my rating</div>
-            <div class="review_header0_cell left">crate version</div>
-            <div class="review_header0_cell left">published_by</div>
+        <div class="review_header_0" style="grid-template-columns: 100fr;">
+            <div class="review_header0_cell left">tree</div>
         </div>
     </div>
 
     <div class="container_0">
-        <div class="review_header_0" style="grid-template-columns: 4fr 5fr 10fr 35fr 10fr 25fr;">
-            <!--wtmplt_VerifyItemData start-->
-            <div class="review_header0_cell left">
-                <!--wt_row_number-->num</div>
-            <div data-wt_status_class="class" class="review_header0_cell left">
-                <!--wt_status-->pass</div>
-            <div data-wt_my_review_class="class" class="review_header0_cell left">
-                <!--wt_my_review-->Strong</div>
-            <div id="crate_name_version" class="review_header0_cell c_link_1 left">
-                <!--wt_crate_name_version-->num-traits 1.20.1</div>
-            <div data-wt_published_by_class="class" class="review_header0_cell left">
-                <!--wt_published_by-->published_by</div>
-            <div class="review_header0_cell"></div>
-            <!--wtmplt_VerifyItemData end-->
+        <div class="review_header_0" style="grid-template-columns: 100fr;">
+            <!--wtmplt_TreeData start-->
+            <div class="review_header0_cell left code" style="line-height: .7em;display: block;">
+                <!--wt_tree_line-->tree line</div>
+            <!--wtmplt_TreeData end-->
         </div>
     </div>
 

@@ -28,8 +28,7 @@ fn main() -> anyhow::Result<()> {
         welcome_print();
         println!(
             r#"
-The crev reviews are cryptographically signed, so you must first enter you crev passphrase to enable the signing of your crev reviews.
-Then this CLI opens the default browser. This is the frontend graphical (GUI) part of the app.
+This CLI opens the default browser. It is the frontend graphical (GUI) part of the app.
 If the default browser does not open from WSL2, you can see my project `https://github.com/LucianoBestia/wsl_open_browser`.
 "#
         );
@@ -110,5 +109,11 @@ pub fn start_web_server() {
             }
         }
     });
+
+    // background sync data
+    sync_in_background_reviews();
+    sync_in_background_yanked();
+    sync_in_background_verify();
+
     server.listen(SERVER_HOST.as_str(), SERVER_PORT.as_str());
 }

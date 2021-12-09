@@ -24,6 +24,7 @@
 // endregion: auto_md_to_doc_comments include README.md A //!
 
 mod auto_generated_mod;
+mod cln_methods_cargo_tree_mod;
 mod cln_methods_review_item_mod;
 mod cln_methods_review_list_mod;
 mod cln_methods_verify_mod;
@@ -67,11 +68,11 @@ pub fn wasm_bindgen_start() -> Result<(), JsValue> {
     // read the url hash parameters for local routing
     let location = w::window().location();
     match location.hash() {
-        // if there is no url hash, show the first page: verify_list
-        Err(_err) => crate::cln_methods_verify_mod::request_verify_list(""),
+        // if there is no url hash, show the first page: cargo_tree
+        Err(_err) => crate::cln_methods_cargo_tree_mod::request_cargo_tree_list(""),
         Ok(location_hash) => {
             if location_hash.is_empty() {
-                crate::cln_methods_verify_mod::request_verify_list("");
+                crate::cln_methods_cargo_tree_mod::request_cargo_tree_list("");
             } else {
                 match get_3_url_param_from_hash(&location_hash) {
                     Err(_err) => {

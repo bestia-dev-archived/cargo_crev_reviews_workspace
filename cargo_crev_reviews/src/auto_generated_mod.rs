@@ -7,6 +7,7 @@ use crate::srv_methods_mod::*;
 pub fn match_request_method_and_call_function(request_method: &str, request_data: serde_json::Value) -> anyhow::Result<String> {
     match request_method {
         // region: generated match_response_method
+        "srv_cargo_tree_project" => srv_cargo_tree_project(request_data),
         "srv_review_delete" => srv_review_delete(request_data),
         "srv_review_edit" => srv_review_edit(request_data),
         "srv_review_edit_or_new" => srv_review_edit_or_new(request_data),
@@ -30,6 +31,15 @@ pub mod cln_methods {
     use function_name::named;
 
     // region: generated cln_methods
+
+    #[named]
+    pub fn cln_cargo_tree_list<T>(response_data: T, response_html: &str) -> anyhow::Result<String>
+    where
+        T: serde::Serialize,
+    {
+        let response_method = function_name!();
+        Ok(return_srv_response(response_method, response_data, response_html))
+    }
 
     #[named]
     pub fn cln_no_action<T>(response_data: T, response_html: &str) -> anyhow::Result<String>

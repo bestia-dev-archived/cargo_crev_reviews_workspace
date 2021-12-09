@@ -24,7 +24,7 @@
 
 ## Workspace
 
-This is a rust [workspace](https://doc.rust-lang.org/book/ch14-03-cargo-workspaces.html) (multi-project) that contains member projects.  
+This is a Rust [workspace](https://doc.rust-lang.org/book/ch14-03-cargo-workspaces.html) (multi-project) that contains member projects.  
 The main member project is `cargo_crev_reviews`.  
 Please, continue reading `README.md` here:  
 

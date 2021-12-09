@@ -131,7 +131,7 @@ pub fn crev_list_my_reviews(filter: &Option<ReviewFilterData>) -> anyhow::Result
             let range = find_range_including_delimiters(&file_content, &mut pos_cursor, "----- BEGIN CREV PROOF -----", "----- END CREV PROOF -----");
             match range {
                 Some(mut range) => {
-                    // if there is some white space after the segment,include it in the range.
+                    // if there is some white space after the segment, include it in the range.
                     let pos_2 = find_pos_before_delimiter(&file_content, pos_cursor, "----- BEGIN CREV PROOF -----");
                     range.end = match pos_2 {
                         Some(pos_2) => pos_2,
@@ -382,7 +382,7 @@ pub fn delete_review_proofs(crate_name: &str, crate_version: &str) -> anyhow::Re
             let range = find_range_including_delimiters(&file_content, &mut pos_cursor, "----- BEGIN CREV PROOF -----", "----- END CREV PROOF -----");
             match range {
                 Some(mut range) => {
-                    // if there is some white space after the segment,include it in the range.
+                    // if there is some white space after the segment, include it in the range.
                     let pos_2 = find_pos_before_delimiter(&file_content, pos_cursor, "----- BEGIN CREV PROOF -----");
                     range.end = match pos_2 {
                         Some(pos_2) => pos_2,
@@ -444,13 +444,14 @@ pub struct TrustedPublisher {
 /// for all these crates. So the next time we have more complete data
 pub fn verify_project() -> anyhow::Result<VerifyListData> {
     let ns_started = crate::utils_mod::ns_start("verify_project");
-    crate::db_sled_mod::sync_in_background_reviews();
-    crate::db_sled_mod::sync_in_background_yanked();
 
     let output = std::process::Command::new("cargo").arg("crev").arg("verify").output().unwrap();
+    crate::utils_mod::ns_print_ms("after cargo crev verify", ns_started);
+
     let output = format!("{} {}", String::from_utf8_lossy(&output.stdout), String::from_utf8_lossy(&output.stderr));
 
     let trusted_publisher_json = load_trusted_publishers_json()?;
+    crate::utils_mod::ns_print_ms("after load_trusted_publishers_json", ns_started);
 
     let mut list_of_verify = vec![];
     for line in output.lines() {
@@ -479,7 +480,7 @@ pub fn verify_project() -> anyhow::Result<VerifyListData> {
             })
         }
     }
-
+    crate::utils_mod::ns_print_ms("after list_of_verify", ns_started);
     verify_sort_list_by_name_version(&mut list_of_verify);
 
     crate::utils_mod::ns_print_ms("verify_project", ns_started);

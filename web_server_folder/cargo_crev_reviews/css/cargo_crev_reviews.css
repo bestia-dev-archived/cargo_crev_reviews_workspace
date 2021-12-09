@@ -153,14 +153,16 @@
             white-space: pre-wrap;
         }
         
-        code {
-            padding: .1em .4em;
+        code,
+        .code {
+            /* padding: .1em .4em; */
             margin: 0;
             font-size: 85%;
             background-color: var(--b_color_code);
             color: var(--f_color_code);
             border-radius: 3px;
             font-family: Consolas, Liberation Mono, Courier, monospace;
+            white-space: pre-wrap;
         }
         
         input[type=text] {

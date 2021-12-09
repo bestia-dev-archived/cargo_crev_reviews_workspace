@@ -4,6 +4,7 @@
 
 pub mod db_crate_mod;
 pub mod db_review_mod;
+pub mod db_verify_mod;
 pub mod db_version_mod;
 pub mod db_yanked_mod;
 
@@ -14,7 +15,7 @@ use crate::{db_sled_mod::db_yanked_mod::YankedForDb, utils_mod::join_crate_versi
 
 lazy_static! {
     /// "sled" db stays open all the time of the program running.
-    /// this program checks if there is an instance already running, so to guarantee only one process access the db files.
+    /// this program on start checks if there is an instance already running, so to guarantee only one process access the db files.
     pub static ref DB_SLED:sled::Db = unwrap!(sled::open(unwrap!(home::home_dir()).join(".config/crev/cargo_crev_reviews_data/db")));
     /// 3 threads to download in parallel
     static ref POOL:rayon::ThreadPool = rayon::ThreadPoolBuilder::new().num_threads(3).build().unwrap();
@@ -109,5 +110,20 @@ pub fn sync_in_background_reviews() {
             }
         }
         crate::utils_mod::ns_print_ms("sync_in_background_reviews", ns_started);
+    });
+}
+
+/// working with crev verify looks slow.
+/// I will sync in background with fast sled database and work from there.
+pub fn sync_in_background_verify() {
+    POOL.spawn(move || {
+        let ns_started = crate::utils_mod::ns_start("sync_in_background_verify");
+        let verify_list_data = unwrap!(crate::crev_mod::verify_project());
+        for item in verify_list_data.list_of_verify.iter() {
+            let crate_name_version = &join_crate_version(&item.crate_name, &item.crate_version);
+            // always insert/update
+            unwrap!(crate::db_sled_mod::db_verify_mod::insert(crate_name_version, &item));
+        }
+        crate::utils_mod::ns_print_ms("sync_in_background_verify", ns_started);
     });
 }
