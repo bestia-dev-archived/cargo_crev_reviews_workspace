@@ -221,6 +221,11 @@ pub mod common_structs_mod {
     #[derive(Serialize, Deserialize, Debug, Default)]
     pub struct CargoTreeItemData {
         pub cargo_tree_line: String,
+        pub crate_name_version: Option<String>,
+        pub my_rating: Option<String>,
+        pub crate_description: Option<String>,
+        pub published_by: Option<String>,
+        pub status: Option<String>,
     }
 
     #[derive(Serialize, Deserialize, Debug, Default)]

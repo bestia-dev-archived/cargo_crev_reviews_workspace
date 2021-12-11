@@ -36,6 +36,10 @@ impl tmplt::HtmlTemplatingDataTrait for CargoTreeItemData {
         // log::debug!(&placeholder);
         match placeholder {
             "wt_tree_line" => self.cargo_tree_line.clone(),
+            "wt_my_rating" => self.my_rating.clone().unwrap_or("".to_string()),
+            "wt_crate_description" => self.crate_description.clone().unwrap_or("".to_string()),
+            "wt_published_by" => self.published_by.clone().unwrap_or("".to_string()),
+            "wt_status" => self.status.clone().unwrap_or("".to_string()),
             _ => tmplt::utils::match_else_for_replace_with_string(&self.data_model_name(), placeholder),
         }
     }
@@ -94,6 +98,7 @@ pub fn request_cargo_tree_list(_element_id: &str) {
 pub fn cln_cargo_tree_list(srv_response: RpcResponse) {
     log::info!("{}", function_name!());
     let html = extract_html(&srv_response);
+    dbg!(&html);
     *CARGO_TREE_LIST_DATA.lock().unwrap() = unwrap!(serde_json::from_value(srv_response.response_data));
     // the mutex is locked inside a scope. When this structure falls out of scope, the lock will be unlocked.
     let html_after_process = {

@@ -155,7 +155,7 @@ checksum = "c4872d67bab6358e59559027aa3b9157c53d9358c51423c17554809a8858e0f8"
 
 [[package]]
 name = "cargo_crev_reviews"
-version = "2021.1209.1111"
+version = "2021.1211.2123"
 dependencies = [
  "anyhow",
  "base64",
@@ -176,6 +176,7 @@ dependencies = [
  "num-format",
  "pretty_env_logger",
  "rayon",
+ "regex",
  "reqwest",
  "semver",
  "serde",
@@ -189,7 +190,7 @@ dependencies = [
 
 [[package]]
 name = "cargo_crev_reviews_wasm"
-version = "2021.1209.1111"
+version = "2021.1211.2123"
 dependencies = [
  "anyhow",
  "chrono",
