@@ -140,7 +140,6 @@ fn task_release() {
 
     auto_lines_of_code("");
     copy_web_folder_files_into_module();
-    run_shell_command("cargo fmt");
 
     run_shell_command("cargo build --release --workspace --exclude cargo_crev_reviews_wasm");
     let cargo_toml = CargoToml::read();
@@ -198,6 +197,7 @@ fn task_docs() {
         &format!("echo \"<meta http-equiv=\\\"refresh\\\" content=\\\"0; url={}/index.html\\\" />\" > docs/index.html",cargo_toml.package_name().replace("-","_")) ,
     ];
     run_shell_commands(shell_commands.to_vec());
+    run_shell_command("cargo fmt");
     // message to help user with next task
     println!(
         r#"
