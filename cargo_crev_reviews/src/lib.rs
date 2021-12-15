@@ -4,11 +4,11 @@
 //! # cargo_crev_reviews
 //!
 //! **Write cargo-crev reviews in GUI with a cross-platform app written in full-stack rust**  
-//! ***[repository](https://github.com/lucianobestia/cargo_crev_reviews_workspace); version: 2021.1215.1118  date: 2021-12-15 authors: Luciano Bestia***  
+//! ***[repository](https://github.com/lucianobestia/cargo_crev_reviews_workspace); version: 2021.1215.1153  date: 2021-12-15 authors: Luciano Bestia***  
 //!
-//! [![Lines in Rust code](https://img.shields.io/badge/Lines_in_Rust-23418-green.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
-//! [![Lines in Doc comments](https://img.shields.io/badge/Lines_in_Doc_comments-517-blue.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
-//! [![Lines in Comments](https://img.shields.io/badge/Lines_in_comments-206-purple.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
+//! [![Lines in Rust code](https://img.shields.io/badge/Lines_in_Rust-23411-green.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
+//! [![Lines in Doc comments](https://img.shields.io/badge/Lines_in_Doc_comments-497-blue.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
+//! [![Lines in Comments](https://img.shields.io/badge/Lines_in_comments-211-purple.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
 //! [![Lines in examples](https://img.shields.io/badge/Lines_in_examples-0-yellow.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
 //! [![Lines in tests](https://img.shields.io/badge/Lines_in_tests-16-orange.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
 //!
@@ -31,12 +31,10 @@
 //!
 //! And follow the simple instructions...
 //!
+//! Backend CLI in Linux terminal:  
 //! ![screen_5](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/raw/main/images/screen_5.png "screen_5")  
-//!
-//! Input your passphrase for cargo-crev proof signing.  
-//!
+//! Frontend GUI in browser:  
 //! ![screen_6](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/raw/main/images/screen_6.png "screen_6")  
-//!
 //!
 //! ## cargo tree
 //!
@@ -54,8 +52,7 @@
 //! - [crev.dev](https://web.crev.dev/rust-reviews/crates/) for other people reviews
 //! - crates.io for basic information
 //! - lib.rs for extended information
-//! - a list of all versions of that crate
-//! - a browser tab to write the review
+//! - a list of all versions of that crate with your reviews added
 //!
 //! Be warned that modern browsers block pop-ups and you have to allow that explicitly for this site `127.0.0.1`.
 //!
