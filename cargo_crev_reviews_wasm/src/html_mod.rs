@@ -48,12 +48,9 @@ pub fn inject_into_html(html_after_process: &str) {
 
 pub fn navigation_on_click() {
     use crate::cln_methods_review_item_mod::*;
-    use crate::cln_methods_verify_mod::*;
     use wasm_bindgen::JsCast;
-    on_click!("button_review_new", request_review_new);
-    on_click!("button_review_publish", request_review_publish);
     on_click!("button_update_registry_index", request_update_registry_index);
-    on_click!("button_verify_project", request_verify_list);
+    on_click!("button_review_publish", request_review_publish);
 }
 
 use dev_bestia_html_templating as tmplt;

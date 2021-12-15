@@ -16,10 +16,8 @@
 <body>
     <div class="container_0" data-template_name="verify_list.html">
         <ul>
-            <li id="button_verify_project">Verify project</li>
-            <li id="button_review_new">Write new review</li>
-            <li id="button_review_publish">Publish to git remote repository</li>
-            <li id="button_update_registry_index">Update cargo registry index</li>
+            <li id="button_update_registry_index">Update cargo registry</li>
+            <li id="button_review_publish">Publish your reviews</li>
         </ul>
         <div style="display: grid;grid-template-columns: 30% 70% ;">
             <div>
@@ -34,35 +32,34 @@
     </div>
     <div class="container_0">
         <div class="container0_content_not_grid" style="line-height: 0.8em;">
-            <p class="small">Click on the crate name to open all links together for analyzing the crate:
+            <p class="small">Your ratings/reviews are most important. The crate is colored in your rating.
+                <br/>All other information are here to help you write your review and give your rating.
+                <br/>Click on the crate name to open all links together for analyzing the crate:
                 <br/>web.crev.dev, crates.io, lib.rs, VSCode, my reviews and new/edit review.
-                <br/>On first run, the data in this list is not complete. It will gather more data in the background.
+                <br/>On first run, the data in this list is not yet complete. It will gather more data in the background.
                 <br/>After few minutes, reload to see the newest data.</p>
         </div>
-        <div class="review_header_0" style="grid-template-columns: 50fr 20fr 20fr 10fr;">
-            <div class="review_header0_cell left">cargo tree</div>
-            <div class="review_header0_cell left">my_rating</div>
+        <div class="review_header_0" style="grid-template-columns: 50fr 20fr 10fr;">
+            <div class="review_header0_cell left">cargo tree colored in my rating</div>
             <div class="review_header0_cell left">published_by</div>
-            <div class="review_header0_cell left">status</div>
+            <div class="review_header0_cell left">crevs</div>
         </div>
     </div>
 
     <div class="container_0">
-        <div class="review_header_0" style="grid-template-columns: 50fr 20fr 20fr 10fr;">
+        <div class="review_header_0" style="grid-template-columns: 50fr 20fr 10fr;">
             <!--wtmplt_TreeData start-->
-            <div class="review_header0_cell left code" style="line-height: .7em;display: block;" data-wt_crate_description="title" title="title">
+            <div id="crate_name_version" data-wt_tree_line_class="class" class="review_header0_cell left codetree pointer" data-wt_crate_description="title" title="title">
                 <!--wt_tree_line-->tree line</div>
-            <div class="review_header0_cell left code" style="line-height: .7em;display: block;">
-                <!--wt_my_rating-->my rating</div>
-            <div class="review_header0_cell left code" style="line-height: .7em;display: block;">
+            <div data-wt_published_by_class="class" class="review_header0_cell left codetree">
                 <!--wt_published_by-->published_by</div>
-            <div class="review_header0_cell left code" style="line-height: .7em;display: block;">
-                <!--wt_status-->status</div>
+            <div data-wt_status_class="class" class="review_header0_cell left codetree">
+                <!--wt_status-->pass</div>
             <!--wtmplt_TreeData end-->
         </div>
     </div>
 
-    <!--s_include footer.html-->
+    <!--s_include /cargo_crev_reviews/footer.html-->
 </body>
 
 </html>

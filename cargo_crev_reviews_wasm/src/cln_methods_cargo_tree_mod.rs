@@ -5,8 +5,8 @@ use lazy_static::__Deref;
 use lazy_static::lazy_static;
 use std::sync::Mutex;
 use unwrap::unwrap;
-//use wasm_bindgen::prelude::*;
-//use wasm_bindgen::JsCast;
+use wasm_bindgen::prelude::*;
+use wasm_bindgen::JsCast;
 
 use crate::auto_generated_mod::common_structs_mod::*;
 use crate::auto_generated_mod::srv_methods;
@@ -14,9 +14,9 @@ use crate::auto_generated_mod::srv_methods;
 use dev_bestia_html_templating as tmplt;
 use dev_bestia_string_utils::*;
 
-// use crate::on_click;
 use crate::html_mod::*;
-// use crate::*;
+use crate::row_on_click;
+use crate::*;
 
 lazy_static! {
     /// mutable static, because it is hard to pass variables around with on_click events
@@ -35,11 +35,14 @@ impl tmplt::HtmlTemplatingDataTrait for CargoTreeItemData {
     fn replace_with_string(&self, placeholder: &str, _subtemplate_name: &str, _pos_cursor: usize) -> String {
         // log::debug!(&placeholder);
         match placeholder {
-            "wt_tree_line" => self.cargo_tree_line.clone(),
-            "wt_my_rating" => self.my_rating.clone().unwrap_or("".to_string()),
-            "wt_crate_description" => self.crate_description.clone().unwrap_or("".to_string()),
-            "wt_published_by" => self.published_by.clone().unwrap_or("".to_string()),
-            "wt_status" => self.status.clone().unwrap_or("".to_string()),
+            "wt_tree_line" => self.cargo_tree_line.replace("──", "─"),
+            "wt_tree_line_class" => format!("review_header0_cell left codetree pointer c_{}", self.my_rating.as_deref().unwrap_or("")),
+            "wt_my_rating" => self.my_rating.as_deref().unwrap_or("").to_string(),
+            "wt_crate_description" => self.crate_description.as_deref().unwrap_or("").to_string(),
+            "wt_published_by" => self.published_by.as_deref().unwrap_or("").to_string(),
+            "wt_published_by_class" => format!("review_header0_cell left codetree c_{}", self.trusted_publisher.as_deref().unwrap_or("")),
+            "wt_status" => self.status.as_deref().unwrap_or("").to_string(),
+            "wt_status_class" => format!("review_header0_cell left codetree c_{}", self.status.as_deref().unwrap_or("")),
             _ => tmplt::utils::match_else_for_replace_with_string(&self.data_model_name(), placeholder),
         }
     }
@@ -110,22 +113,31 @@ pub fn cln_cargo_tree_list(srv_response: RpcResponse) {
     navigation_on_click();
 
     // on_click for every row of the list
-    for (_row_number, _item) in CARGO_TREE_LIST_DATA.lock().unwrap().list_of_cargo_tree.iter().enumerate() {
-        // row_on_click!("crate_name_version", row_number, open_all_links);
+    for (row_number, _item) in CARGO_TREE_LIST_DATA.lock().unwrap().list_of_cargo_tree.iter().enumerate() {
+        row_on_click!("crate_name_version", row_number, open_all_links);
     }
 }
-/*
+
 #[named]
 pub fn request_review_edit_or_new(_element_id: &str, row_number: usize) {
     log::info!("{}", function_name!());
     // from list get crate name and version
     let item = &CARGO_TREE_LIST_DATA.lock().unwrap().list_of_cargo_tree[row_number];
-    let request_data = ReviewFilterData {
-        crate_name: item.crate_name.clone(),
-        crate_version: Some(item.crate_version.clone()),
-        old_crate_version: None,
-    };
-    srv_methods::srv_review_edit_or_new(request_data);
+    match &item.crate_name_version {
+        None => {}
+        Some(crate_name_version) => {
+            let mut spl = crate_name_version.split_whitespace();
+            let crate_name = spl.next().unwrap();
+            let crate_version = spl.next().unwrap();
+
+            let request_data = ReviewFilterData {
+                crate_name: crate_name.to_string(),
+                crate_version: Some(crate_version.to_string()),
+                old_crate_version: None,
+            };
+            srv_methods::srv_review_edit_or_new(request_data);
+        }
+    }
 }
 
 #[named]
@@ -133,30 +145,38 @@ fn open_all_links(_element_id: &str, row_number: usize) {
     log::info!("{}", function_name!());
     let item = &CARGO_TREE_LIST_DATA.lock().unwrap().list_of_cargo_tree[row_number];
 
-    let url = format!("https://web.crev.dev/rust-reviews/crate/{}/", item.crate_name);
-    unwrap!(w::window().open_with_url(&url));
+    match &item.crate_name_version {
+        None => {}
+        Some(crate_name_version) => {
+            let mut spl = crate_name_version.split_whitespace();
+            let crate_name = spl.next().unwrap();
+            let crate_version = spl.next().unwrap();
 
-    let url = format!("https://lib.rs/crates/{}", item.crate_name);
-    unwrap!(w::window().open_with_url(&url));
+            let url = format!("https://web.crev.dev/rust-reviews/crate/{}/", crate_name);
+            unwrap!(w::window().open_with_url(&url));
 
-    let url = format!("https://crates.io/crates/{}/{}", item.crate_name, item.crate_version);
-    unwrap!(w::window().open_with_url(&url));
+            let url = format!("https://lib.rs/crates/{}", crate_name);
+            unwrap!(w::window().open_with_url(&url));
 
-    let request_data = ReviewFilterData {
-        crate_name: item.crate_name.clone(),
-        crate_version: Some(item.crate_version.clone()),
-        old_crate_version: None,
-    };
-    srv_methods::srv_review_open_source_code(request_data);
+            let url = format!("https://crates.io/crates/{}/{}", crate_name, crate_version);
+            unwrap!(w::window().open_with_url(&url));
 
-    // list versions for this crate
-    let url = format!(
-        "http://{}:{}/{}/index.html#version_list/{}",
-        SERVER_HOST.as_str(),
-        SERVER_PORT.as_str(),
-        SERVER_FIRST_SUBDIRECTORY.as_str(),
-        item.crate_name,
-    );
-    unwrap!(w::window().open_with_url(&url));
+            let request_data = ReviewFilterData {
+                crate_name: crate_name.to_string(),
+                crate_version: Some(crate_version.to_string()),
+                old_crate_version: None,
+            };
+            srv_methods::srv_review_open_source_code(request_data);
+
+            // list versions for this crate
+            let url = format!(
+                "http://{}:{}/{}/index.html#version_list/{}",
+                SERVER_HOST.as_str(),
+                SERVER_PORT.as_str(),
+                SERVER_FIRST_SUBDIRECTORY.as_str(),
+                crate_name,
+            );
+            unwrap!(w::window().open_with_url(&url));
+        }
+    }
 }
- */

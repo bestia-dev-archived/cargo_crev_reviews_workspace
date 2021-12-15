@@ -249,7 +249,7 @@ and try it `cargo_crev_reviews`
 }
 // endregion: tasks
 
-/// copy all files in the web_server_folder as strings to the module `files_mod.rs`
+/// copy all files in the web_server_folder as strings to the module `auto_generated_files_mod.rs`
 fn copy_web_folder_files_into_module() {
     /// read all files and push Rust code into module
     /// nested function or inner function, cannot capture environment as closures. Good.
@@ -269,12 +269,8 @@ fn copy_web_folder_files_into_module() {
                         && !ps.ends_with("LICENSE")
                     {
                         let start = format!(
-                            "\npub fn {}() -> &'static str{{\nr##\"\n",
-                            ps.trim_start_matches("web_server_folder/cargo_crev_reviews/")
-                                .replace("/", "_")
-                                .replace(".", "_")
-                                .replace("-", "_")
-                                .to_lowercase()
+                            "\n\"{}\" => {{\nr##\"",
+                            ps.trim_start_matches("web_server_folder")
                         );
                         module_source_code.push_str(&start);
 
@@ -292,7 +288,7 @@ fn copy_web_folder_files_into_module() {
                         };
                         module_source_code.push_str(&body);
 
-                        let end = format!("\n\"##\n}}\n");
+                        let end = format!("\"##\n}}\n");
                         module_source_code.push_str(&end);
                     }
                 }
@@ -301,15 +297,80 @@ fn copy_web_folder_files_into_module() {
     }
 
     let mut module_source_code = String::new();
-    module_source_code.push_str("// files_mod.rs\n\n");
+    module_source_code.push_str("// auto_generated_files_mod.rs\n\n");
     module_source_code.push_str("//! embedded files as Rust code\n\n");
+    module_source_code.push_str(r#"
+/* spell-checker: disable */
+
+use std::borrow::Cow;
+
+// for debug_time it is useful to read from file, so editing files can be made without restarting the server
+// but for runtime, the files must be embedded in the code, so only one file is published
+// this is done by an automation task in `cargo auto` 
+
+// region: debug mode
+/// returns Cow, because in debug I read from files and return a String. 
+/// In release I have embedded strings n the code
+#[cfg(debug_assertions)]
+pub fn get_file_text<'a>(file_name:&str) -> Cow<'a, str>{
+    let file_name = format!("web_server_folder{}",file_name);
+    let str = std::fs::read_to_string(&file_name).unwrap();
+    return Cow::Owned(str);
+}
+
+/// always allocated? Maybe I could do better. I don't know.
+#[cfg(debug_assertions)]
+pub fn get_file_bytes<'a>(file_name:&str) -> Vec<u8>{    
+        let file_name = format!("web_server_folder{}",file_name);
+        let file_bytes = std::fs::read(&file_name).unwrap();
+        return file_bytes;
+}
+
+// endregion: debug mode
+
+// region: release mode
+/// always allocated? Maybe I could do better. I don't know.
+#[cfg(not(debug_assertions))]
+pub fn get_file_bytes<'a>(file_name:&str) -> Vec<u8>{
+    let str = get_file_text(file_name);
+    
+    if file_name.ends_with(".png") || file_name.ends_with(".woff2") || file_name.ends_with(".wasm") {
+        // I artificially added \n to base64 to make it more text editor friendly
+        let file_bytes = str.replace("\n", "");    
+        let file_bytes = base64::decode(file_bytes).unwrap();
+        return file_bytes;
+
+    } else {
+        // file_name.ends_with(".html") || file_name.ends_with(".css") || file_name.ends_with(".js") || file_name.ends_with(".json") {
+        let file_bytes =str.as_bytes().to_vec();
+        return file_bytes;
+    };
+}
+
+/// returns Cow, because in debug I read from files and return a String. 
+/// In release I have embedded strings n the code
+#[cfg(not(debug_assertions))]
+pub fn get_file_text<'a>(file_name:&str) -> Cow<'a, str>{
+    let str = match file_name{
+"#);
     copy_files_from_dir("web_server_folder/cargo_crev_reviews", &mut module_source_code);
     copy_files_from_dir("web_server_folder/cargo_crev_reviews/css", &mut module_source_code);
     copy_files_from_dir("web_server_folder/cargo_crev_reviews/icons", &mut module_source_code);
     copy_files_from_dir("web_server_folder/cargo_crev_reviews/images", &mut module_source_code);
     copy_files_from_dir("web_server_folder/cargo_crev_reviews/js", &mut module_source_code);
     copy_files_from_dir("web_server_folder/cargo_crev_reviews/pkg", &mut module_source_code);
-    unwrap!(std::fs::write("cargo_crev_reviews/src/files_mod.rs", module_source_code));
+
+    module_source_code.push_str(r#"
+        _ => {
+            log::error!("File not exists: {}", file_name);
+            ""
+        }
+    };
+    return Cow::Borrowed(str);
+}
+// endregion: release mode
+    "#);
+    unwrap!(std::fs::write("cargo_crev_reviews/src/auto_generated_files_mod.rs", module_source_code));
 }
 
 fn common_structs_copy(){

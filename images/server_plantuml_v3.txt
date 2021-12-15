@@ -1,5 +1,6 @@
 @startuml
 ' server_plantuml_v3.txt
+' https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/LucianoBestia/cargo_crev_reviews_workspace/main/images/server_plantuml_v3.txt
 
 package "web server 127.0.0.1:8182" {
 
@@ -19,7 +20,7 @@ client proxy functions
 end note
   [auto_generated_mod] -down- [common_structs_mod]
     note right: shared between server and client
-  [response_get_mod] -down- [files_mod]
+  [response_get_mod] -down- [auto_generated_files_mod]
     note left: files are embedded in code
 }
 package "methods" {

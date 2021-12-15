@@ -1,6 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `cargo_crev_reviews_wasm/src/web_sys_mod.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>web_sys_mod.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings"></script><script src="../../storage.js"></script><script src="../../crates.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../favicon.svg">
-<link rel="alternate icon" type="image/png" href="../../favicon-16x16.png">
-<link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../cargo_crev_reviews_wasm/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img src="../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img src="../../wheel.svg" width="18" height="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `cargo_crev_reviews_wasm&#x2F;src&#x2F;web_sys_mod.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>web_sys_mod.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../cargo_crev_reviews_wasm/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -227,8 +225,7 @@
 <span id="225">225</span>
 <span id="226">226</span>
 <span id="227">227</span>
-</pre><pre class="rust">
-<span class="comment">// web_sys_mod.rs</span>
+</pre><pre class="rust"><code><span class="comment">// web_sys_mod.rs</span>
 <span class="doccomment">//! helper functions for web_sys, window, document, dom,</span>
 <span class="doccomment">//! local_storage, session_storage,...</span>
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">dead_code</span>)]</span>
@@ -245,13 +242,13 @@
 <span class="doccomment">/// fn with 1 arg(element_id): on_click!(element_id, function_ident)</span>
 <span class="attribute">#[<span class="ident">macro_export</span>]</span>
 <span class="macro">macro_rules!</span> <span class="ident">on_click</span> {
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">element_id</span>: <span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">function_ident</span>: <span class="ident">ident</span>) <span class="op">=</span><span class="op">&gt;</span> {{
+    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">element_id</span>: <span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">function_ident</span>: <span class="ident">ident</span>) =&gt; {{
         <span class="kw">let</span> <span class="ident">element_id_clone</span> <span class="op">=</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">element_id</span>.<span class="ident">to_owned</span>();
         <span class="kw">let</span> <span class="ident">closure</span> <span class="op">=</span> <span class="ident">Closure::wrap</span>(<span class="ident">Box::new</span>(<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> {
             <span class="macro-nonterminal">$</span><span class="macro-nonterminal">function_ident</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">element_id</span>);
         }) <span class="kw">as</span> <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">FnMut</span>()<span class="op">&gt;</span>);
 
-        <span class="kw">let</span> <span class="ident">html_element</span> <span class="op">=</span> <span class="kw">crate</span><span class="ident">::web_sys_mod::get_html_element_by_id</span>(<span class="kw-2">&amp;</span><span class="ident">element_id_clone</span>);
+        <span class="kw">let</span> <span class="ident">html_element</span> <span class="op">=</span> <span class="ident"><span class="kw">crate</span>::web_sys_mod::get_html_element_by_id</span>(<span class="kw-2">&amp;</span><span class="ident">element_id_clone</span>);
         <span class="ident">html_element</span>.<span class="ident">set_onclick</span>(<span class="prelude-val">Some</span>(<span class="ident">closure</span>.<span class="ident">as_ref</span>().<span class="ident">unchecked_ref</span>()));
         <span class="ident">closure</span>.<span class="ident">forget</span>();
     }};
@@ -261,7 +258,7 @@
 <span class="doccomment">/// the element Id is concatenation of element_prefix plus the row_number</span>
 <span class="attribute">#[<span class="ident">macro_export</span>]</span>
 <span class="macro">macro_rules!</span> <span class="ident">row_on_click</span> {
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">element_prefix</span>: <span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">row_number</span>: <span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">function_ident</span>: <span class="ident">ident</span>) <span class="op">=</span><span class="op">&gt;</span> {{
+    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">element_prefix</span>: <span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">row_number</span>: <span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">function_ident</span>: <span class="ident">ident</span>) =&gt; {{
         <span class="kw">let</span> <span class="ident">closure</span> <span class="op">=</span> <span class="ident">Closure::wrap</span>(<span class="ident">Box::new</span>(<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> {
             <span class="macro-nonterminal">$</span><span class="macro-nonterminal">function_ident</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">element_prefix</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">row_number</span>);
         }) <span class="kw">as</span> <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">FnMut</span>()<span class="op">&gt;</span>);
@@ -273,7 +270,7 @@
         } <span class="kw">else</span> {
             <span class="macro-nonterminal">$</span><span class="macro-nonterminal">element_prefix</span>.<span class="ident">to_string</span>()
         };
-        <span class="kw">let</span> <span class="ident">html_element</span> <span class="op">=</span> <span class="kw">crate</span><span class="ident">::web_sys_mod::get_html_element_by_id</span>(<span class="kw-2">&amp;</span><span class="ident">name</span>);
+        <span class="kw">let</span> <span class="ident">html_element</span> <span class="op">=</span> <span class="ident"><span class="kw">crate</span>::web_sys_mod::get_html_element_by_id</span>(<span class="kw-2">&amp;</span><span class="ident">name</span>);
         <span class="ident">html_element</span>.<span class="ident">set_onclick</span>(<span class="prelude-val">Some</span>(<span class="ident">closure</span>.<span class="ident">as_ref</span>().<span class="ident">unchecked_ref</span>()));
         <span class="ident">closure</span>.<span class="ident">forget</span>();
     }};
@@ -283,24 +280,24 @@
 <span class="doccomment">/// on_keyup!(&quot;regex_text&quot;, run_regex)</span>
 <span class="attribute">#[<span class="ident">macro_export</span>]</span>
 <span class="macro">macro_rules!</span> <span class="ident">on_keyup</span> {
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">element_id</span>: <span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">function_ident</span>: <span class="ident">ident</span>) <span class="op">=</span><span class="op">&gt;</span> {{
+    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">element_id</span>: <span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">function_ident</span>: <span class="ident">ident</span>) =&gt; {{
         <span class="kw">let</span> <span class="ident">closure</span> <span class="op">=</span> <span class="ident">Closure::wrap</span>(<span class="ident">Box::new</span>(<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> {
             <span class="macro-nonterminal">$</span><span class="macro-nonterminal">function_ident</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">element_id</span>);
         }) <span class="kw">as</span> <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">FnMut</span>()<span class="op">&gt;</span>);
 
-        <span class="kw">let</span> <span class="ident">html_element</span> <span class="op">=</span> <span class="kw">crate</span><span class="ident">::web_sys_mod::get_html_element_by_id</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">element_id</span>);
+        <span class="kw">let</span> <span class="ident">html_element</span> <span class="op">=</span> <span class="ident"><span class="kw">crate</span>::web_sys_mod::get_html_element_by_id</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">element_id</span>);
         <span class="ident">html_element</span>.<span class="ident">set_onkeyup</span>(<span class="prelude-val">Some</span>(<span class="ident">closure</span>.<span class="ident">as_ref</span>().<span class="ident">unchecked_ref</span>()));
         <span class="ident">closure</span>.<span class="ident">forget</span>();
     }};
 }
 
 <span class="doccomment">/// return window object</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">window</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">web_sys::Window</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">window</span>() -&gt; <span class="ident">web_sys::Window</span> {
     <span class="macro">unwrap!</span>(<span class="ident">web_sys::window</span>())
 }
 
 <span class="doccomment">/// get element by id</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_element_by_id</span>(<span class="ident">element_id</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">web_sys::Element</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_element_by_id</span>(<span class="ident">element_id</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="ident">web_sys::Element</span> {
     <span class="kw">let</span> <span class="ident">document</span> <span class="op">=</span> <span class="macro">unwrap!</span>(<span class="ident">window</span>().<span class="ident">document</span>());
     <span class="kw">let</span> <span class="ident">element_opt</span> <span class="op">=</span> <span class="ident">document</span>.<span class="ident">get_element_by_id</span>(<span class="ident">element_id</span>);
     <span class="kw">if</span> <span class="ident">element_opt</span>.<span class="ident">is_none</span>() {
@@ -310,7 +307,7 @@
 }
 
 <span class="doccomment">/// get html element by id</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_html_element_by_id</span>(<span class="ident">element_id</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">web_sys::HtmlElement</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_html_element_by_id</span>(<span class="ident">element_id</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="ident">web_sys::HtmlElement</span> {
     <span class="kw">let</span> <span class="ident">element</span> <span class="op">=</span> <span class="ident">get_element_by_id</span>(<span class="ident">element_id</span>);
     <span class="kw">let</span> <span class="ident">html_element</span>: <span class="ident">web_sys::HtmlElement</span> <span class="op">=</span> <span class="macro">unwrap!</span>(<span class="ident">element</span>.<span class="ident">dyn_into</span>::<span class="op">&lt;</span><span class="ident">web_sys::HtmlElement</span><span class="op">&gt;</span>());
     <span class="comment">// return</span>
@@ -318,7 +315,7 @@
 }
 
 <span class="doccomment">/// timestamp with milliseconds</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">now_performance_millisecond</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">f64</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">now_performance_millisecond</span>() -&gt; <span class="ident">f64</span> {
     <span class="ident">web_sys::window</span>()
         .<span class="ident">expect</span>(<span class="string">&quot;should have a Window&quot;</span>)
         .<span class="ident">performance</span>()
@@ -333,7 +330,7 @@
 }
 
 <span class="doccomment">/// get text from element_id</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_text</span>(<span class="ident">element_id</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_text</span>(<span class="ident">element_id</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="ident">String</span> {
     <span class="kw">let</span> <span class="ident">div</span> <span class="op">=</span> <span class="ident">get_html_element_by_id</span>(<span class="ident">element_id</span>);
     <span class="ident">div</span>.<span class="ident">inner_text</span>()
 }
@@ -352,7 +349,7 @@
 
 <span class="doccomment">/// fetch in Rust with async await for executor spawn_local()</span>
 <span class="doccomment">/// return the response as String. Any error will panic.</span>
-<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">fetch_response</span>(<span class="ident">url</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">fetch_response</span>(<span class="ident">url</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="ident">String</span> {
     <span class="comment">// Request init</span>
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">opts</span> <span class="op">=</span> <span class="ident">RequestInit::new</span>();
     <span class="ident">opts</span>.<span class="ident">method</span>(<span class="string">&quot;GET&quot;</span>);
@@ -372,7 +369,7 @@
 
 <span class="doccomment">/// fetch POST response in Rust with async await for executor spawn_local()</span>
 <span class="doccomment">/// return the response as String. Any error will panic.</span>
-<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">fetch_post_response</span>(<span class="ident">url</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">json</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">JsValue</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">fetch_post_response</span>(<span class="ident">url</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">json</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">JsValue</span><span class="op">&gt;</span>) -&gt; <span class="ident">String</span> {
     <span class="comment">// Request init</span>
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">opts</span> <span class="op">=</span> <span class="ident">RequestInit::new</span>();
     <span class="ident">opts</span>.<span class="ident">method</span>(<span class="string">&quot;POST&quot;</span>);
@@ -391,7 +388,7 @@
     <span class="ident">txt_response</span>
 }
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_now_date</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_now_date</span>() -&gt; <span class="ident">String</span> {
     <span class="kw">let</span> <span class="ident">now_js</span> <span class="op">=</span> <span class="ident">js_sys::Date::new_0</span>();
     <span class="kw">let</span> <span class="ident">now_date</span> <span class="op">=</span> <span class="ident">NaiveDate::from_ymd</span>(<span class="ident">now_js</span>.<span class="ident">get_full_year</span>() <span class="kw">as</span> <span class="ident">i32</span>, <span class="ident">now_js</span>.<span class="ident">get_month</span>() <span class="op">+</span> <span class="number">1</span>, <span class="ident">now_js</span>.<span class="ident">get_date</span>());
     <span class="comment">// return</span>
@@ -399,7 +396,7 @@
 }
 
 <span class="doccomment">/// get input html element by id</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_input_html_element_by_id</span>(<span class="ident">element_id</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">web_sys::HtmlInputElement</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_input_html_element_by_id</span>(<span class="ident">element_id</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="ident">web_sys::HtmlInputElement</span> {
     <span class="kw">let</span> <span class="ident">element</span> <span class="op">=</span> <span class="ident">get_element_by_id</span>(<span class="ident">element_id</span>);
     <span class="kw">let</span> <span class="ident">html_input_element</span> <span class="op">=</span> <span class="macro">unwrap!</span>(<span class="ident">element</span>.<span class="ident">dyn_into</span>::<span class="op">&lt;</span><span class="ident">web_sys::HtmlInputElement</span><span class="op">&gt;</span>());
     <span class="comment">//return</span>
@@ -407,13 +404,13 @@
 }
 
 <span class="doccomment">/// get input element value string by id</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_input_element_value_string_by_id</span>(<span class="ident">element_id</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_input_element_value_string_by_id</span>(<span class="ident">element_id</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="ident">String</span> {
     <span class="kw">let</span> <span class="ident">input_html_element</span> <span class="op">=</span> <span class="ident">get_input_html_element_by_id</span>(<span class="ident">element_id</span>);
     <span class="ident">input_html_element</span>.<span class="ident">value</span>()
 }
 
 <span class="doccomment">/// get elements by name for example radio group</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_value_of_radio_group_by_name</span>(<span class="ident">form_element_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_value_of_radio_group_by_name</span>(<span class="ident">form_element_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="ident">String</span> {
     <span class="kw">let</span> <span class="ident">document</span> <span class="op">=</span> <span class="macro">unwrap!</span>(<span class="ident">window</span>().<span class="ident">document</span>());
     <span class="kw">let</span> <span class="ident">element_form</span> <span class="op">=</span> <span class="macro">unwrap!</span>(<span class="ident">document</span>.<span class="ident">forms</span>().<span class="ident">get_with_index</span>(<span class="number">0</span>));
     <span class="kw">let</span> <span class="ident">html_form_element</span> <span class="op">=</span> <span class="macro">unwrap!</span>(<span class="ident">element_form</span>.<span class="ident">dyn_into</span>::<span class="op">&lt;</span><span class="ident">web_sys::HtmlFormElement</span><span class="op">&gt;</span>());
@@ -425,7 +422,7 @@
 }
 
 <span class="doccomment">/// get input element value string by id</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_text_area_element_value_string_by_id</span>(<span class="ident">element_id</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_text_area_element_value_string_by_id</span>(<span class="ident">element_id</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="ident">String</span> {
     <span class="kw">let</span> <span class="ident">element</span> <span class="op">=</span> <span class="ident">get_element_by_id</span>(<span class="ident">element_id</span>);
     <span class="kw">let</span> <span class="ident">html_text_area_element</span> <span class="op">=</span> <span class="macro">unwrap!</span>(<span class="ident">element</span>.<span class="ident">dyn_into</span>::<span class="op">&lt;</span><span class="ident">web_sys::HtmlTextAreaElement</span><span class="op">&gt;</span>());
     <span class="comment">//return</span>
@@ -455,5 +452,7 @@
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">close_tab</span>() {
     <span class="macro">unwrap!</span>(<span class="ident">window</span>().<span class="ident">close</span>());
 }
-</pre></div>
-</section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="cargo_crev_reviews_wasm" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div><script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script></body></html>
+</code></pre></div>
+</section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="cargo_crev_reviews_wasm" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div>
+    <script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script>
+</body></html>

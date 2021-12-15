@@ -225,6 +225,7 @@ pub mod common_structs_mod {
         pub my_rating: Option<String>,
         pub crate_description: Option<String>,
         pub published_by: Option<String>,
+        pub trusted_publisher: Option<String>,
         pub status: Option<String>,
     }
 

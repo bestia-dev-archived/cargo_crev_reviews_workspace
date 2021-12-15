@@ -165,27 +165,13 @@ fn button_open_source_code_onclick(_element_id: &str, row_number: usize) {
 }
 
 #[named]
-pub fn request_review_publish(_element_id: &str) {
-    log::info!("{}", function_name!());
-    let html = r#"
-<div id="modal_message" class="w3_modal">
-    <div class="w3_modal_content">
-        <code>$ cargo crev publish</code>
-        <div>publishing to remote repository. Wait a minute...</div>        
-    </div>
-</div>"#;
-    w::set_inner_html("div_for_modal", html);
-    let request_data = RpcEmptyData {};
-    srv_methods::srv_review_publish(request_data);
-}
-
-#[named]
 pub fn request_update_registry_index(_element_id: &str) {
     log::info!("{}", function_name!());
     let html = r#"
     <div id="modal_message" class="w3_modal">
         <div class="w3_modal_content">
-            <div>Updating registry index. Wait a minute...</div>        
+            <div>Updating local cargo registry index. Wait a minute...</div>
+            <div>This is necessary for your own crates that are published to crates.io just a moment ago.</div>
         </div>
     </div>"#;
     w::set_inner_html("div_for_modal", html);

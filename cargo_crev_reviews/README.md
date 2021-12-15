@@ -5,14 +5,14 @@
 [comment]: # (auto_cargo_toml_to_md start)
 
 **Write cargo-crev reviews in GUI with a cross-platform app written in full-stack rust**  
-***[repository](https://github.com/lucianobestia/cargo_crev_reviews_workspace); version: 2021.1129.1919  date: 2021-11-29 authors: Luciano Bestia***  
+***[repository](https://github.com/lucianobestia/cargo_crev_reviews_workspace); version: 2021.1215.1118  date: 2021-12-15 authors: Luciano Bestia***  
 
 [comment]: # (auto_cargo_toml_to_md end)
 
 [comment]: # (auto_lines_of_code start)
-[![Lines in Rust code](https://img.shields.io/badge/Lines_in_Rust-20360-green.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
-[![Lines in Doc comments](https://img.shields.io/badge/Lines_in_Doc_comments-501-blue.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
-[![Lines in Comments](https://img.shields.io/badge/Lines_in_comments-178-purple.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
+[![Lines in Rust code](https://img.shields.io/badge/Lines_in_Rust-23418-green.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
+[![Lines in Doc comments](https://img.shields.io/badge/Lines_in_Doc_comments-517-blue.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
+[![Lines in Comments](https://img.shields.io/badge/Lines_in_comments-206-purple.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
 [![Lines in examples](https://img.shields.io/badge/Lines_in_examples-0-yellow.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
 [![Lines in tests](https://img.shields.io/badge/Lines_in_tests-16-orange.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
 
@@ -26,50 +26,31 @@
 
 ## Try it
 
-This is a GUI wrapper around [cargo](https://doc.rust-lang.org/cargo/getting-started/installation.html) and [cargo-crev](https://github.com/crev-dev/cargo-crev/blob/master/cargo-crev/src/doc/getting_started.md) and uses Github (or other remote git repository). First, install and configure them.  
-
-Fork the proof repo on Github. Just open this url:  
-<https://github.com/crev-dev/crev-proofs/fork>
-
-Install cargo and the Rust language:  
-
-```bash
-curl https://sh.rustup.rs -sSf | sh
-```
-
-Install and configure cargo-crev:  
-
-```bash
-cargo install cargo-crev
-cargo crev id new --url https://github.com/YOUR-USERNAME/crev-proofs
-cargo crev trust --level high https://github.com/dpc/crev-proofs
-```
-
-Then install cargo_crev_reviews:  
+Install cargo_crev_reviews:  
 
 ```bash
 cargo install cargo_crev_reviews
 ```
 
-Start the program inside the directory of your Rust project, where the Cargo.toml file is.
+Go to a Rust project directory where the Cargo.toml file is, and start the program:  
 
 ```bash
 cd ~/rustprojects/your-project-name
 cargo_crev_reviews
 ```
 
-![screen_3](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/raw/main/images/screen_3.png "screen_3")  
+And follow the simple instructions...
+
+![screen_5](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/raw/main/images/screen_5.png "screen_5")  
 
 Input your passphrase for cargo-crev proof signing.  
 
-![screen_4](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/raw/main/images/screen_4.png "screen_4")  
+![screen_6](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/raw/main/images/screen_6.png "screen_6")  
 
-The program lists all the dependencies of the project with data about reviews. It shows all the dependencies including the transient dependencies. It is easily more than 100 crates in the list.  
 
 ## cargo tree
 
 Cargo-tree is a Rust utility that shows all the ramification of dependencies in your Rust project.
-
 
 ## your personal reviews
 
@@ -276,11 +257,11 @@ export BROWSER='/usr/bin/browser_in_win'
 The command `ln -sf` is permanent and persistent. It makes a symbolic link file that stays there forever. But `export BROWSER=` is NOT persistent. You need to add this command to `~/.bashrc` that runs it on every start of terminal.  
 
 In the next millisecond the web server starts listening to 127.0.0.1 port 8182.  
-The first set of requests are GET and response is "static" files embedded in files_mod.rs
+The first set of requests are GET and response is "static" files embedded in auto_generated_files_mod.rs
 
-1. browser request for `/cargo_crev_reviews/index.html` is GET, the response is html text file embedded in files_mod.rs in the function: `index_html()`  
+1. browser request for `/cargo_crev_reviews/index.html` is GET, the response is html text file embedded in auto_generated_files_mod.rs in the function: `index_html()`  
     This html is just an empty shell that gets the css and wasm code. There is no real content inside. This concept is [Single-page application SPA](https://en.wikipedia.org/wiki/Single-page_application).  
-2. index.html requests: 3 css files, `pkg/cargo_crev_reviews.js`, `pkg/cargo_crev_reviews_bg.wasm`, "favicon" `icons/icon-032.png`. All these requests are GET and responses come from files_mod.rs functions, some are text files and others are base64 files.
+2. index.html requests: 3 css files, `pkg/cargo_crev_reviews.js`, `pkg/cargo_crev_reviews_bg.wasm`, "favicon" `icons/icon-032.png`. All these requests are GET and responses come from auto_generated_files_mod.rs functions, some are text files and others are base64 files.
 3. the browser imports the wasm module and starts the init function that requests `srv_review_list`. This responds with: response_method_name, response_html and response_data.
 4. wasm (inside the browser) is Rust code. First it matches method_name and calls the appropriate function. It processes the html with the data and inserts it into index.html (the empty shell).
 5. the browser renders our first page. Hooray!
@@ -316,7 +297,7 @@ The html page has to be MicroXml compatible, basically XHtml.  Copy for example 
 ### Add markers
 
 Inside the html you want to replace the sample texts with the data from the server. Before the text add the (invisible) marker for example `<!--wt_crate_name-->`. You can replace also an attribute if you insert an attribute before it like this `data-wt_variable_name="next_attribute_name"`.  
-Now run the automation task `cargo auto build` that will copy/embed this file into `files_mod.rs`.  
+Now run the automation task `cargo auto build` that will copy/embed this file into `auto_generated_files_mod.rs`.  
 
 ### Write a server functions
 
@@ -328,7 +309,7 @@ pub fn srv_function_name(request_data: serde_json::Value) -> anyhow::Result<Stri
     log::info!(function_name!());
     let filter: ReviewFilterData = unwrap!(serde_json::from_value(request_data));
     let response_data  = get_some_data(filter)?;
-    let response_html = crate::files_mod::review_edit_html();
+    let response_html = crate::auto_generated_files_mod::review_edit_html();
     // cln_methods::cln_review_edit(response_data, response_html)
 }
 ```

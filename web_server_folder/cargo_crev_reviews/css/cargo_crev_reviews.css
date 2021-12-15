@@ -153,8 +153,7 @@
             white-space: pre-wrap;
         }
         
-        code,
-        .code {
+        code {
             /* padding: .1em .4em; */
             margin: 0;
             font-size: 85%;
@@ -162,7 +161,14 @@
             color: var(--f_color_code);
             border-radius: 3px;
             font-family: Consolas, Liberation Mono, Courier, monospace;
-            white-space: pre-wrap;
+        }
+        
+        .codetree {
+            background-color: var(--b_color_code);
+            text-align: center;
+            font-family: Consolas, Liberation Mono, Courier, monospace;
+            display: block;
+            border-top: 1px dashed #dfdfdf;
         }
         
         input[type=text] {
@@ -302,7 +308,8 @@ A small difference to help search and replace refactoring.
         }
         
         .c_link_1,
-        .c_link_2 {
+        .c_link_2,
+        .pointer {
             cursor: pointer;
         }
         

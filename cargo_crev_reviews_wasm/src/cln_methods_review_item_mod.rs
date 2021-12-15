@@ -149,7 +149,10 @@ pub fn request_review_publish(_element_id: &str) {
 <div id="modal_message" class="w3_modal">
     <div class="w3_modal_content">
         <code>$ cargo crev publish</code>
-        <div>publishing to remote repository. Wait a minute...</div>        
+        <div>Publishing to remote repository. Wait a minute...</div>
+        <div>Before you run `cargo_crev_reviews` in the Linux terminal, 
+        <br/>use the ssh agent to activate your ssh credentials 
+        <br/>for accessing Github.</div>
     </div>
 </div>"#;
     w::set_inner_html("div_for_modal", html);

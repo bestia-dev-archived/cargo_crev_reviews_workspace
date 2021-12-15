@@ -15,12 +15,14 @@ use unwrap::unwrap;
 pub fn cargo_tree_project() -> anyhow::Result<CargoTreeListData> {
     let ns_started = crate::utils_mod::ns_start("cargo_tree_project");
 
+    let trusted_publisher_json = crate::crev_mod::load_trusted_publishers_json()?;
+
     let output = std::process::Command::new("cargo").arg("tree").output().unwrap();
     let output = format!("{} {}", String::from_utf8_lossy(&output.stdout), String::from_utf8_lossy(&output.stderr));
 
     let mut list_of_cargo_tree = vec![];
     for line in output.lines() {
-        if !line.trim().starts_with("warning:") && !line.starts_with("package:") && !line.starts_with("workspace:") {
+        if !line.trim().starts_with("warning:") && !line.starts_with("package:") && !line.starts_with("workspace:") && !line.starts_with("Blocking ") {
             //  └── wasm-bindgen v0.2.78 (*)
             let regex = unwrap!(regex::Regex::new(r#"([a-z0-9-_]+) v([0-9]+.[0-9]+.[0-9]+)"#));
             match regex.captures(line) {
@@ -57,14 +59,18 @@ pub fn cargo_tree_project() -> anyhow::Result<CargoTreeListData> {
                             }
                         };
 
-                    let published_by =
+                    let (published_by,trusted_publisher) =
                     // result, option
                     match crate::db_sled_mod::db_verify_mod::read(&crate_name_version) {
-                        Err(_err) => None,
+                        Err(_err) => (None,None),
                         Ok(verify_data_opt) =>{
                             match verify_data_opt{
-                                None => None,
-                                Some(verify_data) => Some(verify_data.published_by),
+                                None => (None,None),
+                                Some(verify_data) => {
+                                    let published_by = verify_data.published_by;
+                                    let trusted_publisher = crate::crev_mod::is_trusted_publisher(&trusted_publisher_json, &published_by);
+                                    (Some(published_by), Some(trusted_publisher))
+                                }
                             }
                         }
                     };
@@ -87,6 +93,7 @@ pub fn cargo_tree_project() -> anyhow::Result<CargoTreeListData> {
                         my_rating,
                         crate_description,
                         published_by,
+                        trusted_publisher,
                         status,
                     })
                 }

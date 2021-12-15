@@ -4,11 +4,11 @@
 //! # cargo_crev_reviews_wasm
 //!
 //! **Wasm web app that is the frontend of the application cargo_crev_reviews**  
-//! ***[repository](https://github.com/LucianoBestia/cargo_crev_reviews_workspace); version: 2021.1129.1919  date: 2021-11-29 authors: Luciano Bestia***  
+//! ***[repository](https://github.com/LucianoBestia/cargo_crev_reviews_workspace); version: 2021.1215.1118  date: 2021-12-15 authors: Luciano Bestia***  
 //!
-//! [![Lines in Rust code](https://img.shields.io/badge/Lines_in_Rust-1395-green.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
-//! [![Lines in Doc comments](https://img.shields.io/badge/Lines_in_Doc_comments-95-blue.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
-//! [![Lines in Comments](https://img.shields.io/badge/Lines_in_comments-126-purple.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
+//! [![Lines in Rust code](https://img.shields.io/badge/Lines_in_Rust-1579-green.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
+//! [![Lines in Doc comments](https://img.shields.io/badge/Lines_in_Doc_comments-101-blue.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
+//! [![Lines in Comments](https://img.shields.io/badge/Lines_in_comments-138-purple.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
 //! [![Lines in examples](https://img.shields.io/badge/Lines_in_examples-0-yellow.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
 //! [![Lines in tests](https://img.shields.io/badge/Lines_in_tests-0-orange.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
 //!

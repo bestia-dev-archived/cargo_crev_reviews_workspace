@@ -9,9 +9,9 @@ pub fn extract_body_inner(html: &str) -> String {
 }
 
 pub fn process_include(response_html: &str) -> String {
-    let footer_html = crate::html_mod::extract_body_inner(crate::files_mod::footer_html());
+    let footer_html = crate::html_mod::extract_body_inner(&crate::auto_generated_files_mod::get_file_text("/cargo_crev_reviews/footer.html"));
     // brute force replace
-    let response_html = response_html.replace("<!--s_include footer.html-->", &footer_html);
+    let response_html = response_html.replace("<!--s_include /cargo_crev_reviews/footer.html-->", &footer_html);
     // return
     response_html
 }

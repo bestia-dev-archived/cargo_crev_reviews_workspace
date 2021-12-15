@@ -1,8 +1,8 @@
 [package]
 name = "cargo_crev_reviews_wasm"
-version = "2021.1211.2123"
+version = "2021.1215.1118"
 authors = ["Luciano Bestia <Luciano.Bestia@gmail.com>"]
-edition = "2018"
+edition = "2021"
 description = "Wasm web app that is the frontend of the application cargo_crev_reviews"
 repository = "https://github.com/LucianoBestia/cargo_crev_reviews_workspace"
 readme = "README.md"

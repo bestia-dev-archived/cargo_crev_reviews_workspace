@@ -215,12 +215,24 @@ pub fn crev_edit_or_new_review(filter: ReviewFilterData) -> anyhow::Result<Proof
     if vec_of_reviews.is_empty() {
         anyhow::bail!("Crate reviews for {} not found in my reviews!", filter.crate_name.as_str());
     }
-    crev_sort_list_by_name_version(&mut vec_of_reviews);
-    let mut review = vec_of_reviews.last().context("last")?.clone();
-    review.package.version = filter.crate_version.context("none version")?.clone();
+    // search for the exact version
+    match vec_of_reviews.iter().find(|&x| &x.package.version == filter.crate_version.as_ref().unwrap()) {
+        None => {
+            // use the text from the last review. Probably in the new review it will be the same.
+            crev_sort_list_by_name_version(&mut vec_of_reviews);
 
-    // return
-    Ok(review)
+            let mut review = vec_of_reviews.last().context("last")?.clone();
+            match review.comment {
+                None => {}
+                Some(comment) => review.comment = Some(format!("Suggesting a copy from your last review:\n{}", comment)),
+            }
+            review.package.version = filter.crate_version.context("none version")?.clone();
+
+            // return
+            Ok(review)
+        }
+        Some(review) => return Ok(review.clone()),
+    }
 }
 
 /// list the user-selected crate+version
@@ -528,7 +540,7 @@ fn path_to_trusted_publishers_json() -> anyhow::Result<std::path::PathBuf> {
         .join(".config/crev/cargo_crev_reviews_data/trusted_publishers.json");
     Ok(pb)
 }
-fn load_trusted_publishers_json() -> anyhow::Result<TrustedPublisherDataFile> {
+pub fn load_trusted_publishers_json() -> anyhow::Result<TrustedPublisherDataFile> {
     let pb = path_to_trusted_publishers_json()?;
     if !pb.exists() {
         // first create the file empty. I will add alexcrichton, to have an example
@@ -543,7 +555,7 @@ fn load_trusted_publishers_json() -> anyhow::Result<TrustedPublisherDataFile> {
     let trusted_publishers_data: TrustedPublisherDataFile = serde_json::from_str(&trusted_publishers_data_cache)?;
     Ok(trusted_publishers_data)
 }
-fn is_trusted_publisher(trusted_file: &TrustedPublisherDataFile, login: &str) -> String {
+pub fn is_trusted_publisher(trusted_file: &TrustedPublisherDataFile, login: &str) -> String {
     for x in trusted_file.trusted_publishers.iter() {
         if &x.login == login {
             return "T".to_string();

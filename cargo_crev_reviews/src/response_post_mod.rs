@@ -31,8 +31,8 @@ pub fn response_err_message(err: &anyhow::Error) -> anyhow::Result<String> {
 
 pub fn response_modal_message(msg: &str) -> anyhow::Result<String> {
     let response_data = RpcMessageData { message: msg.to_string() };
-    let response_html = crate::files_mod::modal_message_html();
-    crate::auto_generated_mod::cln_methods::cln_review_error(response_data, response_html)
+    let response_html = crate::auto_generated_files_mod::get_file_text("/cargo_crev_reviews/modal_message.html");
+    crate::auto_generated_mod::cln_methods::cln_review_error(response_data, &response_html)
 }
 
 pub fn response_no_action() -> anyhow::Result<String> {

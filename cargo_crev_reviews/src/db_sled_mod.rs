@@ -24,43 +24,48 @@ lazy_static! {
 /// to avoid double or triple call to crates.io for the same crate
 pub fn download_in_background_crate_versions(crate_name: String) {
     POOL.spawn(move || {
-        let crates_io = unwrap!(crate::crates_io_mod::crate_response(&crate_name));
-        let c = crate::db_sled_mod::db_crate_mod::CrateForDb {
-            crate_name: crate_name.clone(),
-            description: crates_io.crate_segment.description.clone(),
-        };
-        unwrap!(crate::db_sled_mod::db_crate_mod::insert(&crate_name, &c));
+        // cargo_crev_reviews_wasm is not on crates.io
+        match crate::crates_io_mod::crate_response(&crate_name) {
+            Err(_err) => log::info!("crate {} is not on crates.io.", &crate_name),
+            Ok(crates_io) => {
+                let c = crate::db_sled_mod::db_crate_mod::CrateForDb {
+                    crate_name: crate_name.clone(),
+                    description: crates_io.crate_segment.description.clone(),
+                };
+                unwrap!(crate::db_sled_mod::db_crate_mod::insert(&crate_name, &c));
 
-        for crate_io_version in crates_io.versions.iter() {
-            // region: VersionForDb
-            let published_by_login = match &crate_io_version.published_by {
-                Some(published_by) => Some(published_by.login.clone()),
-                None => None,
-            };
-            let crate_name_version = crate::utils_mod::join_crate_version(&crate_name, &crate_io_version.num);
-            let v = crate::db_sled_mod::db_version_mod::VersionForDb {
-                crate_name_version: crate_name_version.clone(),
-                published_by_login,
-                published_date: crate_io_version.created_at.clone(),
-            };
-            unwrap!(crate::db_sled_mod::db_version_mod::insert(v.crate_name_version.as_str(), &v));
-            // region: VersionForDb
-            // store only yanked versions
-            // This is ok, but not enough, because yanked can change, while all other data is immutable
-            // Therefore I need also a background_sync sometimes.
-            if crate_io_version.yanked {
-                unwrap!(crate::db_sled_mod::db_yanked_mod::insert(
-                    &crate_name_version,
-                    &YankedForDb {
+                for crate_io_version in crates_io.versions.iter() {
+                    // region: VersionForDb
+                    let published_by_login = match &crate_io_version.published_by {
+                        Some(published_by) => Some(published_by.login.clone()),
+                        None => None,
+                    };
+                    let crate_name_version = crate::utils_mod::join_crate_version(&crate_name, &crate_io_version.num);
+                    let v = crate::db_sled_mod::db_version_mod::VersionForDb {
                         crate_name_version: crate_name_version.clone(),
+                        published_by_login,
+                        published_date: crate_io_version.created_at.clone(),
+                    };
+                    unwrap!(crate::db_sled_mod::db_version_mod::insert(v.crate_name_version.as_str(), &v));
+                    // region: VersionForDb
+                    // store only yanked versions
+                    // This is ok, but not enough, because yanked can change, while all other data is immutable
+                    // Therefore I need also a background_sync sometimes.
+                    if crate_io_version.yanked {
+                        unwrap!(crate::db_sled_mod::db_yanked_mod::insert(
+                            &crate_name_version,
+                            &YankedForDb {
+                                crate_name_version: crate_name_version.clone(),
+                            }
+                        ));
+                    } else {
+                        if crate::db_sled_mod::db_yanked_mod::exists(&crate_name_version) {
+                            crate::db_sled_mod::db_yanked_mod::delete(&crate_name_version);
+                        }
                     }
-                ));
-            } else {
-                if crate::db_sled_mod::db_yanked_mod::exists(&crate_name_version) {
-                    crate::db_sled_mod::db_yanked_mod::delete(&crate_name_version);
+                    // endregion: YankedForDb
                 }
             }
-            // endregion: YankedForDb
         }
     });
 }
