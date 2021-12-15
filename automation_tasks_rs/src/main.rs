@@ -299,6 +299,7 @@ fn copy_web_folder_files_into_module() {
     let mut module_source_code = String::new();
     module_source_code.push_str("// auto_generated_files_mod.rs\n\n");
     module_source_code.push_str("//! embedded files as Rust code\n\n");
+    module_source_code.push_str("// exclude from auto_lines_of_code\n");
     module_source_code.push_str(r#"
 /* spell-checker: disable */
 
