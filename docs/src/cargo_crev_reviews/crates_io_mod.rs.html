@@ -78,6 +78,7 @@
 <span id="78">78</span>
 <span id="79">79</span>
 <span id="80">80</span>
+<span id="81">81</span>
 </pre><pre class="rust"><code><span class="comment">// crates_io_mod.rs</span>
 
 <span class="comment">// communication with crates.io api</span>
@@ -147,9 +148,10 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_crate_responses_get</span>() {
-        <span class="kw">let</span> <span class="ident">response_text</span> <span class="op">=</span> <span class="ident">crate_responses_get</span>(<span class="string">&quot;anyhow&quot;</span>).<span class="ident">unwrap</span>();
-        <span class="kw">let</span> <span class="ident">sample_text</span> <span class="op">=</span> <span class="ident">std::fs::read_to_string</span>(<span class="string">&quot;samples/crates_io_versions_for_crate.txt&quot;</span>).<span class="ident">unwrap</span>();
-        <span class="macro">assert_eq!</span>(<span class="ident">response_text</span>, <span class="ident">sample_text</span>);
+        <span class="kw">let</span> <span class="ident">response_text</span> <span class="op">=</span> <span class="ident">crate_responses_get</span>(<span class="string">&quot;unwrap&quot;</span>).<span class="ident">unwrap</span>();
+        <span class="kw">if</span> <span class="op">!</span><span class="ident">response_text</span>.<span class="ident">starts_with</span>(<span class="string">r#&quot;{&quot;categories&quot;:[{&quot;&quot;#</span>) {
+            <span class="macro">panic!</span>(<span class="string">&quot;wrong start&quot;</span>);
+        }
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>

@@ -545,21 +545,19 @@
 <span id="545">545</span>
 <span id="546">546</span>
 <span id="547">547</span>
-<span id="548">548</span>
-<span id="549">549</span>
 </pre><pre class="rust"><code><span class="comment">// cargo_crev_reviews/src/lib.rs</span>
 
 <span class="comment">// region: auto_md_to_doc_comments include README.md A //!</span>
 <span class="doccomment">//! # cargo_crev_reviews</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! **Write cargo-crev reviews in GUI with a cross-platform app written in full-stack rust**  </span>
-<span class="doccomment">//! ***[repository](https://github.com/lucianobestia/cargo_crev_reviews_workspace); version: 2021.1215.1209  date: 2021-12-15 authors: Luciano Bestia***  </span>
+<span class="doccomment">//! ***[repository](https://github.com/lucianobestia/cargo_crev_reviews_workspace); version: 2021.1215.1248  date: 2021-12-15 authors: Luciano Bestia***  </span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! [![Lines in Rust code](https://img.shields.io/badge/Lines_in_Rust-2084-green.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)</span>
-<span class="doccomment">//! [![Lines in Doc comments](https://img.shields.io/badge/Lines_in_Doc_comments-479-blue.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)</span>
+<span class="doccomment">//! [![Lines in Rust code](https://img.shields.io/badge/Lines_in_Rust-2085-green.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)</span>
+<span class="doccomment">//! [![Lines in Doc comments](https://img.shields.io/badge/Lines_in_Doc_comments-478-blue.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)</span>
 <span class="doccomment">//! [![Lines in Comments](https://img.shields.io/badge/Lines_in_comments-182-purple.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)</span>
 <span class="doccomment">//! [![Lines in examples](https://img.shields.io/badge/Lines_in_examples-0-yellow.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)</span>
-<span class="doccomment">//! [![Lines in tests](https://img.shields.io/badge/Lines_in_tests-16-orange.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)</span>
+<span class="doccomment">//! [![Lines in tests](https://img.shields.io/badge/Lines_in_tests-17-orange.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! [![crates.io](https://img.shields.io/crates/v/cargo_crev_reviews.svg)](https://crates.io/crates/cargo_crev_reviews) [![Documentation](https://docs.rs/cargo_crev_reviews/badge.svg)](https://docs.rs/cargo_crev_reviews/) [![crev reviews](https://web.crev.dev/rust-reviews/badge/crev_count/cargo_crev_reviews.svg)](https://web.crev.dev/rust-reviews/crate/cargo_crev_reviews/) [![Lib.rs](https://img.shields.io/badge/Lib.rs-rust-orange.svg)](https://lib.rs/crates/cargo_crev_reviews/) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/LucianoBestia/cargo_crev_reviews/blob/master/LICENSE) [![Rust](https://github.com/LucianoBestia/cargo_crev_reviews/workflows/RustAction/badge.svg)](https://github.com/LucianoBestia/cargo_crev_reviews/actions)  </span>
 <span class="doccomment">//!</span>
@@ -839,7 +837,7 @@
 <span class="doccomment">//!</span>
 <span class="doccomment">//! In `srv_methods_mod.rs` add a function like this:  </span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! ```rust</span>
+<span class="doccomment">//! ```ignore</span>
 <span class="doccomment">//! #[named]</span>
 <span class="doccomment">//! pub fn srv_function_name(request_data: serde_json::Value) -&gt; anyhow::Result&lt;String&gt; {</span>
 <span class="doccomment">//!     log::info!(function_name!());</span>
@@ -859,10 +857,8 @@
 <span class="doccomment">//!</span>
 <span class="doccomment">//! In `cln_methods_version_mod.rs` add a client function like this:</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! ```rust</span>
-<span class="doccomment">//! #[named]</span>
+<span class="doccomment">//! ```ignore</span>
 <span class="doccomment">//! pub fn cln_review_edit(srv_response: RpcResponse) {</span>
-<span class="doccomment">//!     log::info!(&quot;{}&quot;,function_name!());</span>
 <span class="doccomment">//!     let html = extract_html(&amp;srv_response);</span>
 <span class="doccomment">//!     store_to_review_item_data(srv_response);</span>
 <span class="doccomment">//!</span>

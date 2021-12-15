@@ -67,9 +67,10 @@ mod tests {
 
     #[test]
     fn test_crate_responses_get() {
-        let response_text = crate_responses_get("anyhow").unwrap();
-        let sample_text = std::fs::read_to_string("samples/crates_io_versions_for_crate.txt").unwrap();
-        assert_eq!(response_text, sample_text);
+        let response_text = crate_responses_get("unwrap").unwrap();
+        if !response_text.starts_with(r#"{"categories":[{""#) {
+            panic!("wrong start");
+        }
     }
 
     #[test]
