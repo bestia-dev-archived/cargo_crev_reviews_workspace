@@ -224,7 +224,7 @@ pub fn crev_edit_or_new_review(filter: ReviewFilterData) -> anyhow::Result<Proof
             let mut review = vec_of_reviews.last().context("last")?.clone();
             match review.comment {
                 None => {}
-                Some(comment) => review.comment = Some(format!("Suggesting a copy from your last review:\n{}", comment)),
+                Some(comment) => review.comment = Some(format!("// Just suggesting a copy from your last review:\n\n\n{}", comment)),
             }
             review.package.version = filter.crate_version.context("none version")?.clone();
 

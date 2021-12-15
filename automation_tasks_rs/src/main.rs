@@ -30,17 +30,17 @@ fn match_arguments_and_call_tasks(mut args: std::env::Args) {
                 completion();
             } else {
                 println!("Running automation task: {}", &task);
-                if &task == "build" || &task == "b" {
+                if &task == "build" {
                     task_build();
                 } else if &task == "build_and_run" {
                     task_build_and_run();
-                } else if &task == "release" || &task == "r" {
+                } else if &task == "release" {
                     task_release();
                 } else if &task == "release_and_run" {
                     task_release_and_run();
                 } else if &task == "generated_mod" {
                     task_generated_mod();
-                } else if &task == "docs" || &task == "doc" || &task == "d" {
+                } else if &task == "doc" {
                     task_docs();
                 } else if &task == "commit_and_push" {
                     let arg_2 = args.next();
@@ -140,7 +140,7 @@ fn task_release() {
 
     auto_lines_of_code("");
     copy_web_folder_files_into_module();
-
+    run_shell_command("cargo fmt");
 
     run_shell_command("cargo build --release --workspace --exclude cargo_crev_reviews_wasm");
     let cargo_toml = CargoToml::read();

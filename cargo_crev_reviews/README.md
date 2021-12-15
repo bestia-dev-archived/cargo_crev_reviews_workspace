@@ -41,12 +41,10 @@ cargo_crev_reviews
 
 And follow the simple instructions...
 
+Backend CLI in Linux terminal:  
 ![screen_5](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/raw/main/images/screen_5.png "screen_5")  
-
-Input your passphrase for cargo-crev proof signing.  
-
+Frontend GUI in browser:  
 ![screen_6](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/raw/main/images/screen_6.png "screen_6")  
-
 
 ## cargo tree
 
@@ -64,8 +62,7 @@ To write a review you need to see the exact source code and other metadata about
 - [crev.dev](https://web.crev.dev/rust-reviews/crates/) for other people reviews
 - crates.io for basic information
 - lib.rs for extended information
-- a list of all versions of that crate
-- a browser tab to write the review
+- a list of all versions of that crate with your reviews added
 
 Be warned that modern browsers block pop-ups and you have to allow that explicitly for this site `127.0.0.1`.
 
