@@ -124,56 +124,64 @@ pub fn unlock_crev_id_interactively() -> anyhow::Result<()> {
 pub fn crev_list_my_reviews(filter: &Option<ReviewFilterData>) -> anyhow::Result<Vec<ProofCrevForReview>> {
     let mut vec_proof: Vec<ProofCrevForReview> = vec![];
     // open every *.proof.crev file in my crev reviews directory
-    for path in proof_crev_files_paths()?.iter() {
-        let file_content = std::fs::read_to_string(path)?;
-        let mut pos_cursor = 0;
-        loop {
-            let range = find_range_including_delimiters(&file_content, &mut pos_cursor, "----- BEGIN CREV PROOF -----", "----- END CREV PROOF -----");
-            match range {
-                Some(mut range) => {
-                    // if there is some white space after the segment, include it in the range.
-                    let pos_2 = find_pos_before_delimiter(&file_content, pos_cursor, "----- BEGIN CREV PROOF -----");
-                    range.end = match pos_2 {
-                        Some(pos_2) => pos_2,
-                        None => file_content.len(),
-                    };
+    match proof_crev_files_paths() {
+        Err(err) => {
+            // just write it and return an empty vector
+            log::error!("There are no personal reviews yet: {}", err);
+        }
+        Ok(paths) => {
+            for path in paths.iter() {
+                let file_content = std::fs::read_to_string(path)?;
+                let mut pos_cursor = 0;
+                loop {
+                    let range = find_range_including_delimiters(&file_content, &mut pos_cursor, "----- BEGIN CREV PROOF -----", "----- END CREV PROOF -----");
+                    match range {
+                        Some(mut range) => {
+                            // if there is some white space after the segment, include it in the range.
+                            let pos_2 = find_pos_before_delimiter(&file_content, pos_cursor, "----- BEGIN CREV PROOF -----");
+                            range.end = match pos_2 {
+                                Some(pos_2) => pos_2,
+                                None => file_content.len(),
+                            };
 
-                    let proof_text = unwrap!(file_content.get(range.clone()));
-                    // This must not panic because it is internal to the previous range.
-                    let range_yaml = unwrap!(find_range_between_delimiters(
-                        proof_text,
-                        &mut 0,
-                        "----- BEGIN CREV PROOF -----",
-                        "----- SIGN CREV PROOF -----",
-                    ));
-                    // if this panics it's a bug in the code and not an exception to handle
-                    let yaml = unwrap!(proof_text.get(range_yaml));
-                    let proof_crev: ProofCrevForReview = unwrap!(serde_yaml::from_str(yaml));
-                    // push it to vector, if it filters
-                    match filter {
-                        // no filter, push all for list
-                        None => vec_proof.push(proof_crev),
-                        Some(filter) => {
-                            // always filtered at least by crate_name
-                            if filter.crate_name == proof_crev.package.name {
-                                match &filter.crate_version {
-                                    None => {
-                                        // all the versions of one crate
-                                        vec_proof.push(proof_crev);
-                                    }
-                                    Some(version) => {
-                                        if version == proof_crev.package.version.as_str() {
-                                            // exact match
-                                            vec_proof.push(proof_crev);
-                                            break;
+                            let proof_text = unwrap!(file_content.get(range.clone()));
+                            // This must not panic because it is internal to the previous range.
+                            let range_yaml = unwrap!(find_range_between_delimiters(
+                                proof_text,
+                                &mut 0,
+                                "----- BEGIN CREV PROOF -----",
+                                "----- SIGN CREV PROOF -----",
+                            ));
+                            // if this panics it's a bug in the code and not an exception to handle
+                            let yaml = unwrap!(proof_text.get(range_yaml));
+                            let proof_crev: ProofCrevForReview = unwrap!(serde_yaml::from_str(yaml));
+                            // push it to vector, if it filters
+                            match filter {
+                                // no filter, push all for list
+                                None => vec_proof.push(proof_crev),
+                                Some(filter) => {
+                                    // always filtered at least by crate_name
+                                    if filter.crate_name == proof_crev.package.name {
+                                        match &filter.crate_version {
+                                            None => {
+                                                // all the versions of one crate
+                                                vec_proof.push(proof_crev);
+                                            }
+                                            Some(version) => {
+                                                if version == proof_crev.package.version.as_str() {
+                                                    // exact match
+                                                    vec_proof.push(proof_crev);
+                                                    break;
+                                                }
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
+                        None => break,
                     }
                 }
-                None => break,
             }
         }
     }
