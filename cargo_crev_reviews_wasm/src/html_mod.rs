@@ -46,13 +46,6 @@ pub fn inject_into_html(html_after_process: &str) {
     w::set_inner_html("div_for_wasm_html_injecting", html_after_process);
 }
 
-pub fn navigation_on_click() {
-    use crate::cln_methods_review_item_mod::*;
-    use wasm_bindgen::JsCast;
-    on_click!("button_update_registry_index", request_update_registry_index);
-    on_click!("button_review_publish", request_review_publish);
-}
-
 use dev_bestia_html_templating as tmplt;
 // region: HtmlTemplatingDataTrait for data structs
 impl tmplt::HtmlTemplatingDataTrait for RpcMessageData {

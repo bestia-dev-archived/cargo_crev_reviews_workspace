@@ -67,7 +67,7 @@ pub struct CargoTreeItemData {
     pub crate_name_version: Option<String>,
     pub my_rating: Option<String>,
     pub crate_description: Option<String>,
-    pub published_by: Option<String>,
+    pub published_by_url: Option<String>,
     pub trusted_publisher: Option<String>,
     pub status: Option<String>,
 }
@@ -86,7 +86,7 @@ pub struct VerifyItemData {
     pub my_review: String,
     pub crate_name: String,
     pub crate_version: String,
-    pub published_by: String,
+    pub published_by_url: String,
     pub trusted_publisher: String,
 }
 
@@ -101,7 +101,7 @@ pub struct VersionItemData {
     pub crate_name: String,
     pub crate_version: String,
     pub yanked: bool,
-    pub published_by_login: Option<String>,
+    pub published_by_url: Option<String>,
     pub published_date: String,
     pub is_src_cached: Option<bool>,
     pub my_review: Option<ReviewItemData>,
@@ -110,4 +110,15 @@ pub struct VersionItemData {
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct VersionListData {
     pub list_of_version: Vec<VersionItemData>,
+}
+
+#[derive(Serialize, Deserialize, Debug, Default, Clone)]
+pub struct PublisherItemData {
+    pub url: String,
+    pub note: String,
+}
+
+#[derive(Serialize, Deserialize, Debug, Default)]
+pub struct PublisherListData {
+    pub list_of_publisher: Vec<PublisherItemData>,
 }

@@ -3,6 +3,7 @@
 #![allow(dead_code)]
 
 pub mod db_crate_mod;
+pub mod db_publisher_mod;
 pub mod db_review_mod;
 pub mod db_verify_mod;
 pub mod db_version_mod;
@@ -24,6 +25,7 @@ lazy_static! {
 /// to avoid double or triple call to crates.io for the same crate
 pub fn download_in_background_crate_versions(crate_name: String) {
     POOL.spawn(move || {
+        let ns_started = crate::utils_mod::ns_start(&format!("download_in_background_crate_versions {}", &crate_name));
         // cargo_crev_reviews_wasm is not on crates.io
         match crate::crates_io_mod::crate_response(&crate_name) {
             Err(_err) => log::info!("crate {} is not on crates.io.", &crate_name),
@@ -36,14 +38,14 @@ pub fn download_in_background_crate_versions(crate_name: String) {
 
                 for crate_io_version in crates_io.versions.iter() {
                     // region: VersionForDb
-                    let published_by_login = match &crate_io_version.published_by {
-                        Some(published_by) => Some(published_by.login.clone()),
+                    let published_by_url = match &crate_io_version.published_by {
+                        Some(published_by) => Some(published_by.url.clone()),
                         None => None,
                     };
                     let crate_name_version = crate::utils_mod::join_crate_version(&crate_name, &crate_io_version.num);
                     let v = crate::db_sled_mod::db_version_mod::VersionForDb {
                         crate_name_version: crate_name_version.clone(),
-                        published_by_login,
+                        published_by_url,
                         published_date: crate_io_version.created_at.clone(),
                     };
                     unwrap!(crate::db_sled_mod::db_version_mod::insert(v.crate_name_version.as_str(), &v));
@@ -67,6 +69,7 @@ pub fn download_in_background_crate_versions(crate_name: String) {
                 }
             }
         }
+        crate::utils_mod::ns_print_ms("download_in_background_crate_versions", ns_started);
     });
 }
 

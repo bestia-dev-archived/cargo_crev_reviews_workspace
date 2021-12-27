@@ -33,7 +33,7 @@ pub struct CratesIoVersion {
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct CratesIoPublishedBy {
-    pub login: String,
+    pub url: String,
 }
 
 /// GET from crates.io

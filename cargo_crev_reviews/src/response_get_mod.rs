@@ -34,7 +34,7 @@ fn default_mime() -> String {
 /// Files are stored in functions in the auto_generated_files_mod.rs module
 /// there is an automation task to copy files from web_server_folder to the module
 pub fn parse_get_uri_and_response_file(path: &str) -> ResponseWithBytes {
-    log::info!("path: {}", path);
+    // log::info!("path: {}", path);
     let (mime_type, text_or_else_base64, cache) = if path.ends_with(".html") {
         ("text/html", true, Cache::NoStore)
     } else if path.ends_with(".css") {

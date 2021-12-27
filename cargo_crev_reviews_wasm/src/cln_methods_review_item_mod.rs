@@ -130,14 +130,9 @@ pub fn cln_review_error(srv_response: RpcResponse) {
     let data: RpcMessageData = unwrap!(serde_json::from_value(srv_response.response_data));
     let html_after_process = tmplt::process_html(&data, &html);
     w::set_inner_html("div_for_modal", &html_after_process);
+    use crate::cln_methods_mod::modal_close_on_click;
     on_click!("modal_close", modal_close_on_click);
 }
-
-#[named]
-pub fn cln_no_action(_srv_response: RpcResponse) {
-    log::info!("{}", function_name!());
-}
-
 // endregion: cln methods to render the page and data
 
 // region: functions for event handlers (on_click)
@@ -158,20 +153,6 @@ pub fn request_review_publish(_element_id: &str) {
     w::set_inner_html("div_for_modal", html);
     let request_data = RpcEmptyData {};
     srv_methods::srv_review_publish(request_data);
-}
-
-#[named]
-pub fn request_update_registry_index(_element_id: &str) {
-    log::info!("{}", function_name!());
-    let html = r#"
-    <div id="modal_message" class="w3_modal">
-        <div class="w3_modal_content">
-            <div>Updating registry index. Wait a minute...</div>        
-        </div>
-    </div>"#;
-    w::set_inner_html("div_for_modal", html);
-    let request_data = RpcEmptyData {};
-    srv_methods::srv_update_registry_index(request_data);
 }
 
 #[named]
@@ -196,10 +177,6 @@ fn request_review_save(_element_id: &str) {
         comment_md: w::get_text_area_element_value_string_by_id("comment_md"),
     };
     srv_methods::srv_review_save(request_data);
-}
-
-fn modal_close_on_click(_element_id: &str) {
-    w::set_inner_html("div_for_modal", "");
 }
 
 fn close_on_click(_element_id: &str) {

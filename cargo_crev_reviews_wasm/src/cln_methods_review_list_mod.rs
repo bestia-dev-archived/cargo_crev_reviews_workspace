@@ -79,6 +79,14 @@ impl tmplt::HtmlTemplatingDataTrait for ReviewListData {
 
 // region: cln methods to render the page and data
 
+pub fn routing_edit_or_new(param2: &str, param3: &str) {
+    let request_data = ReviewFilterData {
+        crate_name: param2.to_string(),
+        crate_version: Some(param3.to_string()),
+        old_crate_version: None,
+    };
+    srv_methods::srv_review_edit_or_new(request_data);
+}
 /// the code for processing the html srv_review_list
 /// the data is already in static Mutex REVIEW_LIST_DATA
 #[named]
@@ -95,8 +103,6 @@ pub fn cln_review_list(srv_response: RpcResponse) {
     };
 
     inject_into_html(&html_after_process);
-
-    navigation_on_click();
 
     // on_click for every row of the list
     for (row_number, _item) in REVIEW_LIST_DATA.lock().unwrap().list_of_review.iter().enumerate() {
@@ -117,6 +123,7 @@ pub fn cln_review_publish_modal(srv_response: RpcResponse) {
     let data: RpcMessageData = unwrap!(serde_json::from_value(srv_response.response_data));
     let html_after_process = tmplt::process_html(&data, &html);
     w::set_inner_html("div_for_modal", &html_after_process);
+    use crate::cln_methods_mod::modal_close_on_click;
     on_click!("modal_close", modal_close_on_click);
 }
 
@@ -229,10 +236,6 @@ fn request_review_edit_from_list(_element_id: &str, row_number: usize) {
     srv_methods::srv_review_edit(request_data);
 }
 
-fn modal_close_on_click(_element_id: &str) {
-    w::set_inner_html("div_for_modal", "");
-}
-
 #[named]
 pub fn modal_delete(_element_id: &str, row_number: usize) {
     log::info!("{}", function_name!());
@@ -248,7 +251,7 @@ pub fn modal_delete(_element_id: &str, row_number: usize) {
         row_number
     );
     w::set_inner_html("div_for_modal", &html);
-
+    use crate::cln_methods_mod::modal_close_on_click;
     on_click!("modal_close", modal_close_on_click);
     // I had to add modal_yes_delete(0), because row_on_click works that way.
     row_on_click!("modal_yes_delete", row_number, request_review_delete);
@@ -257,6 +260,7 @@ pub fn modal_delete(_element_id: &str, row_number: usize) {
 #[named]
 fn request_review_delete(_element_id: &str, row_number: usize) {
     log::info!("{}", function_name!());
+    use crate::cln_methods_mod::modal_close_on_click;
     modal_close_on_click("");
 
     // from list get crate name and version

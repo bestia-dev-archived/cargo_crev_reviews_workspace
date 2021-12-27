@@ -148,9 +148,18 @@ pub fn srv_review_open_source_code(request_data: serde_json::Value) -> anyhow::R
     if !path_dir.exists() {
         anyhow::bail!("Src for version {} is not cached on your system.", &version);
     }
-    let mut child = std::process::Command::new("code").arg(path_dir).spawn()?;
-    std::thread::sleep(Duration::new(1, 0));
-    child.kill()?;
+    log::info!("Open source code in {}", unwrap!(path_dir.to_str()));
+    // test if the `/usr/bin/code` exists.
+    if !std::path::Path::new("/usr/bin/code").exists() {
+        log::error!(
+            "The file `/usr/bin/code` does not exist. Create a symbolic link `ln -s /usr/bin/code your_preferred_editor`. Or open manually the directory `{}`.",
+            unwrap!(path_dir.to_str())
+        );
+    } else {
+        let mut child = std::process::Command::new("/usr/bin/code").arg(path_dir).spawn()?;
+        std::thread::sleep(Duration::new(1, 0));
+        child.kill()?;
+    }
     // return nothing
     crate::response_post_mod::response_no_action()
 }
@@ -169,16 +178,6 @@ pub fn srv_review_delete(filter_data: serde_json::Value) -> anyhow::Result<Strin
 // endregion: review
 
 #[named]
-pub fn srv_verify_project(_filter_data: serde_json::Value) -> anyhow::Result<String> {
-    log::info!(function_name!());
-
-    let response_data = crate::crev_mod::verify_project()?;
-    let response_html = crate::html_mod::process_include(&crate::auto_generated_files_mod::get_file_text("/cargo_crev_reviews/verify_list.html"));
-    cln_methods::cln_verify_list(response_data, &response_html)
-}
-
-#[named]
-
 pub fn srv_cargo_tree_project(_filter_data: serde_json::Value) -> anyhow::Result<String> {
     log::info!(function_name!());
 

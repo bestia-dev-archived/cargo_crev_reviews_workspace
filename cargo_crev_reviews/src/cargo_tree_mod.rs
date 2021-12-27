@@ -13,9 +13,9 @@ use unwrap::unwrap;
 
 /// cargo_tree
 pub fn cargo_tree_project() -> anyhow::Result<CargoTreeListData> {
-    let ns_started = crate::utils_mod::ns_start("cargo_tree_project");
+    //let ns_started = crate::utils_mod::ns_start("cargo_tree_project");
 
-    let trusted_publisher_json = crate::crev_mod::load_trusted_publishers_json()?;
+    let vec_publisher = crate::db_sled_mod::db_publisher_mod::list()?;
 
     let output = std::process::Command::new("cargo").arg("tree").output().unwrap();
     let output = format!("{} {}", String::from_utf8_lossy(&output.stdout), String::from_utf8_lossy(&output.stderr));
@@ -59,7 +59,7 @@ pub fn cargo_tree_project() -> anyhow::Result<CargoTreeListData> {
                             }
                         };
 
-                    let (published_by,trusted_publisher) =
+                    let (published_by_url,trusted_publisher) =
                     // result, option
                     match crate::db_sled_mod::db_verify_mod::read(&crate_name_version) {
                         Err(_err) => (None,None),
@@ -67,9 +67,9 @@ pub fn cargo_tree_project() -> anyhow::Result<CargoTreeListData> {
                             match verify_data_opt{
                                 None => (None,None),
                                 Some(verify_data) => {
-                                    let published_by = verify_data.published_by;
-                                    let trusted_publisher = crate::crev_mod::is_trusted_publisher(&trusted_publisher_json, &published_by);
-                                    (Some(published_by), Some(trusted_publisher))
+                                    let published_by_url = verify_data.published_by_url;
+                                    let trusted_publisher = crate::crev_mod::is_trusted_publisher(&vec_publisher, &published_by_url);
+                                    (Some(published_by_url), Some(trusted_publisher))
                                 }
                             }
                         }
@@ -92,7 +92,7 @@ pub fn cargo_tree_project() -> anyhow::Result<CargoTreeListData> {
                         crate_name_version: Some(crate_name_version),
                         my_rating,
                         crate_description,
-                        published_by,
+                        published_by_url,
                         trusted_publisher,
                         status,
                     })
@@ -101,7 +101,7 @@ pub fn cargo_tree_project() -> anyhow::Result<CargoTreeListData> {
         }
     }
 
-    crate::utils_mod::ns_print_ms("cargo_tree_project", ns_started);
+    //crate::utils_mod::ns_print_ms("cargo_tree_project", ns_started);
 
     Ok(CargoTreeListData {
         project_dir: env::current_dir()?.to_string_lossy().to_string(),

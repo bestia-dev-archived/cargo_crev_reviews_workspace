@@ -58,13 +58,15 @@ Don't panic!
 
 To write a review you need to see the exact source code and other metadata about the crate. Click on the crate name in the list and it will open:
 
-- VSCode with the exact source code
+- VSCode in the directory with the source code
 - [crev.dev](https://web.crev.dev/rust-reviews/crates/) for other people reviews
 - crates.io for basic information
 - lib.rs for extended information
 - a list of all versions of that crate with your reviews added
 
-Be warned that modern browsers block pop-ups and you have to allow that explicitly for this site `127.0.0.1`.
+Be warned that modern browsers block pop-ups and you have to allow that explicitly for this site `127.0.0.1`.  
+If you don't have VSCode, you can create a symbolic link for the command `code directory_path` to open your preferred editor:  
+`ln -s /usr/bin/code your_preferred_editor`  
 
 ## Reputation vs. code review
 
@@ -289,7 +291,7 @@ pub struct VersionListData {
 
 ### Create a "standard" html page
 
-The html page has to be MicroXml compatible, basically XHtml.  Copy for example `web_server_folder/review_list.html` to a new html file. Open this file with a browser to preview it. I use the VSCode extension [vscode-open-wsl](https://marketplace.visualstudio.com/items?itemName=NoThlnG.vscode-open-wsl) and right-click on the file and `Open with default application`. In WSL2 I use my project [wsl_open_browser](https://github.com/LucianoBestia/wsl_open_browser). Now edit the html file to your liking and reload the browser with F5 to see the changes. Use some sample text to make it look as close to what you want. These texts will be later programmatically replaced, but they are invaluable while designing a nice layout.
+The html page has to be MicroXml compatible, basically XHtml.  Copy for example `web_server_folder/review_list.html` to a new html file. Open this file with a browser to preview it. I use the VSCode extension [vscode-open-wsl](https://marketplace.visualstudio.com/items?itemName=NoThlnG.vscode-open-wsl) and right-click on the file and `Open with default application`. In WSL2 I use my project [wsl_open_browser](https://github.com/LucianoBestia/wsl_open_browser) to open the default browser from wsl2 to Windows. Now edit the html file to your liking and reload the browser with F5 to see the changes. Use some sample text to make it look as close to what you want. These texts will be later programmatically replaced, but they are invaluable while designing a nice layout.
 
 ### Add markers
 

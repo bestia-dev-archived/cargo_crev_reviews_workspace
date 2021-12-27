@@ -80,7 +80,9 @@ impl tmplt::HtmlTemplatingDataTrait for VersionItemData {
             "wt_crate_name" => self.crate_name.clone(),
             "wt_crate_version" => self.crate_version.clone(),
             "wt_crate_name_version" => join_crate_version(&self.crate_name, &self.crate_version),
-            "wt_crate_published_by_login" => self.published_by_login.as_ref().unwrap_or(&"".to_string()).clone(),
+            "wt_crate_published_by_url" => {
+                crate::cln_methods_publisher_mod::published_by_url_shorten(self.published_by_url.as_deref().unwrap_or("")).to_string()
+            }
             "wt_edit_or_new" => {
                 if self.yanked {
                     "".to_string()
@@ -152,6 +154,15 @@ impl tmplt::HtmlTemplatingDataTrait for VersionItemData {
     }
 }
 
+pub fn routing_version_list(param2: &str) {
+    let request_data = ReviewFilterData {
+        crate_name: param2.to_string(),
+        crate_version: None,
+        old_crate_version: None,
+    };
+    srv_methods::srv_version_list(request_data);
+}
+
 #[named]
 pub fn cln_version_list(srv_response: RpcResponse) {
     log::info!("{}", function_name!());
@@ -164,7 +175,6 @@ pub fn cln_version_list(srv_response: RpcResponse) {
     };
 
     inject_into_html(&html_after_process);
-    navigation_on_click();
 
     // on_click for every row of the list
     for (row_number, item) in VERSION_LIST_DATA.lock().unwrap().list_of_version.iter().enumerate() {
@@ -249,19 +259,16 @@ pub fn modal_delete(_element_id: &str, row_number: usize) {
         row_number
     );
     w::set_inner_html("div_for_modal", &html);
-
+    use crate::cln_methods_mod::modal_close_on_click;
     on_click!("modal_close", modal_close_on_click);
     // I had to add modal_yes_delete(0), because row_on_click works that way.
     row_on_click!("modal_yes_delete", row_number, request_review_delete);
 }
 
-fn modal_close_on_click(_element_id: &str) {
-    w::set_inner_html("div_for_modal", "");
-}
-
 #[named]
 fn request_review_delete(_element_id: &str, row_number: usize) {
     log::info!("{}", function_name!());
+    use crate::cln_methods_mod::modal_close_on_click;
     modal_close_on_click("");
 
     // from list get crate name and version

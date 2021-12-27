@@ -39,7 +39,7 @@ impl tmplt::HtmlTemplatingDataTrait for CargoTreeItemData {
             "wt_tree_line_class" => format!("review_header0_cell left codetree pointer c_{}", self.my_rating.as_deref().unwrap_or("")),
             "wt_my_rating" => self.my_rating.as_deref().unwrap_or("").to_string(),
             "wt_crate_description" => self.crate_description.as_deref().unwrap_or("").to_string(),
-            "wt_published_by" => self.published_by.as_deref().unwrap_or("").to_string(),
+            "wt_published_by_url" => crate::cln_methods_publisher_mod::published_by_url_shorten(self.published_by_url.as_deref().unwrap_or("")).to_string(),
             "wt_published_by_class" => format!("review_header0_cell left codetree c_{}", self.trusted_publisher.as_deref().unwrap_or("")),
             "wt_status" => self.status.as_deref().unwrap_or("").to_string(),
             "wt_status_class" => format!("review_header0_cell left codetree c_{}", self.status.as_deref().unwrap_or("")),
@@ -110,7 +110,13 @@ pub fn cln_cargo_tree_list(srv_response: RpcResponse) {
     };
 
     inject_into_html(&html_after_process);
-    navigation_on_click();
+    // navigation menu bar
+    use crate::cln_methods_publisher_mod::*;
+    use crate::cln_methods_review_item_mod::*;
+    use crate::cln_methods_review_list_mod::*;
+    on_click!("button_open_publisher_list", open_publisher_list);
+    on_click!("button_update_registry_index", request_update_registry_index);
+    on_click!("button_review_publish", request_review_publish);
 
     // on_click for every row of the list
     for (row_number, _item) in CARGO_TREE_LIST_DATA.lock().unwrap().list_of_cargo_tree.iter().enumerate() {
@@ -169,13 +175,7 @@ fn open_all_links(_element_id: &str, row_number: usize) {
             srv_methods::srv_review_open_source_code(request_data);
 
             // list versions for this crate
-            let url = format!(
-                "http://{}:{}/{}/index.html#version_list/{}",
-                SERVER_HOST.as_str(),
-                SERVER_PORT.as_str(),
-                SERVER_FIRST_SUBDIRECTORY.as_str(),
-                crate_name,
-            );
+            let url = format!("index.html#version_list/{}", crate_name);
             unwrap!(w::window().open_with_url(&url));
         }
     }

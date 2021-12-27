@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <title>trusted publishers</title>
+    <meta name="Description" content="web app for writing new reviews for cargo-crev" />
+    <link rel="stylesheet" href="css/normalize.css" />
+    <link rel="stylesheet" href="css/cargo_crev_reviews.css" />
+    <link rel="stylesheet" href="css/fontawesome.css" />
+    <meta name="viewport" content="width = device-width,initial-scale = 1.0" />
+    <link rel="shortcut icon" type="image/x-icon" href="icons/icon-032.png" />
+    <script src="js/dropdown.js"></script>
+</head>
+
+<body>
+    <div class="container_0" data-template_name="publisher_list.html">
+        <div style="display: grid;grid-template-columns: 20% 80% ;">
+            <div>
+                <img src="images/Logo_02.png" style="padding: 7px;width:60%;max-width:300px;min-width:150px;" alt="logo" />
+            </div>
+            <div class="middle">
+                <h2>Trusted crates.io publishers</h2>
+            </div>
+        </div>
+    </div>
+    <div class="container_0">
+        <div class="container0_content_not_grid" style="line-height: 0.8em;">
+            <p class="small">Every crate version on crates.io is published by a publisher.
+                <br/>It can be the author or an owner, or maybe not.
+                <br/>But this is the person that ultimately published the crate version and takes responsibility there is no malware inside.
+                <br/>Crates.io guarantees that once published, code can never be changed later.
+                <br/>The publisher is uniquely identified by his/her url in a git remote repository (Github, Gitlab or other).</p>
+        </div>
+        <div>
+            <ul>
+                <li id="button_new_publisher">New trusted publisher</li>
+            </ul>
+        </div>
+        <div class="review_header_0" style="grid-template-columns: 40fr 60fr;">
+            <div class="review_header0_cell left">publisher url</div>
+            <div class="review_header0_cell left">note</div>
+        </div>
+    </div>
+
+    <div class="container_0">
+        <div class="review_header_0" style="grid-template-columns: 40fr 60fr;">
+            <!--wtmplt_PublisherItemData start-->
+            <div class="review_header0_cell left c_link_1" id="publisher_url">
+                <!--wt_publisher_url-->publisher_url</div>
+            <div class="review_header0_cell left">
+                <!--wt_note-->note</div>
+            <!--wtmplt_PublisherItemData end-->
+        </div>
+    </div>
+
+    <!--s_include /cargo_crev_reviews/footer.html-->
+</body>
+
+</html>

@@ -15,7 +15,7 @@ use crate::utils_mod::split_crate_version;
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct VersionForDb {
     pub crate_name_version: String,
-    pub published_by_login: Option<String>,
+    pub published_by_url: Option<String>,
     pub published_date: String,
 }
 

@@ -25,15 +25,15 @@
 
 mod auto_generated_mod;
 mod cln_methods_cargo_tree_mod;
+mod cln_methods_mod;
+mod cln_methods_publisher_mod;
 mod cln_methods_review_item_mod;
 mod cln_methods_review_list_mod;
-mod cln_methods_verify_mod;
 mod cln_methods_version_mod;
 mod html_mod;
 mod utils_mod;
 mod web_sys_mod;
 
-use anyhow::Context;
 use lazy_static::lazy_static;
 use log::Level;
 use wasm_bindgen::prelude::*;
@@ -41,9 +41,6 @@ use wasm_bindgen::JsValue;
 
 pub use dev_bestia_url_utf8::*;
 
-use crate::auto_generated_mod::common_structs_mod::ReviewFilterData;
-use crate::auto_generated_mod::common_structs_mod::RpcEmptyData;
-use crate::auto_generated_mod::srv_methods;
 use crate::web_sys_mod as w;
 
 lazy_static! {
@@ -65,55 +62,52 @@ pub fn wasm_bindgen_start() -> Result<(), JsValue> {
     // write the app version just for debug purposes
     log::info!("{} v{}", env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION"));
 
-    // read the url hash parameters for local routing
-    let location = w::window().location();
-    match location.hash() {
-        // if there is no url hash, show the first page: cargo_tree
-        Err(_err) => crate::cln_methods_cargo_tree_mod::request_cargo_tree_list(""),
-        Ok(location_hash) => {
-            if location_hash.is_empty() {
-                crate::cln_methods_cargo_tree_mod::request_cargo_tree_list("");
-            } else {
-                match get_3_url_param_from_hash(&location_hash) {
-                    Err(_err) => {
-                        let request_data = RpcEmptyData {};
-                        srv_methods::srv_verify_project(request_data);
-                    }
-                    Ok((method, crate_name, crate_version)) => match method {
-                        "edit_or_new" => {
-                            let request_data = ReviewFilterData {
-                                crate_name: crate_name.to_string(),
-                                crate_version: Some(crate_version.to_string()),
-                                old_crate_version: None,
-                            };
-                            srv_methods::srv_review_edit_or_new(request_data);
-                        }
-                        "version_list" => {
-                            let request_data = ReviewFilterData {
-                                crate_name: crate_name.to_string(),
-                                crate_version: None,
-                                old_crate_version: None,
-                            };
-                            srv_methods::srv_version_list(request_data);
-                        }
-                        _ => log::info!("unrecognized hash method: {}", method),
-                    },
-                }
-            }
-        }
-    }
+    router_boilerplate();
 
     // return
     Ok(())
 }
 
+/// jump over this boilerplate to router_for_local_hash_routing()
+fn router_boilerplate() {
+    fn open_main_page() {
+        crate::cln_methods_cargo_tree_mod::request_cargo_tree_list("");
+    }
+    let location: web_sys::Location = w::window().location();
+    match location.hash() {
+        // if there is no url hash, show the first page: cargo_tree
+        Err(_err) => open_main_page(),
+        Ok(location_hash) => {
+            if location_hash.is_empty() {
+                open_main_page();
+            } else {
+                let (param1, param2, param3) = get_3_url_param_from_hash(&location_hash);
+                router_for_local_hash_routing(param1, param2, param3);
+            }
+        }
+    }
+}
+
+/// read the url hash parameters for local routing
+/// this is a SPA single page application. The page is always index.html
+/// then a hash parameter is added for local routing like index.html#edit/crate_name/crate_version
+/// the main page is opened only once. It lists the cargo_tree and verify all the dependencies.
+/// All other pages are opened in separate tabs. So the user can easily close this tabs and return to the main page.
+/// The use of the back button in not recommended.
+fn router_for_local_hash_routing(param1: &str, param2: &str, param3: &str) {
+    // param1 is the "routing method" name
+    match param1 {
+        "edit_or_new" => cln_methods_review_list_mod::routing_edit_or_new(param2, param3),
+        "version_list" => cln_methods_version_mod::routing_version_list(param2),
+        "publisher_list" => cln_methods_publisher_mod::routing_publisher_list(),
+        _ => log::info!("unrecognized hash routing method: {}", param1),
+    }
+}
+
 /// get 3 param from hash
 /// example "#edit/crate_name/crate_version" -> ["edit","crate_name","crate_version"]
-pub fn get_3_url_param_from_hash(location_hash: &str) -> anyhow::Result<(&str, &str, &str)> {
+/// if the param does not exist returns an empty string
+pub fn get_3_url_param_from_hash(location_hash: &str) -> (&str, &str, &str) {
     let mut spl = location_hash.trim_start_matches("#").split('/');
-    Ok((
-        spl.next().context("first method")?,
-        spl.next().context("second crate_name")?,
-        spl.next().unwrap_or(""),
-    ))
+    (spl.next().unwrap_or(""), spl.next().unwrap_or(""), spl.next().unwrap_or(""))
 }

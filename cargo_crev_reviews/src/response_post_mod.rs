@@ -38,3 +38,7 @@ pub fn response_modal_message(msg: &str) -> anyhow::Result<String> {
 pub fn response_no_action() -> anyhow::Result<String> {
     crate::auto_generated_mod::cln_methods::cln_no_action("", "")
 }
+
+pub fn response_modal_close() -> anyhow::Result<String> {
+    crate::auto_generated_mod::cln_methods::cln_modal_close("", "")
+}

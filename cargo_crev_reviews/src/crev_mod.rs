@@ -24,7 +24,6 @@ use crev_lib::ProofStore;
 use dev_bestia_string_utils::*;
 use lazy_static::lazy_static;
 use serde::Deserialize;
-use serde::Serialize;
 use std::{env, sync::Mutex};
 use std::{ops::Range, str::FromStr, vec};
 use unwrap::unwrap;
@@ -450,22 +449,12 @@ pub fn crev_publish() -> anyhow::Result<String> {
     Ok(ret_val)
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct TrustedPublisherDataFile {
-    trusted_publishers: Vec<TrustedPublisher>,
-}
-
-#[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct TrustedPublisher {
-    pub login: String,
-}
-
 /// verify_project should return some data quickly, but in the background start to fill the db_version
 /// for all these crates. So the next time we have more complete data
 pub fn verify_project() -> anyhow::Result<VerifyListData> {
     let output = std::process::Command::new("cargo").arg("crev").arg("verify").output().unwrap();
     let output = format!("{} {}", String::from_utf8_lossy(&output.stdout), String::from_utf8_lossy(&output.stderr));
-    let trusted_publisher_json = load_trusted_publishers_json()?;
+    let vec_publisher_item = crate::db_sled_mod::db_publisher_mod::list()?;
 
     let mut list_of_verify = vec![];
     for line in output.lines() {
@@ -476,8 +465,8 @@ pub fn verify_project() -> anyhow::Result<VerifyListData> {
             let crate_version = s[2].to_string();
             let crate_name_version = join_crate_version(&crate_name, &crate_version);
 
-            let published_by = published_by_login(&crate_name, &crate_version)?;
-            let trusted_publisher = is_trusted_publisher(&trusted_publisher_json, &published_by);
+            let published_by_url = published_by_url(&crate_name, &crate_version)?;
+            let trusted_publisher = is_trusted_publisher(&vec_publisher_item, &published_by_url);
             if crate::db_sled_mod::db_yanked_mod::exists(&crate_name_version) {
                 status = "yanked".to_string();
             }
@@ -489,7 +478,7 @@ pub fn verify_project() -> anyhow::Result<VerifyListData> {
                 my_review,
                 crate_name,
                 crate_version,
-                published_by,
+                published_by_url,
                 trusted_publisher,
             })
         }
@@ -516,11 +505,18 @@ pub fn verify_sort_list_by_name_version(vec_of_verify: &mut Vec<VerifyItemData>)
 // region: cargo_crev_reviews/db_version
 
 /// check if it is already in the cache or GET from crates.io API and store in cache
-fn published_by_login(crate_name: &str, crate_version: &str) -> anyhow::Result<String> {
+fn published_by_url(crate_name: &str, crate_version: &str) -> anyhow::Result<String> {
     let crate_name_version = &join_crate_version(crate_name, crate_version);
     let exact_version = crate::db_sled_mod::db_version_mod::read(&crate_name_version)?;
     match exact_version {
-        Some(exact_version) => Ok(exact_version.published_by_login.unwrap_or("".to_string())),
+        Some(exact_version) => match exact_version.published_by_url {
+            Some(published_by_url) => Ok(published_by_url),
+            None => {
+                // get version in background, because before 2021-12-27 I stored the login instead of url
+                crate::db_sled_mod::download_in_background_crate_versions(crate_name.to_string());
+                Ok("".to_string())
+            }
+        },
         None => Ok("".to_string()),
     }
 }
@@ -548,24 +544,10 @@ fn path_to_trusted_publishers_json() -> anyhow::Result<std::path::PathBuf> {
         .join(".config/crev/cargo_crev_reviews_data/trusted_publishers.json");
     Ok(pb)
 }
-pub fn load_trusted_publishers_json() -> anyhow::Result<TrustedPublisherDataFile> {
-    let pb = path_to_trusted_publishers_json()?;
-    if !pb.exists() {
-        // first create the file empty. I will add alexcrichton, to have an example
-        let trusted_publishers = vec![TrustedPublisher {
-            login: "alexcrichton".to_string(),
-        }];
-        let trusted_publishers_data = TrustedPublisherDataFile { trusted_publishers };
-        let json = serde_json::to_string_pretty(&trusted_publishers_data)?;
-        std::fs::write(&pb, json)?;
-    }
-    let trusted_publishers_data_cache = std::fs::read_to_string(&pb)?;
-    let trusted_publishers_data: TrustedPublisherDataFile = serde_json::from_str(&trusted_publishers_data_cache)?;
-    Ok(trusted_publishers_data)
-}
-pub fn is_trusted_publisher(trusted_file: &TrustedPublisherDataFile, login: &str) -> String {
-    for x in trusted_file.trusted_publishers.iter() {
-        if &x.login == login {
+
+pub fn is_trusted_publisher(trusted_publishers: &Vec<PublisherItemData>, url: &str) -> String {
+    for x in trusted_publishers.iter() {
+        if &x.url == url {
             return "T".to_string();
         }
     }
@@ -622,7 +604,7 @@ pub fn crev_crate_versions(crate_name: &str) -> anyhow::Result<Vec<VersionItemDa
             crate_name: crate_name.to_string(),
             crate_version: io_crate_version.to_string(),
             yanked,
-            published_by_login: version_for_db.published_by_login.clone(),
+            published_by_url: version_for_db.published_by_url.clone(),
             published_date: version_for_db.published_date.clone(),
             is_src_cached,
             my_review: my_review.clone(),
