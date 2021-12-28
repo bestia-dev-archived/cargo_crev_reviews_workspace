@@ -133,7 +133,7 @@
 <span class="doccomment">/// Files are stored in functions in the auto_generated_files_mod.rs module</span>
 <span class="doccomment">/// there is an automation task to copy files from web_server_folder to the module</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">parse_get_uri_and_response_file</span>(<span class="ident">path</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="ident">ResponseWithBytes</span> {
-    <span class="macro">log::info!</span>(<span class="string">&quot;path: {}&quot;</span>, <span class="ident">path</span>);
+    <span class="comment">// log::info!(&quot;path: {}&quot;, path);</span>
     <span class="kw">let</span> (<span class="ident">mime_type</span>, <span class="ident">text_or_else_base64</span>, <span class="ident">cache</span>) <span class="op">=</span> <span class="kw">if</span> <span class="ident">path</span>.<span class="ident">ends_with</span>(<span class="string">&quot;.html&quot;</span>) {
         (<span class="string">&quot;text/html&quot;</span>, <span class="bool-val">true</span>, <span class="ident">Cache::NoStore</span>)
     } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">path</span>.<span class="ident">ends_with</span>(<span class="string">&quot;.css&quot;</span>) {

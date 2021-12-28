@@ -47,9 +47,15 @@
 <span id="47">47</span>
 <span id="48">48</span>
 <span id="49">49</span>
+<span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
 </pre><pre class="rust"><code><span class="comment">// db_review_mod.rs</span>
 
-<span class="comment">// only one review per crate_name_version</span>
+<span class="doccomment">//! cached data for &quot;my reviews&quot;</span>
+<span class="doccomment">//! reading from yaml files is slow, therefore</span>
+<span class="doccomment">//! it reads (sync) from &quot;my reviews&quot; in the background</span>
+<span class="doccomment">//! only one review per crate_name_version is permitted</span>
 
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">dead_code</span>)]</span>
 

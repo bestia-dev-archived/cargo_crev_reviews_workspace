@@ -4,11 +4,11 @@
 //! # cargo_crev_reviews
 //!
 //! **Write cargo-crev reviews in GUI with a cross-platform app written in full-stack Rust**  
-//! ***[repository](https://github.com/lucianobestia/cargo_crev_reviews_workspace); version: 2021.1220.1952  date: 2021-12-20 authors: Luciano Bestia***  
+//! ***[repository](https://github.com/lucianobestia/cargo_crev_reviews_workspace); version: 2021.1228.1729  date: 2021-12-28 authors: Luciano Bestia***  
 //!
-//! [![Lines in Rust code](https://img.shields.io/badge/Lines_in_Rust-2092-green.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
-//! [![Lines in Doc comments](https://img.shields.io/badge/Lines_in_Doc_comments-478-blue.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
-//! [![Lines in Comments](https://img.shields.io/badge/Lines_in_comments-183-purple.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
+//! [![Lines in Rust code](https://img.shields.io/badge/Lines_in_Rust-2372-green.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
+//! [![Lines in Doc comments](https://img.shields.io/badge/Lines_in_Doc_comments-502-blue.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
+//! [![Lines in Comments](https://img.shields.io/badge/Lines_in_comments-189-purple.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
 //! [![Lines in examples](https://img.shields.io/badge/Lines_in_examples-0-yellow.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
 //! [![Lines in tests](https://img.shields.io/badge/Lines_in_tests-17-orange.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
 //!
@@ -48,13 +48,15 @@
 //!
 //! To write a review you need to see the exact source code and other metadata about the crate. Click on the crate name in the list and it will open:
 //!
-//! - VSCode with the exact source code
+//! - VSCode in the directory with the source code
 //! - [crev.dev](https://web.crev.dev/rust-reviews/crates/) for other people reviews
 //! - crates.io for basic information
 //! - lib.rs for extended information
 //! - a list of all versions of that crate with your reviews added
 //!
-//! Be warned that modern browsers block pop-ups and you have to allow that explicitly for this site `127.0.0.1`.
+//! Be warned that modern browsers block pop-ups and you have to allow that explicitly for this site `127.0.0.1`.  
+//! If you don't have VSCode, you can create a symbolic link for the command `code directory_path` to open your preferred editor:  
+//! `ln -s /usr/bin/code your_preferred_editor`  
 //!
 //! ## Reputation vs. code review
 //!
@@ -279,7 +281,7 @@
 //!
 //! ### Create a "standard" html page
 //!
-//! The html page has to be MicroXml compatible, basically XHtml.  Copy for example `web_server_folder/review_list.html` to a new html file. Open this file with a browser to preview it. I use the VSCode extension [vscode-open-wsl](https://marketplace.visualstudio.com/items?itemName=NoThlnG.vscode-open-wsl) and right-click on the file and `Open with default application`. In WSL2 I use my project [wsl_open_browser](https://github.com/LucianoBestia/wsl_open_browser). Now edit the html file to your liking and reload the browser with F5 to see the changes. Use some sample text to make it look as close to what you want. These texts will be later programmatically replaced, but they are invaluable while designing a nice layout.
+//! The html page has to be MicroXml compatible, basically XHtml.  Copy for example `web_server_folder/review_list.html` to a new html file. Open this file with a browser to preview it. I use the VSCode extension [vscode-open-wsl](https://marketplace.visualstudio.com/items?itemName=NoThlnG.vscode-open-wsl) and right-click on the file and `Open with default application`. In WSL2 I use my project [wsl_open_browser](https://github.com/LucianoBestia/wsl_open_browser) to open the default browser from wsl2 to Windows. Now edit the html file to your liking and reload the browser with F5 to see the changes. Use some sample text to make it look as close to what you want. These texts will be later programmatically replaced, but they are invaluable while designing a nice layout.
 //!
 //! ### Add markers
 //!

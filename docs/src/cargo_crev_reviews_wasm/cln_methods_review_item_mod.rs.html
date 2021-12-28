@@ -174,39 +174,6 @@
 <span id="174">174</span>
 <span id="175">175</span>
 <span id="176">176</span>
-<span id="177">177</span>
-<span id="178">178</span>
-<span id="179">179</span>
-<span id="180">180</span>
-<span id="181">181</span>
-<span id="182">182</span>
-<span id="183">183</span>
-<span id="184">184</span>
-<span id="185">185</span>
-<span id="186">186</span>
-<span id="187">187</span>
-<span id="188">188</span>
-<span id="189">189</span>
-<span id="190">190</span>
-<span id="191">191</span>
-<span id="192">192</span>
-<span id="193">193</span>
-<span id="194">194</span>
-<span id="195">195</span>
-<span id="196">196</span>
-<span id="197">197</span>
-<span id="198">198</span>
-<span id="199">199</span>
-<span id="200">200</span>
-<span id="201">201</span>
-<span id="202">202</span>
-<span id="203">203</span>
-<span id="204">204</span>
-<span id="205">205</span>
-<span id="206">206</span>
-<span id="207">207</span>
-<span id="208">208</span>
-<span id="209">209</span>
 </pre><pre class="rust"><code><span class="comment">// cln_methods_review_item_mod.rs</span>
 
 <span class="doccomment">//! functions to render the html for reviews</span>
@@ -332,21 +299,6 @@
     <span class="macro">on_click!</span>(<span class="string">&quot;button_review_close&quot;</span>, <span class="ident">close_on_click</span>);
 }
 
-<span class="attribute">#[<span class="ident">named</span>]</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cln_review_error</span>(<span class="ident">srv_response</span>: <span class="ident">RpcResponse</span>) {
-    <span class="macro">log::info!</span>(<span class="string">&quot;{}&quot;</span>, <span class="macro">function_name!</span>());
-    <span class="kw">let</span> <span class="ident">html</span> <span class="op">=</span> <span class="ident">extract_html</span>(<span class="kw-2">&amp;</span><span class="ident">srv_response</span>);
-    <span class="kw">let</span> <span class="ident">data</span>: <span class="ident">RpcMessageData</span> <span class="op">=</span> <span class="macro">unwrap!</span>(<span class="ident">serde_json::from_value</span>(<span class="ident">srv_response</span>.<span class="ident">response_data</span>));
-    <span class="kw">let</span> <span class="ident">html_after_process</span> <span class="op">=</span> <span class="ident">tmplt::process_html</span>(<span class="kw-2">&amp;</span><span class="ident">data</span>, <span class="kw-2">&amp;</span><span class="ident">html</span>);
-    <span class="ident">w::set_inner_html</span>(<span class="string">&quot;div_for_modal&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">html_after_process</span>);
-    <span class="macro">on_click!</span>(<span class="string">&quot;modal_close&quot;</span>, <span class="ident">modal_close_on_click</span>);
-}
-
-<span class="attribute">#[<span class="ident">named</span>]</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cln_no_action</span>(<span class="ident">_srv_response</span>: <span class="ident">RpcResponse</span>) {
-    <span class="macro">log::info!</span>(<span class="string">&quot;{}&quot;</span>, <span class="macro">function_name!</span>());
-}
-
 <span class="comment">// endregion: cln methods to render the page and data</span>
 
 <span class="comment">// region: functions for event handlers (on_click)</span>
@@ -367,20 +319,6 @@
     <span class="ident">w::set_inner_html</span>(<span class="string">&quot;div_for_modal&quot;</span>, <span class="ident">html</span>);
     <span class="kw">let</span> <span class="ident">request_data</span> <span class="op">=</span> <span class="ident">RpcEmptyData</span> {};
     <span class="ident">srv_methods::srv_review_publish</span>(<span class="ident">request_data</span>);
-}
-
-<span class="attribute">#[<span class="ident">named</span>]</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">request_update_registry_index</span>(<span class="ident">_element_id</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) {
-    <span class="macro">log::info!</span>(<span class="string">&quot;{}&quot;</span>, <span class="macro">function_name!</span>());
-    <span class="kw">let</span> <span class="ident">html</span> <span class="op">=</span> <span class="string">r#&quot;
-    &lt;div id=&quot;modal_message&quot; class=&quot;w3_modal&quot;&gt;
-        &lt;div class=&quot;w3_modal_content&quot;&gt;
-            &lt;div&gt;Updating registry index. Wait a minute...&lt;/div&gt;        
-        &lt;/div&gt;
-    &lt;/div&gt;&quot;#</span>;
-    <span class="ident">w::set_inner_html</span>(<span class="string">&quot;div_for_modal&quot;</span>, <span class="ident">html</span>);
-    <span class="kw">let</span> <span class="ident">request_data</span> <span class="op">=</span> <span class="ident">RpcEmptyData</span> {};
-    <span class="ident">srv_methods::srv_update_registry_index</span>(<span class="ident">request_data</span>);
 }
 
 <span class="attribute">#[<span class="ident">named</span>]</span>
@@ -405,10 +343,6 @@
         <span class="ident">comment_md</span>: <span class="ident">w::get_text_area_element_value_string_by_id</span>(<span class="string">&quot;comment_md&quot;</span>),
     };
     <span class="ident">srv_methods::srv_review_save</span>(<span class="ident">request_data</span>);
-}
-
-<span class="kw">fn</span> <span class="ident">modal_close_on_click</span>(<span class="ident">_element_id</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) {
-    <span class="ident">w::set_inner_html</span>(<span class="string">&quot;div_for_modal&quot;</span>, <span class="string">&quot;&quot;</span>);
 }
 
 <span class="kw">fn</span> <span class="ident">close_on_click</span>(<span class="ident">_element_id</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) {

@@ -545,17 +545,21 @@
 <span id="545">545</span>
 <span id="546">546</span>
 <span id="547">547</span>
+<span id="548">548</span>
+<span id="549">549</span>
+<span id="550">550</span>
+<span id="551">551</span>
 </pre><pre class="rust"><code><span class="comment">// cargo_crev_reviews/src/lib.rs</span>
 
 <span class="comment">// region: auto_md_to_doc_comments include README.md A //!</span>
 <span class="doccomment">//! # cargo_crev_reviews</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! **Write cargo-crev reviews in GUI with a cross-platform app written in full-stack Rust**  </span>
-<span class="doccomment">//! ***[repository](https://github.com/lucianobestia/cargo_crev_reviews_workspace); version: 2021.1220.1952  date: 2021-12-20 authors: Luciano Bestia***  </span>
+<span class="doccomment">//! ***[repository](https://github.com/lucianobestia/cargo_crev_reviews_workspace); version: 2021.1228.1729  date: 2021-12-28 authors: Luciano Bestia***  </span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! [![Lines in Rust code](https://img.shields.io/badge/Lines_in_Rust-2092-green.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)</span>
-<span class="doccomment">//! [![Lines in Doc comments](https://img.shields.io/badge/Lines_in_Doc_comments-478-blue.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)</span>
-<span class="doccomment">//! [![Lines in Comments](https://img.shields.io/badge/Lines_in_comments-183-purple.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)</span>
+<span class="doccomment">//! [![Lines in Rust code](https://img.shields.io/badge/Lines_in_Rust-2372-green.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)</span>
+<span class="doccomment">//! [![Lines in Doc comments](https://img.shields.io/badge/Lines_in_Doc_comments-502-blue.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)</span>
+<span class="doccomment">//! [![Lines in Comments](https://img.shields.io/badge/Lines_in_comments-189-purple.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)</span>
 <span class="doccomment">//! [![Lines in examples](https://img.shields.io/badge/Lines_in_examples-0-yellow.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)</span>
 <span class="doccomment">//! [![Lines in tests](https://img.shields.io/badge/Lines_in_tests-17-orange.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)</span>
 <span class="doccomment">//!</span>
@@ -595,13 +599,15 @@
 <span class="doccomment">//!</span>
 <span class="doccomment">//! To write a review you need to see the exact source code and other metadata about the crate. Click on the crate name in the list and it will open:</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! - VSCode with the exact source code</span>
+<span class="doccomment">//! - VSCode in the directory with the source code</span>
 <span class="doccomment">//! - [crev.dev](https://web.crev.dev/rust-reviews/crates/) for other people reviews</span>
 <span class="doccomment">//! - crates.io for basic information</span>
 <span class="doccomment">//! - lib.rs for extended information</span>
 <span class="doccomment">//! - a list of all versions of that crate with your reviews added</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! Be warned that modern browsers block pop-ups and you have to allow that explicitly for this site `127.0.0.1`.</span>
+<span class="doccomment">//! Be warned that modern browsers block pop-ups and you have to allow that explicitly for this site `127.0.0.1`.  </span>
+<span class="doccomment">//! If you don&#39;t have VSCode, you can create a symbolic link for the command `code directory_path` to open your preferred editor:  </span>
+<span class="doccomment">//! `ln -s /usr/bin/code your_preferred_editor`  </span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! ## Reputation vs. code review</span>
 <span class="doccomment">//!</span>
@@ -826,7 +832,7 @@
 <span class="doccomment">//!</span>
 <span class="doccomment">//! ### Create a &quot;standard&quot; html page</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! The html page has to be MicroXml compatible, basically XHtml.  Copy for example `web_server_folder/review_list.html` to a new html file. Open this file with a browser to preview it. I use the VSCode extension [vscode-open-wsl](https://marketplace.visualstudio.com/items?itemName=NoThlnG.vscode-open-wsl) and right-click on the file and `Open with default application`. In WSL2 I use my project [wsl_open_browser](https://github.com/LucianoBestia/wsl_open_browser). Now edit the html file to your liking and reload the browser with F5 to see the changes. Use some sample text to make it look as close to what you want. These texts will be later programmatically replaced, but they are invaluable while designing a nice layout.</span>
+<span class="doccomment">//! The html page has to be MicroXml compatible, basically XHtml.  Copy for example `web_server_folder/review_list.html` to a new html file. Open this file with a browser to preview it. I use the VSCode extension [vscode-open-wsl](https://marketplace.visualstudio.com/items?itemName=NoThlnG.vscode-open-wsl) and right-click on the file and `Open with default application`. In WSL2 I use my project [wsl_open_browser](https://github.com/LucianoBestia/wsl_open_browser) to open the default browser from wsl2 to Windows. Now edit the html file to your liking and reload the browser with F5 to see the changes. Use some sample text to make it look as close to what you want. These texts will be later programmatically replaced, but they are invaluable while designing a nice layout.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! ### Add markers</span>
 <span class="doccomment">//!</span>
@@ -939,12 +945,14 @@
 <span class="kw">mod</span> <span class="ident">response_get_mod</span>;
 <span class="kw">mod</span> <span class="ident">response_post_mod</span>;
 <span class="kw">mod</span> <span class="ident">srv_methods_mod</span>;
+<span class="kw">mod</span> <span class="ident">srv_methods_publisher_mod</span>;
 <span class="kw">mod</span> <span class="ident">stdio_input_password_mod</span>;
 <span class="kw">mod</span> <span class="ident">utils_mod</span>;
 
 <span class="comment">// region: functions and structs accessible to /bin/cargo_crev_reviews.</span>
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">crev_mod::unlock_crev_id_interactively</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">db_sled_mod::db_sled_migration_update</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">db_sled_mod::sync_in_background_reviews</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">db_sled_mod::sync_in_background_verify</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">db_sled_mod::sync_in_background_yanked</span>;

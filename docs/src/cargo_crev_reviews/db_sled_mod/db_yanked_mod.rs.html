@@ -58,10 +58,10 @@
 <span id="58">58</span>
 </pre><pre class="rust"><code><span class="comment">// db_yanked_mod.rs</span>
 
-<span class="comment">// a list of yanked versions in the sled database</span>
-<span class="comment">// so the reading should be faster than reading from cargo registry index</span>
-<span class="comment">// this is not immutable like other information from crates.io and it needs regular updates</span>
-<span class="comment">// it can read the data from cargo registry.</span>
+<span class="doccomment">//! cached list of yanked versions in the sled database</span>
+<span class="doccomment">//! so the reading should be faster than reading from cargo registry index</span>
+<span class="doccomment">//! this is not immutable like other information from crates.io and it needs regular updates</span>
+<span class="doccomment">//! it can read the data from cargo registry.</span>
 
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">dead_code</span>)]</span>
 

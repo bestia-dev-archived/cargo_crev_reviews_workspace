@@ -64,14 +64,6 @@
 <span id="64">64</span>
 <span id="65">65</span>
 <span id="66">66</span>
-<span id="67">67</span>
-<span id="68">68</span>
-<span id="69">69</span>
-<span id="70">70</span>
-<span id="71">71</span>
-<span id="72">72</span>
-<span id="73">73</span>
-<span id="74">74</span>
 </pre><pre class="rust"><code><span class="comment">// cln_methods_mod.rs</span>
 
 <span class="doccomment">//! generic code to process html</span>
@@ -81,7 +73,6 @@
 <span class="kw">use</span> <span class="ident">wasm_bindgen_futures::spawn_local</span>;
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::auto_generated_mod::common_structs_mod</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::on_click</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::web_sys_mod</span> <span class="kw">as</span> <span class="ident">w</span>;
 <span class="kw">use</span> <span class="ident">dev_bestia_string_utils</span>::<span class="kw-2">*</span>;
 
@@ -118,13 +109,6 @@
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">inject_into_html</span>(<span class="ident">html_after_process</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) {
     <span class="ident">w::set_inner_html</span>(<span class="string">&quot;div_for_wasm_html_injecting&quot;</span>, <span class="ident">html_after_process</span>);
-}
-
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">navigation_on_click</span>() {
-    <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::cln_methods_review_item_mod</span>::<span class="kw-2">*</span>;
-    <span class="kw">use</span> <span class="ident">wasm_bindgen::JsCast</span>;
-    <span class="macro">on_click!</span>(<span class="string">&quot;button_update_registry_index&quot;</span>, <span class="ident">request_update_registry_index</span>);
-    <span class="macro">on_click!</span>(<span class="string">&quot;button_review_publish&quot;</span>, <span class="ident">request_review_publish</span>);
 }
 
 <span class="kw">use</span> <span class="ident">dev_bestia_html_templating</span> <span class="kw">as</span> <span class="ident">tmplt</span>;

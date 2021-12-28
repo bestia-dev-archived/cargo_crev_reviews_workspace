@@ -73,7 +73,17 @@
 <span id="73">73</span>
 <span id="74">74</span>
 <span id="75">75</span>
+<span id="76">76</span>
+<span id="77">77</span>
+<span id="78">78</span>
+<span id="79">79</span>
+<span id="80">80</span>
+<span id="81">81</span>
+<span id="82">82</span>
 </pre><pre class="rust"><code><span class="comment">// db_version_mod.rs</span>
+
+<span class="doccomment">//! cached data for crate versions</span>
+<span class="doccomment">//! for needed crates it reads (sync) from crates.io api in the background</span>
 
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">dead_code</span>)]</span>
 
@@ -90,7 +100,7 @@
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">VersionForDb</span> {
     <span class="kw">pub</span> <span class="ident">crate_name_version</span>: <span class="ident">String</span>,
-    <span class="kw">pub</span> <span class="ident">published_by_login</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">published_by_url</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
     <span class="kw">pub</span> <span class="ident">published_date</span>: <span class="ident">String</span>,
 }
 
@@ -147,6 +157,10 @@
         <span class="prelude-val">Some</span>(<span class="kw">_</span>) =&gt; <span class="bool-val">true</span>,
         <span class="prelude-val">None</span> =&gt; <span class="bool-val">false</span>,
     }
+}
+
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">clear</span>() {
+    <span class="macro">unwrap!</span>(<span class="ident">DB_VERSION</span>.<span class="ident">clear</span>());
 }
 </code></pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="cargo_crev_reviews" data-search-index-js="../../../search-index.js" data-search-js="../../../search.js"></div>

@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["srv_publisher_delete",""],["srv_publisher_edit",""],["srv_publisher_list",""],["srv_publisher_new",""],["srv_publisher_save",""]]});

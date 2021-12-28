@@ -1,1 +1,0 @@
-initSidebarItems({"fn":[["cln_verify_list",""],["open_all_links",""],["request_review_edit_or_new",""],["request_verify_list",""]],"struct":[["VERIFY_ITEM_DATA","mutable static, because it is hard to pass variables around with on_click events"],["VERIFY_LIST_DATA",""]]});

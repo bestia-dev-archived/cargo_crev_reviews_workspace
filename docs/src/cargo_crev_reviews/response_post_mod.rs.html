@@ -38,6 +38,10 @@
 <span id="38">38</span>
 <span id="39">39</span>
 <span id="40">40</span>
+<span id="41">41</span>
+<span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
 </pre><pre class="rust"><code><span class="comment">// response_post_mod.rs</span>
 
 <span class="doccomment">//! generic functions for response to the POST method</span>
@@ -72,11 +76,15 @@
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">response_modal_message</span>(<span class="ident">msg</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="ident">anyhow::Result</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">response_data</span> <span class="op">=</span> <span class="ident">RpcMessageData</span> { <span class="ident">message</span>: <span class="ident">msg</span>.<span class="ident">to_string</span>() };
     <span class="kw">let</span> <span class="ident">response_html</span> <span class="op">=</span> <span class="ident"><span class="kw">crate</span>::auto_generated_files_mod::get_file_text</span>(<span class="string">&quot;/cargo_crev_reviews/modal_message.html&quot;</span>);
-    <span class="ident"><span class="kw">crate</span>::auto_generated_mod::cln_methods::cln_review_error</span>(<span class="ident">response_data</span>, <span class="kw-2">&amp;</span><span class="ident">response_html</span>)
+    <span class="ident"><span class="kw">crate</span>::auto_generated_mod::cln_methods::cln_modal_error</span>(<span class="ident">response_data</span>, <span class="kw-2">&amp;</span><span class="ident">response_html</span>)
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">response_no_action</span>() -&gt; <span class="ident">anyhow::Result</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
     <span class="ident"><span class="kw">crate</span>::auto_generated_mod::cln_methods::cln_no_action</span>(<span class="string">&quot;&quot;</span>, <span class="string">&quot;&quot;</span>)
+}
+
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">response_modal_close</span>() -&gt; <span class="ident">anyhow::Result</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
+    <span class="ident"><span class="kw">crate</span>::auto_generated_mod::cln_methods::cln_modal_close</span>(<span class="string">&quot;&quot;</span>, <span class="string">&quot;&quot;</span>)
 }
 </code></pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="cargo_crev_reviews" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div>
