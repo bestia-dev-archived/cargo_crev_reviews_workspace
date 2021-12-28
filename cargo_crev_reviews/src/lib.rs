@@ -399,6 +399,7 @@ mod utils_mod;
 // region: functions and structs accessible to /bin/cargo_crev_reviews.
 
 pub use crev_mod::unlock_crev_id_interactively;
+pub use db_sled_mod::db_sled_migration_update;
 pub use db_sled_mod::sync_in_background_reviews;
 pub use db_sled_mod::sync_in_background_verify;
 pub use db_sled_mod::sync_in_background_yanked;

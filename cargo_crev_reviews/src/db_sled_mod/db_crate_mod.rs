@@ -1,5 +1,8 @@
 // db_crate_mod.rs
 
+//! cached data for crates
+//! for needed crates it reads (sync) from crates.io in the background
+
 #![allow(dead_code)]
 
 use lazy_static::lazy_static;

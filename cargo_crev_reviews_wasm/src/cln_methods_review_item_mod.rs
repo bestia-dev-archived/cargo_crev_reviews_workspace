@@ -123,16 +123,6 @@ pub fn cln_review_edit(srv_response: RpcResponse) {
     on_click!("button_review_close", close_on_click);
 }
 
-#[named]
-pub fn cln_review_error(srv_response: RpcResponse) {
-    log::info!("{}", function_name!());
-    let html = extract_html(&srv_response);
-    let data: RpcMessageData = unwrap!(serde_json::from_value(srv_response.response_data));
-    let html_after_process = tmplt::process_html(&data, &html);
-    w::set_inner_html("div_for_modal", &html_after_process);
-    use crate::cln_methods_mod::modal_close_on_click;
-    on_click!("modal_close", modal_close_on_click);
-}
 // endregion: cln methods to render the page and data
 
 // region: functions for event handlers (on_click)

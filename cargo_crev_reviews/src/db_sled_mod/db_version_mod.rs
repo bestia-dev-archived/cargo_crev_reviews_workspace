@@ -1,5 +1,8 @@
 // db_version_mod.rs
 
+//! cached data for crate versions
+//! for needed crates it reads (sync) from crates.io api in the background
+
 #![allow(dead_code)]
 
 use lazy_static::lazy_static;
@@ -72,4 +75,8 @@ pub fn exists(crate_name: &str) -> bool {
         Some(_) => true,
         None => false,
     }
+}
+
+pub fn clear() {
+    unwrap!(DB_VERSION.clear());
 }

@@ -114,11 +114,16 @@ pub struct VersionListData {
 
 #[derive(Serialize, Deserialize, Debug, Default, Clone)]
 pub struct PublisherItemData {
-    pub url: String,
+    pub publisher_url: String,
     pub note: String,
 }
 
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct PublisherListData {
     pub list_of_publisher: Vec<PublisherItemData>,
+}
+
+#[derive(Serialize, Deserialize, Debug, Default)]
+pub struct PublisherFilterData {
+    pub publisher_url: String,
 }

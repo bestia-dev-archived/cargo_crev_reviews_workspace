@@ -504,18 +504,14 @@ pub fn verify_sort_list_by_name_version(vec_of_verify: &mut Vec<VerifyItemData>)
 }
 // region: cargo_crev_reviews/db_version
 
-/// check if it is already in the cache or GET from crates.io API and store in cache
+/// check if it is already in the cache or it will GET from crates.io API and store in cache
 fn published_by_url(crate_name: &str, crate_version: &str) -> anyhow::Result<String> {
     let crate_name_version = &join_crate_version(crate_name, crate_version);
     let exact_version = crate::db_sled_mod::db_version_mod::read(&crate_name_version)?;
     match exact_version {
         Some(exact_version) => match exact_version.published_by_url {
             Some(published_by_url) => Ok(published_by_url),
-            None => {
-                // get version in background, because before 2021-12-27 I stored the login instead of url
-                crate::db_sled_mod::download_in_background_crate_versions(crate_name.to_string());
-                Ok("".to_string())
-            }
+            None => Ok("".to_string()),
         },
         None => Ok("".to_string()),
     }
@@ -545,9 +541,9 @@ fn path_to_trusted_publishers_json() -> anyhow::Result<std::path::PathBuf> {
     Ok(pb)
 }
 
-pub fn is_trusted_publisher(trusted_publishers: &Vec<PublisherItemData>, url: &str) -> String {
+pub fn is_trusted_publisher(trusted_publishers: &Vec<PublisherItemData>, publisher_url: &str) -> String {
     for x in trusted_publishers.iter() {
-        if &x.url == url {
+        if &x.publisher_url == publisher_url {
             return "T".to_string();
         }
     }

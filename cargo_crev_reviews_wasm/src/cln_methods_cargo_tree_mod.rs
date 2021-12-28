@@ -40,7 +40,10 @@ impl tmplt::HtmlTemplatingDataTrait for CargoTreeItemData {
             "wt_my_rating" => self.my_rating.as_deref().unwrap_or("").to_string(),
             "wt_crate_description" => self.crate_description.as_deref().unwrap_or("").to_string(),
             "wt_published_by_url" => crate::cln_methods_publisher_mod::published_by_url_shorten(self.published_by_url.as_deref().unwrap_or("")).to_string(),
-            "wt_published_by_class" => format!("review_header0_cell left codetree c_{}", self.trusted_publisher.as_deref().unwrap_or("")),
+            "wt_published_by_class" => format!(
+                "review_header0_cell left codetree pointer c_{}",
+                self.trusted_publisher.as_deref().unwrap_or("")
+            ),
             "wt_status" => self.status.as_deref().unwrap_or("").to_string(),
             "wt_status_class" => format!("review_header0_cell left codetree c_{}", self.status.as_deref().unwrap_or("")),
             _ => tmplt::utils::match_else_for_replace_with_string(&self.data_model_name(), placeholder),
@@ -121,6 +124,7 @@ pub fn cln_cargo_tree_list(srv_response: RpcResponse) {
     // on_click for every row of the list
     for (row_number, _item) in CARGO_TREE_LIST_DATA.lock().unwrap().list_of_cargo_tree.iter().enumerate() {
         row_on_click!("crate_name_version", row_number, open_all_links);
+        row_on_click!("published_by_url", row_number, open_published_by_url);
     }
 }
 
@@ -177,6 +181,19 @@ fn open_all_links(_element_id: &str, row_number: usize) {
             // list versions for this crate
             let url = format!("index.html#version_list/{}", crate_name);
             unwrap!(w::window().open_with_url(&url));
+        }
+    }
+}
+
+#[named]
+fn open_published_by_url(_element_id: &str, row_number: usize) {
+    log::info!("{}", function_name!());
+    let item = &CARGO_TREE_LIST_DATA.lock().unwrap().list_of_cargo_tree[row_number];
+
+    match &item.published_by_url {
+        None => {}
+        Some(url) => {
+            unwrap!(unwrap!(w::window().open_with_url(&url)));
         }
     }
 }

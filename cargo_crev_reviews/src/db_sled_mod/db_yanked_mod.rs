@@ -1,9 +1,9 @@
 // db_yanked_mod.rs
 
-// a list of yanked versions in the sled database
-// so the reading should be faster than reading from cargo registry index
-// this is not immutable like other information from crates.io and it needs regular updates
-// it can read the data from cargo registry.
+//! cached list of yanked versions in the sled database
+//! so the reading should be faster than reading from cargo registry index
+//! this is not immutable like other information from crates.io and it needs regular updates
+//! it can read the data from cargo registry.
 
 #![allow(dead_code)]
 

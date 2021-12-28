@@ -33,6 +33,7 @@ If the default browser does not open from WSL2, you can see my project `https://
 "#
         );
         unlock_crev_id_interactively()?;
+        db_sled_migration_update(env!("CARGO_PKG_VERSION"));
         open_browser();
         // this must be the last command, because the server lasts
         start_web_server();

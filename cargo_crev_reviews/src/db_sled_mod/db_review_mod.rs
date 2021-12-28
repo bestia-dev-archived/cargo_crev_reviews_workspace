@@ -1,6 +1,9 @@
 // db_review_mod.rs
 
-// only one review per crate_name_version
+//! cached data for "my reviews"
+//! reading from yaml files is slow, therefore
+//! it reads (sync) from "my reviews" in the background
+//! only one review per crate_name_version is permitted
 
 #![allow(dead_code)]
 

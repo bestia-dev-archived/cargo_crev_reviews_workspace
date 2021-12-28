@@ -1,5 +1,9 @@
 // db_verify_mod.rs
 
+//! cached data for the command "verify"
+//! the command can be slow therefore
+//! it reads (sync) the result of the command in the background
+
 #![allow(dead_code)]
 
 use lazy_static::lazy_static;

@@ -13,14 +13,17 @@ use dev_bestia_string_utils::*;
 
 use crate::auto_generated_mod::{common_structs_mod::*, srv_methods};
 //use crate::auto_generated_mod::srv_methods;
-
-// use crate::on_click;
 use crate::{html_mod::*, on_click, row_on_click};
 
 lazy_static! {
     /// mutable static, because it is hard to pass variables around with on_click events
     static ref PUBLISHER_ITEM_DATA: Mutex<PublisherItemData> = Mutex::new(PublisherItemData::default());
     static ref PUBLISHER_LIST_DATA: Mutex<PublisherListData> = Mutex::new(PublisherListData::default());
+}
+
+/// store data in static Mutex because of events like on_click
+fn store_to_publisher_item_data(srv_response: RpcResponse) {
+    *PUBLISHER_ITEM_DATA.lock().unwrap() = unwrap!(serde_json::from_value(srv_response.response_data));
 }
 
 impl tmplt::HtmlTemplatingDataTrait for PublisherListData {
@@ -76,7 +79,7 @@ impl tmplt::HtmlTemplatingDataTrait for PublisherItemData {
     fn replace_with_string(&self, placeholder: &str, _subtemplate_name: &str, _pos_cursor: usize) -> String {
         // log::debug!(&placeholder);
         match placeholder {
-            "wt_publisher_url" => self.url.clone(),
+            "wt_publisher_url" => self.publisher_url.clone(),
             "wt_note" => self.note.clone(),
             _ => tmplt::utils::match_else_for_replace_with_string(&self.data_model_name(), placeholder),
         }
@@ -123,16 +126,26 @@ pub fn cln_publisher_list(srv_response: RpcResponse) {
     // on_click for every row of the list
     for (row_number, _item) in PUBLISHER_LIST_DATA.lock().unwrap().list_of_publisher.iter().enumerate() {
         row_on_click!("publisher_url", row_number, button_open_publisher_url_onclick);
+        row_on_click!("button_edit", row_number, button_edit_onclick);
     }
 }
 
 #[named]
 fn button_open_publisher_url_onclick(_element_id: &str, row_number: usize) {
     log::info!("{}", function_name!());
-    // from list get crate name and publisher
     let item = &PUBLISHER_LIST_DATA.lock().unwrap().list_of_publisher[row_number];
-    let url = format!("{}", item.url);
+    let url = format!("{}", item.publisher_url);
     unwrap!(w::window().open_with_url(&url));
+}
+
+#[named]
+pub fn button_edit_onclick(_element_id: &str, row_number: usize) {
+    log::info!("{}", function_name!());
+    let item = &PUBLISHER_LIST_DATA.lock().unwrap().list_of_publisher[row_number];
+    let request_data = PublisherFilterData {
+        publisher_url: item.publisher_url.to_string(),
+    };
+    srv_methods::srv_publisher_edit(request_data);
 }
 
 #[named]
@@ -156,65 +169,54 @@ pub fn cln_publisher_new_modal(srv_response: RpcResponse) {
     on_click!("publisher_save", request_publisher_save);
 }
 
+#[named]
+pub fn cln_publisher_edit_modal(srv_response: RpcResponse) {
+    log::info!("{}", function_name!());
+    // button_edit_publisher_on_click > srv_publisher_edit > cln_publisher_edit_modal
+    let html = extract_html(&srv_response);
+    store_to_publisher_item_data(srv_response);
+    // process with PublisherItemData
+    let html_after_process = {
+        let data = PUBLISHER_ITEM_DATA.lock().unwrap();
+        tmplt::process_html(data.deref(), &html)
+    };
+    w::set_inner_html("div_for_modal", &html_after_process);
+
+    use crate::cln_methods_mod::modal_close_on_click;
+    on_click!("modal_close", modal_close_on_click);
+    on_click!("publisher_save", request_publisher_save);
+    on_click!("publisher_delete", request_publisher_delete);
+}
+
 /// send rpc requests
 #[named]
 fn request_publisher_save(_element_id: &str) {
     log::info!("{}", function_name!());
     // values from form
     let request_data = PublisherItemData {
-        url: w::get_input_element_value_string_by_id("modal_publisher_url"),
+        publisher_url: w::get_input_element_value_string_by_id("modal_publisher_url"),
         note: w::get_text_area_element_value_string_by_id("modal_note"),
     };
     srv_methods::srv_publisher_save(request_data);
     // srv returns response_modal_close
 }
 
-pub fn published_by_url_shorten(url: &str) -> &str {
-    if url.starts_with("https://github.com/") {
-        return &url[19..];
-    } else if url.starts_with("https://") {
-        return &url[8..];
+pub fn published_by_url_shorten(publisher_url: &str) -> &str {
+    if publisher_url.starts_with("https://github.com/") {
+        return &publisher_url[19..];
+    } else if publisher_url.starts_with("https://") {
+        return &publisher_url[8..];
     } else {
-        return url;
+        return publisher_url;
     }
 }
 
-/*
-
 #[named]
-pub fn modal_delete(_element_id: &str, row_number: usize) {
+fn request_publisher_delete(_element_id: &str) {
     log::info!("{}", function_name!());
-    let html = format!(
-        r#"
-    <div id="modal_message" class="w3_modal">
-        <div class="w3_modal_content">
-            <div>Do you really want to delete your review?</div>
-            <button id="modal_yes_delete({})">Yes</button>
-            <button id="modal_close">No</button>
-        </div>
-    </div>"#,
-        row_number
-    );
-    w::set_inner_html("div_for_modal", &html);
-use crate::cln_methods_mod::modal_close_on_click;
-    on_click!("modal_close", modal_close_on_click);
-    // I had to add modal_yes_delete(0), because row_on_click works that way.
-    row_on_click!("modal_yes_delete", row_number, request_review_delete);
-}
 
-
-#[named]
-fn request_review_delete(_element_id: &str, row_number: usize) {
-    log::info!("{}", function_name!());
-    modal_close_on_click("");
-
-    // from list get crate name and version
-    let item = &PUBLISHER_LIST_DATA.lock().unwrap().list_of_version[row_number];
-    let request_data = ReviewFilterData {
-        crate_name: item.crate_name.clone(),
-        crate_version: Some(item.crate_version.clone()),
-        old_crate_version: None,
+    let request_data = PublisherFilterData {
+        publisher_url: w::get_input_element_value_string_by_id("modal_publisher_url"),
     };
-    srv_methods::srv_review_delete(request_data);
+    srv_methods::srv_publisher_delete(request_data);
 }
- */

@@ -16,11 +16,12 @@ pub async fn match_response_method_and_call_function(response: common_structs_mo
         // region: generated match_response_method
         "cln_cargo_tree_list" => cln_cargo_tree_list(response),
         "cln_modal_close" => cln_modal_close(response),
+        "cln_modal_error" => cln_modal_error(response),
         "cln_no_action" => cln_no_action(response),
+        "cln_publisher_edit_modal" => cln_publisher_edit_modal(response),
         "cln_publisher_list" => cln_publisher_list(response),
         "cln_publisher_new_modal" => cln_publisher_new_modal(response),
         "cln_review_edit" => cln_review_edit(response),
-        "cln_review_error" => cln_review_error(response),
         "cln_review_list" => cln_review_list(response),
         "cln_review_new" => cln_review_new(response),
         "cln_review_publish_modal" => cln_review_publish_modal(response),
@@ -39,6 +40,24 @@ pub mod srv_methods {
 
     #[named]
     pub fn srv_cargo_tree_project<T>(request_data: T)
+    where
+        T: serde::Serialize,
+    {
+        let request_method = function_name!();
+        post_request_await_run_response_method(request_method, request_data);
+    }
+
+    #[named]
+    pub fn srv_publisher_delete<T>(request_data: T)
+    where
+        T: serde::Serialize,
+    {
+        let request_method = function_name!();
+        post_request_await_run_response_method(request_method, request_data);
+    }
+
+    #[named]
+    pub fn srv_publisher_edit<T>(request_data: T)
     where
         T: serde::Serialize,
     {
@@ -292,13 +311,18 @@ pub mod common_structs_mod {
 
     #[derive(Serialize, Deserialize, Debug, Default, Clone)]
     pub struct PublisherItemData {
-        pub url: String,
+        pub publisher_url: String,
         pub note: String,
     }
 
     #[derive(Serialize, Deserialize, Debug, Default)]
     pub struct PublisherListData {
         pub list_of_publisher: Vec<PublisherItemData>,
+    }
+
+    #[derive(Serialize, Deserialize, Debug, Default)]
+    pub struct PublisherFilterData {
+        pub publisher_url: String,
     }
     // endregion: generated common_structs_mod
 }

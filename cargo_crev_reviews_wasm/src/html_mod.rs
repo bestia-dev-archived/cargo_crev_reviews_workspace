@@ -7,7 +7,6 @@ use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::spawn_local;
 
 use crate::auto_generated_mod::common_structs_mod::*;
-use crate::on_click;
 use crate::web_sys_mod as w;
 use dev_bestia_string_utils::*;
 

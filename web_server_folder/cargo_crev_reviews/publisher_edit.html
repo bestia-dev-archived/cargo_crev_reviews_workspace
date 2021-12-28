@@ -3,7 +3,7 @@
 
 <head>
     <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
-    <title>publisher_new</title>
+    <title>publisher_edit</title>
     <meta name="Description" content="web app for writing new reviews for cargo-crev" />
     <link rel="stylesheet" href="css/normalize.css" />
     <link rel="stylesheet" href="css/cargo_crev_reviews.css" />
@@ -14,17 +14,18 @@
 </head>
 
 <body>
-    <div id="modal_message" class="w3_modal" data-template_name="publisher_new.html">
+    <div id="modal_message" class="w3_modal" data-template_name="publisher_edit.html">
         <div class="w3_modal_content">
             <form>
                 <label for="modal_publisher_url">publisher url:</label>
-                <input type="text" id="modal_publisher_url" style="width:30em"></input>
+                <input type="text" id="modal_publisher_url" style="width:30em" data-wt_publisher_url="value" value="publisher_url"></input>
                 <br/>
                 <label for="modal_note">note:</label>
-                <textarea style="height: 100px;width: 90%;" id="modal_note" name="modal_note"></textarea>
+                <textarea style="height: 100px;width: 90%;" id="modal_note" name="modal_note"><!--wt_note-->note</textarea>
 
             </form>
             <button id="publisher_save">Save</button>
+            <button id="publisher_delete">Delete</button>
             <button id="modal_close">Close</button>
         </div>
     </div>

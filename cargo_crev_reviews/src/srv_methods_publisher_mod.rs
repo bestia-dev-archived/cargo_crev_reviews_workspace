@@ -31,11 +31,33 @@ pub fn srv_publisher_new(_request_data: serde_json::Value) -> anyhow::Result<Str
 }
 
 #[named]
+pub fn srv_publisher_edit(request_data: serde_json::Value) -> anyhow::Result<String> {
+    log::info!(function_name!());
+
+    let p: PublisherFilterData = serde_json::from_value(request_data)?;
+    let response_html = crate::html_mod::process_include(&crate::auto_generated_files_mod::get_file_text("/cargo_crev_reviews/publisher_edit.html"));
+    let response_data = crate::db_sled_mod::db_publisher_mod::read(&p.publisher_url)?;
+
+    cln_methods::cln_publisher_edit_modal(response_data, &response_html)
+}
+
+#[named]
 pub fn srv_publisher_save(request_data: serde_json::Value) -> anyhow::Result<String> {
     log::info!(function_name!());
 
     let p: PublisherItemData = serde_json::from_value(request_data)?;
-    crate::db_sled_mod::db_publisher_mod::insert(&p.url, &p)?;
+    crate::db_sled_mod::db_publisher_mod::insert(&p.publisher_url, &p)?;
+
+    crate::response_post_mod::response_modal_close()
+}
+
+#[named]
+pub fn srv_publisher_delete(request_data: serde_json::Value) -> anyhow::Result<String> {
+    log::info!(function_name!());
+    log::info!("{}", request_data);
+
+    let p: PublisherFilterData = serde_json::from_value(request_data)?;
+    crate::db_sled_mod::db_publisher_mod::delete(&p.publisher_url);
 
     crate::response_post_mod::response_modal_close()
 }
