@@ -394,7 +394,6 @@ mod html_mod;
 mod response_get_mod;
 mod response_post_mod;
 mod srv_methods_mod;
-mod srv_methods_publisher_mod;
 mod stdio_input_password_mod;
 mod utils_mod;
 

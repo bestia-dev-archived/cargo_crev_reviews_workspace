@@ -123,7 +123,7 @@ pub fn cln_review_publish_modal(srv_response: RpcResponse) {
     let data: RpcMessageData = unwrap!(serde_json::from_value(srv_response.response_data));
     let html_after_process = tmplt::process_html(&data, &html);
     w::set_inner_html("div_for_modal", &html_after_process);
-    use crate::cln_methods_mod::modal_close_on_click;
+    use crate::cln_methods_mod::cln_methods_utils_mod::modal_close_on_click;
     on_click!("modal_close", modal_close_on_click);
 }
 
@@ -251,7 +251,7 @@ pub fn modal_delete(_element_id: &str, row_number: usize) {
         row_number
     );
     w::set_inner_html("div_for_modal", &html);
-    use crate::cln_methods_mod::modal_close_on_click;
+    use crate::cln_methods_mod::cln_methods_utils_mod::modal_close_on_click;
     on_click!("modal_close", modal_close_on_click);
     // I had to add modal_yes_delete(0), because row_on_click works that way.
     row_on_click!("modal_yes_delete", row_number, request_review_delete);
@@ -260,7 +260,7 @@ pub fn modal_delete(_element_id: &str, row_number: usize) {
 #[named]
 fn request_review_delete(_element_id: &str, row_number: usize) {
     log::info!("{}", function_name!());
-    use crate::cln_methods_mod::modal_close_on_click;
+    use crate::cln_methods_mod::cln_methods_utils_mod::modal_close_on_click;
     modal_close_on_click("");
 
     // from list get crate name and version

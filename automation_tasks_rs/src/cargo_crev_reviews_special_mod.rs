@@ -143,8 +143,8 @@ pub fn common_structs_copy(){
 }
 
 pub fn generate_server_methods(){    
-    // list functions starting with `pub fn srv_` in files starting with `srv_methods_`
-    let mut function_list = list_methods_in_files("cargo_crev_reviews/src/","srv_methods_","srv_");
+    // list functions starting with `pub fn srv_` in files starting with `srv_` in the srv_methods_mod folder
+    let mut function_list = list_methods_in_files("cargo_crev_reviews/src/srv_methods_mod/","srv_","srv_");
     function_list.sort();
 
     let mut code = String::new();
@@ -167,7 +167,8 @@ where
 
 pub fn generate_client_match_response_method(){
     
-    let mut function_list = list_methods_in_files("cargo_crev_reviews_wasm/src/","cln_methods_","cln_");
+    let mut function_list = list_methods_in_files("cargo_crev_reviews_wasm/src/cln_methods_mod/","cln_","cln_");
+
     function_list.sort();
 
     let mut code = String::new();
@@ -181,7 +182,7 @@ pub fn generate_client_match_response_method(){
 }
 
 pub fn generate_client_methods(){    
-    let mut function_list = list_methods_in_files("cargo_crev_reviews_wasm/src/","cln_methods_","cln_");
+    let mut function_list = list_methods_in_files("cargo_crev_reviews_wasm/src/cln_methods_mod/","cln_","cln_");
     function_list.sort();
     
     let mut code = String::new();
@@ -203,7 +204,7 @@ where
 }
 
 pub fn generate_server_match_response_method(){
-    let mut function_list = list_methods_in_files("cargo_crev_reviews/src/","srv_methods_","srv_");
+    let mut function_list = list_methods_in_files("cargo_crev_reviews/src/srv_methods_mod/","srv_","srv_");
     function_list.sort();
 
     let mut code = String::new();

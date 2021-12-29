@@ -175,9 +175,9 @@
             background-color: var(--b_color_code);
             color: var(--f_color_code);
             width: 600px;
-            border: 1px;
+            border-width: 1px;
             border-radius: 3px;
-            padding: 2px;
+            border-color: var(--f_color_05);
             font-size: 100%;
             font-family: Consolas, Liberation Mono, Courier, monospace;
         }
@@ -192,8 +192,9 @@
             color: var(--f_color_code);
             width: 900px;
             height: 120px;
-            border: 1px;
+            border-width: 1px;
             border-radius: 3px;
+            border-color: var(--f_color_05);
             padding: 18px;
             font-size: 100%;
             font-family: Consolas, Liberation Mono, Courier, monospace;

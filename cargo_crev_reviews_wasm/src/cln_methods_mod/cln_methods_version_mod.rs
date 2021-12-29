@@ -81,7 +81,7 @@ impl tmplt::HtmlTemplatingDataTrait for VersionItemData {
             "wt_crate_version" => self.crate_version.clone(),
             "wt_crate_name_version" => join_crate_version(&self.crate_name, &self.crate_version),
             "wt_crate_published_by_url" => {
-                crate::cln_methods_publisher_mod::published_by_url_shorten(self.published_by_url.as_deref().unwrap_or("")).to_string()
+                crate::cln_methods_mod::cln_methods_publisher_mod::published_by_url_shorten(self.published_by_url.as_deref().unwrap_or("")).to_string()
             }
             "wt_edit_or_new" => {
                 if self.yanked {
@@ -259,7 +259,7 @@ pub fn modal_delete(_element_id: &str, row_number: usize) {
         row_number
     );
     w::set_inner_html("div_for_modal", &html);
-    use crate::cln_methods_mod::modal_close_on_click;
+    use crate::cln_methods_mod::cln_methods_utils_mod::modal_close_on_click;
     on_click!("modal_close", modal_close_on_click);
     // I had to add modal_yes_delete(0), because row_on_click works that way.
     row_on_click!("modal_yes_delete", row_number, request_review_delete);
@@ -268,7 +268,7 @@ pub fn modal_delete(_element_id: &str, row_number: usize) {
 #[named]
 fn request_review_delete(_element_id: &str, row_number: usize) {
     log::info!("{}", function_name!());
-    use crate::cln_methods_mod::modal_close_on_click;
+    use crate::cln_methods_mod::cln_methods_utils_mod::modal_close_on_click;
     modal_close_on_click("");
 
     // from list get crate name and version
