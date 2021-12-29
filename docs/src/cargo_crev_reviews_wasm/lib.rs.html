@@ -106,22 +106,17 @@
 <span id="106">106</span>
 <span id="107">107</span>
 <span id="108">108</span>
-<span id="109">109</span>
-<span id="110">110</span>
-<span id="111">111</span>
-<span id="112">112</span>
-<span id="113">113</span>
 </pre><pre class="rust"><code><span class="comment">// cargo_crev_reviews_wasm lib.rs</span>
 
 <span class="comment">// region: auto_md_to_doc_comments include README.md A //!</span>
 <span class="doccomment">//! # cargo_crev_reviews_wasm</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! **Wasm web app that is the frontend of the application cargo_crev_reviews**  </span>
-<span class="doccomment">//! ***[repository](https://github.com/LucianoBestia/cargo_crev_reviews_workspace); version: 2021.1228.1729  date: 2021-12-28 authors: Luciano Bestia***  </span>
+<span class="doccomment">//! ***[repository](https://github.com/LucianoBestia/cargo_crev_reviews_workspace); version: 2021.1229.1428  date: 2021-12-29 authors: Luciano Bestia***  </span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! [![Lines in Rust code](https://img.shields.io/badge/Lines_in_Rust-1682-green.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)</span>
-<span class="doccomment">//! [![Lines in Doc comments](https://img.shields.io/badge/Lines_in_Doc_comments-113-blue.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)</span>
-<span class="doccomment">//! [![Lines in Comments](https://img.shields.io/badge/Lines_in_comments-147-purple.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)</span>
+<span class="doccomment">//! [![Lines in Rust code](https://img.shields.io/badge/Lines_in_Rust-1728-green.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)</span>
+<span class="doccomment">//! [![Lines in Doc comments](https://img.shields.io/badge/Lines_in_Doc_comments-115-blue.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)</span>
+<span class="doccomment">//! [![Lines in Comments](https://img.shields.io/badge/Lines_in_comments-150-purple.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)</span>
 <span class="doccomment">//! [![Lines in examples](https://img.shields.io/badge/Lines_in_examples-0-yellow.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)</span>
 <span class="doccomment">//! [![Lines in tests](https://img.shields.io/badge/Lines_in_tests-0-orange.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)</span>
 <span class="doccomment">//!</span>
@@ -137,12 +132,7 @@
 <span class="comment">// endregion: auto_md_to_doc_comments include README.md A //!</span>
 
 <span class="kw">mod</span> <span class="ident">auto_generated_mod</span>;
-<span class="kw">mod</span> <span class="ident">cln_methods_cargo_tree_mod</span>;
 <span class="kw">mod</span> <span class="ident">cln_methods_mod</span>;
-<span class="kw">mod</span> <span class="ident">cln_methods_publisher_mod</span>;
-<span class="kw">mod</span> <span class="ident">cln_methods_review_item_mod</span>;
-<span class="kw">mod</span> <span class="ident">cln_methods_review_list_mod</span>;
-<span class="kw">mod</span> <span class="ident">cln_methods_version_mod</span>;
 <span class="kw">mod</span> <span class="ident">html_mod</span>;
 <span class="kw">mod</span> <span class="ident">utils_mod</span>;
 <span class="kw">mod</span> <span class="ident">web_sys_mod</span>;
@@ -184,7 +174,7 @@
 <span class="doccomment">/// jump over this boilerplate to router_for_local_hash_routing()</span>
 <span class="kw">fn</span> <span class="ident">router_boilerplate</span>() {
     <span class="kw">fn</span> <span class="ident">open_main_page</span>() {
-        <span class="ident"><span class="kw">crate</span>::cln_methods_cargo_tree_mod::request_cargo_tree_list</span>(<span class="string">&quot;&quot;</span>);
+        <span class="ident">cln_methods_mod::cln_cargo_tree_mod::request_cargo_tree_list</span>(<span class="string">&quot;&quot;</span>);
     }
     <span class="kw">let</span> <span class="ident">location</span>: <span class="ident">web_sys::Location</span> <span class="op">=</span> <span class="ident">w::window</span>().<span class="ident">location</span>();
     <span class="kw">match</span> <span class="ident">location</span>.<span class="ident">hash</span>() {
@@ -210,9 +200,9 @@
 <span class="kw">fn</span> <span class="ident">router_for_local_hash_routing</span>(<span class="ident">param1</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">param2</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">param3</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) {
     <span class="comment">// param1 is the &quot;routing method&quot; name</span>
     <span class="kw">match</span> <span class="ident">param1</span> {
-        <span class="string">&quot;edit_or_new&quot;</span> =&gt; <span class="ident">cln_methods_review_list_mod::routing_edit_or_new</span>(<span class="ident">param2</span>, <span class="ident">param3</span>),
-        <span class="string">&quot;version_list&quot;</span> =&gt; <span class="ident">cln_methods_version_mod::routing_version_list</span>(<span class="ident">param2</span>),
-        <span class="string">&quot;publisher_list&quot;</span> =&gt; <span class="ident">cln_methods_publisher_mod::routing_publisher_list</span>(),
+        <span class="string">&quot;edit_or_new&quot;</span> =&gt; <span class="ident">cln_methods_mod::cln_review_list_mod::routing_edit_or_new</span>(<span class="ident">param2</span>, <span class="ident">param3</span>),
+        <span class="string">&quot;version_list&quot;</span> =&gt; <span class="ident">cln_methods_mod::cln_version_mod::routing_version_list</span>(<span class="ident">param2</span>),
+        <span class="string">&quot;publisher_list&quot;</span> =&gt; <span class="ident">cln_methods_mod::cln_publisher_list_mod::routing_publisher_list</span>(),
         <span class="kw">_</span> =&gt; <span class="macro">log::info!</span>(<span class="string">&quot;unrecognized hash routing method: {}&quot;</span>, <span class="ident">param1</span>),
     }
 }

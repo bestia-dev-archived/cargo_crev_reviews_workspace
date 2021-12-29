@@ -5,8 +5,7 @@
 // I need a disk persistent data storage.
 // This crate will be used only to fill the database. Never directly from any other function.
 
-use serde::Deserialize;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct CratesIoCrateResponse {

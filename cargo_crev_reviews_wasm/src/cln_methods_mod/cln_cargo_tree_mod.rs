@@ -39,13 +39,21 @@ impl tmplt::HtmlTemplatingDataTrait for CargoTreeItemData {
             "wt_tree_line_class" => format!("review_header0_cell left codetree pointer c_{}", self.my_rating.as_deref().unwrap_or("")),
             "wt_my_rating" => self.my_rating.as_deref().unwrap_or("").to_string(),
             "wt_crate_description" => self.crate_description.as_deref().unwrap_or("").to_string(),
-            "wt_published_by_url" => cln_methods_mod::cln_publisher_mod::published_by_url_shorten(self.published_by_url.as_deref().unwrap_or("")).to_string(),
+            "wt_published_by_url" => {
+                cln_methods_mod::cln_publisher_item_mod::published_by_url_shorten(self.published_by_url.as_deref().unwrap_or("")).to_string()
+            }
             "wt_published_by_class" => format!(
                 "review_header0_cell left codetree pointer c_{}",
                 self.trusted_publisher.as_deref().unwrap_or("")
             ),
             "wt_status" => self.status.as_deref().unwrap_or("").to_string(),
             "wt_status_class" => format!("review_header0_cell left codetree c_{}", self.status.as_deref().unwrap_or("")),
+            "wt_audit_id" => self.audit_id.as_deref().unwrap_or("").replace("RUSTSEC-", ""),
+            "wt_audit_link" => self
+                .audit_id
+                .as_deref()
+                .unwrap_or("")
+                .replace("RUSTSEC-", "https://rustsec.org/advisories/RUSTSEC-"),
             _ => tmplt::utils::match_else_for_replace_with_string(&self.data_model_name(), placeholder),
         }
     }
@@ -114,7 +122,7 @@ pub fn cln_cargo_tree_list(srv_response: RpcResponse) {
 
     inject_into_html(&html_after_process);
     // navigation menu bar
-    use cln_methods_mod::cln_publisher_mod::*;
+    use cln_methods_mod::cln_publisher_list_mod::*;
     use cln_methods_mod::cln_review_item_mod::*;
     use cln_methods_mod::cln_review_list_mod::*;
     on_click!("button_open_publisher_list", open_publisher_list);
@@ -125,6 +133,7 @@ pub fn cln_cargo_tree_list(srv_response: RpcResponse) {
     for (row_number, _item) in CARGO_TREE_LIST_DATA.lock().unwrap().list_of_cargo_tree.iter().enumerate() {
         row_on_click!("crate_name_version", row_number, open_all_links);
         row_on_click!("published_by_url", row_number, open_published_by_url);
+        row_on_click!("audit_id", row_number, open_audit_id);
     }
 }
 
@@ -193,6 +202,20 @@ fn open_published_by_url(_element_id: &str, row_number: usize) {
     match &item.published_by_url {
         None => {}
         Some(url) => {
+            unwrap!(unwrap!(w::window().open_with_url(&url)));
+        }
+    }
+}
+
+#[named]
+fn open_audit_id(_element_id: &str, row_number: usize) {
+    log::info!("{}", function_name!());
+    let item = &CARGO_TREE_LIST_DATA.lock().unwrap().list_of_cargo_tree[row_number];
+
+    match &item.audit_id {
+        None => {}
+        Some(audit_id) => {
+            let url = audit_id.replace("RUSTSEC-", "https://rustsec.org/advisories/RUSTSEC-");
             unwrap!(unwrap!(w::window().open_with_url(&url)));
         }
     }

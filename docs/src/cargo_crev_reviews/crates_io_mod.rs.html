@@ -78,7 +78,6 @@
 <span id="78">78</span>
 <span id="79">79</span>
 <span id="80">80</span>
-<span id="81">81</span>
 </pre><pre class="rust"><code><span class="comment">// crates_io_mod.rs</span>
 
 <span class="comment">// communication with crates.io api</span>
@@ -86,8 +85,7 @@
 <span class="comment">// I need a disk persistent data storage.</span>
 <span class="comment">// This crate will be used only to fill the database. Never directly from any other function.</span>
 
-<span class="kw">use</span> <span class="ident">serde::Deserialize</span>;
-<span class="kw">use</span> <span class="ident">serde::Serialize</span>;
+<span class="kw">use</span> <span class="ident">serde</span>::{<span class="ident">Deserialize</span>, <span class="ident">Serialize</span>};
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">CratesIoCrateResponse</span> {

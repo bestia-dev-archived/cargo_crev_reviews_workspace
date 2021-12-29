@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["get_audit_id_for_crate_version",""],["run_cargo_audit",""]],"struct":[["Advisory",""],["CargoAudit",""],["ListItem",""],["Package",""],["Vulnerabilities",""],["Warnings",""]]});

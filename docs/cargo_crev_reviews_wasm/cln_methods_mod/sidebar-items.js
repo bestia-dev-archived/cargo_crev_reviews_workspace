@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["cln_modal_close",""],["cln_modal_error",""],["cln_no_action",""],["modal_close_on_click",""]]});
+initSidebarItems({"mod":[["cln_cargo_tree_mod",""],["cln_publisher_item_mod",""],["cln_publisher_list_mod",""],["cln_review_item_mod","functions to render the html for reviews"],["cln_review_list_mod","functions to render the html for reviews list"],["cln_utils_mod","helper functions and utils"],["cln_version_mod",""]]});

@@ -16,6 +16,7 @@ pub fn cargo_tree_project() -> anyhow::Result<CargoTreeListData> {
     //let ns_started = crate::utils_mod::ns_start("cargo_tree_project");
 
     let vec_publisher = crate::db_sled_mod::db_publisher_mod::list()?;
+    let cargo_audit = crate::cargo_audit_mod::run_cargo_audit()?;
 
     let output = std::process::Command::new("cargo").arg("tree").output().unwrap();
     let output = format!("{} {}", String::from_utf8_lossy(&output.stdout), String::from_utf8_lossy(&output.stderr));
@@ -86,6 +87,7 @@ pub fn cargo_tree_project() -> anyhow::Result<CargoTreeListData> {
                             }
                         }
                     };
+                    let audit_id = crate::cargo_audit_mod::get_audit_id_for_crate_version(&cargo_audit, &crate_name, &crate_version);
 
                     list_of_cargo_tree.push(CargoTreeItemData {
                         cargo_tree_line: line.to_string(),
@@ -95,6 +97,7 @@ pub fn cargo_tree_project() -> anyhow::Result<CargoTreeListData> {
                         published_by_url,
                         trusted_publisher,
                         status,
+                        audit_id,
                     })
                 }
             }

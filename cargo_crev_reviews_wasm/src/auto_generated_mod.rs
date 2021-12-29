@@ -4,7 +4,8 @@
 // Please, don't modify manually the special "region: generated..." that are filled by automation.
 
 use crate::cln_methods_mod::cln_cargo_tree_mod::*;
-use crate::cln_methods_mod::cln_publisher_mod::*;
+use crate::cln_methods_mod::cln_publisher_item_mod::*;
+use crate::cln_methods_mod::cln_publisher_list_mod::*;
 use crate::cln_methods_mod::cln_review_item_mod::*;
 use crate::cln_methods_mod::cln_review_list_mod::*;
 use crate::cln_methods_mod::cln_utils_mod::*;
@@ -267,6 +268,7 @@ pub mod common_structs_mod {
         pub published_by_url: Option<String>,
         pub trusted_publisher: Option<String>,
         pub status: Option<String>,
+        pub audit_id: Option<String>,
     }
 
     #[derive(Serialize, Deserialize, Debug, Default)]

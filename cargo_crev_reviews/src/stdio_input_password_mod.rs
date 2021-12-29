@@ -25,8 +25,11 @@ pub fn read_passphrase_interactively() -> crossterm::Result<String> {
         }
         Err(_err) => {
             println!(
-                r#"The crev reviews are cryptographically signed, so you must first enter you crev passphrase to enable the signing of your crev reviews.
+                r#"
+The crev reviews are cryptographically signed, so you must first enter you crev passphrase to enable the signing of your crev reviews.
 Passphrase does not accept backspace or ctrl+c, just characters and Enter. 
+You can also put your passphrase in env variable: ` export CREV_PASSPHRASE=your_passphrase`. 
+Add a space before the bash command to avoid it to be stored in bash history.
 Unlocking needs 2-3 seconds after you press Enter. Holly patience..."#
             );
             print!("Enter passphrase: ");

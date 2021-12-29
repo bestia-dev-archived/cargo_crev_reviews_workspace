@@ -549,19 +549,24 @@
 <span id="549">549</span>
 <span id="550">550</span>
 <span id="551">551</span>
+<span id="552">552</span>
+<span id="553">553</span>
+<span id="554">554</span>
+<span id="555">555</span>
+<span id="556">556</span>
 </pre><pre class="rust"><code><span class="comment">// cargo_crev_reviews/src/lib.rs</span>
 
 <span class="comment">// region: auto_md_to_doc_comments include README.md A //!</span>
 <span class="doccomment">//! # cargo_crev_reviews</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! **Write cargo-crev reviews in GUI with a cross-platform app written in full-stack Rust**  </span>
-<span class="doccomment">//! ***[repository](https://github.com/lucianobestia/cargo_crev_reviews_workspace); version: 2021.1228.1729  date: 2021-12-28 authors: Luciano Bestia***  </span>
+<span class="doccomment">//! ***[repository](https://github.com/lucianobestia/cargo_crev_reviews_workspace); version: 2021.1229.1428  date: 2021-12-29 authors: Luciano Bestia***  </span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! [![Lines in Rust code](https://img.shields.io/badge/Lines_in_Rust-2372-green.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)</span>
-<span class="doccomment">//! [![Lines in Doc comments](https://img.shields.io/badge/Lines_in_Doc_comments-502-blue.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)</span>
-<span class="doccomment">//! [![Lines in Comments](https://img.shields.io/badge/Lines_in_comments-189-purple.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)</span>
+<span class="doccomment">//! [![Lines in Rust code](https://img.shields.io/badge/Lines_in_Rust-2463-green.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)</span>
+<span class="doccomment">//! [![Lines in Doc comments](https://img.shields.io/badge/Lines_in_Doc_comments-507-blue.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)</span>
+<span class="doccomment">//! [![Lines in Comments](https://img.shields.io/badge/Lines_in_comments-193-purple.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)</span>
 <span class="doccomment">//! [![Lines in examples](https://img.shields.io/badge/Lines_in_examples-0-yellow.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)</span>
-<span class="doccomment">//! [![Lines in tests](https://img.shields.io/badge/Lines_in_tests-17-orange.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)</span>
+<span class="doccomment">//! [![Lines in tests](https://img.shields.io/badge/Lines_in_tests-27-orange.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! [![crates.io](https://img.shields.io/crates/v/cargo_crev_reviews.svg)](https://crates.io/crates/cargo_crev_reviews) [![Documentation](https://docs.rs/cargo_crev_reviews/badge.svg)](https://docs.rs/cargo_crev_reviews/) [![crev reviews](https://web.crev.dev/rust-reviews/badge/crev_count/cargo_crev_reviews.svg)](https://web.crev.dev/rust-reviews/crate/cargo_crev_reviews/) [![Lib.rs](https://img.shields.io/badge/Lib.rs-rust-orange.svg)](https://lib.rs/crates/cargo_crev_reviews/) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/LucianoBestia/cargo_crev_reviews/blob/master/LICENSE) [![Rust](https://github.com/LucianoBestia/cargo_crev_reviews/workflows/RustAction/badge.svg)](https://github.com/LucianoBestia/cargo_crev_reviews/actions)  </span>
 <span class="doccomment">//!</span>
@@ -777,9 +782,14 @@
 <span class="doccomment">//!</span>
 <span class="doccomment">//! Some data are not available locally in the cargo registry and need to be obtained from &lt;https://crates.io//api/v1/crates/{}/{}/&gt;. Then I store them in `~/.config/crev/cargo_crev_reviews_data/db`. Data from crates.io are immutable all, except yanked. I will find in the local registry the data for yanked and new versions. That will trigger the download of data from crates.io.</span>
 <span class="doccomment">//!</span>
+<span class="doccomment">//! ## RustSec cargo audit</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! I added the result of `cargo audit --json` into the cargo tree list.  </span>
+<span class="doccomment">//!</span>
 <span class="doccomment">//! ## trusted publishers</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! There is a confusion on crates.io who is the owner, author or group that is responsible for a crate version. Lately they added a `published_by` field for a crate_version. That sounds more accurate. In the file `~/.config/crev/cargo_crev_reviews_data/trusted_publishers.json` is the list of your trusted publishers. You can edit this file manually.  </span>
+<span class="doccomment">//! There is a confusion on crates.io who is the owner, author or group that is responsible for a crate version. Lately they added a `published_by` field for a crate_version. That sounds more accurate. The one that published is responsible to check there is no malware inside.  </span>
+<span class="doccomment">//! You can edit your list of Trusted publishers in the app.  </span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! ## Code-flow</span>
 <span class="doccomment">//!</span>
@@ -861,7 +871,7 @@
 <span class="doccomment">//! If I use a different struct for data, I must have different client modules and functions.  </span>
 <span class="doccomment">//! With a generic data-struct all of this could be generic.  </span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! In `cln_methods_version_mod.rs` add a client function like this:</span>
+<span class="doccomment">//! In `cln_version_mod.rs` add a client function like this:</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! ```ignore</span>
 <span class="doccomment">//! pub fn cln_review_edit(srv_response: RpcResponse) {</span>
@@ -935,6 +945,7 @@
 
 <span class="kw">mod</span> <span class="ident">auto_generated_files_mod</span>;
 <span class="kw">mod</span> <span class="ident">auto_generated_mod</span>;
+<span class="kw">mod</span> <span class="ident">cargo_audit_mod</span>;
 <span class="kw">mod</span> <span class="ident">cargo_registry_mod</span>;
 <span class="kw">mod</span> <span class="ident">cargo_tree_mod</span>;
 <span class="kw">mod</span> <span class="ident">common_structs_mod</span>;
@@ -945,7 +956,6 @@
 <span class="kw">mod</span> <span class="ident">response_get_mod</span>;
 <span class="kw">mod</span> <span class="ident">response_post_mod</span>;
 <span class="kw">mod</span> <span class="ident">srv_methods_mod</span>;
-<span class="kw">mod</span> <span class="ident">srv_methods_publisher_mod</span>;
 <span class="kw">mod</span> <span class="ident">stdio_input_password_mod</span>;
 <span class="kw">mod</span> <span class="ident">utils_mod</span>;
 

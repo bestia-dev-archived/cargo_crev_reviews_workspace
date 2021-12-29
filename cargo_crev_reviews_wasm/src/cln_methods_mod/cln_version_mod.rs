@@ -81,7 +81,7 @@ impl tmplt::HtmlTemplatingDataTrait for VersionItemData {
             "wt_crate_version" => self.crate_version.clone(),
             "wt_crate_name_version" => join_crate_version(&self.crate_name, &self.crate_version),
             "wt_crate_published_by_url" => {
-                crate::cln_methods_mod::cln_publisher_mod::published_by_url_shorten(self.published_by_url.as_deref().unwrap_or("")).to_string()
+                crate::cln_methods_mod::cln_publisher_item_mod::published_by_url_shorten(self.published_by_url.as_deref().unwrap_or("")).to_string()
             }
             "wt_edit_or_new" => {
                 if self.yanked {

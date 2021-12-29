@@ -70,6 +70,7 @@ pub struct CargoTreeItemData {
     pub published_by_url: Option<String>,
     pub trusted_publisher: Option<String>,
     pub status: Option<String>,
+    pub audit_id: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Default)]

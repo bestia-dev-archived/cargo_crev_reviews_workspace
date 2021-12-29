@@ -1,4 +1,4 @@
-// cargo_crev_reviews/src/bin/main.rs
+// cargo_crev_reviews/src/bin/cargo_crev_reviews.rs
 
 use std::env;
 use unwrap::unwrap;
@@ -29,8 +29,7 @@ fn main() -> anyhow::Result<()> {
         println!(
             r#"
 This CLI opens the default browser. It is the frontend graphical (GUI) part of the app.
-If the default browser does not open from WSL2, you can see my project `https://github.com/LucianoBestia/wsl_open_browser`.
-"#
+If the default browser does not open from WSL2, you can see my project `https://github.com/LucianoBestia/wsl_open_browser`."#
         );
         unlock_crev_id_interactively()?;
         db_sled_migration_update(env!("CARGO_PKG_VERSION"));

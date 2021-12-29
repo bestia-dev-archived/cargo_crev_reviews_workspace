@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["button_edit_onclick",""],["button_open_publisher_url_onclick",""],["cln_publisher_list",""],["open_publisher_list",""],["routing_publisher_list",""]],"struct":[["PUBLISHER_LIST_DATA","mutable static, because it is hard to pass variables around with on_click events"]]});

@@ -1,0 +1,40 @@
+{
+    "vulnerabilities": {
+        "list": [{
+            "advisory": {
+                "id": "RUSTSEC-2020-0159"
+            },
+            "package": {
+                "name": "chrono",
+                "version": "0.4.19"
+            }
+        }, {
+            "advisory": {
+                "id": "RUSTSEC-2020-0071"
+            },
+            "package": {
+                "name": "time",
+                "version": "0.1.44"
+            }
+        }, {
+            "advisory": {
+                "id": "RUSTSEC-2021-0124"
+            },
+            "package": {
+                "name": "tokio",
+                "version": "1.12.0"
+            }
+        }]
+    },
+    "warnings": {
+        "unmaintained": [{
+            "package": {
+                "name": "serde_cbor",
+                "version": "0.11.2"
+            },
+            "advisory": {
+                "id": "RUSTSEC-2021-0127"
+            },
+        }]
+    }
+}

@@ -4,11 +4,11 @@
 //! # cargo_crev_reviews_wasm
 //!
 //! **Wasm web app that is the frontend of the application cargo_crev_reviews**  
-//! ***[repository](https://github.com/LucianoBestia/cargo_crev_reviews_workspace); version: 2021.1228.1729  date: 2021-12-28 authors: Luciano Bestia***  
+//! ***[repository](https://github.com/LucianoBestia/cargo_crev_reviews_workspace); version: 2021.1229.1428  date: 2021-12-29 authors: Luciano Bestia***  
 //!
-//! [![Lines in Rust code](https://img.shields.io/badge/Lines_in_Rust-1682-green.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
-//! [![Lines in Doc comments](https://img.shields.io/badge/Lines_in_Doc_comments-113-blue.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
-//! [![Lines in Comments](https://img.shields.io/badge/Lines_in_comments-147-purple.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
+//! [![Lines in Rust code](https://img.shields.io/badge/Lines_in_Rust-1728-green.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
+//! [![Lines in Doc comments](https://img.shields.io/badge/Lines_in_Doc_comments-115-blue.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
+//! [![Lines in Comments](https://img.shields.io/badge/Lines_in_comments-150-purple.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
 //! [![Lines in examples](https://img.shields.io/badge/Lines_in_examples-0-yellow.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
 //! [![Lines in tests](https://img.shields.io/badge/Lines_in_tests-0-orange.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
 //!
@@ -94,7 +94,7 @@ fn router_for_local_hash_routing(param1: &str, param2: &str, param3: &str) {
     match param1 {
         "edit_or_new" => cln_methods_mod::cln_review_list_mod::routing_edit_or_new(param2, param3),
         "version_list" => cln_methods_mod::cln_version_mod::routing_version_list(param2),
-        "publisher_list" => cln_methods_mod::cln_publisher_mod::routing_publisher_list(),
+        "publisher_list" => cln_methods_mod::cln_publisher_list_mod::routing_publisher_list(),
         _ => log::info!("unrecognized hash routing method: {}", param1),
     }
 }
