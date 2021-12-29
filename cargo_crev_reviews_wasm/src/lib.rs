@@ -66,7 +66,7 @@ pub fn wasm_bindgen_start() -> Result<(), JsValue> {
 /// jump over this boilerplate to router_for_local_hash_routing()
 fn router_boilerplate() {
     fn open_main_page() {
-        cln_methods_mod::cln_methods_cargo_tree_mod::request_cargo_tree_list("");
+        cln_methods_mod::cln_cargo_tree_mod::request_cargo_tree_list("");
     }
     let location: web_sys::Location = w::window().location();
     match location.hash() {
@@ -92,9 +92,9 @@ fn router_boilerplate() {
 fn router_for_local_hash_routing(param1: &str, param2: &str, param3: &str) {
     // param1 is the "routing method" name
     match param1 {
-        "edit_or_new" => cln_methods_mod::cln_methods_review_list_mod::routing_edit_or_new(param2, param3),
-        "version_list" => cln_methods_mod::cln_methods_version_mod::routing_version_list(param2),
-        "publisher_list" => cln_methods_mod::cln_methods_publisher_mod::routing_publisher_list(),
+        "edit_or_new" => cln_methods_mod::cln_review_list_mod::routing_edit_or_new(param2, param3),
+        "version_list" => cln_methods_mod::cln_version_mod::routing_version_list(param2),
+        "publisher_list" => cln_methods_mod::cln_publisher_mod::routing_publisher_list(),
         _ => log::info!("unrecognized hash routing method: {}", param1),
     }
 }

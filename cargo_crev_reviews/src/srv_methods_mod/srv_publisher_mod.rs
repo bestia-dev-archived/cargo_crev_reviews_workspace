@@ -1,4 +1,4 @@
-// srv_methods_publisher_mod.rs
+// srv_publisher_mod.rs
 
 //! rpc methods prepare the data to respond the POST rpc requests
 

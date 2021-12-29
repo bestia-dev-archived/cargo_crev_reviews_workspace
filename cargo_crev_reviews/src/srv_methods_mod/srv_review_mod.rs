@@ -1,4 +1,4 @@
-// srv_methods_review_mod.rs
+// srv_review_mod.rs
 
 //! rpc methods prepare the data to respond the POST rpc requests
 

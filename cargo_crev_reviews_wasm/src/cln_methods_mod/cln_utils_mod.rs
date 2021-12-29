@@ -1,4 +1,4 @@
-// cln_methods_utils_mod.rs
+// cln_utils_mod.rs
 
 //! helper functions and utils
 

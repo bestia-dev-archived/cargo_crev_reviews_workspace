@@ -1,4 +1,4 @@
-// cln_methods_cargo_tree_mod.rs
+// cln_cargo_tree_mod.rs
 
 use function_name::named;
 use lazy_static::__Deref;
@@ -39,9 +39,7 @@ impl tmplt::HtmlTemplatingDataTrait for CargoTreeItemData {
             "wt_tree_line_class" => format!("review_header0_cell left codetree pointer c_{}", self.my_rating.as_deref().unwrap_or("")),
             "wt_my_rating" => self.my_rating.as_deref().unwrap_or("").to_string(),
             "wt_crate_description" => self.crate_description.as_deref().unwrap_or("").to_string(),
-            "wt_published_by_url" => {
-                cln_methods_mod::cln_methods_publisher_mod::published_by_url_shorten(self.published_by_url.as_deref().unwrap_or("")).to_string()
-            }
+            "wt_published_by_url" => cln_methods_mod::cln_publisher_mod::published_by_url_shorten(self.published_by_url.as_deref().unwrap_or("")).to_string(),
             "wt_published_by_class" => format!(
                 "review_header0_cell left codetree pointer c_{}",
                 self.trusted_publisher.as_deref().unwrap_or("")
@@ -116,9 +114,9 @@ pub fn cln_cargo_tree_list(srv_response: RpcResponse) {
 
     inject_into_html(&html_after_process);
     // navigation menu bar
-    use cln_methods_mod::cln_methods_publisher_mod::*;
-    use cln_methods_mod::cln_methods_review_item_mod::*;
-    use cln_methods_mod::cln_methods_review_list_mod::*;
+    use cln_methods_mod::cln_publisher_mod::*;
+    use cln_methods_mod::cln_review_item_mod::*;
+    use cln_methods_mod::cln_review_list_mod::*;
     on_click!("button_open_publisher_list", open_publisher_list);
     on_click!("button_update_registry_index", request_update_registry_index);
     on_click!("button_review_publish", request_review_publish);

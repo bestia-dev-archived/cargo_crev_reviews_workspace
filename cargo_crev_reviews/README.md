@@ -320,7 +320,7 @@ Now run the automation task `cargo auto build` that generates auto_generated_mod
 If I use a different struct for data, I must have different client modules and functions.  
 With a generic data-struct all of this could be generic.  
 
-In `cln_methods_version_mod.rs` add a client function like this:
+In `cln_version_mod.rs` add a client function like this:
 
 ```ignore
 pub fn cln_review_edit(srv_response: RpcResponse) {

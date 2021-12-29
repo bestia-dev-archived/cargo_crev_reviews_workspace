@@ -1,4 +1,4 @@
-// cln_methods_review_item_mod.rs
+// cln_review_item_mod.rs
 
 //! functions to render the html for reviews
 
