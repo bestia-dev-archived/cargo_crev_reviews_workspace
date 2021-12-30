@@ -127,6 +127,9 @@ Together the backend and the frontend form a complete application that is cross-
 They share some structs for communication that are defined in the `common_structs_mod` module. One automation task copies the content from backend to frontend projects to keep them in sync.  
 The only URL the server operates is: <http://127.0.0.1:8182/cargo_crev_reviews>
 
+The web server CLI will access files, commands, libraries and the network.  For the signing process of crev reviews it need the crev passphrase. This can be entered interactively or with the env variable ` export CREV_PASSPHRASE=your_passphrase`.  
+Add a space before the export command to avoid the secret to be saved in the bash history.  
+
 If I want to publish this on crates.io it must all be inside one binary executable file.  
 It means that all the static files: css, html, icons, images, ... must be inside the Rust code.  
 For developing it is practical to have all this files as files.  
