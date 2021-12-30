@@ -128,3 +128,9 @@ pub struct PublisherListData {
 pub struct PublisherFilterData {
     pub publisher_url: String,
 }
+
+#[derive(Serialize, Deserialize, Debug, Default, Clone)]
+pub struct ConfigData {
+    pub code_editor_path: String,
+    pub browser_path: String,
+}

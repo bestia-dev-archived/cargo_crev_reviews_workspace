@@ -17,6 +17,18 @@ fn main() -> anyhow::Result<()> {
     // priority order: error!, warn!, info!, debug! and trace!
     pretty_env_logger::formatted_builder().filter_level(log::LevelFilter::Info).init();
 
+    // env variable is stronger then config menu
+    let crev_browser_path = match std::env::var("CREV_BROWSER_PATH") {
+        Ok(path) => {
+            log::info!("Reading env variable CREV_BROWSER_PATH.");
+            path
+        }
+        Err(_err) => {
+            let config = unwrap!(get_config());
+            config.browser_path
+        }
+    };
+
     if let Some(host_port_already_busy) = host_port_is_busy() {
         one_instance_of_the_program_already_running(&host_port_already_busy);
     } else if !home::cargo_home()?.join("bin").join("cargo-crev").exists() {
@@ -24,7 +36,10 @@ fn main() -> anyhow::Result<()> {
         cargo_crev_not_installed();
     } else if !home::cargo_home()?.join("bin").join("cargo-audit").exists() {
         // check if cargo-audit is installed
-        cargo_audit_not_installed();        
+        cargo_audit_not_installed();
+    } else if !std::path::PathBuf::from(&crev_browser_path).exists() {
+        // check if the browser from config is installed. Default is /usr/bin/xdg-open
+        browser_not_installed(&crev_browser_path);
     } else if !env::current_dir()?.join("Cargo.toml").exists() {
         not_started_inside_rust_project()?;
     } else {
@@ -36,7 +51,7 @@ If the default browser does not open from WSL2, you can see my project `https://
         );
         unlock_crev_id_interactively()?;
         db_sled_migration_update(env!("CARGO_PKG_VERSION"));
-        open_browser();
+        open_browser(&crev_browser_path);
         // this must be the last command, because the server lasts
         start_web_server();
     }
@@ -44,10 +59,13 @@ If the default browser does not open from WSL2, you can see my project `https://
 }
 
 /// open browser with xdg-open
-pub fn open_browser() {
+/// it is read from env variable CREV_BROWSER_PATH
+/// or from the config item in the db_sled metadata tree
+pub fn open_browser(browser_path: &str) {
     // open default browser in Linux
     // for WSL2 in Win10 I used my project https://crates.io/crates/wsl_open_browser
-    let x = std::process::Command::new("xdg-open")
+
+    let x = std::process::Command::new(browser_path)
         .arg(&format!(
             "http://{}:{}/{}/index.html",
             SERVER_HOST.as_str(),
@@ -55,7 +73,13 @@ pub fn open_browser() {
             SERVER_FIRST_SUBDIRECTORY.as_str()
         ))
         .spawn()
-        .expect("Failed to open default browser using `xdg-open`. Probably it is not preinstalled on your Linux distro. Try to instal it with `xdg-utils`.");
+        .expect(&format!(
+            "Failed to open default browser using `{}`. 
+        Probably it is not preinstalled on your Linux distro. Try to instal it with `xdg-utils`. 
+        Or you can change the default browser command in the Config menu.
+        Or you can set the env variable `export CREV_BROWSER_PATH=/usr/bin/xdg-open`.",
+            browser_path
+        ));
     drop(x);
 }
 

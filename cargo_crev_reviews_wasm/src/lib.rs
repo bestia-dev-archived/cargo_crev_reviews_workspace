@@ -4,11 +4,11 @@
 //! # cargo_crev_reviews_wasm
 //!
 //! **Wasm web app that is the frontend of the application cargo_crev_reviews**  
-//! ***[repository](https://github.com/LucianoBestia/cargo_crev_reviews_workspace); version: 2021.1229.1428  date: 2021-12-29 authors: Luciano Bestia***  
+//! ***[repository](https://github.com/LucianoBestia/cargo_crev_reviews_workspace); version: 2021.1230.1945  date: 2021-12-30 authors: Luciano Bestia***  
 //!
-//! [![Lines in Rust code](https://img.shields.io/badge/Lines_in_Rust-1728-green.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
-//! [![Lines in Doc comments](https://img.shields.io/badge/Lines_in_Doc_comments-115-blue.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
-//! [![Lines in Comments](https://img.shields.io/badge/Lines_in_comments-150-purple.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
+//! [![Lines in Rust code](https://img.shields.io/badge/Lines_in_Rust-1836-green.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
+//! [![Lines in Doc comments](https://img.shields.io/badge/Lines_in_Doc_comments-120-blue.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
+//! [![Lines in Comments](https://img.shields.io/badge/Lines_in_comments-157-purple.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
 //! [![Lines in examples](https://img.shields.io/badge/Lines_in_examples-0-yellow.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
 //! [![Lines in tests](https://img.shields.io/badge/Lines_in_tests-0-orange.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
 //!
@@ -26,6 +26,7 @@
 mod auto_generated_mod;
 mod cln_methods_mod;
 mod html_mod;
+mod routing_local_hash_mod;
 mod utils_mod;
 mod web_sys_mod;
 
@@ -57,52 +58,8 @@ pub fn wasm_bindgen_start() -> Result<(), JsValue> {
     // write the app version just for debug purposes
     log::info!("{} v{}", env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION"));
 
-    router_boilerplate();
+    routing_local_hash_mod::router_boilerplate();
 
     // return
     Ok(())
-}
-
-/// jump over this boilerplate to router_for_local_hash_routing()
-fn router_boilerplate() {
-    fn open_main_page() {
-        cln_methods_mod::cln_cargo_tree_mod::request_cargo_tree_list("");
-    }
-    let location: web_sys::Location = w::window().location();
-    match location.hash() {
-        // if there is no url hash, show the first page: cargo_tree
-        Err(_err) => open_main_page(),
-        Ok(location_hash) => {
-            if location_hash.is_empty() {
-                open_main_page();
-            } else {
-                let (param1, param2, param3) = get_3_url_param_from_hash(&location_hash);
-                router_for_local_hash_routing(param1, param2, param3);
-            }
-        }
-    }
-}
-
-/// read the url hash parameters for local routing
-/// this is a SPA single page application. The page is always index.html
-/// then a hash parameter is added for local routing like index.html#edit/crate_name/crate_version
-/// the main page is opened only once. It lists the cargo_tree and verify all the dependencies.
-/// All other pages are opened in separate tabs. So the user can easily close this tabs and return to the main page.
-/// The use of the back button in not recommended.
-fn router_for_local_hash_routing(param1: &str, param2: &str, param3: &str) {
-    // param1 is the "routing method" name
-    match param1 {
-        "edit_or_new" => cln_methods_mod::cln_review_list_mod::routing_edit_or_new(param2, param3),
-        "version_list" => cln_methods_mod::cln_version_mod::routing_version_list(param2),
-        "publisher_list" => cln_methods_mod::cln_publisher_list_mod::routing_publisher_list(),
-        _ => log::info!("unrecognized hash routing method: {}", param1),
-    }
-}
-
-/// get 3 param from hash
-/// example "#edit/crate_name/crate_version" -> ["edit","crate_name","crate_version"]
-/// if the param does not exist returns an empty string
-pub fn get_3_url_param_from_hash(location_hash: &str) -> (&str, &str, &str) {
-    let mut spl = location_hash.trim_start_matches("#").split('/');
-    (spl.next().unwrap_or(""), spl.next().unwrap_or(""), spl.next().unwrap_or(""))
 }

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <title>config_edit</title>
+    <meta name="Description" content="web app for writing new reviews for cargo-crev" />
+    <link rel="stylesheet" href="css/normalize.css" />
+    <link rel="stylesheet" href="css/cargo_crev_reviews.css" />
+    <link rel="stylesheet" href="css/fontawesome.css" />
+    <meta name="viewport" content="width = device-width,initial-scale = 1.0" />
+    <link rel="shortcut icon" type="image/x-icon" href="icons/icon-032.png" />
+    <script src="js/dropdown.js"></script>
+</head>
+
+<body>
+    <div class="container_0" data-template_name="config_edit.html">
+        <div style="display: grid;grid-template-columns: 15% 40% 38% 2% ;">
+            <div>
+                <img src="images/Logo_02.png" style="padding: 7px;width:60%;max-width:300px;min-width:150px;" />
+            </div>
+            <div class="middle">
+                <h2>Config cargo crev reviews</h2>
+            </div>
+        </div>
+    </div>
+    <div class="container_0">
+        <div class="container0_content_not_grid">
+            <form>
+                <label for="code_editor_path">Command for code editor:</label>
+                <input type="text" id="code_editor_path" data-wt_code_editor_path="value" value="code_editor_path"></input>
+                <br/>
+                <label for="browser_path">Command for browser:</label>
+                <input type="text" id="browser_path" data-wt_browser_path="value" value="browser_path"></input>
+                <br/>
+                <br/>
+            </form>
+
+            <button id="button_config_save">Save</button>
+            <button id="button_close">Close</button>
+        </div>
+    </div>
+</body>
+
+</html>

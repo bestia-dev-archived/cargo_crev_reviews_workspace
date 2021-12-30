@@ -7,6 +7,7 @@ use derivative::*;
 #[derive(Derivative)]
 #[derivative(Default)]
 pub struct ResponseWithBytes {
+    pub url: String,
     #[derivative(Default(value = "Status::Ok"))]
     pub status_code: Status,
     #[derivative(Default(value = "default_mime()"))]
@@ -59,27 +60,29 @@ pub fn parse_get_uri_and_response_file(path: &str) -> ResponseWithBytes {
     }
     let cache_control = match cache {
         Cache::NoStore => Some("no-store, max-age=0".to_string()),
-        Cache::Ok => None,
+        // 8 hours cache in browser
+        Cache::Ok => Some("private, max-age=28800".to_string()),
     };
     if text_or_else_base64 {
-        return response_file_text(file_as_body, cache_control, mime_type);
+        return response_file_text(path, file_as_body, cache_control, mime_type);
     } else {
-        return response_file_base64(file_as_body, cache_control, mime_type);
+        return response_file_base64(path, file_as_body, cache_control, mime_type);
     }
 }
 
 pub fn response_404_not_found(path: &str) -> ResponseWithBytes {
     log::warn!("404 not found: {}", path);
     let file_as_body = r#"<h1>404</h1><p>Not found! URI must start with `/cargo_crev_reviews`<p>"#.as_bytes().to_vec();
-    let mut response_with_text = response_file_text(file_as_body, None, "text/html");
+    let mut response_with_text = response_file_text(path, file_as_body, None, "text/html");
     response_with_text.status_code = Status::NotFound;
     response_with_text
 }
 
-fn response_file_text(file_as_body: Vec<u8>, cache_control: Option<String>, mime_type: &str) -> ResponseWithBytes {
+fn response_file_text(path: &str, file_as_body: Vec<u8>, cache_control: Option<String>, mime_type: &str) -> ResponseWithBytes {
     let mime_type = mime_type.to_string();
 
     ResponseWithBytes {
+        url: path.to_string(),
         mime_type,
         cache_control,
         body: file_as_body,
@@ -87,10 +90,11 @@ fn response_file_text(file_as_body: Vec<u8>, cache_control: Option<String>, mime
     }
 }
 
-fn response_file_base64(file_as_body: Vec<u8>, cache_control: Option<String>, mime_type: &str) -> ResponseWithBytes {
+fn response_file_base64(path: &str, file_as_body: Vec<u8>, cache_control: Option<String>, mime_type: &str) -> ResponseWithBytes {
     let mime_type = mime_type.to_string();
 
     ResponseWithBytes {
+        url: path.to_string(),
         mime_type,
         cache_control,
         body: file_as_body,

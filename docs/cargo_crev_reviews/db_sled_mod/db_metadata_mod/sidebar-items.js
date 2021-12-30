@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["get_config",""],["get_version",""],["set_config",""],["set_version",""]],"struct":[["CrateForDb",""],["DB_SLED_METADATA","I will store the “version” string, so I can use it for migration upgrades and also the “config” struct"]]});

@@ -29,12 +29,12 @@ lazy_static! {
 /// insert
 pub fn insert(crate_name_version: &str, value: &VersionForDb) -> anyhow::Result<()> {
     let value = serde_json::to_vec(value)?;
-    DB_VERSION.insert(crate_name_version.as_bytes(), value)?;
+    DB_VERSION.insert(crate_name_version, value)?;
     Ok(())
 }
 
 pub fn read(crate_name_version: &str) -> anyhow::Result<Option<VersionForDb>> {
-    let data = DB_VERSION.get(crate_name_version.as_bytes())?;
+    let data = DB_VERSION.get(crate_name_version)?;
     match data {
         Some(data) => Ok(Some(serde_json::from_slice(&data)?)),
         None => {
@@ -48,7 +48,7 @@ pub fn read(crate_name_version: &str) -> anyhow::Result<Option<VersionForDb>> {
 }
 
 pub fn delete(crate_name_version: &str) {
-    unwrap!(DB_VERSION.remove(crate_name_version.as_bytes()));
+    unwrap!(DB_VERSION.remove(crate_name_version));
 }
 
 pub fn all_versions_for_crate(crate_name: &str) -> anyhow::Result<Vec<VersionForDb>> {

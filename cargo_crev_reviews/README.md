@@ -5,14 +5,14 @@
 [comment]: # (auto_cargo_toml_to_md start)
 
 **Write cargo-crev reviews in GUI with a cross-platform app written in full-stack Rust**  
-***[repository](https://github.com/lucianobestia/cargo_crev_reviews_workspace); version: 2021.1229.1428  date: 2021-12-29 authors: Luciano Bestia***  
+***[repository](https://github.com/lucianobestia/cargo_crev_reviews_workspace); version: 2021.1230.1945  date: 2021-12-30 authors: Luciano Bestia***  
 
 [comment]: # (auto_cargo_toml_to_md end)
 
 [comment]: # (auto_lines_of_code start)
-[![Lines in Rust code](https://img.shields.io/badge/Lines_in_Rust-2463-green.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
-[![Lines in Doc comments](https://img.shields.io/badge/Lines_in_Doc_comments-507-blue.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
-[![Lines in Comments](https://img.shields.io/badge/Lines_in_comments-193-purple.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
+[![Lines in Rust code](https://img.shields.io/badge/Lines_in_Rust-2603-green.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
+[![Lines in Doc comments](https://img.shields.io/badge/Lines_in_Doc_comments-518-blue.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
+[![Lines in Comments](https://img.shields.io/badge/Lines_in_comments-200-purple.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
 [![Lines in examples](https://img.shields.io/badge/Lines_in_examples-0-yellow.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
 [![Lines in tests](https://img.shields.io/badge/Lines_in_tests-27-orange.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
 
@@ -65,8 +65,7 @@ To write a review you need to see the exact source code and other metadata about
 - a list of all versions of that crate with your reviews added
 
 Be warned that modern browsers block pop-ups and you have to allow that explicitly for this site `127.0.0.1`.  
-If you don't have VSCode, you can create a symbolic link for the command `code directory_path` to open your preferred editor:  
-`ln -s /usr/bin/code your_preferred_editor`  
+If you don't have VSCode, you can change the code_editor in the `Config` menu.  
 
 ## Reputation vs. code review
 
@@ -108,6 +107,7 @@ For the browser I will create a simple web app. All the code will be in Rust, I 
 
 I will use [cargo-auto](https://crates.io/crates/cargo-auto) to automate the tasks needed to build the project.  
 The sub-directory `automation_tasks_rs` is the Rust project for [cargo-auto](https://crates.io/crates/cargo-auto).  
+My project [dev_bestia_cargo_completion](https://github.com/LucianoBestia/dev_bestia_cargo_completion) helps with bash auto-completion.  
 
 The Rust workspace is made of members:
 
@@ -251,6 +251,8 @@ Everything is compiled into one single executable binary for Linux: `cargo_crev_
 First it opens the default browser with `xdg-open` on <http://127.0.0.1:8182/cargo_crev_reviews/index.html>.  
 I received a comment that `xdg-open` is not preinstalled on every Linux distro. I use Debian 10 and have it.  
 On other distros it is possible to install it with `xdg-utils`.  
+You can also use the env variable `export CREV_BROWSER_PATH=/usr/bin/xdg-open` for the first use.  
+And then later change it in the Config menu.  
 If your WSL2 does not have yet a default browser run this:  
 
 ``` bash

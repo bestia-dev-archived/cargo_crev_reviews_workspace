@@ -554,17 +554,59 @@
 <span id="554">554</span>
 <span id="555">555</span>
 <span id="556">556</span>
+<span id="557">557</span>
+<span id="558">558</span>
+<span id="559">559</span>
+<span id="560">560</span>
+<span id="561">561</span>
+<span id="562">562</span>
+<span id="563">563</span>
+<span id="564">564</span>
+<span id="565">565</span>
+<span id="566">566</span>
+<span id="567">567</span>
+<span id="568">568</span>
+<span id="569">569</span>
+<span id="570">570</span>
+<span id="571">571</span>
+<span id="572">572</span>
+<span id="573">573</span>
+<span id="574">574</span>
+<span id="575">575</span>
+<span id="576">576</span>
+<span id="577">577</span>
+<span id="578">578</span>
+<span id="579">579</span>
+<span id="580">580</span>
+<span id="581">581</span>
+<span id="582">582</span>
+<span id="583">583</span>
+<span id="584">584</span>
+<span id="585">585</span>
+<span id="586">586</span>
+<span id="587">587</span>
+<span id="588">588</span>
+<span id="589">589</span>
+<span id="590">590</span>
+<span id="591">591</span>
+<span id="592">592</span>
+<span id="593">593</span>
+<span id="594">594</span>
+<span id="595">595</span>
+<span id="596">596</span>
+<span id="597">597</span>
+<span id="598">598</span>
 </pre><pre class="rust"><code><span class="comment">// cargo_crev_reviews/src/lib.rs</span>
 
 <span class="comment">// region: auto_md_to_doc_comments include README.md A //!</span>
 <span class="doccomment">//! # cargo_crev_reviews</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! **Write cargo-crev reviews in GUI with a cross-platform app written in full-stack Rust**  </span>
-<span class="doccomment">//! ***[repository](https://github.com/lucianobestia/cargo_crev_reviews_workspace); version: 2021.1229.1428  date: 2021-12-29 authors: Luciano Bestia***  </span>
+<span class="doccomment">//! ***[repository](https://github.com/lucianobestia/cargo_crev_reviews_workspace); version: 2021.1230.1945  date: 2021-12-30 authors: Luciano Bestia***  </span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! [![Lines in Rust code](https://img.shields.io/badge/Lines_in_Rust-2463-green.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)</span>
-<span class="doccomment">//! [![Lines in Doc comments](https://img.shields.io/badge/Lines_in_Doc_comments-507-blue.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)</span>
-<span class="doccomment">//! [![Lines in Comments](https://img.shields.io/badge/Lines_in_comments-193-purple.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)</span>
+<span class="doccomment">//! [![Lines in Rust code](https://img.shields.io/badge/Lines_in_Rust-2603-green.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)</span>
+<span class="doccomment">//! [![Lines in Doc comments](https://img.shields.io/badge/Lines_in_Doc_comments-518-blue.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)</span>
+<span class="doccomment">//! [![Lines in Comments](https://img.shields.io/badge/Lines_in_comments-200-purple.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)</span>
 <span class="doccomment">//! [![Lines in examples](https://img.shields.io/badge/Lines_in_examples-0-yellow.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)</span>
 <span class="doccomment">//! [![Lines in tests](https://img.shields.io/badge/Lines_in_tests-27-orange.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)</span>
 <span class="doccomment">//!</span>
@@ -611,8 +653,7 @@
 <span class="doccomment">//! - a list of all versions of that crate with your reviews added</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! Be warned that modern browsers block pop-ups and you have to allow that explicitly for this site `127.0.0.1`.  </span>
-<span class="doccomment">//! If you don&#39;t have VSCode, you can create a symbolic link for the command `code directory_path` to open your preferred editor:  </span>
-<span class="doccomment">//! `ln -s /usr/bin/code your_preferred_editor`  </span>
+<span class="doccomment">//! If you don&#39;t have VSCode, you can change the code_editor in the `Config` menu.  </span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! ## Reputation vs. code review</span>
 <span class="doccomment">//!</span>
@@ -654,6 +695,7 @@
 <span class="doccomment">//!</span>
 <span class="doccomment">//! I will use [cargo-auto](https://crates.io/crates/cargo-auto) to automate the tasks needed to build the project.  </span>
 <span class="doccomment">//! The sub-directory `automation_tasks_rs` is the Rust project for [cargo-auto](https://crates.io/crates/cargo-auto).  </span>
+<span class="doccomment">//! My project [dev_bestia_cargo_completion](https://github.com/LucianoBestia/dev_bestia_cargo_completion) helps with bash auto-completion.  </span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! The Rust workspace is made of members:</span>
 <span class="doccomment">//!</span>
@@ -797,6 +839,8 @@
 <span class="doccomment">//! First it opens the default browser with `xdg-open` on &lt;http://127.0.0.1:8182/cargo_crev_reviews/index.html&gt;.  </span>
 <span class="doccomment">//! I received a comment that `xdg-open` is not preinstalled on every Linux distro. I use Debian 10 and have it.  </span>
 <span class="doccomment">//! On other distros it is possible to install it with `xdg-utils`.  </span>
+<span class="doccomment">//! You can also use the env variable `export CREV_BROWSER_PATH=/usr/bin/xdg-open` for the first use.  </span>
+<span class="doccomment">//! And then later change it in the Config menu.  </span>
 <span class="doccomment">//! If your WSL2 does not have yet a default browser run this:  </span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! ``` bash</span>
@@ -962,6 +1006,7 @@
 <span class="comment">// region: functions and structs accessible to /bin/cargo_crev_reviews.</span>
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">crev_mod::unlock_crev_id_interactively</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">db_sled_mod::db_metadata_mod::get_config</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">db_sled_mod::db_sled_migration_update</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">db_sled_mod::sync_in_background_reviews</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">db_sled_mod::sync_in_background_verify</span>;
@@ -1072,7 +1117,7 @@ in the directory where the Cargo.toml file is.
 {red}Error: cargo-crev is not installed!{res}
 
 Cargo_crev_reviews is a GUI wrapper around cargo-crev (from dpc).
-Install and configure cargo-crev and cargo-tree in 5 easy steps.
+Install and configure cargo-crev in 5 easy steps.
 Open a new Linux terminal and use this incantations:  
 1. Install cargo-crev:
   {green}$ cargo install cargo-crev{res}
@@ -1092,6 +1137,45 @@ Read more here: https://github.com/crev-dev/cargo-crev/blob/master/cargo-crev/sr
         <span class="ident">red</span> <span class="op">=</span> <span class="kw-2">*</span><span class="ident">RED</span>,
         <span class="ident">res</span> <span class="op">=</span> <span class="kw-2">*</span><span class="ident">RESET</span>,
         <span class="ident">green</span> <span class="op">=</span> <span class="kw-2">*</span><span class="ident">GREEN</span>
+    );
+}
+
+<span class="doccomment">/// warning cargo-audit not installed</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cargo_audit_not_installed</span>() {
+    <span class="macro">println!</span>(
+        <span class="string">r#&quot;
+{yel}WELCOME to cargo_crev_reviews from Bestia.dev!{res}
+
+{red}Error: cargo-audit is not installed!{res}
+
+Cargo_crev_reviews is using cargo-audit to list the RustSec advisories of dependencies.
+Install cargo-audit:
+  {green}$ cargo install cargo-audit{res}
+&quot;#</span>,
+        <span class="ident">yel</span> <span class="op">=</span> <span class="kw-2">*</span><span class="ident">YELLOW</span>,
+        <span class="ident">red</span> <span class="op">=</span> <span class="kw-2">*</span><span class="ident">RED</span>,
+        <span class="ident">res</span> <span class="op">=</span> <span class="kw-2">*</span><span class="ident">RESET</span>,
+        <span class="ident">green</span> <span class="op">=</span> <span class="kw-2">*</span><span class="ident">GREEN</span>
+    );
+}
+
+<span class="doccomment">/// warning browser from config not installed</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">browser_not_installed</span>(<span class="ident">browser_path</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) {
+    <span class="macro">println!</span>(
+        <span class="string">r#&quot;
+{yel}WELCOME to cargo_crev_reviews from Bestia.dev!{res}
+
+{red}Error: the browser {browser_path} is not installed!{res}
+
+The default way to open the browser from the terminal is `xdg-open`.
+If your Linux distro does not have it installed, you can install it with `xdg-utils`.
+Or you can set the env variable `export CREV_BROWSER_PATH=/usr/bin/xdg-open` for the first use.
+Then change the browser in the Config menu to make your choice permanent.
+&quot;#</span>,
+        <span class="ident">browser_path</span> <span class="op">=</span> <span class="ident">browser_path</span>,
+        <span class="ident">yel</span> <span class="op">=</span> <span class="kw-2">*</span><span class="ident">YELLOW</span>,
+        <span class="ident">red</span> <span class="op">=</span> <span class="kw-2">*</span><span class="ident">RED</span>,
+        <span class="ident">res</span> <span class="op">=</span> <span class="kw-2">*</span><span class="ident">RESET</span>,
     );
 }
 

@@ -122,12 +122,14 @@ pub fn cln_cargo_tree_list(srv_response: RpcResponse) {
 
     inject_into_html(&html_after_process);
     // navigation menu bar
-    use cln_methods_mod::cln_publisher_list_mod::*;
-    use cln_methods_mod::cln_review_item_mod::*;
-    use cln_methods_mod::cln_review_list_mod::*;
+    use cln_methods_mod::cln_config_mod::button_open_config_edit_on_click;
+    use cln_methods_mod::cln_publisher_list_mod::open_publisher_list;
+    use cln_methods_mod::cln_review_item_mod::request_review_publish;
+    use cln_methods_mod::cln_review_list_mod::request_update_registry_index;
     on_click!("button_open_publisher_list", open_publisher_list);
     on_click!("button_update_registry_index", request_update_registry_index);
     on_click!("button_review_publish", request_review_publish);
+    on_click!("button_config_edit", button_open_config_edit_on_click);
 
     // on_click for every row of the list
     for (row_number, _item) in CARGO_TREE_LIST_DATA.lock().unwrap().list_of_cargo_tree.iter().enumerate() {

@@ -147,14 +147,16 @@ pub fn srv_review_open_source_code(request_data: serde_json::Value) -> anyhow::R
         anyhow::bail!("Src for version {} is not cached on your system.", &version);
     }
     log::info!("Open source code in {}", unwrap!(path_dir.to_str()));
+    let config = unwrap!(crate::get_config());
     // test if the `/usr/bin/code` exists.
-    if !std::path::Path::new("/usr/bin/code").exists() {
+    if !std::path::Path::new(&config.code_editor_path).exists() {
         log::error!(
-            "The file `/usr/bin/code` does not exist. Create a symbolic link `ln -s /usr/bin/code your_preferred_editor`. Or open manually the directory `{}`.",
+            "The editor `{}` does not exist. Change it in the config menu. Or open manually the directory `{}`.",
+            &config.code_editor_path,
             unwrap!(path_dir.to_str())
         );
     } else {
-        let mut child = std::process::Command::new("/usr/bin/code").arg(path_dir).spawn()?;
+        let mut child = std::process::Command::new(&config.code_editor_path).arg(path_dir).spawn()?;
         std::thread::sleep(Duration::new(1, 0));
         child.kill()?;
     }

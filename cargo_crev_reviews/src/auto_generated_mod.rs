@@ -11,6 +11,8 @@ pub fn match_request_method_and_call_function(request_method: &str, request_data
     match request_method {
         // region: generated match_response_method
         "srv_cargo_tree_project" => srv_cargo_tree_project(request_data),
+        "srv_config_edit" => srv_config_edit(request_data),
+        "srv_config_save" => srv_config_save(request_data),
         "srv_publisher_delete" => srv_publisher_delete(request_data),
         "srv_publisher_edit" => srv_publisher_edit(request_data),
         "srv_publisher_list" => srv_publisher_list(request_data),
@@ -41,6 +43,15 @@ pub mod cln_methods {
 
     #[named]
     pub fn cln_cargo_tree_list<T>(response_data: T, response_html: &str) -> anyhow::Result<String>
+    where
+        T: serde::Serialize,
+    {
+        let response_method = function_name!();
+        Ok(return_srv_response(response_method, response_data, response_html))
+    }
+
+    #[named]
+    pub fn cln_config_edit<T>(response_data: T, response_html: &str) -> anyhow::Result<String>
     where
         T: serde::Serialize,
     {

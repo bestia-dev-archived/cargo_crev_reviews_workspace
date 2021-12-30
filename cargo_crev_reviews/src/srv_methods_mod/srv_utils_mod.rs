@@ -47,3 +47,23 @@ pub fn srv_update_registry_index(_request_data: serde_json::Value) -> anyhow::Re
         Err(err) => crate::response_post_mod::response_err_message(&err),
     }
 }
+
+#[named]
+pub fn srv_config_edit(_request_data: serde_json::Value) -> anyhow::Result<String> {
+    log::info!(function_name!());
+
+    let response_html = crate::html_mod::process_include(&crate::auto_generated_files_mod::get_file_text("/cargo_crev_reviews/config_edit.html"));
+    let response_data = crate::db_sled_mod::db_metadata_mod::get_config()?;
+
+    cln_methods::cln_config_edit(response_data, &response_html)
+}
+
+#[named]
+pub fn srv_config_save(request_data: serde_json::Value) -> anyhow::Result<String> {
+    log::info!(function_name!());
+
+    let config: ConfigData = serde_json::from_value(request_data)?;
+    crate::db_sled_mod::db_metadata_mod::set_config(config);
+
+    crate::response_post_mod::response_modal_message("Config saved.")
+}

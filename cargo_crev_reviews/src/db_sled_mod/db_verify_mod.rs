@@ -18,12 +18,12 @@ lazy_static! {
 /// insert
 pub fn insert(crate_name_version: &str, value: &VerifyItemData) -> anyhow::Result<()> {
     let value = serde_json::to_vec(value)?;
-    DB_VERIFY.insert(crate_name_version.as_bytes(), value)?;
+    DB_VERIFY.insert(crate_name_version, value)?;
     Ok(())
 }
 
 pub fn read(crate_name_version: &str) -> anyhow::Result<Option<VerifyItemData>> {
-    let data = DB_VERIFY.get(crate_name_version.as_bytes())?;
+    let data = DB_VERIFY.get(crate_name_version)?;
     match data {
         Some(data) => Ok(Some(serde_json::from_slice(&data)?)),
         None => Ok(None),
@@ -31,7 +31,7 @@ pub fn read(crate_name_version: &str) -> anyhow::Result<Option<VerifyItemData>> 
 }
 
 pub fn delete(crate_name_version: &str) {
-    unwrap!(DB_VERIFY.remove(crate_name_version.as_bytes()));
+    unwrap!(DB_VERIFY.remove(crate_name_version));
 }
 
 pub fn exists(crate_name_version: &str) -> bool {

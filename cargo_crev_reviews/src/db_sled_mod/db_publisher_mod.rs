@@ -17,12 +17,12 @@ lazy_static! {
 
 pub fn insert(publisher_url: &str, value: &PublisherItemData) -> anyhow::Result<()> {
     let value = serde_json::to_vec(value)?;
-    DB_PUBLISHERS.insert(publisher_url.as_bytes(), value)?;
+    DB_PUBLISHERS.insert(publisher_url, value)?;
     Ok(())
 }
 
 pub fn read(publisher_url: &str) -> anyhow::Result<Option<PublisherItemData>> {
-    let data = DB_PUBLISHERS.get(publisher_url.as_bytes())?;
+    let data = DB_PUBLISHERS.get(publisher_url)?;
     match data {
         Some(data) => Ok(Some(serde_json::from_slice(&data)?)),
         None => Ok(None),
@@ -30,7 +30,7 @@ pub fn read(publisher_url: &str) -> anyhow::Result<Option<PublisherItemData>> {
 }
 
 pub fn delete(publisher_url: &str) {
-    unwrap!(DB_PUBLISHERS.remove(publisher_url.as_bytes()));
+    unwrap!(DB_PUBLISHERS.remove(publisher_url));
 }
 
 pub fn exists(publisher_url: &str) -> bool {

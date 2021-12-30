@@ -177,21 +177,6 @@
 <span id="177">177</span>
 <span id="178">178</span>
 <span id="179">179</span>
-<span id="180">180</span>
-<span id="181">181</span>
-<span id="182">182</span>
-<span id="183">183</span>
-<span id="184">184</span>
-<span id="185">185</span>
-<span id="186">186</span>
-<span id="187">187</span>
-<span id="188">188</span>
-<span id="189">189</span>
-<span id="190">190</span>
-<span id="191">191</span>
-<span id="192">192</span>
-<span id="193">193</span>
-<span id="194">194</span>
 </pre><pre class="rust"><code><span class="comment">// db_sled_mod.rs</span>
 
 <span class="doccomment">//! db_sled is a database that works in memory, but is persisted on disk</span>
@@ -201,6 +186,7 @@
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">dead_code</span>)]</span>
 
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">db_crate_mod</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">db_metadata_mod</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">db_publisher_mod</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">db_review_mod</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">db_verify_mod</span>;
@@ -218,8 +204,6 @@
     <span class="kw">pub</span> <span class="kw">static</span> <span class="kw-2">ref</span> <span class="ident">DB_SLED</span>:<span class="ident">sled::Db</span> <span class="op">=</span> <span class="macro">unwrap!</span>(<span class="ident">sled::open</span>(<span class="macro">unwrap!</span>(<span class="ident">home::home_dir</span>()).<span class="ident">join</span>(<span class="string">&quot;.config/crev/cargo_crev_reviews_data/db&quot;</span>)));
     <span class="doccomment">/// 3 threads to download in parallel</span>
     <span class="kw">static</span> <span class="kw-2">ref</span> <span class="ident">POOL</span>:<span class="ident">rayon::ThreadPool</span> <span class="op">=</span> <span class="ident">rayon::ThreadPoolBuilder::new</span>().<span class="ident">num_threads</span>(<span class="number">3</span>).<span class="ident">build</span>().<span class="ident">unwrap</span>();
-    <span class="doccomment">/// I will store the version here, so I can use it for migration upgrades</span>
-    <span class="kw">static</span> <span class="kw-2">ref</span> <span class="ident">DB_SLED_METADATA</span>: <span class="ident">sled::Tree</span> <span class="op">=</span> <span class="ident"><span class="kw">crate</span>::db_sled_mod::DB_SLED</span>.<span class="ident">open_tree</span>(<span class="string">b&quot;metadata&quot;</span>).<span class="ident">unwrap</span>();
 }
 
 <span class="doccomment">/// to avoid double or triple call to crates.io for the same crate</span>
@@ -338,53 +322,39 @@
 
 <span class="doccomment">/// if the data structure changes then it must be updated by a migration</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">db_sled_migration_update</span>(<span class="ident">cargo_pkg_version</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) {
-    <span class="kw">match</span> <span class="ident">DB_SLED_METADATA</span>.<span class="ident">get</span>(<span class="string">&quot;version&quot;</span>.<span class="ident">as_bytes</span>()) {
-        <span class="prelude-val">Err</span>(<span class="ident">err</span>) =&gt; <span class="macro">log::error!</span>(<span class="string">&quot;db_sled_migration_update {}&quot;</span>, <span class="ident">err</span>),
-        <span class="prelude-val">Ok</span>(<span class="ident">old_version_opt</span>) =&gt; {
-            <span class="kw">let</span> <span class="ident">pkg_semver</span> <span class="op">=</span> <span class="ident">semver::Version::parse</span>(<span class="kw-2">&amp;</span><span class="ident">cargo_pkg_version</span>).<span class="ident">unwrap</span>();
+    <span class="kw">let</span> <span class="ident">pkg_semver</span> <span class="op">=</span> <span class="macro">unwrap!</span>(<span class="ident">semver::Version::parse</span>(<span class="kw-2">&amp;</span><span class="ident">cargo_pkg_version</span>));
+    <span class="kw">let</span> <span class="ident">db_version</span> <span class="op">=</span> <span class="macro">unwrap!</span>(<span class="ident">db_metadata_mod::get_version</span>());
+    <span class="kw">let</span> <span class="ident">db_semver</span> <span class="op">=</span> <span class="macro">unwrap!</span>(<span class="ident">semver::Version::parse</span>(<span class="kw-2">&amp;</span><span class="ident">db_version</span>));
+    <span class="comment">// log::info!(&quot;db_sled_migration_update pkg={}, db={}&quot;, &amp;pkg_semver, &amp;db_semver);</span>
 
-            <span class="kw">let</span> <span class="ident">db_version</span>: <span class="ident">String</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">old_version_opt</span> {
-                <span class="prelude-val">Some</span>(<span class="ident">data</span>) =&gt; <span class="ident">String::from_utf8_lossy</span>(<span class="ident">data</span>.<span class="ident">as_ref</span>()).<span class="ident">to_string</span>(),
-                <span class="prelude-val">None</span> =&gt; <span class="string">&quot;0.0.0&quot;</span>.<span class="ident">to_string</span>(),
-            };
-            <span class="comment">// log::info!(&quot;db_sled_migration_update pkg={}, db={}&quot;, &amp;cargo_pkg_version, &amp;db_version);</span>
-
-            <span class="ident">upgrade_to_2021_1228_1255</span>(<span class="kw-2">&amp;</span><span class="ident">pkg_semver</span>, <span class="kw-2">&amp;</span><span class="ident">db_version</span>);
-            <span class="ident">upgrade_to_2021_1228_1528</span>(<span class="kw-2">&amp;</span><span class="ident">pkg_semver</span>, <span class="kw-2">&amp;</span><span class="ident">db_version</span>);
-        }
-    }
+    <span class="ident">upgrade_to_2021_1228_1255</span>(<span class="kw-2">&amp;</span><span class="ident">pkg_semver</span>, <span class="kw-2">&amp;</span><span class="ident">db_semver</span>);
+    <span class="ident">upgrade_to_2021_1228_1528</span>(<span class="kw-2">&amp;</span><span class="ident">pkg_semver</span>, <span class="kw-2">&amp;</span><span class="ident">db_semver</span>);
 }
 
-<span class="kw">fn</span> <span class="ident">upgrade_to_2021_1228_1255</span>(<span class="ident">pkg_semver</span>: <span class="kw-2">&amp;</span><span class="ident">crev_data::Version</span>, <span class="ident">db_version</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="ident">String</span> {
-    <span class="kw">let</span> <span class="ident">db_updated_version</span> <span class="op">=</span> <span class="string">&quot;2021.1228.1255&quot;</span>.<span class="ident">to_string</span>();
-    <span class="kw">let</span> <span class="ident">db_updated_semver</span> <span class="op">=</span> <span class="ident">semver::Version::parse</span>(<span class="kw-2">&amp;</span><span class="ident">db_updated_version</span>).<span class="ident">unwrap</span>();
-    <span class="kw">let</span> <span class="ident">db_semver</span> <span class="op">=</span> <span class="ident">semver::Version::parse</span>(<span class="kw-2">&amp;</span><span class="ident">db_version</span>).<span class="ident">unwrap</span>();
+<span class="kw">fn</span> <span class="ident">upgrade_to_2021_1228_1255</span>(<span class="ident">pkg_semver</span>: <span class="kw-2">&amp;</span><span class="ident">crev_data::Version</span>, <span class="ident">db_semver</span>: <span class="kw-2">&amp;</span><span class="ident">crev_data::Version</span>) {
+    <span class="kw">let</span> <span class="ident">db_updated_semver</span> <span class="op">=</span> <span class="macro">unwrap!</span>(<span class="ident">semver::Version::parse</span>(<span class="string">&quot;2021.1228.1255&quot;</span>));
+
     <span class="kw">if</span> <span class="ident">db_updated_semver</span>.<span class="ident">cmp</span>(<span class="kw-2">&amp;</span><span class="ident">pkg_semver</span>) <span class="op">==</span> <span class="ident">std::cmp::Ordering::Less</span> <span class="op">&amp;&amp;</span> <span class="ident">db_semver</span>.<span class="ident">cmp</span>(<span class="kw-2">&amp;</span><span class="ident">db_updated_semver</span>) <span class="op">==</span> <span class="ident">std::cmp::Ordering::Less</span> {
-        <span class="macro">log::info!</span>(<span class="string">&quot;migrating db_sled from {} to {}&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">db_version</span>, <span class="kw-2">&amp;</span><span class="ident">db_updated_version</span>);
+        <span class="macro">log::info!</span>(<span class="string">&quot;migrating db_sled from {} to {}&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">db_semver</span>, <span class="kw-2">&amp;</span><span class="ident">db_updated_semver</span>);
         <span class="comment">// clear the content of db_version because published_by_login changed to published_by_url</span>
         <span class="comment">// this is only a data cache tree and will be populated automatically</span>
         <span class="ident">db_version_mod::clear</span>();
 
-        <span class="macro">unwrap!</span>(<span class="ident">DB_SLED_METADATA</span>.<span class="ident">insert</span>(<span class="string">&quot;version&quot;</span>, <span class="ident">db_updated_version</span>.<span class="ident">as_str</span>()));
+        <span class="ident">db_metadata_mod::set_version</span>(<span class="kw-2">&amp;</span><span class="ident">db_updated_semver</span>.<span class="ident">to_string</span>());
     }
-    <span class="comment">// return</span>
-    <span class="ident">db_updated_version</span>
 }
 
-<span class="kw">fn</span> <span class="ident">upgrade_to_2021_1228_1528</span>(<span class="ident">pkg_semver</span>: <span class="kw-2">&amp;</span><span class="ident">crev_data::Version</span>, <span class="ident">db_version</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="ident">String</span> {
-    <span class="kw">let</span> <span class="ident">db_updated_version</span> <span class="op">=</span> <span class="string">&quot;2021.1228.1528&quot;</span>.<span class="ident">to_string</span>();
-    <span class="kw">let</span> <span class="ident">db_updated_semver</span> <span class="op">=</span> <span class="ident">semver::Version::parse</span>(<span class="kw-2">&amp;</span><span class="ident">db_updated_version</span>).<span class="ident">unwrap</span>();
-    <span class="kw">let</span> <span class="ident">db_semver</span> <span class="op">=</span> <span class="ident">semver::Version::parse</span>(<span class="kw-2">&amp;</span><span class="ident">db_version</span>).<span class="ident">unwrap</span>();
+<span class="kw">fn</span> <span class="ident">upgrade_to_2021_1228_1528</span>(<span class="ident">pkg_semver</span>: <span class="kw-2">&amp;</span><span class="ident">crev_data::Version</span>, <span class="ident">db_semver</span>: <span class="kw-2">&amp;</span><span class="ident">crev_data::Version</span>) {
+    <span class="kw">let</span> <span class="ident">db_updated_semver</span> <span class="op">=</span> <span class="macro">unwrap!</span>(<span class="ident">semver::Version::parse</span>(<span class="string">&quot;2021.1228.1528&quot;</span>));
+
     <span class="kw">if</span> <span class="ident">db_updated_semver</span>.<span class="ident">cmp</span>(<span class="kw-2">&amp;</span><span class="ident">pkg_semver</span>) <span class="op">==</span> <span class="ident">std::cmp::Ordering::Less</span> <span class="op">&amp;&amp;</span> <span class="ident">db_semver</span>.<span class="ident">cmp</span>(<span class="kw-2">&amp;</span><span class="ident">db_updated_semver</span>) <span class="op">==</span> <span class="ident">std::cmp::Ordering::Less</span> {
-        <span class="macro">log::info!</span>(<span class="string">&quot;migrating db_sled from {} to {}&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">db_version</span>, <span class="kw-2">&amp;</span><span class="ident">db_updated_version</span>);
+        <span class="macro">log::info!</span>(<span class="string">&quot;migrating db_sled from {} to {}&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">db_semver</span>, <span class="kw-2">&amp;</span><span class="ident">db_updated_semver</span>);
 
         <span class="comment">// init with some default trusted publishers</span>
         <span class="ident">db_publisher_mod::init_with_some_default</span>();
 
-        <span class="macro">unwrap!</span>(<span class="ident">DB_SLED_METADATA</span>.<span class="ident">insert</span>(<span class="string">&quot;version&quot;</span>.<span class="ident">as_bytes</span>(), <span class="ident">db_updated_version</span>.<span class="ident">as_str</span>()));
+        <span class="ident">db_metadata_mod::set_version</span>(<span class="kw-2">&amp;</span><span class="ident">db_updated_semver</span>.<span class="ident">to_string</span>());
     }
-    <span class="comment">// return</span>
-    <span class="ident">db_updated_version</span>
 }
 </code></pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="cargo_crev_reviews" data-search-index-js="../../../search-index.js" data-search-js="../../../search.js"></div>

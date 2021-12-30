@@ -24,12 +24,12 @@ lazy_static! {
 /// insert
 pub fn insert(crate_name: &str, value: &CrateForDb) -> anyhow::Result<()> {
     let value = serde_json::to_vec(value)?;
-    DB_CRATES.insert(crate_name.as_bytes(), value)?;
+    DB_CRATES.insert(crate_name, value)?;
     Ok(())
 }
 
 pub fn read(crate_name: &str) -> anyhow::Result<Option<CrateForDb>> {
-    let data = DB_CRATES.get(crate_name.as_bytes())?;
+    let data = DB_CRATES.get(crate_name)?;
     match data {
         Some(data) => Ok(Some(serde_json::from_slice(&data)?)),
         None => {
@@ -42,7 +42,7 @@ pub fn read(crate_name: &str) -> anyhow::Result<Option<CrateForDb>> {
 }
 
 pub fn delete(crate_name: &str) {
-    unwrap!(DB_CRATES.remove(crate_name.as_bytes()));
+    unwrap!(DB_CRATES.remove(crate_name));
 }
 
 pub fn exists(crate_name: &str) -> bool {

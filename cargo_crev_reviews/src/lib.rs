@@ -4,11 +4,11 @@
 //! # cargo_crev_reviews
 //!
 //! **Write cargo-crev reviews in GUI with a cross-platform app written in full-stack Rust**  
-//! ***[repository](https://github.com/lucianobestia/cargo_crev_reviews_workspace); version: 2021.1229.1428  date: 2021-12-29 authors: Luciano Bestia***  
+//! ***[repository](https://github.com/lucianobestia/cargo_crev_reviews_workspace); version: 2021.1230.1945  date: 2021-12-30 authors: Luciano Bestia***  
 //!
-//! [![Lines in Rust code](https://img.shields.io/badge/Lines_in_Rust-2463-green.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
-//! [![Lines in Doc comments](https://img.shields.io/badge/Lines_in_Doc_comments-507-blue.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
-//! [![Lines in Comments](https://img.shields.io/badge/Lines_in_comments-193-purple.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
+//! [![Lines in Rust code](https://img.shields.io/badge/Lines_in_Rust-2603-green.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
+//! [![Lines in Doc comments](https://img.shields.io/badge/Lines_in_Doc_comments-518-blue.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
+//! [![Lines in Comments](https://img.shields.io/badge/Lines_in_comments-200-purple.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
 //! [![Lines in examples](https://img.shields.io/badge/Lines_in_examples-0-yellow.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
 //! [![Lines in tests](https://img.shields.io/badge/Lines_in_tests-27-orange.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
 //!
@@ -55,8 +55,7 @@
 //! - a list of all versions of that crate with your reviews added
 //!
 //! Be warned that modern browsers block pop-ups and you have to allow that explicitly for this site `127.0.0.1`.  
-//! If you don't have VSCode, you can create a symbolic link for the command `code directory_path` to open your preferred editor:  
-//! `ln -s /usr/bin/code your_preferred_editor`  
+//! If you don't have VSCode, you can change the code_editor in the `Config` menu.  
 //!
 //! ## Reputation vs. code review
 //!
@@ -98,6 +97,7 @@
 //!
 //! I will use [cargo-auto](https://crates.io/crates/cargo-auto) to automate the tasks needed to build the project.  
 //! The sub-directory `automation_tasks_rs` is the Rust project for [cargo-auto](https://crates.io/crates/cargo-auto).  
+//! My project [dev_bestia_cargo_completion](https://github.com/LucianoBestia/dev_bestia_cargo_completion) helps with bash auto-completion.  
 //!
 //! The Rust workspace is made of members:
 //!
@@ -241,6 +241,8 @@
 //! First it opens the default browser with `xdg-open` on <http://127.0.0.1:8182/cargo_crev_reviews/index.html>.  
 //! I received a comment that `xdg-open` is not preinstalled on every Linux distro. I use Debian 10 and have it.  
 //! On other distros it is possible to install it with `xdg-utils`.  
+//! You can also use the env variable `export CREV_BROWSER_PATH=/usr/bin/xdg-open` for the first use.  
+//! And then later change it in the Config menu.  
 //! If your WSL2 does not have yet a default browser run this:  
 //!
 //! ``` bash
@@ -406,6 +408,7 @@ mod utils_mod;
 // region: functions and structs accessible to /bin/cargo_crev_reviews.
 
 pub use crev_mod::unlock_crev_id_interactively;
+pub use db_sled_mod::db_metadata_mod::get_config;
 pub use db_sled_mod::db_sled_migration_update;
 pub use db_sled_mod::sync_in_background_reviews;
 pub use db_sled_mod::sync_in_background_verify;
@@ -539,7 +542,6 @@ Read more here: https://github.com/crev-dev/cargo-crev/blob/master/cargo-crev/sr
     );
 }
 
-
 /// warning cargo-audit not installed
 pub fn cargo_audit_not_installed() {
     println!(
@@ -556,6 +558,26 @@ Install cargo-audit:
         red = *RED,
         res = *RESET,
         green = *GREEN
+    );
+}
+
+/// warning browser from config not installed
+pub fn browser_not_installed(browser_path: &str) {
+    println!(
+        r#"
+{yel}WELCOME to cargo_crev_reviews from Bestia.dev!{res}
+
+{red}Error: the browser {browser_path} is not installed!{res}
+
+The default way to open the browser from the terminal is `xdg-open`.
+If your Linux distro does not have it installed, you can install it with `xdg-utils`.
+Or you can set the env variable `export CREV_BROWSER_PATH=/usr/bin/xdg-open` for the first use.
+Then change the browser in the Config menu to make your choice permanent.
+"#,
+        browser_path = browser_path,
+        yel = *YELLOW,
+        red = *RED,
+        res = *RESET,
     );
 }
 

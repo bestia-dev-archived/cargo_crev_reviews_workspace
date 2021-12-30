@@ -4,6 +4,7 @@
 // Please, don't modify manually the special "region: generated..." that are filled by automation.
 
 use crate::cln_methods_mod::cln_cargo_tree_mod::*;
+use crate::cln_methods_mod::cln_config_mod::*;
 use crate::cln_methods_mod::cln_publisher_item_mod::*;
 use crate::cln_methods_mod::cln_publisher_list_mod::*;
 use crate::cln_methods_mod::cln_review_item_mod::*;
@@ -16,6 +17,7 @@ pub async fn match_response_method_and_call_function(response: common_structs_mo
     match response.response_method.as_str() {
         // region: generated match_response_method
         "cln_cargo_tree_list" => cln_cargo_tree_list(response),
+        "cln_config_edit" => cln_config_edit(response),
         "cln_modal_close" => cln_modal_close(response),
         "cln_modal_error" => cln_modal_error(response),
         "cln_no_action" => cln_no_action(response),
@@ -41,6 +43,24 @@ pub mod srv_methods {
 
     #[named]
     pub fn srv_cargo_tree_project<T>(request_data: T)
+    where
+        T: serde::Serialize,
+    {
+        let request_method = function_name!();
+        post_request_await_run_response_method(request_method, request_data);
+    }
+
+    #[named]
+    pub fn srv_config_edit<T>(request_data: T)
+    where
+        T: serde::Serialize,
+    {
+        let request_method = function_name!();
+        post_request_await_run_response_method(request_method, request_data);
+    }
+
+    #[named]
+    pub fn srv_config_save<T>(request_data: T)
     where
         T: serde::Serialize,
     {
@@ -325,6 +345,12 @@ pub mod common_structs_mod {
     #[derive(Serialize, Deserialize, Debug, Default)]
     pub struct PublisherFilterData {
         pub publisher_url: String,
+    }
+
+    #[derive(Serialize, Deserialize, Debug, Default, Clone)]
+    pub struct ConfigData {
+        pub code_editor_path: String,
+        pub browser_path: String,
     }
     // endregion: generated common_structs_mod
 }

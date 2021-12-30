@@ -19,12 +19,12 @@ lazy_static! {
 /// insert
 pub fn insert(crate_name_version: &str, value: &ReviewItemData) -> anyhow::Result<()> {
     let value = serde_json::to_vec(value)?;
-    DB_REVIEW.insert(crate_name_version.as_bytes(), value)?;
+    DB_REVIEW.insert(crate_name_version, value)?;
     Ok(())
 }
 
 pub fn read(crate_name_version: &str) -> anyhow::Result<Option<ReviewItemData>> {
-    let data = DB_REVIEW.get(crate_name_version.as_bytes())?;
+    let data = DB_REVIEW.get(crate_name_version)?;
     match data {
         Some(data) => Ok(Some(serde_json::from_slice(&data)?)),
         None => Ok(None),
@@ -44,7 +44,7 @@ pub fn all_versions_for_crate(crate_name: &str) -> anyhow::Result<Vec<ReviewItem
 }
 
 pub fn delete(crate_name_version: &str) {
-    unwrap!(DB_REVIEW.remove(crate_name_version.as_bytes()));
+    unwrap!(DB_REVIEW.remove(crate_name_version));
 }
 
 pub fn exists(crate_name_version: &str) -> bool {

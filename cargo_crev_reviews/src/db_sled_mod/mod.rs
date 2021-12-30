@@ -7,6 +7,7 @@
 #![allow(dead_code)]
 
 pub mod db_crate_mod;
+pub mod db_metadata_mod;
 pub mod db_publisher_mod;
 pub mod db_review_mod;
 pub mod db_verify_mod;
@@ -24,8 +25,6 @@ lazy_static! {
     pub static ref DB_SLED:sled::Db = unwrap!(sled::open(unwrap!(home::home_dir()).join(".config/crev/cargo_crev_reviews_data/db")));
     /// 3 threads to download in parallel
     static ref POOL:rayon::ThreadPool = rayon::ThreadPoolBuilder::new().num_threads(3).build().unwrap();
-    /// I will store the version here, so I can use it for migration upgrades
-    static ref DB_SLED_METADATA: sled::Tree = crate::db_sled_mod::DB_SLED.open_tree(b"metadata").unwrap();
 }
 
 /// to avoid double or triple call to crates.io for the same crate
@@ -144,51 +143,37 @@ pub fn sync_in_background_verify() {
 
 /// if the data structure changes then it must be updated by a migration
 pub fn db_sled_migration_update(cargo_pkg_version: &str) {
-    match DB_SLED_METADATA.get("version".as_bytes()) {
-        Err(err) => log::error!("db_sled_migration_update {}", err),
-        Ok(old_version_opt) => {
-            let pkg_semver = semver::Version::parse(&cargo_pkg_version).unwrap();
+    let pkg_semver = unwrap!(semver::Version::parse(&cargo_pkg_version));
+    let db_version = unwrap!(db_metadata_mod::get_version());
+    let db_semver = unwrap!(semver::Version::parse(&db_version));
+    // log::info!("db_sled_migration_update pkg={}, db={}", &pkg_semver, &db_semver);
 
-            let db_version: String = match old_version_opt {
-                Some(data) => String::from_utf8_lossy(data.as_ref()).to_string(),
-                None => "0.0.0".to_string(),
-            };
-            // log::info!("db_sled_migration_update pkg={}, db={}", &cargo_pkg_version, &db_version);
-
-            upgrade_to_2021_1228_1255(&pkg_semver, &db_version);
-            upgrade_to_2021_1228_1528(&pkg_semver, &db_version);
-        }
-    }
+    upgrade_to_2021_1228_1255(&pkg_semver, &db_semver);
+    upgrade_to_2021_1228_1528(&pkg_semver, &db_semver);
 }
 
-fn upgrade_to_2021_1228_1255(pkg_semver: &crev_data::Version, db_version: &str) -> String {
-    let db_updated_version = "2021.1228.1255".to_string();
-    let db_updated_semver = semver::Version::parse(&db_updated_version).unwrap();
-    let db_semver = semver::Version::parse(&db_version).unwrap();
+fn upgrade_to_2021_1228_1255(pkg_semver: &crev_data::Version, db_semver: &crev_data::Version) {
+    let db_updated_semver = unwrap!(semver::Version::parse("2021.1228.1255"));
+
     if db_updated_semver.cmp(&pkg_semver) == std::cmp::Ordering::Less && db_semver.cmp(&db_updated_semver) == std::cmp::Ordering::Less {
-        log::info!("migrating db_sled from {} to {}", &db_version, &db_updated_version);
+        log::info!("migrating db_sled from {} to {}", &db_semver, &db_updated_semver);
         // clear the content of db_version because published_by_login changed to published_by_url
         // this is only a data cache tree and will be populated automatically
         db_version_mod::clear();
 
-        unwrap!(DB_SLED_METADATA.insert("version", db_updated_version.as_str()));
+        db_metadata_mod::set_version(&db_updated_semver.to_string());
     }
-    // return
-    db_updated_version
 }
 
-fn upgrade_to_2021_1228_1528(pkg_semver: &crev_data::Version, db_version: &str) -> String {
-    let db_updated_version = "2021.1228.1528".to_string();
-    let db_updated_semver = semver::Version::parse(&db_updated_version).unwrap();
-    let db_semver = semver::Version::parse(&db_version).unwrap();
+fn upgrade_to_2021_1228_1528(pkg_semver: &crev_data::Version, db_semver: &crev_data::Version) {
+    let db_updated_semver = unwrap!(semver::Version::parse("2021.1228.1528"));
+
     if db_updated_semver.cmp(&pkg_semver) == std::cmp::Ordering::Less && db_semver.cmp(&db_updated_semver) == std::cmp::Ordering::Less {
-        log::info!("migrating db_sled from {} to {}", &db_version, &db_updated_version);
+        log::info!("migrating db_sled from {} to {}", &db_semver, &db_updated_semver);
 
         // init with some default trusted publishers
         db_publisher_mod::init_with_some_default();
 
-        unwrap!(DB_SLED_METADATA.insert("version".as_bytes(), db_updated_version.as_str()));
+        db_metadata_mod::set_version(&db_updated_semver.to_string());
     }
-    // return
-    db_updated_version
 }

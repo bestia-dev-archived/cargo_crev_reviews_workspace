@@ -124,9 +124,7 @@ pub fn set_inner_html(element_id: &str, inner_html: &str) {
 /// return the response as String. Any error will panic.
 pub async fn fetch_response(url: &str) -> String {
     // Request init
-    let mut opts = RequestInit::new();
-    opts.method("GET");
-    opts.mode(web_sys::RequestMode::Cors);
+    let opts = RequestInit::new().method("GET").mode(web_sys::RequestMode::Cors).to_owned();
     let request = unwrap!(Request::new_with_str_and_init(url, &opts));
     // log1("before fetch");
     let resp_jsvalue = unwrap!(JsFuture::from(window().fetch_with_request(&request)).await);
