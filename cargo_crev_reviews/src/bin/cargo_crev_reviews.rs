@@ -22,6 +22,9 @@ fn main() -> anyhow::Result<()> {
     } else if !home::cargo_home()?.join("bin").join("cargo-crev").exists() {
         // check if cargo-crev is installed
         cargo_crev_not_installed();
+    } else if !home::cargo_home()?.join("bin").join("cargo-audit").exists() {
+        // check if cargo-audit is installed
+        cargo_audit_not_installed();        
     } else if !env::current_dir()?.join("Cargo.toml").exists() {
         not_started_inside_rust_project()?;
     } else {

@@ -516,7 +516,7 @@ pub fn cargo_crev_not_installed() {
 {red}Error: cargo-crev is not installed!{res}
 
 Cargo_crev_reviews is a GUI wrapper around cargo-crev (from dpc).
-Install and configure cargo-crev and cargo-tree in 5 easy steps.
+Install and configure cargo-crev in 5 easy steps.
 Open a new Linux terminal and use this incantations:  
 1. Install cargo-crev:
   {green}$ cargo install cargo-crev{res}
@@ -531,6 +531,26 @@ Choose a passphrase. Warning: There's no way to recover your CrevID if you forge
   {green}$ cargo crev repo fetch trusted{res}
 Done! Easy!
 Read more here: https://github.com/crev-dev/cargo-crev/blob/master/cargo-crev/src/doc/getting_started.md
+"#,
+        yel = *YELLOW,
+        red = *RED,
+        res = *RESET,
+        green = *GREEN
+    );
+}
+
+
+/// warning cargo-audit not installed
+pub fn cargo_audit_not_installed() {
+    println!(
+        r#"
+{yel}WELCOME to cargo_crev_reviews from Bestia.dev!{res}
+
+{red}Error: cargo-audit is not installed!{res}
+
+Cargo_crev_reviews is using cargo-audit to list the RustSec advisories of dependencies.
+Install cargo-audit:
+  {green}$ cargo install cargo-audit{res}
 "#,
         yel = *YELLOW,
         red = *RED,
