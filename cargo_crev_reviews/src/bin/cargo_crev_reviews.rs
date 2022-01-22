@@ -1,5 +1,6 @@
 // cargo_crev_reviews/src/bin/cargo_crev_reviews.rs
 
+use anyhow::Context;
 use std::env;
 use unwrap::unwrap;
 
@@ -49,6 +50,7 @@ fn main() -> anyhow::Result<()> {
 This CLI opens the default browser. It is the frontend graphical (GUI) part of the app.
 If the default browser does not open from WSL2, you can see my project `https://github.com/LucianoBestia/wsl_open_browser`."#
         );
+        delete_temp_files();
         unlock_crev_id_interactively()?;
         db_sled_migration_update(env!("CARGO_PKG_VERSION"));
         open_browser(&crev_browser_path);
@@ -56,6 +58,15 @@ If the default browser does not open from WSL2, you can see my project `https://
         start_web_server();
     }
     Ok(())
+}
+
+/// The original source code of crates is unpacked in a temp dir and then opens the VSCode on that folder.
+/// This can accumulate temporary files I don't need anymore.
+/// On start I will empty this folder. It will be recreated when needed.
+pub fn delete_temp_files() {
+    let home_dir = home::home_dir().with_context(|| "home::home_dir() is None.").unwrap();
+    let tempdir = home_dir.join(".config/crev/cargo_crev_reviews_data/tmp_src");
+    std::fs::remove_dir_all(tempdir).unwrap();
 }
 
 /// open browser with xdg-open

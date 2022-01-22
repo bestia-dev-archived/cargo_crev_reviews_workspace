@@ -137,26 +137,48 @@ pub fn srv_review_publish(_request_data: serde_json::Value) -> anyhow::Result<St
     }
 }
 
+/// The source code of the dependency crate is in the `cargo registry src` folder
+/// But it must not be opened with a code editor, because the intellisense server will alter the files: add the target folder and Cargo.lock file.
+/// This is why I copy this folder into a temp directory first.
+/// To avoid copying some unclean crate, I will unpack the `.crate` file from the `cargo registry cache` folder
 #[named]
 pub fn srv_review_open_source_code(request_data: serde_json::Value) -> anyhow::Result<String> {
     log::info!(function_name!());
     let filter: ReviewFilterData = unwrap!(serde_json::from_value(request_data));
     let version = filter.crate_version.context("Parameter version in None.")?;
-    let path_dir = crate::cargo_registry_mod::cargo_registry_src_dir_for_crate(&filter.crate_name, &version)?;
-    if !path_dir.exists() {
-        anyhow::bail!("Src for version {} is not cached on your system.", &version);
+
+    let cache_crate_file = crate::cargo_registry_mod::cargo_registry_cache_file_for_crate(&filter.crate_name, &version)?;
+    if !cache_crate_file.exists() {
+        anyhow::bail!("Crate version {} {} is not cached on your system.", &filter.crate_name, &version);
     }
-    log::info!("Open source code in {}", unwrap!(path_dir.to_str()));
+    log::info!("Unpack and open source code from {:#?}", &cache_crate_file);
+
+    // unpack the .crate into temp directory
+    // VSCode cannot open a folder in the tmp dir. I will use the existing:
+    // ~\.config\crev\cargo_crev_reviews_data\tmp_src
+    let home_dir = home::home_dir().with_context(|| "home::home_dir() is None.")?;
+    let tempdir = home_dir.join(".config/crev/cargo_crev_reviews_data/tmp_src");
+    if !tempdir.exists() {
+        std::fs::create_dir(&tempdir)?;
+    }
+    let folder_name = crate::utils_mod::crate_version_for_src_folder(&filter.crate_name, &version);
+    let temp_path_dir = tempdir.join(&folder_name);
+    if temp_path_dir.exists() {
+        std::fs::remove_dir_all(&temp_path_dir)?;
+    }
+    crate::cargo_registry_mod::unpack_from_cache_to_folder(&filter.crate_name, &version, &tempdir)?;
+    log::info!("Unpacked into {:#?}", &temp_path_dir);
+
     let config = unwrap!(crate::get_config());
     // test if the `/usr/bin/code` exists.
     if !std::path::Path::new(&config.code_editor_path).exists() {
         log::error!(
             "The editor `{}` does not exist. Change it in the config menu. Or open manually the directory `{}`.",
             &config.code_editor_path,
-            unwrap!(path_dir.to_str())
+            unwrap!(temp_path_dir.to_str())
         );
     } else {
-        let mut child = std::process::Command::new(&config.code_editor_path).arg(path_dir).spawn()?;
+        let mut child = std::process::Command::new(&config.code_editor_path).arg(&temp_path_dir).spawn()?;
         std::thread::sleep(Duration::new(1, 0));
         child.kill()?;
     }

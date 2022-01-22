@@ -173,16 +173,23 @@ pub fn download_crate_from_crate_io(crate_name: &str, crate_version: &str) -> an
 
 /// unpack the .crate file from the `cache` to the `src` folder
 pub fn unpack_from_cache_to_src(crate_name: &str, crate_version: &str) -> anyhow::Result<()> {
-    let crate_file = cargo_registry_cache_file_for_crate(&crate_name, &crate_version)?;
     let src_folder = cargo_registry_src_dir()?;
-    log::info!("unpack_from_cache_to_src: {:#?}", &src_folder);
-    let tar_gz = std::fs::File::open(crate_file)?;
-    let tar = flate2::read::GzDecoder::new(tar_gz);
-    let mut archive = tar::Archive::new(tar);
-    archive.unpack(src_folder)?;
+    unpack_from_cache_to_folder(crate_name, crate_version, &src_folder)?;
     // create `.cargo-ok`. It is a signal for async use, that the unpacking is completed.
     let file_path = cargo_registry_src_dir_for_crate(crate_name, crate_version)?.join(".cargo-ok");
     std::fs::write(file_path, "ok")?;
+    Ok(())
+}
+
+/// unpack the .crate file from the `cache` to a folder
+pub fn unpack_from_cache_to_folder(crate_name: &str, crate_version: &str, folder: &std::path::Path) -> anyhow::Result<()> {
+    log::info!("unpack_from_cache_to_folder: {:#?}", &folder);
+    let crate_file = cargo_registry_cache_file_for_crate(&crate_name, &crate_version)?;
+    let tar_gz = std::fs::File::open(crate_file)?;
+    let tar = flate2::read::GzDecoder::new(tar_gz);
+    let mut archive = tar::Archive::new(tar);
+    archive.unpack(folder)?;
+
     Ok(())
 }
 

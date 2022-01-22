@@ -1,6 +1,6 @@
 [package]
 name = "cargo_crev_reviews_wasm"
-version = "2022.122.1441"
+version = "2022.122.1621"
 authors = ["Luciano Bestia <Luciano.Bestia@gmail.com>"]
 edition = "2021"
 description = "Wasm web app that is the frontend of the application cargo_crev_reviews"
