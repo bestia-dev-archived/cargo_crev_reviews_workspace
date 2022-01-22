@@ -68,8 +68,9 @@ cargo auto release - builds the crate in release mode, version from date, fmt
 cargo auto release_and_run - release and run
 cargo auto docs - builds the docs, copy to docs directory
 cargo auto test - runs all the tests
-cargo auto commit_and_push - commits with message and push with mandatory message
-    if you use SSH, it is easy to start the ssh-agent in the background and ssh-add your credentials for git
+cargo auto commit_and_push - commits and push with mandatory message
+    if you use SSH for git push, it is easy to start the `eval $(ssh-agent)` in the background 
+    and your credentials for git with `ssh-add ~/.ssh/your_private_key`
 cargo auto publish_to_crates_io_cargo_crev_reviews - publish to crates.io, git tag
 "#
     );
@@ -82,7 +83,7 @@ fn completion() {
     let last_word = args[3].as_str();
 
     if last_word == "cargo-auto" || last_word == "auto" {
-        let sub_commands = vec!["build", "build_and_run", "release", "release_and_run", "test", "doc", "commit_and_push","publish_to_crates_io_cargo_crev_reviews"];
+        let sub_commands = vec!["build", "build_and_run", "release", "release_and_run", "doc", "test", "commit_and_push","publish_to_crates_io_cargo_crev_reviews"];
         completion_return_one_or_more_sub_commands(sub_commands, word_being_completed);
     }
 
@@ -117,8 +118,7 @@ fn task_build() {
     println!(
         r#"
 After `cargo auto build`, 
-run `cargo auto build_and_run` 
-run `cargo auto test`
+run `cargo auto build_and_run` or
 run `cargo auto release`
 "#
     );
@@ -151,8 +151,7 @@ fn task_release() {
     println!(
         r#"
 After `cargo auto release`, 
-run `cargo auto release_and_run`
-run `cargo auto test`
+run `cargo auto release_and_run` or
 run `cargo auto doc`
 "#
     );
@@ -189,19 +188,6 @@ fn task_generated_mod() {
     generate_server_match_response_method();
 }
 
-/// cargo test
-fn task_test() {
-    run_shell_command("cargo test");
-   
-    println!(
-        r#"
-After `cargo auto test`, if ok, then 
-run `cargo auto doc`
-or run `cargo auto commit_and_push` with mandatory commit message
-"#
-    );
-}
-
 /// example how to call a list of shell commands and combine with Rust code
 fn task_docs() {
     auto_md_to_doc_comments();
@@ -220,8 +206,18 @@ fn task_docs() {
     println!(
         r#"
 After `cargo auto doc`, check `docs/index.html`. 
-run `cargo auto test` for the last time
-If ok, then 
+run `cargo auto test`,
+"#
+    );
+}
+
+/// cargo test
+fn task_test() {
+    run_shell_command("cargo test");
+   
+    println!(
+        r#"
+After `cargo auto test`, 
 run `cargo auto commit_and_push` with mandatory commit message
 "#
     );

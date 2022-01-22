@@ -18,7 +18,7 @@ use crate::auto_generated_mod::common_structs_mod::*;
 use crate::auto_generated_mod::srv_methods;
 
 use crate::html_mod::*;
-// use crate::utils_mod::join_crate_version;
+// use crate::utils_mod::crate_version_join;
 use crate::*;
 
 // region: mutable static, because it is hard to pass variables around with on_click events
@@ -122,7 +122,7 @@ pub fn cln_review_publish_modal(srv_response: RpcResponse) {
     let html = extract_html(&srv_response);
     let data: RpcMessageData = unwrap!(serde_json::from_value(srv_response.response_data));
     let html_after_process = tmplt::process_html(&data, &html);
-    w::set_inner_html("div_for_modal", &html_after_process);
+    show_modal_html(&html_after_process);
     use crate::cln_methods_mod::cln_utils_mod::modal_close_on_click;
     on_click!("modal_close", modal_close_on_click);
 }
@@ -174,14 +174,10 @@ fn button_open_source_code_onclick(_element_id: &str, row_number: usize) {
 #[named]
 pub fn request_update_registry_index(_element_id: &str) {
     log::info!("{}", function_name!());
-    let html = r#"
-    <div id="modal_message" class="w3_modal">
-        <div class="w3_modal_content">
-            <div>Updating local cargo registry index. Wait a minute...</div>
-            <div>This is necessary for your own crates that are published to crates.io just a moment ago.</div>
-        </div>
-    </div>"#;
-    w::set_inner_html("div_for_modal", html);
+    show_modal_message(
+        "Updating local cargo registry index. Wait a minute...
+This is necessary for your own crates that are published to crates.io just a moment ago.",
+    );
     let request_data = RpcEmptyData {};
     srv_methods::srv_update_registry_index(request_data);
 }
@@ -250,7 +246,7 @@ pub fn modal_delete(_element_id: &str, row_number: usize) {
     </div>"#,
         row_number
     );
-    w::set_inner_html("div_for_modal", &html);
+    show_modal_html(&html);
     use crate::cln_methods_mod::cln_utils_mod::modal_close_on_click;
     on_click!("modal_close", modal_close_on_click);
     // I had to add modal_yes_delete(0), because row_on_click works that way.

@@ -174,7 +174,6 @@
         input[type=text] {
             background-color: var(--b_color_code);
             color: var(--f_color_code);
-            width: 600px;
             border-width: 1px;
             border-radius: 3px;
             border-color: var(--f_color_05);
@@ -190,8 +189,6 @@
         textarea {
             background-color: var(--b_color_code);
             color: var(--f_color_code);
-            width: 900px;
-            height: 120px;
             border-width: 1px;
             border-radius: 3px;
             border-color: var(--f_color_05);
@@ -276,6 +273,11 @@ A small difference to help search and replace refactoring.
             overflow-wrap: break-word;
             white-space: pre-line;
             overflow: hidden;
+        }
+        
+        .pre-line {
+            /* new line is really new line */
+            white-space: pre-line;
         }
         
         .h3y {

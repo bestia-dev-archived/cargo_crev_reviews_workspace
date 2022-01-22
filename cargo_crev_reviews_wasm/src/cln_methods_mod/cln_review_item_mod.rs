@@ -18,7 +18,7 @@ use crate::auto_generated_mod::common_structs_mod::*;
 use crate::auto_generated_mod::srv_methods;
 
 use crate::html_mod::*;
-use crate::utils_mod::join_crate_version;
+use crate::utils_mod::crate_version_join;
 use crate::*;
 
 // region: mutable static, because it is hard to pass variables around with on_click events
@@ -48,7 +48,7 @@ impl tmplt::HtmlTemplatingDataTrait for ReviewItemData {
             "wt_comment_md" => self.comment_md.clone(),
             "wt_crate_name" => self.crate_name.clone(),
             "wt_crate_version" => self.crate_version.clone(),
-            "wt_crate_name_version" => join_crate_version(&self.crate_name, &self.crate_version),
+            "wt_crate_name_version" => crate_version_join(&self.crate_name, &self.crate_version),
             "wt_thoroughness" => self.thoroughness.clone(),
             "wt_understanding" => self.understanding.clone(),
             "wt_crate_thoroughness_understanding" => format!("{} {}", self.thoroughness, self.understanding),
@@ -130,17 +130,17 @@ pub fn cln_review_edit(srv_response: RpcResponse) {
 #[named]
 pub fn request_review_publish(_element_id: &str) {
     log::info!("{}", function_name!());
-    let html = r#"
-<div id="modal_message" class="w3_modal">
-    <div class="w3_modal_content">
-        <code>$ cargo crev publish</code>
-        <div>Publishing to remote repository. Wait a minute...</div>
-        <div>Before you run `cargo_crev_reviews` in the Linux terminal, 
-        <br/>use the ssh agent to activate your ssh credentials 
-        <br/>for accessing Github.</div>
-    </div>
-</div>"#;
-    w::set_inner_html("div_for_modal", html);
+    show_modal_message(
+        "
+$ cargo crev publish
+
+
+Publishing to remote repository. Wait a minute...
+
+Before you run `cargo_crev_reviews` in the Linux terminal, 
+use the ssh agent to activate your ssh credentials 
+for accessing Github.",
+    );
     let request_data = RpcEmptyData {};
     srv_methods::srv_review_publish(request_data);
 }

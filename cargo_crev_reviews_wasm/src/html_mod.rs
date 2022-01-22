@@ -45,6 +45,25 @@ pub fn inject_into_html(html_after_process: &str) {
     w::set_inner_html("div_for_wasm_html_injecting", html_after_process);
 }
 
+pub fn show_modal_message(msg: &str) {
+    let html = format!(
+        r#"
+<div id="modal_message" class="w3_modal">
+    <div class="w3_modal_content pre-line">{}</div>
+</div>"#,
+        encode_5_xml_control_characters(msg)
+    );
+    w::set_inner_html("div_for_modal", &html);
+}
+
+pub fn show_modal_html(html: &str) {
+    w::set_inner_html("div_for_modal", &html);
+}
+
+pub fn close_modal() {
+    w::set_inner_html("div_for_modal", "");
+}
+
 use dev_bestia_html_templating as tmplt;
 // region: HtmlTemplatingDataTrait for data structs
 impl tmplt::HtmlTemplatingDataTrait for RpcMessageData {
@@ -63,4 +82,32 @@ impl tmplt::HtmlTemplatingDataTrait for RpcMessageData {
             _ => tmplt::utils::match_else_for_replace_with_string(&self.data_model_name(), placeholder),
         }
     }
+}
+
+/// decode 5 xml control characters : " ' & < >
+/// <https://www.liquid-technologies.com/XML/EscapingData.aspx>
+/// I will ignore all html entities, to keep things simple,
+/// because all others characters can be written as utf-8 characters.
+/// it is mandatory that text is valid utf-8.
+/// <https://www.tutorialspoint.com/html5/html5_entities.htm>
+/// TODO: find a faster method // The standard library replace() function makes allocation,
+#[allow(dead_code)]
+pub fn decode_5_xml_control_characters(input: &str) -> String {
+    input
+        .replace("&quot;", "\"")
+        .replace("&apos;", "'")
+        .replace("&lt;", "<")
+        .replace("&gt;", ">")
+        .replace("&amp;", "&")
+}
+
+/// encode 5 xml control characters : " ' & < >
+/// TODO: find a faster method // The standard library replace() function makes allocation,
+pub fn encode_5_xml_control_characters(input: &str) -> String {
+    input
+        .replace("&", "&amp;")
+        .replace("\"", "&quot;")
+        .replace("'", "&apos;")
+        .replace("<", "&lt;")
+        .replace(">", "&gt;")
 }

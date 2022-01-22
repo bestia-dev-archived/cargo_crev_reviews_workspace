@@ -34,7 +34,7 @@ pub fn cargo_tree_project() -> anyhow::Result<CargoTreeListData> {
                 Some(caps) => {
                     let crate_name = caps[1].to_string();
                     let crate_version = caps[2].to_string();
-                    let crate_name_version = crate::utils_mod::join_crate_version(&crate_name, &crate_version);
+                    let crate_name_version = crate::utils_mod::crate_version_join(&crate_name, &crate_version);
                     // my rating from my review
                     let my_rating =
                         // result, option

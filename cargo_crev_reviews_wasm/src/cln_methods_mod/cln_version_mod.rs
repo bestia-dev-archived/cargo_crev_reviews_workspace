@@ -15,7 +15,7 @@ use crate::auto_generated_mod::{common_structs_mod::*, srv_methods};
 //use crate::auto_generated_mod::srv_methods;
 
 // use crate::on_click;
-use crate::utils_mod::join_crate_version;
+use crate::utils_mod::crate_version_join;
 use crate::{html_mod::*, on_click, row_on_click};
 
 lazy_static! {
@@ -79,7 +79,7 @@ impl tmplt::HtmlTemplatingDataTrait for VersionItemData {
         match placeholder {
             "wt_crate_name" => self.crate_name.clone(),
             "wt_crate_version" => self.crate_version.clone(),
-            "wt_crate_name_version" => join_crate_version(&self.crate_name, &self.crate_version),
+            "wt_crate_name_version" => crate_version_join(&self.crate_name, &self.crate_version),
             "wt_crate_published_by_url" => {
                 crate::cln_methods_mod::cln_publisher_item_mod::published_by_url_shorten(self.published_by_url.as_deref().unwrap_or("")).to_string()
             }
@@ -258,7 +258,7 @@ pub fn modal_delete(_element_id: &str, row_number: usize) {
     </div>"#,
         row_number
     );
-    w::set_inner_html("div_for_modal", &html);
+    show_modal_html(&html);
     use crate::cln_methods_mod::cln_utils_mod::modal_close_on_click;
     on_click!("modal_close", modal_close_on_click);
     // I had to add modal_yes_delete(0), because row_on_click works that way.

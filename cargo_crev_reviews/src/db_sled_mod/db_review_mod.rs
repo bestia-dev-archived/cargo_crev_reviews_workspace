@@ -50,3 +50,13 @@ pub fn delete(crate_name_version: &str) {
 pub fn exists(crate_name_version: &str) -> bool {
     unwrap!(DB_REVIEW.contains_key(crate_name_version))
 }
+
+// list crate_name_version for all reviews from sled
+pub fn list_all_crate_name_version() -> anyhow::Result<Vec<String>> {
+    let mut vec: Vec<String> = vec![];
+    for x in DB_REVIEW.iter() {
+        let (key, _value) = x?;
+        vec.push(std::str::from_utf8(&key).unwrap().to_string());
+    }
+    Ok(vec)
+}

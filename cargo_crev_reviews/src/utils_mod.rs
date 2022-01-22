@@ -7,16 +7,31 @@ use unwrap::unwrap;
 
 use crate::*;
 
-pub fn split_crate_version(crate_name_version: &str) -> (String, String) {
+// region: crate_version can be in different formats
+// separate crate_name and crate_version
+// inside Cargo.toml: dev_bestia_string_utils="0.1.19"  (dash is replaced with underscore)
+// folder name in src: wasm-bindgen-test-macro-0.3.28
+// in sled database: wasm-bindgen-test-macro 0.3.28
+
+pub fn crate_version_split(crate_name_version: &str) -> (String, String) {
     let s: Vec<&str> = crate_name_version.split_whitespace().collect();
     let crate_name = s[0].to_string();
     let crate_version = s[1].to_string();
     (crate_name, crate_version)
 }
 
-pub fn join_crate_version(crate_name: &str, crate_version: &str) -> String {
+pub fn crate_version_join(crate_name: &str, crate_version: &str) -> String {
     format!("{} {}", crate_name, crate_version)
 }
+
+pub fn crate_version_for_src_folder(crate_name: &str, crate_version: &str) -> String {
+    format!("{}-{}", crate_name, crate_version)
+}
+
+pub fn crate_version_for_cargo_toml(crate_name: &str, crate_version: &str) -> String {
+    format!(r#"{}="{}""#, crate_name, crate_version)
+}
+// endregion: crate_version can be in different formats
 
 /// returns the now in nanoseconds
 pub fn ns_start(text: &str) -> i64 {

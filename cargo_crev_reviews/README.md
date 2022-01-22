@@ -127,7 +127,7 @@ Together the backend and the frontend form a complete application that is cross-
 They share some structs for communication that are defined in the `common_structs_mod` module. One automation task copies the content from backend to frontend projects to keep them in sync.  
 The only URL the server operates is: <http://127.0.0.1:8182/cargo_crev_reviews>
 
-The web server CLI will access files, commands, libraries and the network.  For the signing process of crev reviews it need the crev passphrase. This can be entered interactively or with the env variable ` export CREV_PASSPHRASE=your_passphrase`.  
+The web server CLI will access files, commands, libraries and the network.  For the signing process of crev reviews it need the crev passphrase. This can be entered interactively or with the env variable `_export CREV_PASSPHRASE=your_passphrase`.  
 Add a space before the export command to avoid the secret to be saved in the bash history.  
 
 If I want to publish this on crates.io it must all be inside one binary executable file.  
@@ -194,22 +194,11 @@ The [cargo-crev](https://github.com/crev-dev/cargo-crev) project contains many c
 
 ## cargo registry
 
-The cargo application is essential for work with the Rust language. It maintains a local `cargo registry cache`. The registry index is git fetched from github. Path to an index file:  
+The cargo application is essential for work with the Rust language. It maintains a local `cargo registry` in the directory `~/.cargo/registry/`. It has 3 basic sub-directories: index, cache and src.  
+The `registry index` is the databse with crates metadata and is git fetched from github. Path to an index file:  
 `~/.cargo/registry/index/github.com-1ecc6299db9ec823/cache/re/ad/reader_for_microxml`  
 
-```bash
-cd ~/.cargo/registry/index/github.com-1ecc6299db9ec823
-git remote add origin https://github.com/rust-lang/crates.io-index
-git pull
-# if this does not work, I deleted the old directory and cloned it fresh
-# I am experimenting, maybe this is not the best approach ?
-rmdir ~/.cargo/registry/index/github.com-1ecc6299db9ec823
-cd ~/.cargo/registry/index
-git clone https://github.com/rust-lang/crates.io-index github.com-1ecc6299db9ec823
-
-```
-
-The content of this file is roughly:  
+The content of this file looks like this:  
 
 ```yaml
 bc688d353fc7c7a2f3f1f5fed9a27fc1773fc710
@@ -233,7 +222,16 @@ bc688d353fc7c7a2f3f1f5fed9a27fc1773fc710
 }
 ```
 
-Cargo also downloads from crates.io the complete source code for every dependency in the path `~/.cargo/registry/src/github.com-1ecc6299db9ec823/`. `Crates.io` guarantees the source code for a crate+version cannot be altered or deleted. We know it will never change, so we can review exactly this local code with confidence.  
+Cargo downloads from crates.io the complete source code for every dependency it needs for your project.  
+First it downloads the tar gz file ending with `.crate` into the cache directory:  
+`~/.cargo/registry/cache/github.com-1ecc6299db9ec823/cargo_auto_lib-0.7.23.crate`  
+Probably the `cksum` field in the `registry index` is calculated from this `.crate` file.  
+Then this is unzipped into the `src` folder as the complete source code directories and files:  
+`~/.cargo/registry/src/github.com-1ecc6299db9ec823/`.  
+`Crates.io` guarantees the `.crate` file for a crate+version cannot be altered or deleted.  
+We can review exactly this local code with confidence, because we know it will never change.  
+This local files should not be altered in any way. But it can happen unknowingly and unwillingly, if we open a code editor with intellisense in this folder. It will create the `target` folder and `Cargo.lock` file. It can happen also that `Go to definition` opens this files in the editor and maybe we alter some comment or code. This is no good.  
+I will make a utility to check that this files are not tempered. If something is modified it is easy to just remove that folder from `src`. The next use of `cargo` will unzip the `.crate` file when it finds the src folder does not exist.  
 
 ## crates.io API
 

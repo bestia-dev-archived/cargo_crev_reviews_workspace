@@ -10,7 +10,7 @@ use serde::Deserialize;
 use serde::Serialize;
 use unwrap::unwrap;
 
-use crate::utils_mod::split_crate_version;
+use crate::utils_mod::crate_version_split;
 
 // this struct will be cached in a local file
 // most of the data on crates.io is immutable and they are easy to cache
@@ -40,7 +40,7 @@ pub fn read(crate_name_version: &str) -> anyhow::Result<Option<VersionForDb>> {
         None => {
             // if there is no data in the database, I will GET it from crates.io in the background
             // so the next time they will be available fast.
-            let (crate_name, _crate_version) = split_crate_version(crate_name_version);
+            let (crate_name, _crate_version) = crate_version_split(crate_name_version);
             crate::db_sled_mod::download_in_background_crate_versions(crate_name);
             Ok(None)
         }

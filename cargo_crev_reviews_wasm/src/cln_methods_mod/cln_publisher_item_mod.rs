@@ -63,7 +63,7 @@ pub fn cln_publisher_new_modal(srv_response: RpcResponse) {
     log::info!("{}", function_name!());
     // button_new_publisher_on_click > srv_publisher_new > cln_publisher_new_modal
     let html = extract_html(&srv_response);
-    w::set_inner_html("div_for_modal", &html);
+    show_modal_html(&html);
 
     use crate::cln_methods_mod::cln_utils_mod::modal_close_on_click;
 
@@ -82,7 +82,7 @@ pub fn cln_publisher_edit_modal(srv_response: RpcResponse) {
         let data = PUBLISHER_ITEM_DATA.lock().unwrap();
         tmplt::process_html(data.deref(), &html)
     };
-    w::set_inner_html("div_for_modal", &html_after_process);
+    show_modal_html(&html_after_process);
 
     use crate::cln_methods_mod::cln_utils_mod::modal_close_on_click;
     on_click!("modal_close", modal_close_on_click);

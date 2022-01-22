@@ -17,7 +17,7 @@ pub mod db_yanked_mod;
 use lazy_static::lazy_static;
 use unwrap::unwrap;
 
-use crate::{db_sled_mod::db_yanked_mod::YankedForDb, utils_mod::join_crate_version};
+use crate::{db_sled_mod::db_yanked_mod::YankedForDb, utils_mod::crate_version_join};
 
 lazy_static! {
     /// "sled" db stays open all the time of the program running.
@@ -47,7 +47,7 @@ pub fn download_in_background_crate_versions(crate_name: String) {
                         Some(published_by) => Some(published_by.url.clone()),
                         None => None,
                     };
-                    let crate_name_version = crate::utils_mod::join_crate_version(&crate_name, &crate_io_version.num);
+                    let crate_name_version = crate::utils_mod::crate_version_join(&crate_name, &crate_io_version.num);
                     let v = crate::db_sled_mod::db_version_mod::VersionForDb {
                         crate_name_version: crate_name_version.clone(),
                         published_by_url,
@@ -86,7 +86,7 @@ pub fn sync_in_background_yanked() {
         for x in unwrap!(crate::db_sled_mod::db_crate_mod::all_crates()).iter() {
             // println!("registry crate: {}", &x.crate_name);
             for (crate_version, yanked) in unwrap!(crate::cargo_registry_mod::info_for_one_crate(&x.crate_name)).iter() {
-                let crate_name_version = join_crate_version(&x.crate_name, crate_version);
+                let crate_name_version = crate_version_join(&x.crate_name, crate_version);
                 if crate::db_sled_mod::db_yanked_mod::exists(&crate_name_version) && *yanked == false {
                     crate::db_sled_mod::db_yanked_mod::delete(&crate_name_version);
                 } else if !crate::db_sled_mod::db_yanked_mod::exists(&crate_name_version) && *yanked == true {
@@ -111,7 +111,7 @@ pub fn sync_in_background_reviews() {
         let vec = unwrap!(crate::crev_mod::crev_list_my_reviews(&None));
         for x in vec.iter() {
             let item = crate::utils_mod::from_crev_to_item(x);
-            let crate_name_version = &join_crate_version(&item.crate_name, &item.crate_version);
+            let crate_name_version = &crate_version_join(&item.crate_name, &item.crate_version);
             if crate::db_sled_mod::db_review_mod::exists(crate_name_version) {
                 // check the date
                 let y = unwrap!(unwrap!(crate::db_sled_mod::db_review_mod::read(crate_name_version)));
@@ -133,7 +133,7 @@ pub fn sync_in_background_verify() {
         let ns_started = crate::utils_mod::ns_start("sync_in_background_verify");
         let verify_list_data = unwrap!(crate::crev_mod::verify_project());
         for item in verify_list_data.list_of_verify.iter() {
-            let crate_name_version = &join_crate_version(&item.crate_name, &item.crate_version);
+            let crate_name_version = &crate_version_join(&item.crate_name, &item.crate_version);
             // always insert/update
             unwrap!(crate::db_sled_mod::db_verify_mod::insert(crate_name_version, &item));
         }

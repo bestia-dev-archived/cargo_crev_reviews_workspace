@@ -4,7 +4,6 @@
 
 use crate::auto_generated_mod::common_structs_mod::{RpcMessageData, RpcResponse};
 use crate::on_click;
-use crate::web_sys_mod as w;
 use crate::*;
 use dev_bestia_html_templating as tmplt;
 use function_name::named;
@@ -17,7 +16,7 @@ pub fn cln_modal_error(srv_response: RpcResponse) {
     let html = html_mod::extract_html(&srv_response);
     let data: RpcMessageData = unwrap!(serde_json::from_value(srv_response.response_data));
     let html_after_process = tmplt::process_html(&data, &html);
-    w::set_inner_html("div_for_modal", &html_after_process);
+    html_mod::show_modal_html(&html_after_process);
     on_click!("modal_close", modal_close_on_click);
 }
 
@@ -28,9 +27,9 @@ pub fn cln_no_action(_srv_response: RpcResponse) {
 
 #[named]
 pub fn cln_modal_close(_srv_response: RpcResponse) {
-    w::set_inner_html("div_for_modal", "");
+    html_mod::close_modal();
 }
 
 pub fn modal_close_on_click(_element_id: &str) {
-    w::set_inner_html("div_for_modal", "");
+    html_mod::close_modal();
 }
