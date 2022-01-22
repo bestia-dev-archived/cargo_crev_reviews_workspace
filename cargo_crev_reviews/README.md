@@ -5,14 +5,14 @@
 [comment]: # (auto_cargo_toml_to_md start)
 
 **Write cargo-crev reviews in GUI with a cross-platform app written in full-stack Rust**  
-***[repository](https://github.com/lucianobestia/cargo_crev_reviews_workspace); version: 2021.1230.1945  date: 2021-12-30 authors: Luciano Bestia***  
+***[repository](https://github.com/lucianobestia/cargo_crev_reviews_workspace); version: 2022.122.1441  date: 2022-01-22 authors: Luciano Bestia***  
 
 [comment]: # (auto_cargo_toml_to_md end)
 
 [comment]: # (auto_lines_of_code start)
-[![Lines in Rust code](https://img.shields.io/badge/Lines_in_Rust-2603-green.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
-[![Lines in Doc comments](https://img.shields.io/badge/Lines_in_Doc_comments-518-blue.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
-[![Lines in Comments](https://img.shields.io/badge/Lines_in_comments-200-purple.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
+[![Lines in Rust code](https://img.shields.io/badge/Lines_in_Rust-2964-green.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
+[![Lines in Doc comments](https://img.shields.io/badge/Lines_in_Doc_comments-547-blue.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
+[![Lines in Comments](https://img.shields.io/badge/Lines_in_comments-254-purple.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
 [![Lines in examples](https://img.shields.io/badge/Lines_in_examples-0-yellow.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
 [![Lines in tests](https://img.shields.io/badge/Lines_in_tests-27-orange.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
 
@@ -48,7 +48,7 @@ Frontend GUI in browser:
 
 ## cargo tree
 
-Cargo-tree is a Rust utility that shows all the ramification of dependencies in your Rust project.
+Cargo-tree is a Rust utility that shows all the ramification of dependencies in your Rust project. It is included inside the cargo utility.
 
 ## your personal reviews
 
@@ -58,7 +58,7 @@ Don't panic!
 
 To write a review you need to see the exact source code and other metadata about the crate. Click on the crate name in the list and it will open:
 
-- VSCode in the directory with the source code
+- VSCode in the directory with a copy of the original dependency source code
 - [crev.dev](https://web.crev.dev/rust-reviews/crates/) for other people reviews
 - crates.io for basic information
 - lib.rs for extended information
@@ -169,6 +169,7 @@ curl -d '{"request_method": "subtract", "request_data": {"subtrahend": 23, "minu
 ```
 
 There are also a small number of GET requests for static files mostly to start the communication between the browser and the server.  
+TODO: one day I will add also a websocket communication, so the client can show a progress bar for actions processing on the server.
 
 ## GUI frontend - cargo_crev_reviews_wasm
 
@@ -194,8 +195,8 @@ The [cargo-crev](https://github.com/crev-dev/cargo-crev) project contains many c
 
 ## cargo registry
 
-The cargo application is essential for work with the Rust language. It maintains a local `cargo registry` in the directory `~/.cargo/registry/`. It has 3 basic sub-directories: index, cache and src.  
-The `registry index` is the databse with crates metadata and is git fetched from github. Path to an index file:  
+The cargo application is essential for work with the Rust language. Cargo maintains a local `cargo registry` in the directory `~/.cargo/registry/`. It has 3 basic sub-directories: index, cache and src.  
+The `registry index` is the database with crates metadata and is git fetched from github. Path to an index file:  
 `~/.cargo/registry/index/github.com-1ecc6299db9ec823/cache/re/ad/reader_for_microxml`  
 
 The content of this file looks like this:  
@@ -228,10 +229,10 @@ First it downloads the tar gz file ending with `.crate` into the cache directory
 Probably the `cksum` field in the `registry index` is calculated from this `.crate` file.  
 Then this is unzipped into the `src` folder as the complete source code directories and files:  
 `~/.cargo/registry/src/github.com-1ecc6299db9ec823/`.  
-`Crates.io` guarantees the `.crate` file for a crate+version cannot be altered or deleted.  
+`Crates.io` guarantees the `.crate` file for a crate+version cannot be altered or deleted and are always available for download from crates.io (even when yanked).  
 We can review exactly this local code with confidence, because we know it will never change.  
 This local files should not be altered in any way. But it can happen unknowingly and unwillingly, if we open a code editor with intellisense in this folder. It will create the `target` folder and `Cargo.lock` file. It can happen also that `Go to definition` opens this files in the editor and maybe we alter some comment or code. This is no good.  
-I will make a utility to check that this files are not tempered. If something is modified it is easy to just remove that folder from `src`. The next use of `cargo` will unzip the `.crate` file when it finds the src folder does not exist.  
+In the `config and utils` it is possible to check that these files are not tempered. If something is modified it is easy to just remove that folder from `src`. Then we can download and unpack the missing crates.  
 
 ## crates.io API
 
@@ -252,8 +253,7 @@ Everything is compiled into one single executable binary for Linux: `cargo_crev_
 First it opens the default browser with `xdg-open` on <http://127.0.0.1:8182/cargo_crev_reviews/index.html>.  
 I received a comment that `xdg-open` is not preinstalled on every Linux distro. I use Debian 10 and have it.  
 On other distros it is possible to install it with `xdg-utils`.  
-You can also use the env variable `export CREV_BROWSER_PATH=/usr/bin/xdg-open` for the first use.  
-And then later change it in the Config menu.  
+You can also change it with the env variable `export CREV_BROWSER_PATH=/usr/bin/xdg-open` for the command that exists on your system. Later you can change this command in the Config menu.  
 If your WSL2 does not have yet a default browser run this:  
 
 ``` bash
@@ -261,15 +261,16 @@ ln -s "/mnt/c/Program Files/Mozilla Firefox/firefox.exe" /usr/bin/browser_in_win
 export BROWSER='/usr/bin/browser_in_win'
 ```
 
-The command `ln -sf` is permanent and persistent. It makes a symbolic link file that stays there forever. But `export BROWSER=` is NOT persistent. You need to add this command to `~/.bashrc` that runs it on every start of terminal.  
+The command `ln -sf` is permanent and persistent. It makes a symbolic link file that stays there forever.  
+But `export BROWSER=` is NOT persistent. You need to add this command to `~/.bashrc` that runs it on every start of terminal.  
 
-In the next millisecond the web server starts listening to 127.0.0.1 port 8182.  
+In the next millisecond the web server starts listening to `127.0.0.1` port `8182`.  
 The first set of requests are GET and response is "static" files embedded in auto_generated_files_mod.rs
 
 1. browser request for `/cargo_crev_reviews/index.html` is GET, the response is html text file embedded in auto_generated_files_mod.rs in the function: `index_html()`  
     This html is just an empty shell that gets the css and wasm code. There is no real content inside. This concept is [Single-page application SPA](https://en.wikipedia.org/wiki/Single-page_application).  
 2. index.html requests: 3 css files, `pkg/cargo_crev_reviews.js`, `pkg/cargo_crev_reviews_bg.wasm`, "favicon" `icons/icon-032.png`. All these requests are GET and responses come from auto_generated_files_mod.rs functions, some are text files and others are base64 files.
-3. the browser imports the wasm module and starts the init function that requests `srv_review_list`. This responds with: response_method_name, response_html and response_data.
+3. the browser imports the wasm module and starts the init function that requests `request_cargo_tree_list`. This responds with: response_method_name, response_html and response_data.
 4. wasm (inside the browser) is Rust code. First it matches method_name and calls the appropriate function. It processes the html with the data and inserts it into index.html (the empty shell).
 5. the browser renders our first page. Hooray!
 6. the user clicks on some button.
@@ -321,12 +322,13 @@ pub fn srv_function_name(request_data: serde_json::Value) -> anyhow::Result<Stri
 }
 ```
 
-Now run the automation task `cargo auto build` that generates auto_generated_mod.rs.
+Now run the automation task `cargo auto build` that generates `auto_generated_mod.rs`.
 
 ### client module
 
 If I use a different struct for data, I must have different client modules and functions.  
 With a generic data-struct all of this could be generic.  
+TODO: use QVS21
 
 In `cln_version_mod.rs` add a client function like this:
 
@@ -375,6 +377,7 @@ git fsck --full
 ## Some other info
 
 Cargo-crev knows also about Issues and Advisories. But for this project I focused only on Reviews. You can rate the version as Negative if there is something really broken with it.
+I also limited the crates source to only `crates.io`. Other sources are not publicly interesting.
 
 ## cargo crev reviews and advisory
 
@@ -385,9 +388,9 @@ Please, spread this info.
 You can also read reviews quickly on the web:  
 <https://web.crev.dev/rust-reviews/crates/>  
 
-## open-source free and free as a beer
+## open-source and free as a beer
 
-My open-source projects are free and free as a beer (MIT license).  
+My open-source projects are free as a beer (MIT license).  
 I just love programming.  
 But I need also to drink. If you find my projects and tutorials helpful,  
 please buy me a beer donating on my [paypal](https://www.paypal.com/paypalme/LucianoBestia).  

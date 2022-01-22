@@ -610,6 +610,55 @@
 <span id="610">610</span>
 <span id="611">611</span>
 <span id="612">612</span>
+<span id="613">613</span>
+<span id="614">614</span>
+<span id="615">615</span>
+<span id="616">616</span>
+<span id="617">617</span>
+<span id="618">618</span>
+<span id="619">619</span>
+<span id="620">620</span>
+<span id="621">621</span>
+<span id="622">622</span>
+<span id="623">623</span>
+<span id="624">624</span>
+<span id="625">625</span>
+<span id="626">626</span>
+<span id="627">627</span>
+<span id="628">628</span>
+<span id="629">629</span>
+<span id="630">630</span>
+<span id="631">631</span>
+<span id="632">632</span>
+<span id="633">633</span>
+<span id="634">634</span>
+<span id="635">635</span>
+<span id="636">636</span>
+<span id="637">637</span>
+<span id="638">638</span>
+<span id="639">639</span>
+<span id="640">640</span>
+<span id="641">641</span>
+<span id="642">642</span>
+<span id="643">643</span>
+<span id="644">644</span>
+<span id="645">645</span>
+<span id="646">646</span>
+<span id="647">647</span>
+<span id="648">648</span>
+<span id="649">649</span>
+<span id="650">650</span>
+<span id="651">651</span>
+<span id="652">652</span>
+<span id="653">653</span>
+<span id="654">654</span>
+<span id="655">655</span>
+<span id="656">656</span>
+<span id="657">657</span>
+<span id="658">658</span>
+<span id="659">659</span>
+<span id="660">660</span>
+<span id="661">661</span>
 </pre><pre class="rust"><code><span class="comment">// crev_mod.rs</span>
 
 <span class="doccomment">//! functions around the crev data and lib</span>
@@ -654,6 +703,7 @@
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">PackageSegment</span> {
     <span class="kw">pub</span> <span class="ident">name</span>: <span class="ident">String</span>,
     <span class="kw">pub</span> <span class="ident">version</span>: <span class="ident">String</span>,
+    <span class="kw">pub</span> <span class="ident">digest</span>: <span class="ident">String</span>,
     <span class="kw">pub</span> <span class="ident">version_for_sorting</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
 }
 
@@ -705,9 +755,21 @@
     }
 }
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cargo_min_ignore_list</span>() -&gt; <span class="ident">fnv::FnvHashSet</span><span class="op">&lt;</span><span class="ident">std::path::PathBuf</span><span class="op">&gt;</span> {
+<span class="doccomment">/// Ignore things that are commonly added during the review (eg. by RLS)</span>
+<span class="doccomment">/// Cargo.lock can be part of the package, or added later. How to know that.</span>
+<span class="doccomment">/// crates.io makes some changes when the crate is uploaded:</span>
+<span class="doccomment">/// 1. it rewrites Cargo.toml into a normalized format and set the date</span>
+<span class="doccomment">/// 2. creates .cargo_vcs_info.json¸with the same date</span>
+<span class="doccomment">/// 3. modifies Cargo.lock with the same date</span>
+<span class="doccomment">/// If the Cargo.lock is created later it has a different date.</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cargo_full_ignore_list</span>(<span class="ident">ignore_cargo_lock</span>: <span class="ident">bool</span>) -&gt; <span class="ident">fnv::FnvHashSet</span><span class="op">&lt;</span><span class="ident">std::path::PathBuf</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ignore_list</span> <span class="op">=</span> <span class="ident">std::collections::HashSet::default</span>();
     <span class="ident">ignore_list</span>.<span class="ident">insert</span>(<span class="ident">std::path::PathBuf::from</span>(<span class="string">&quot;.cargo-ok&quot;</span>));
+    <span class="ident">ignore_list</span>.<span class="ident">insert</span>(<span class="ident">std::path::PathBuf::from</span>(<span class="string">&quot;target&quot;</span>));
+    <span class="kw">if</span> <span class="ident">ignore_cargo_lock</span> {
+        <span class="ident">ignore_list</span>.<span class="ident">insert</span>(<span class="ident">std::path::PathBuf::from</span>(<span class="string">&quot;Cargo.lock&quot;</span>));
+    }
+
     <span class="ident">ignore_list</span>
 }
 
@@ -904,15 +966,14 @@
         <span class="ident">understanding</span>,
         <span class="ident">rating</span>,
     };
-    <span class="kw">let</span> <span class="ident">crate_root</span> <span class="op">=</span> <span class="ident"><span class="kw">crate</span>::cargo_registry_mod::cargo_registry_src_dir_for_crate</span>(<span class="ident">crate_name</span>, <span class="ident">crate_version_str</span>)<span class="question-mark">?</span>;
 
+    <span class="kw">let</span> <span class="ident">crate_version</span> <span class="op">=</span> <span class="ident">crev_data::Version::from_str</span>(<span class="ident">crate_version_str</span>)<span class="question-mark">?</span>;
+    <span class="kw">let</span> <span class="ident">digest_clean</span> <span class="op">=</span> <span class="ident">calculate_crate_digest</span>(<span class="ident">crate_name</span>, <span class="ident">crate_version_str</span>)<span class="question-mark">?</span>;
+    <span class="kw">let</span> <span class="ident">crate_root</span> <span class="op">=</span> <span class="ident"><span class="kw">crate</span>::cargo_registry_mod::cargo_registry_src_dir_for_crate</span>(<span class="ident">crate_name</span>, <span class="ident">crate_version_str</span>)<span class="question-mark">?</span>;
     <span class="kw">if</span> <span class="op">!</span><span class="ident">crate_root</span>.<span class="ident">exists</span>() {
         <span class="macro">anyhow::bail!</span>(<span class="string">&quot;The crate {}-{} does not exist in the local cargo registry cache. You must use the crate as dependency in your projects, if you want to review it. This way cargo will download the source code for the crate that you review. &quot;</span>, <span class="ident">crate_name</span>, <span class="ident">crate_version_str</span>);
     }
-    <span class="kw">let</span> <span class="ident">digest_clean</span> <span class="op">=</span> <span class="ident">crev_lib::get_recursive_digest_for_dir</span>(<span class="kw-2">&amp;</span><span class="ident">crate_root</span>, <span class="kw-2">&amp;</span><span class="ident">cargo_min_ignore_list</span>())<span class="question-mark">?</span>;
     <span class="kw">let</span> <span class="ident">vcs</span> <span class="op">=</span> <span class="ident">VcsInfoJson::read_from_crate_dir</span>(<span class="kw-2">&amp;</span><span class="ident">crate_root</span>)<span class="question-mark">?</span>;
-
-    <span class="kw">let</span> <span class="ident">crate_version</span> <span class="op">=</span> <span class="ident">crev_data::Version::from_str</span>(<span class="ident">crate_version_str</span>)<span class="question-mark">?</span>;
 
     <span class="comment">// new reviews only for crates that come from crates.io</span>
     <span class="kw">let</span> <span class="ident">package_id</span> <span class="op">=</span> <span class="ident">crev_data::proof::PackageVersionId::new</span>(<span class="string">&quot;https://crates.io&quot;</span>.<span class="ident">to_string</span>(), <span class="ident">crate_name</span>.<span class="ident">to_string</span>(), <span class="ident">crate_version</span>);
@@ -948,6 +1009,43 @@
 
     <span class="comment">// return</span>
     <span class="prelude-val">Ok</span>(())
+}
+
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">calculate_crate_digest</span>(<span class="ident">crate_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">crate_version_str</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="ident">anyhow::Result</span><span class="op">&lt;</span><span class="ident">crev_data::Digest</span><span class="op">&gt;</span> {
+    <span class="kw">let</span> <span class="ident">crate_root</span> <span class="op">=</span> <span class="ident"><span class="kw">crate</span>::cargo_registry_mod::cargo_registry_src_dir_for_crate</span>(<span class="ident">crate_name</span>, <span class="ident">crate_version_str</span>)<span class="question-mark">?</span>;
+    <span class="kw">if</span> <span class="op">!</span><span class="ident">crate_root</span>.<span class="ident">exists</span>() {
+        <span class="macro">anyhow::bail!</span>(<span class="string">&quot;The crate {}-{} does not exist in the local cargo registry cache. You must use the crate as dependency in your projects, if you want to review it. This way cargo will download the source code for the crate that you review. &quot;</span>, <span class="ident">crate_name</span>, <span class="ident">crate_version_str</span>);
+    }
+    <span class="comment">/*
+    // 2022-01-13 dpc: https://github.com/crev-dev/cargo-crev/issues/434
+    // For Rust we need to do bunch of shenanigans before calculating digest. See comments.
+     */</span>
+
+    <span class="comment">// Ignore things that are commonly added during the review (eg. by RLS)</span>
+    <span class="comment">// Cargo.lock can be part of the package, or added later. How to know that.</span>
+    <span class="comment">// crates.io makes some changes when the crate is uploaded:</span>
+    <span class="comment">// 1. it rewrites Cargo.toml into a normalized format and set the date</span>
+    <span class="comment">// 2. creates .cargo_vcs_info.json¸with the same date</span>
+    <span class="comment">// 3. modifies Cargo.lock with the same date</span>
+    <span class="comment">// If the Cargo.lock is created later it has a different date.</span>
+    <span class="kw">let</span> <span class="ident">ignore_cargo_lock</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">crate_root</span>.<span class="ident">join</span>(<span class="string">&quot;Cargo.lock&quot;</span>).<span class="ident">exists</span>() {
+        <span class="comment">// check the file dates</span>
+        <span class="kw">let</span> <span class="ident">metadata_1</span> <span class="op">=</span> <span class="ident">std::fs::metadata</span>(<span class="ident">crate_root</span>.<span class="ident">join</span>(<span class="string">&quot;Cargo.lock&quot;</span>))<span class="question-mark">?</span>;
+        <span class="kw">let</span> <span class="ident">metadata_2</span> <span class="op">=</span> <span class="ident">std::fs::metadata</span>(<span class="ident">crate_root</span>.<span class="ident">join</span>(<span class="string">&quot;Cargo.toml&quot;</span>))<span class="question-mark">?</span>;
+        <span class="kw">if</span> <span class="macro">unwrap!</span>(<span class="ident">metadata_1</span>.<span class="ident">modified</span>()) <span class="op">==</span> <span class="macro">unwrap!</span>(<span class="ident">metadata_2</span>.<span class="ident">modified</span>()) {
+            <span class="comment">// if dates are same don&#39;t ignore</span>
+            <span class="comment">// log::info!(&quot;dates of Cargo.lock and Cargo.toml are same.&quot;);</span>
+            <span class="bool-val">false</span>
+        } <span class="kw">else</span> {
+            <span class="macro">log::info!</span>(<span class="string">&quot;dates of Cargo.lock and Cargo.toml are different.&quot;</span>);
+            <span class="bool-val">true</span>
+        }
+    } <span class="kw">else</span> {
+        <span class="comment">// the file does not exist, it does not need to be ignored.</span>
+        <span class="bool-val">false</span>
+    };
+    <span class="kw">let</span> <span class="ident">digest_clean</span> <span class="op">=</span> <span class="ident">crev_lib::get_recursive_digest_for_dir</span>(<span class="kw-2">&amp;</span><span class="ident">crate_root</span>, <span class="kw-2">&amp;</span><span class="ident">cargo_full_ignore_list</span>(<span class="ident">ignore_cargo_lock</span>))<span class="question-mark">?</span>;
+    <span class="prelude-val">Ok</span>(<span class="ident">digest_clean</span>)
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">rating_parse</span>(<span class="ident">rating</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="ident">anyhow::Result</span><span class="op">&lt;</span><span class="ident">Rating</span><span class="op">&gt;</span> {
@@ -1075,7 +1173,7 @@
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">status</span> <span class="op">=</span> <span class="ident">s</span>[<span class="number">0</span>].<span class="ident">to_string</span>();
             <span class="kw">let</span> <span class="ident">crate_name</span> <span class="op">=</span> <span class="ident">s</span>[<span class="number">1</span>].<span class="ident">to_string</span>();
             <span class="kw">let</span> <span class="ident">crate_version</span> <span class="op">=</span> <span class="ident">s</span>[<span class="number">2</span>].<span class="ident">to_string</span>();
-            <span class="kw">let</span> <span class="ident">crate_name_version</span> <span class="op">=</span> <span class="ident">join_crate_version</span>(<span class="kw-2">&amp;</span><span class="ident">crate_name</span>, <span class="kw-2">&amp;</span><span class="ident">crate_version</span>);
+            <span class="kw">let</span> <span class="ident">crate_name_version</span> <span class="op">=</span> <span class="ident">crate_version_join</span>(<span class="kw-2">&amp;</span><span class="ident">crate_name</span>, <span class="kw-2">&amp;</span><span class="ident">crate_version</span>);
 
             <span class="kw">let</span> <span class="ident">published_by_url</span> <span class="op">=</span> <span class="ident">published_by_url</span>(<span class="kw-2">&amp;</span><span class="ident">crate_name</span>, <span class="kw-2">&amp;</span><span class="ident">crate_version</span>)<span class="question-mark">?</span>;
             <span class="kw">let</span> <span class="ident">trusted_publisher</span> <span class="op">=</span> <span class="ident">is_trusted_publisher</span>(<span class="kw-2">&amp;</span><span class="ident">vec_publisher_item</span>, <span class="kw-2">&amp;</span><span class="ident">published_by_url</span>);
@@ -1118,7 +1216,7 @@
 
 <span class="doccomment">/// check if it is already in the cache or it will GET from crates.io API and store in cache</span>
 <span class="kw">fn</span> <span class="ident">published_by_url</span>(<span class="ident">crate_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">crate_version</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="ident">anyhow::Result</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
-    <span class="kw">let</span> <span class="ident">crate_name_version</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">join_crate_version</span>(<span class="ident">crate_name</span>, <span class="ident">crate_version</span>);
+    <span class="kw">let</span> <span class="ident">crate_name_version</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">crate_version_join</span>(<span class="ident">crate_name</span>, <span class="ident">crate_version</span>);
     <span class="kw">let</span> <span class="ident">exact_version</span> <span class="op">=</span> <span class="ident"><span class="kw">crate</span>::db_sled_mod::db_version_mod::read</span>(<span class="kw-2">&amp;</span><span class="ident">crate_name_version</span>)<span class="question-mark">?</span>;
     <span class="kw">match</span> <span class="ident">exact_version</span> {
         <span class="prelude-val">Some</span>(<span class="ident">exact_version</span>) =&gt; <span class="kw">match</span> <span class="ident">exact_version</span>.<span class="ident">published_by_url</span> {
@@ -1182,7 +1280,7 @@
     <span class="comment">// versions from db_version</span>
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">vec_of_version</span> <span class="op">=</span> <span class="macro">vec!</span>[];
     <span class="kw">for</span> <span class="ident">version_for_db</span> <span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::db_sled_mod::db_version_mod::all_versions_for_crate</span>(<span class="ident">crate_name</span>)<span class="question-mark">?</span> {
-        <span class="kw">let</span> (<span class="ident">_io_crate_name</span>, <span class="ident">io_crate_version</span>) <span class="op">=</span> <span class="ident">split_crate_version</span>(<span class="ident">version_for_db</span>.<span class="ident">crate_name_version</span>.<span class="ident">as_str</span>());
+        <span class="kw">let</span> (<span class="ident">_io_crate_name</span>, <span class="ident">io_crate_version</span>) <span class="op">=</span> <span class="ident">crate_version_split</span>(<span class="ident">version_for_db</span>.<span class="ident">crate_name_version</span>.<span class="ident">as_str</span>());
 
         <span class="comment">// is_src_cache (if path exists in cargo registry src)</span>
         <span class="kw">let</span> <span class="ident">path_dir</span> <span class="op">=</span> <span class="ident"><span class="kw">crate</span>::cargo_registry_mod::cargo_registry_src_dir_for_crate</span>(<span class="ident">crate_name</span>, <span class="kw-2">&amp;</span><span class="ident">io_crate_version</span>)<span class="question-mark">?</span>;

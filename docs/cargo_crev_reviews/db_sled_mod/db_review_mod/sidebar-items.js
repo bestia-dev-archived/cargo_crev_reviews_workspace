@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["all_versions_for_crate",""],["delete",""],["exists",""],["insert","insert"],["read",""]],"struct":[["DB_REVIEW",""]]});
+initSidebarItems({"fn":[["all_versions_for_crate",""],["delete",""],["exists",""],["insert","insert"],["list_all_crate_name_version",""],["read",""]],"struct":[["DB_REVIEW",""]]});

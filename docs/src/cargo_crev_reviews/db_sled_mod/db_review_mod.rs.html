@@ -50,6 +50,16 @@
 <span id="50">50</span>
 <span id="51">51</span>
 <span id="52">52</span>
+<span id="53">53</span>
+<span id="54">54</span>
+<span id="55">55</span>
+<span id="56">56</span>
+<span id="57">57</span>
+<span id="58">58</span>
+<span id="59">59</span>
+<span id="60">60</span>
+<span id="61">61</span>
+<span id="62">62</span>
 </pre><pre class="rust"><code><span class="comment">// db_review_mod.rs</span>
 
 <span class="doccomment">//! cached data for &quot;my reviews&quot;</span>
@@ -101,6 +111,16 @@
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">exists</span>(<span class="ident">crate_name_version</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="ident">bool</span> {
     <span class="macro">unwrap!</span>(<span class="ident">DB_REVIEW</span>.<span class="ident">contains_key</span>(<span class="ident">crate_name_version</span>))
+}
+
+<span class="comment">// list crate_name_version for all reviews from sled</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">list_all_crate_name_version</span>() -&gt; <span class="ident">anyhow::Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">vec</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> <span class="op">=</span> <span class="macro">vec!</span>[];
+    <span class="kw">for</span> <span class="ident">x</span> <span class="kw">in</span> <span class="ident">DB_REVIEW</span>.<span class="ident">iter</span>() {
+        <span class="kw">let</span> (<span class="ident">key</span>, <span class="ident">_value</span>) <span class="op">=</span> <span class="ident">x</span><span class="question-mark">?</span>;
+        <span class="ident">vec</span>.<span class="ident">push</span>(<span class="ident">std::str::from_utf8</span>(<span class="kw-2">&amp;</span><span class="ident">key</span>).<span class="ident">unwrap</span>().<span class="ident">to_string</span>());
+    }
+    <span class="prelude-val">Ok</span>(<span class="ident">vec</span>)
 }
 </code></pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="cargo_crev_reviews" data-search-index-js="../../../search-index.js" data-search-js="../../../search.js"></div>

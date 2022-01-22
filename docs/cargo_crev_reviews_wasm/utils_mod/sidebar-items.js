@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["join_crate_version",""],["split_crate_version",""]]});
+initSidebarItems({"fn":[["crate_version_join",""],["crate_version_split",""]]});

@@ -196,7 +196,7 @@
 <span class="kw">use</span> <span class="ident">lazy_static::lazy_static</span>;
 <span class="kw">use</span> <span class="ident">unwrap::unwrap</span>;
 
-<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">db_sled_mod::db_yanked_mod::YankedForDb</span>, <span class="ident">utils_mod::join_crate_version</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">db_sled_mod::db_yanked_mod::YankedForDb</span>, <span class="ident">utils_mod::crate_version_join</span>};
 
 <span class="macro">lazy_static!</span> {
     <span class="doccomment">/// &quot;sled&quot; db stays open all the time of the program running.</span>
@@ -226,7 +226,7 @@
                         <span class="prelude-val">Some</span>(<span class="ident">published_by</span>) =&gt; <span class="prelude-val">Some</span>(<span class="ident">published_by</span>.<span class="ident">url</span>.<span class="ident">clone</span>()),
                         <span class="prelude-val">None</span> =&gt; <span class="prelude-val">None</span>,
                     };
-                    <span class="kw">let</span> <span class="ident">crate_name_version</span> <span class="op">=</span> <span class="ident"><span class="kw">crate</span>::utils_mod::join_crate_version</span>(<span class="kw-2">&amp;</span><span class="ident">crate_name</span>, <span class="kw-2">&amp;</span><span class="ident">crate_io_version</span>.<span class="ident">num</span>);
+                    <span class="kw">let</span> <span class="ident">crate_name_version</span> <span class="op">=</span> <span class="ident"><span class="kw">crate</span>::utils_mod::crate_version_join</span>(<span class="kw-2">&amp;</span><span class="ident">crate_name</span>, <span class="kw-2">&amp;</span><span class="ident">crate_io_version</span>.<span class="ident">num</span>);
                     <span class="kw">let</span> <span class="ident">v</span> <span class="op">=</span> <span class="ident"><span class="kw">crate</span>::db_sled_mod::db_version_mod::VersionForDb</span> {
                         <span class="ident">crate_name_version</span>: <span class="ident">crate_name_version</span>.<span class="ident">clone</span>(),
                         <span class="ident">published_by_url</span>,
@@ -265,7 +265,7 @@
         <span class="kw">for</span> <span class="ident">x</span> <span class="kw">in</span> <span class="macro">unwrap!</span>(<span class="ident"><span class="kw">crate</span>::db_sled_mod::db_crate_mod::all_crates</span>()).<span class="ident">iter</span>() {
             <span class="comment">// println!(&quot;registry crate: {}&quot;, &amp;x.crate_name);</span>
             <span class="kw">for</span> (<span class="ident">crate_version</span>, <span class="ident">yanked</span>) <span class="kw">in</span> <span class="macro">unwrap!</span>(<span class="ident"><span class="kw">crate</span>::cargo_registry_mod::info_for_one_crate</span>(<span class="kw-2">&amp;</span><span class="ident">x</span>.<span class="ident">crate_name</span>)).<span class="ident">iter</span>() {
-                <span class="kw">let</span> <span class="ident">crate_name_version</span> <span class="op">=</span> <span class="ident">join_crate_version</span>(<span class="kw-2">&amp;</span><span class="ident">x</span>.<span class="ident">crate_name</span>, <span class="ident">crate_version</span>);
+                <span class="kw">let</span> <span class="ident">crate_name_version</span> <span class="op">=</span> <span class="ident">crate_version_join</span>(<span class="kw-2">&amp;</span><span class="ident">x</span>.<span class="ident">crate_name</span>, <span class="ident">crate_version</span>);
                 <span class="kw">if</span> <span class="ident"><span class="kw">crate</span>::db_sled_mod::db_yanked_mod::exists</span>(<span class="kw-2">&amp;</span><span class="ident">crate_name_version</span>) <span class="op">&amp;&amp;</span> <span class="kw-2">*</span><span class="ident">yanked</span> <span class="op">==</span> <span class="bool-val">false</span> {
                     <span class="ident"><span class="kw">crate</span>::db_sled_mod::db_yanked_mod::delete</span>(<span class="kw-2">&amp;</span><span class="ident">crate_name_version</span>);
                 } <span class="kw">else</span> <span class="kw">if</span> <span class="op">!</span><span class="ident"><span class="kw">crate</span>::db_sled_mod::db_yanked_mod::exists</span>(<span class="kw-2">&amp;</span><span class="ident">crate_name_version</span>) <span class="op">&amp;&amp;</span> <span class="kw-2">*</span><span class="ident">yanked</span> <span class="op">==</span> <span class="bool-val">true</span> {
@@ -290,7 +290,7 @@
         <span class="kw">let</span> <span class="ident">vec</span> <span class="op">=</span> <span class="macro">unwrap!</span>(<span class="ident"><span class="kw">crate</span>::crev_mod::crev_list_my_reviews</span>(<span class="kw-2">&amp;</span><span class="prelude-val">None</span>));
         <span class="kw">for</span> <span class="ident">x</span> <span class="kw">in</span> <span class="ident">vec</span>.<span class="ident">iter</span>() {
             <span class="kw">let</span> <span class="ident">item</span> <span class="op">=</span> <span class="ident"><span class="kw">crate</span>::utils_mod::from_crev_to_item</span>(<span class="ident">x</span>);
-            <span class="kw">let</span> <span class="ident">crate_name_version</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">join_crate_version</span>(<span class="kw-2">&amp;</span><span class="ident">item</span>.<span class="ident">crate_name</span>, <span class="kw-2">&amp;</span><span class="ident">item</span>.<span class="ident">crate_version</span>);
+            <span class="kw">let</span> <span class="ident">crate_name_version</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">crate_version_join</span>(<span class="kw-2">&amp;</span><span class="ident">item</span>.<span class="ident">crate_name</span>, <span class="kw-2">&amp;</span><span class="ident">item</span>.<span class="ident">crate_version</span>);
             <span class="kw">if</span> <span class="ident"><span class="kw">crate</span>::db_sled_mod::db_review_mod::exists</span>(<span class="ident">crate_name_version</span>) {
                 <span class="comment">// check the date</span>
                 <span class="kw">let</span> <span class="ident">y</span> <span class="op">=</span> <span class="macro">unwrap!</span>(<span class="macro">unwrap!</span>(<span class="ident"><span class="kw">crate</span>::db_sled_mod::db_review_mod::read</span>(<span class="ident">crate_name_version</span>)));
@@ -312,7 +312,7 @@
         <span class="kw">let</span> <span class="ident">ns_started</span> <span class="op">=</span> <span class="ident"><span class="kw">crate</span>::utils_mod::ns_start</span>(<span class="string">&quot;sync_in_background_verify&quot;</span>);
         <span class="kw">let</span> <span class="ident">verify_list_data</span> <span class="op">=</span> <span class="macro">unwrap!</span>(<span class="ident"><span class="kw">crate</span>::crev_mod::verify_project</span>());
         <span class="kw">for</span> <span class="ident">item</span> <span class="kw">in</span> <span class="ident">verify_list_data</span>.<span class="ident">list_of_verify</span>.<span class="ident">iter</span>() {
-            <span class="kw">let</span> <span class="ident">crate_name_version</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">join_crate_version</span>(<span class="kw-2">&amp;</span><span class="ident">item</span>.<span class="ident">crate_name</span>, <span class="kw-2">&amp;</span><span class="ident">item</span>.<span class="ident">crate_version</span>);
+            <span class="kw">let</span> <span class="ident">crate_name_version</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">crate_version_join</span>(<span class="kw-2">&amp;</span><span class="ident">item</span>.<span class="ident">crate_name</span>, <span class="kw-2">&amp;</span><span class="ident">item</span>.<span class="ident">crate_version</span>);
             <span class="comment">// always insert/update</span>
             <span class="macro">unwrap!</span>(<span class="ident"><span class="kw">crate</span>::db_sled_mod::db_verify_mod::insert</span>(<span class="ident">crate_name_version</span>, <span class="kw-2">&amp;</span><span class="ident">item</span>));
         }
