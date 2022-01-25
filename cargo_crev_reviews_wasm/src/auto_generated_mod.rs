@@ -78,15 +78,6 @@ pub mod srv_methods {
     }
 
     #[named]
-    pub fn srv_fix_missing_src_folder<T>(request_data: T)
-    where
-        T: serde::Serialize,
-    {
-        let request_method = function_name!();
-        post_request_await_run_response_method(request_method, request_data);
-    }
-
-    #[named]
     pub fn srv_list_unclean_crates<T>(request_data: T)
     where
         T: serde::Serialize,

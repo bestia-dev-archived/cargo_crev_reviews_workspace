@@ -217,7 +217,7 @@
 //! First it downloads the tar gz file ending with `.crate` into the cache directory:  
 //! `~/.cargo/registry/cache/github.com-1ecc6299db9ec823/cargo_auto_lib-0.7.23.crate`  
 //! Probably the `cksum` field in the `registry index` is calculated from this `.crate` file.  
-//! Then this is unzipped into the `src` folder as the complete source code directories and files:  
+//! Then this is unpacked into the `src` folder as the complete source code directories and files:  
 //! `~/.cargo/registry/src/github.com-1ecc6299db9ec823/`.  
 //! `Crates.io` guarantees the `.crate` file for a crate+version cannot be altered or deleted and are always available for download from crates.io (even when yanked).  
 //! We can review exactly this local code with confidence, because we know it will never change.  
@@ -390,6 +390,7 @@
 //!
 // endregion: auto_md_to_doc_comments include README.md A //!
 
+// use anyhow::Context;
 use lazy_static::lazy_static;
 use std::sync::Mutex;
 
@@ -460,6 +461,16 @@ lazy_static! {
     /// ansi unhide cursor
     pub static ref UNHIDE_CURSOR: String = termion::cursor::Show.to_string();
 }
+
+lazy_static! {
+    // The Linux home folder ~ or /home/username
+    pub static ref HOME_DIR:std::path::PathBuf = home::home_dir().unwrap();
+    pub static ref CARGO_CREV_REVIEWS_CACHE:std::path::PathBuf = HOME_DIR.join(".cache/cargo_crev_reviews/cache");
+    pub static ref CARGO_CREV_REVIEWS_SRC:std::path::PathBuf = HOME_DIR.join(".cache/cargo_crev_reviews/src");
+    // TODO: move this, because is data, to .local/cargo_crev_reviews/sled_db
+    pub static ref CARGO_CREV_REVIEWS_SLED_DB:std::path::PathBuf = HOME_DIR.join(".config/crev/cargo_crev_reviews_data/db");
+}
+
 // endregion: public static variables
 
 /// check that this is the only instance of this server
@@ -599,4 +610,26 @@ First check the reviews from other developers on https://web.crev.dev/rust-revie
         yel = *YELLOW,
         res = *RESET
     );
+}
+/// On start check that exists persistent directories needed for cargo_crev_reviews.
+/// If not create them.
+pub fn create_persistent_directories() {
+    // TODO: move this, because is data, to .local/cargo_crev_reviews/sled_db
+    if !CARGO_CREV_REVIEWS_SLED_DB.exists() {
+        std::fs::create_dir_all(CARGO_CREV_REVIEWS_SLED_DB.as_path()).unwrap();
+    }
+}
+/// On start empty and creates the temp directories needed for cargo_crev_reviews.
+/// So it will never grow too big.
+/// If the crate is not in `cargo registry cache` and `cargo registry src` I download and unpack it
+/// in temp directories and then opens the VSCode on that folder or calculate digest.
+pub fn empty_and_create_temp_directories() {
+    if CARGO_CREV_REVIEWS_CACHE.exists() {
+        std::fs::remove_dir_all(CARGO_CREV_REVIEWS_CACHE.as_path()).unwrap();
+    }
+    std::fs::create_dir_all(CARGO_CREV_REVIEWS_CACHE.as_path()).unwrap();
+    if CARGO_CREV_REVIEWS_SRC.exists() {
+        std::fs::remove_dir_all(CARGO_CREV_REVIEWS_SRC.as_path()).unwrap();
+    }
+    std::fs::create_dir_all(CARGO_CREV_REVIEWS_SRC.as_path()).unwrap();
 }

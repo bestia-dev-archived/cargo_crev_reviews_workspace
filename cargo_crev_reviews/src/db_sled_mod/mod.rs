@@ -22,7 +22,7 @@ use crate::{db_sled_mod::db_yanked_mod::YankedForDb, utils_mod::crate_version_jo
 lazy_static! {
     /// "sled" db stays open all the time of the program running.
     /// this program on start checks if there is an instance already running, so to guarantee only one process access the db files.
-    pub static ref DB_SLED:sled::Db = unwrap!(sled::open(unwrap!(home::home_dir()).join(".config/crev/cargo_crev_reviews_data/db")));
+    pub static ref DB_SLED:sled::Db = unwrap!(sled::open(crate::CARGO_CREV_REVIEWS_SLED_DB.as_path()));
     /// 3 threads to download in parallel
     static ref POOL:rayon::ThreadPool = rayon::ThreadPoolBuilder::new().num_threads(3).build().unwrap();
 }

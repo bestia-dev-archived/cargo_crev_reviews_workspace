@@ -46,19 +46,14 @@
             <p class="small">When we are reviewing the source code of a crate, we must be sure that it is not compromised.
                 <br/>The commands `cargo check` or `cargo build` download files with the `.crate` extension from crates.io to the `cargo registry cache` for all the crates in your project dependency tree.
                 <br/>It then checks the cksum field from the `cargo registry index` database to test the integrity of the downloaded files.
-                <br/>Then it unzips this files into the `cargo registry src` directory. This is the original source code that cargo uses to compile into your project.
+                <br/>Then it unpacks this files into the `cargo registry src` directory. This is the original source code that cargo uses to compile into your project.
                 <br/>Sometimes it can happen that this source code is altered - unknowingly or unwillingly. Most of the time by the intellisense server of the code editor.
                 <br/>Use the command `List unclean crates` to get a list of crates to manually delete from the `src` folder.
             </p>
             <button id="button_list_unclean_crates">List unclean crates</button>
 
-            <p class="small">After manually deleting these directories we need to fix these missing src folders.
-                <br/>We will fix the local src folders for all crates that have our crev review. So later we can calculate the correct digest for all reviews.
-            </p>
-            <button id="button_fix_missing_src_folder">Fix missing src folders</button>
-
-            <p class="small">If the crate was unclean when writing the crev review, the calculated digest is incorrect.
-                <br/>If all the crates are now clean and not missing, you can correct these incorrect digests.
+            <p class="small">If the crate was unclean when writing the crev review, the calculated digest is incorrect in the saved review.
+                <br/>You can check and correct these incorrect digests.
             </p>
             <button id="button_correct_digest">Correct digest for all reviews</button>
         </div>

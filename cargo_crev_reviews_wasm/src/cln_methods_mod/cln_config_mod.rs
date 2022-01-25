@@ -70,7 +70,6 @@ pub fn cln_config_edit(srv_response: RpcResponse) {
     on_click!("button_close", close_on_click);
     on_click!("button_correct_digest", request_correct_digest);
     on_click!("button_list_unclean_crates", request_list_unclean_crates);
-    on_click!("button_fix_missing_src_folder", request_fix_missing_src_folder);
 }
 
 /// send rpc requests
@@ -92,7 +91,7 @@ fn close_on_click(_element_id: &str) {
 #[named]
 fn request_correct_digest(_element_id: &str) {
     log::info!("{}", function_name!());
-    show_modal_message("Correcting digest can take some time. You can see the progress in the terminal.");
+    show_modal_message("Correcting digest can take some time. You can see the progress in the terminal...");
     let request_data = RpcEmptyData {};
     srv_methods::srv_correct_digest(request_data);
 }
@@ -100,16 +99,8 @@ fn request_correct_digest(_element_id: &str) {
 #[named]
 fn request_list_unclean_crates(_element_id: &str) {
     log::info!("{}", function_name!());
-    show_modal_message("The search for unclean crates can take some time. You can see the progress in the terminal.");
+    show_modal_message("The search for unclean crates can take some time. You can see the progress in the terminal...");
     let request_data = RpcEmptyData {};
 
     srv_methods::srv_list_unclean_crates(request_data);
-}
-
-#[named]
-fn request_fix_missing_src_folder(_element_id: &str) {
-    log::info!("{}", function_name!());
-    show_modal_message("Downloading missing crates can take some time. You can see the progress in the terminal.");
-    let request_data = RpcEmptyData {};
-    srv_methods::srv_fix_missing_src_folder(request_data);
 }

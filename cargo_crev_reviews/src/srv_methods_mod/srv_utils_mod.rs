@@ -68,7 +68,7 @@ pub fn srv_config_save(request_data: serde_json::Value) -> anyhow::Result<String
     crate::response_post_mod::response_modal_message("Config saved.")
 }
 
-/// list crates to delete manually. The next `cargo check` or `cargo build` will unzip them from the cache folder.
+/// list crates to delete manually. The next `cargo check` or `cargo build` will unpack them from the cache folder.
 #[named]
 pub fn srv_list_unclean_crates(_request_data: serde_json::Value) -> anyhow::Result<String> {
     log::info!(function_name!());
@@ -82,17 +82,9 @@ pub fn srv_list_unclean_crates(_request_data: serde_json::Value) -> anyhow::Resu
     crate::response_post_mod::response_modal_message(&list)
 }
 
-/// fix the scr folder for crates that have our review
-#[named]
-pub fn srv_fix_missing_src_folder(_request_data: serde_json::Value) -> anyhow::Result<String> {
-    log::info!(function_name!());
-
-    let output = crate::cargo_registry_mod::fix_missing_src_folder_for_crates_that_have_review()?;
-    log::info!("srv_fix_missing_src_folder() finished.");
-    crate::response_post_mod::response_modal_message(&output)
-}
-
 /// correct digest to all reviews where needed
+/// start with a vector of all reviews
+/// calculate digest (from clean crate) and correct
 #[named]
 pub fn srv_correct_digest(_request_data: serde_json::Value) -> anyhow::Result<String> {
     log::info!(function_name!());
@@ -104,41 +96,31 @@ pub fn srv_correct_digest(_request_data: serde_json::Value) -> anyhow::Result<St
     vec_proof.sort_by(|a, b| a.package.version_for_sorting.cmp(&b.package.version_for_sorting));
     let num_of_all = vec_proof.len();
     for p in vec_proof.iter() {
-        log::info!("check digest: {} {}", &p.package.name, &p.package.version);
+        let crate_name = p.package.name.clone();
+        let crate_version = p.package.version.clone();
+        log::info!("check digest: {} {}", &crate_name, &crate_version);
         match calculate_crate_digest(&p.package.name, &p.package.version) {
             Err(err) => ret_string.push_str(&format!("{}\n", &err)),
             Ok(digest) => {
                 if p.package.digest != digest.to_string() {
-                    match &p.review {
-                        None => {
-                            let thoroughness = crev_data::Level::None;
-                            let understanding = crev_data::Level::None;
-                            let rating = crev_data::Rating::Neutral;
-                            // crev save review proof
-                            unwrap!(crev_save_review(
-                                &p.package.name,
-                                &p.package.version,
-                                thoroughness,
-                                understanding,
-                                rating,
-                                &p.comment.as_deref().unwrap_or("")
-                            ));
-                        }
-                        Some(review) => {
-                            let thoroughness = crev_data::Level::from(review.thoroughness);
-                            let understanding = crev_data::Level::from(review.understanding);
-                            let rating = crev_data::Rating::from(review.rating);
-                            // crev save review proof
-                            unwrap!(crev_save_review(
-                                &p.package.name,
-                                &p.package.version,
-                                thoroughness,
-                                understanding,
-                                rating,
-                                &p.comment.as_deref().unwrap_or("")
-                            ));
-                        }
-                    }
+                    // review can be optional in cargo-crev, but cargo_crev_reviews saves it always.
+                    let (thoroughness, understanding, rating) = match &p.review {
+                        None => (crev_data::Level::None, crev_data::Level::None, crev_data::Rating::Neutral),
+                        Some(review) => (
+                            crev_data::Level::from(review.thoroughness),
+                            crev_data::Level::from(review.understanding),
+                            crev_data::Rating::from(review.rating),
+                        ),
+                    };
+                    // crev save review proof
+                    unwrap!(crev_save_review(
+                        &p.package.name,
+                        &p.package.version,
+                        thoroughness,
+                        understanding,
+                        rating,
+                        &p.comment.as_deref().unwrap_or("")
+                    ));
                     num_of_corrected += 1;
                 }
             }

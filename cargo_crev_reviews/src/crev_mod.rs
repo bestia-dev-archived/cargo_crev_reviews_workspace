@@ -94,29 +94,11 @@ impl VcsInfoJson {
     }
 }
 
-/// Ignore things that are commonly added during the review (eg. by RLS)
-/// Cargo.lock can be part of the package, or added later. How to know that.
-/// crates.io makes some changes when the crate is uploaded:
-/// 1. it rewrites Cargo.toml into a normalized format and set the date
-/// 2. creates .cargo_vcs_info.json¸with the same date
-/// 3. modifies Cargo.lock with the same date
-/// If the Cargo.lock is created later it has a different date.
-pub fn cargo_full_ignore_list(ignore_cargo_lock: bool) -> fnv::FnvHashSet<std::path::PathBuf> {
-    let mut ignore_list = std::collections::HashSet::default();
-    ignore_list.insert(std::path::PathBuf::from(".cargo-ok"));
-    ignore_list.insert(std::path::PathBuf::from("target"));
-    if ignore_cargo_lock {
-        ignore_list.insert(std::path::PathBuf::from("Cargo.lock"));
-    }
-
-    ignore_list
-}
-
 pub fn vcs_info_to_revision_string(vcs: Option<VcsInfoJson>) -> String {
     vcs.and_then(|vcs| vcs.get_git_revision()).unwrap_or_else(|| "".into())
 }
 
-// endregion: copied from cargo-crev  (maybe missing in cargo lib)
+// endregion: copied from cargo-crev
 
 /// unlock crev_id interactively
 pub fn unlock_crev_id_interactively() -> anyhow::Result<()> {
@@ -274,7 +256,7 @@ pub fn crev_new_version(filter: ReviewFilterData) -> anyhow::Result<ProofCrevFor
         if version == max_version.as_str() {
             anyhow::bail!("Max version {} is already reviewed!", &max_version);
         }
-        let path_dir = crate::cargo_registry_mod::cargo_registry_src_dir_for_crate(&filter.crate_name, &max_version)?;
+        let path_dir = crate::cargo_registry_mod::cargo_registry_src_dir_for_crate(&filter.crate_name, &max_version);
         if !path_dir.exists() {
             anyhow::bail!("Max version {} src is not cached on your system. It means you don't have a dependency on it in your projects. You cannot review a crate version that you don't use.", &max_version);
         }
@@ -294,7 +276,7 @@ pub fn crev_new_version(filter: ReviewFilterData) -> anyhow::Result<ProofCrevFor
 /// create save review proof
 pub fn crev_save_review(
     crate_name: &str,
-    crate_version_str: &str,
+    crate_version: &str,
     thoroughness: crev_data::Level,
     understanding: crev_data::Level,
     rating: crev_data::Rating,
@@ -306,16 +288,16 @@ pub fn crev_save_review(
         rating,
     };
 
-    let crate_version = crev_data::Version::from_str(crate_version_str)?;
-    let digest_clean = calculate_crate_digest(crate_name, crate_version_str)?;
-    let crate_root = crate::cargo_registry_mod::cargo_registry_src_dir_for_crate(crate_name, crate_version_str)?;
-    if !crate_root.exists() {
-        anyhow::bail!("The crate {}-{} does not exist in the local cargo registry cache. You must use the crate as dependency in your projects, if you want to review it. This way cargo will download the source code for the crate that you review. ", crate_name, crate_version_str);
+    let digest_clean = calculate_crate_digest(crate_name, crate_version)?;
+    let src_folder = crate::cargo_registry_mod::cargo_registry_src_dir_for_crate(crate_name, crate_version);
+    if !src_folder.exists() {
+        anyhow::bail!("The crate {}-{} does not exist in the local cargo registry cache. You must use the crate as dependency in your projects, if you want to review it. This way cargo will download the source code for the crate that you review. ", crate_name, crate_version);
     }
-    let vcs = VcsInfoJson::read_from_crate_dir(&crate_root)?;
+    let vcs = VcsInfoJson::read_from_crate_dir(&src_folder)?;
 
     // new reviews only for crates that come from crates.io
-    let package_id = crev_data::proof::PackageVersionId::new("https://crates.io".to_string(), crate_name.to_string(), crate_version);
+    let crate_version_version = crev_data::Version::from_str(crate_version)?;
+    let package_id = crev_data::proof::PackageVersionId::new("https://crates.io".to_string(), crate_name.to_string(), crate_version_version);
 
     let package_info = crev_data::proof::PackageInfo {
         id: package_id,
@@ -338,53 +320,55 @@ pub fn crev_save_review(
     let proof = proof.sign_by(&CREV_UNLOCKED.lock().unwrap().as_ref().unwrap())?;
 
     // if exists an old proof with same crate+version, delete it and then save the new one
-    delete_review_proofs(crate_name, crate_version_str)?;
+    delete_review_proofs(crate_name, crate_version)?;
 
     // it needs `use crev_lib::ProofStore;`
     CREV_LOCAL.lock().unwrap().as_ref().unwrap().insert(&proof)?;
 
-    let commit_msg = format!("Add review for {} v{}", crate_name, crate_version_str);
+    let commit_msg = format!("Add review for {} v{}", crate_name, crate_version);
     CREV_LOCAL.lock().unwrap().as_ref().unwrap().proof_dir_commit(&commit_msg)?;
 
     // return
     Ok(())
 }
 
-pub fn calculate_crate_digest(crate_name: &str, crate_version_str: &str) -> anyhow::Result<crev_data::Digest> {
-    let crate_root = crate::cargo_registry_mod::cargo_registry_src_dir_for_crate(crate_name, crate_version_str)?;
-    if !crate_root.exists() {
-        anyhow::bail!("The crate {}-{} does not exist in the local cargo registry cache. You must use the crate as dependency in your projects, if you want to review it. This way cargo will download the source code for the crate that you review. ", crate_name, crate_version_str);
+/// If the .crate targz file is not in `cargo registry cache`, download it to temp dir.
+/// Check that the crate src folder exist in `cargo registry src` and is clean.
+/// If not, unpack targz in temp folder and return that PathBuf
+pub fn get_clean_src_folder(crate_name: &str, crate_version: &str) -> anyhow::Result<std::path::PathBuf> {
+    let mut cache_crate_file = crate::cargo_registry_mod::cargo_registry_cache_file_for_crate(&crate_name, &crate_version);
+    if !cache_crate_file.exists() {
+        // download in temp file
+        cache_crate_file = crate::cargo_registry_mod::download_crate_from_crate_io(&crate_name, &crate_version)?;
     }
-    /*
-    // 2022-01-13 dpc: https://github.com/crev-dev/cargo-crev/issues/434
-    // For Rust we need to do bunch of shenanigans before calculating digest. See comments.
-     */
 
-    // Ignore things that are commonly added during the review (eg. by RLS)
-    // Cargo.lock can be part of the package, or added later. How to know that.
-    // crates.io makes some changes when the crate is uploaded:
-    // 1. it rewrites Cargo.toml into a normalized format and set the date
-    // 2. creates .cargo_vcs_info.json¸with the same date
-    // 3. modifies Cargo.lock with the same date
-    // If the Cargo.lock is created later it has a different date.
-    let ignore_cargo_lock = if crate_root.join("Cargo.lock").exists() {
-        // check the file dates
-        let metadata_1 = std::fs::metadata(crate_root.join("Cargo.lock"))?;
-        let metadata_2 = std::fs::metadata(crate_root.join("Cargo.toml"))?;
-        if unwrap!(metadata_1.modified()) == unwrap!(metadata_2.modified()) {
-            // if dates are same don't ignore
-            // log::info!("dates of Cargo.lock and Cargo.toml are same.");
-            false
-        } else {
-            log::info!("dates of Cargo.lock and Cargo.toml are different.");
-            true
-        }
-    } else {
-        // the file does not exist, it does not need to be ignored.
-        false
-    };
-    let digest_clean = crev_lib::get_recursive_digest_for_dir(&crate_root, &cargo_full_ignore_list(ignore_cargo_lock))?;
-    Ok(digest_clean)
+    let mut src_folder = crate::cargo_registry_mod::cargo_registry_src_dir_for_crate(&crate_name, &crate_version);
+    let mut use_temp_dir = false;
+    if !src_folder.exists() {
+        use_temp_dir = true;
+    } else if !crate::cargo_registry_mod::is_crate_clean(&src_folder, &cache_crate_file)? {
+        log::error!("Remove unclean crate: rm -r {:#?}", &src_folder);
+        use_temp_dir = true;
+    }
+
+    if use_temp_dir == true {
+        src_folder = crate::cargo_registry_mod::cargo_crev_reviews_src_dir_for_crate(&crate_name, &crate_version);
+        crate::cargo_registry_mod::unpack_from_targz_to_folder(&crate_name, &crate_version, cache_crate_file.parent().unwrap(), src_folder.parent().unwrap())
+            .unwrap();
+    }
+    Ok(src_folder)
+}
+
+/// if the `cargo registry src` does not exist or is unclean, download and unpack into temp folder
+/// and calculate digest there.
+pub fn calculate_crate_digest(crate_name: &str, crate_version: &str) -> anyhow::Result<crev_data::Digest> {
+    let src_folder = get_clean_src_folder(crate_name, crate_version)?;
+
+    // Ignore only the file .cargo_ok, that is added after unpacking the targz
+    let mut ignore_list = std::collections::HashSet::default();
+    ignore_list.insert(std::path::PathBuf::from(".cargo-ok"));
+    let digest = crev_lib::get_recursive_digest_for_dir(&src_folder, &ignore_list)?;
+    Ok(digest)
 }
 
 pub fn rating_parse(rating: &str) -> anyhow::Result<Rating> {
@@ -582,14 +566,6 @@ fn rating_or_version(crate_name: &str, crate_version: &str) -> anyhow::Result<St
 }
 // endregion: cargo_crev_reviews/db_version
 
-// region: cargo_crev_reviews_data/trusted_publishers.json
-fn path_to_trusted_publishers_json() -> anyhow::Result<std::path::PathBuf> {
-    let pb = home::home_dir()
-        .context("home_dir")?
-        .join(".config/crev/cargo_crev_reviews_data/trusted_publishers.json");
-    Ok(pb)
-}
-
 pub fn is_trusted_publisher(trusted_publishers: &Vec<PublisherItemData>, publisher_url: &str) -> String {
     for x in trusted_publishers.iter() {
         if &x.publisher_url == publisher_url {
@@ -598,7 +574,6 @@ pub fn is_trusted_publisher(trusted_publishers: &Vec<PublisherItemData>, publish
     }
     "".to_string()
 }
-// endregion: cargo_crev_reviews_data/trusted_publishers.json
 
 /// get all versions for one crate
 pub fn crev_crate_versions(crate_name: &str) -> anyhow::Result<Vec<VersionItemData>> {
@@ -622,7 +597,7 @@ pub fn crev_crate_versions(crate_name: &str) -> anyhow::Result<Vec<VersionItemDa
         let (_io_crate_name, io_crate_version) = crate_version_split(version_for_db.crate_name_version.as_str());
 
         // is_src_cache (if path exists in cargo registry src)
-        let path_dir = crate::cargo_registry_mod::cargo_registry_src_dir_for_crate(crate_name, &io_crate_version)?;
+        let path_dir = crate::cargo_registry_mod::cargo_registry_src_dir_for_crate(crate_name, &io_crate_version);
         let is_src_cached = Some(path_dir.exists());
 
         let yanked = yanked_one_crate.iter().any(|s| s.crate_name_version == version_for_db.crate_name_version);

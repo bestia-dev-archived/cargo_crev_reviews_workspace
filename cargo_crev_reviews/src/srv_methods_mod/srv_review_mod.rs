@@ -139,34 +139,32 @@ pub fn srv_review_publish(_request_data: serde_json::Value) -> anyhow::Result<St
 
 /// The source code of the dependency crate is in the `cargo registry src` folder
 /// But it must not be opened with a code editor, because the intellisense server will alter the files: add the target folder and Cargo.lock file.
-/// This is why I copy this folder into a temp directory first.
-/// To avoid copying some unclean crate, I will unpack the `.crate` file from the `cargo registry cache` folder
+/// This is why I unpack the .crate file into a temp directory first.
+/// So I avoid also copying unclean crate folders.
+/// If the cache file does not exist in `cargo registry`, I will download it in another temp folder.
 #[named]
 pub fn srv_review_open_source_code(request_data: serde_json::Value) -> anyhow::Result<String> {
     log::info!(function_name!());
     let filter: ReviewFilterData = unwrap!(serde_json::from_value(request_data));
-    let version = filter.crate_version.context("Parameter version in None.")?;
+    let crate_name = filter.crate_name;
+    let crate_version = filter.crate_version.context("Parameter version in None.")?;
 
-    let cache_crate_file = crate::cargo_registry_mod::cargo_registry_cache_file_for_crate(&filter.crate_name, &version)?;
+    let crate_name_version_folder_name = crate::utils_mod::crate_version_for_src_folder(&crate_name, &crate_version);
+
+    let mut cache_crate_file = crate::cargo_registry_mod::cargo_registry_cache_file_for_crate(&crate_name, &crate_version);
     if !cache_crate_file.exists() {
-        anyhow::bail!("Crate version {} {} is not cached on your system.", &filter.crate_name, &version);
+        // download into temp folder and change PathBuf
+        cache_crate_file = crate::cargo_registry_mod::download_crate_from_crate_io(&crate_name, &crate_version)?;
     }
     log::info!("Unpack and open source code from {:#?}", &cache_crate_file);
 
     // unpack the .crate into temp directory
-    // VSCode cannot open a folder in the tmp dir. I will use the existing:
-    // ~\.config\crev\cargo_crev_reviews_data\tmp_src
-    let home_dir = home::home_dir().with_context(|| "home::home_dir() is None.")?;
-    let tempdir = home_dir.join(".config/crev/cargo_crev_reviews_data/tmp_src");
-    if !tempdir.exists() {
-        std::fs::create_dir(&tempdir)?;
-    }
-    let folder_name = crate::utils_mod::crate_version_for_src_folder(&filter.crate_name, &version);
-    let temp_path_dir = tempdir.join(&folder_name);
+    // ~\.cache\cargo_crev_reviews\src
+    let temp_path_dir = crate::CARGO_CREV_REVIEWS_SRC.join(&crate_name_version_folder_name);
     if temp_path_dir.exists() {
         std::fs::remove_dir_all(&temp_path_dir)?;
     }
-    crate::cargo_registry_mod::unpack_from_cache_to_folder(&filter.crate_name, &version, &tempdir)?;
+    crate::cargo_registry_mod::unpack_from_targz_to_folder(&crate_name, &crate_version, cache_crate_file.parent().unwrap(), temp_path_dir.parent().unwrap())?;
     log::info!("Unpacked into {:#?}", &temp_path_dir);
 
     let config = unwrap!(crate::get_config());

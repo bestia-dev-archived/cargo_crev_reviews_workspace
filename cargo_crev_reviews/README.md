@@ -5,14 +5,14 @@
 [comment]: # (auto_cargo_toml_to_md start)
 
 **Write cargo-crev reviews in GUI with a cross-platform app written in full-stack Rust**  
-***[repository](https://github.com/lucianobestia/cargo_crev_reviews_workspace); version: 2022.122.1621  date: 2022-01-22 authors: Luciano Bestia***  
+***[repository](https://github.com/lucianobestia/cargo_crev_reviews_workspace); version: 2022.125.1123  date: 2022-01-25 authors: Luciano Bestia***  
 
 [comment]: # (auto_cargo_toml_to_md end)
 
 [comment]: # (auto_lines_of_code start)
-[![Lines in Rust code](https://img.shields.io/badge/Lines_in_Rust-2993-green.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
-[![Lines in Doc comments](https://img.shields.io/badge/Lines_in_Doc_comments-559-blue.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
-[![Lines in Comments](https://img.shields.io/badge/Lines_in_comments-257-purple.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
+[![Lines in Rust code](https://img.shields.io/badge/Lines_in_Rust-2945-green.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
+[![Lines in Doc comments](https://img.shields.io/badge/Lines_in_Doc_comments-556-blue.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
+[![Lines in Comments](https://img.shields.io/badge/Lines_in_comments-242-purple.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
 [![Lines in examples](https://img.shields.io/badge/Lines_in_examples-0-yellow.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
 [![Lines in tests](https://img.shields.io/badge/Lines_in_tests-27-orange.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
 
@@ -227,12 +227,12 @@ Cargo downloads from crates.io the complete source code for every dependency it 
 First it downloads the tar gz file ending with `.crate` into the cache directory:  
 `~/.cargo/registry/cache/github.com-1ecc6299db9ec823/cargo_auto_lib-0.7.23.crate`  
 Probably the `cksum` field in the `registry index` is calculated from this `.crate` file.  
-Then this is unzipped into the `src` folder as the complete source code directories and files:  
+Then this is unpacked into the `src` folder as the complete source code directories and files:  
 `~/.cargo/registry/src/github.com-1ecc6299db9ec823/`.  
 `Crates.io` guarantees the `.crate` file for a crate+version cannot be altered or deleted and are always available for download from crates.io (even when yanked).  
 We can review exactly this local code with confidence, because we know it will never change.  
-This local files should not be altered in any way. But it can happen unknowingly and unwillingly, if we open a code editor with intellisense in this folder. It will create the `target` folder and `Cargo.lock` file. It can happen also that `Go to definition` opens this files in the editor and maybe we alter some comment or code. This is no good.  
-In the `config and utils` it is possible to check that these files are not tempered. If something is modified it is easy to just remove that folder from `src`. Then we can download and unpack the missing crates.  
+This local files should not be altered in any way. But it can happen unknowingly and unwillingly, if we open a code editor with auto-complete in this folder. It will create the `target` folder and `Cargo.lock` file. It can happen also that `Go to definition` opens this files in the editor and maybe we alter some comment or code. This is no good.  
+In the `config and utils` it is possible to do an integrity check that these files are not tempered. If something is modified it is easy to just remove that folder from `src`. The next time cargo needs these crates it will download and unpack automatically.
 
 ## crates.io API
 

@@ -73,6 +73,7 @@
         "stylesheet",
         "subtemplate",
         "tagname",
+        "targz",
         "tempdir",
         "tempfile",
         "templating",
