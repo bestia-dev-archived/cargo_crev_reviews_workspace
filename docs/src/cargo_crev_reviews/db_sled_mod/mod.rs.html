@@ -201,7 +201,7 @@
 <span class="macro">lazy_static!</span> {
     <span class="doccomment">/// &quot;sled&quot; db stays open all the time of the program running.</span>
     <span class="doccomment">/// this program on start checks if there is an instance already running, so to guarantee only one process access the db files.</span>
-    <span class="kw">pub</span> <span class="kw">static</span> <span class="kw-2">ref</span> <span class="ident">DB_SLED</span>:<span class="ident">sled::Db</span> <span class="op">=</span> <span class="macro">unwrap!</span>(<span class="ident">sled::open</span>(<span class="macro">unwrap!</span>(<span class="ident">home::home_dir</span>()).<span class="ident">join</span>(<span class="string">&quot;.config/crev/cargo_crev_reviews_data/db&quot;</span>)));
+    <span class="kw">pub</span> <span class="kw">static</span> <span class="kw-2">ref</span> <span class="ident">DB_SLED</span>:<span class="ident">sled::Db</span> <span class="op">=</span> <span class="macro">unwrap!</span>(<span class="ident">sled::open</span>(<span class="ident"><span class="kw">crate</span>::CARGO_CREV_REVIEWS_SLED_DB</span>.<span class="ident">as_path</span>()));
     <span class="doccomment">/// 3 threads to download in parallel</span>
     <span class="kw">static</span> <span class="kw-2">ref</span> <span class="ident">POOL</span>:<span class="ident">rayon::ThreadPool</span> <span class="op">=</span> <span class="ident">rayon::ThreadPoolBuilder::new</span>().<span class="ident">num_threads</span>(<span class="number">3</span>).<span class="ident">build</span>().<span class="ident">unwrap</span>();
 }

@@ -332,50 +332,6 @@
 <span id="332">332</span>
 <span id="333">333</span>
 <span id="334">334</span>
-<span id="335">335</span>
-<span id="336">336</span>
-<span id="337">337</span>
-<span id="338">338</span>
-<span id="339">339</span>
-<span id="340">340</span>
-<span id="341">341</span>
-<span id="342">342</span>
-<span id="343">343</span>
-<span id="344">344</span>
-<span id="345">345</span>
-<span id="346">346</span>
-<span id="347">347</span>
-<span id="348">348</span>
-<span id="349">349</span>
-<span id="350">350</span>
-<span id="351">351</span>
-<span id="352">352</span>
-<span id="353">353</span>
-<span id="354">354</span>
-<span id="355">355</span>
-<span id="356">356</span>
-<span id="357">357</span>
-<span id="358">358</span>
-<span id="359">359</span>
-<span id="360">360</span>
-<span id="361">361</span>
-<span id="362">362</span>
-<span id="363">363</span>
-<span id="364">364</span>
-<span id="365">365</span>
-<span id="366">366</span>
-<span id="367">367</span>
-<span id="368">368</span>
-<span id="369">369</span>
-<span id="370">370</span>
-<span id="371">371</span>
-<span id="372">372</span>
-<span id="373">373</span>
-<span id="374">374</span>
-<span id="375">375</span>
-<span id="376">376</span>
-<span id="377">377</span>
-<span id="378">378</span>
 </pre><pre class="rust"><code><span class="comment">// cargo_registry_mod.rs</span>
 
 <span class="doccomment">//! functions around the cargo registry  d</span>
@@ -385,49 +341,42 @@
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">dead_code</span>)]</span>
 
 <span class="kw">use</span> <span class="ident">anyhow::Context</span>;
+<span class="kw">use</span> <span class="ident">lazy_static::lazy_static</span>;
 <span class="kw">use</span> <span class="ident">unwrap::unwrap</span>;
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::utils_mod</span>::<span class="kw-2">*</span>;
 
-<span class="doccomment">/// cargo registry src directory for a crate</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cargo_registry_src_dir</span>() -&gt; <span class="ident">anyhow::Result</span><span class="op">&lt;</span><span class="ident">std::path::PathBuf</span><span class="op">&gt;</span> {
-    <span class="kw">let</span> <span class="ident">home_dir</span> <span class="op">=</span> <span class="ident">home::home_dir</span>().<span class="ident">with_context</span>(<span class="op">|</span><span class="op">|</span> <span class="string">&quot;home::home_dir() is None.&quot;</span>)<span class="question-mark">?</span>;
-    <span class="kw">let</span> <span class="ident">crate_root</span> <span class="op">=</span> <span class="ident">home_dir</span>.<span class="ident">join</span>(<span class="string">&quot;.cargo/registry/src/github.com-1ecc6299db9ec823&quot;</span>);
-
-    <span class="comment">// return</span>
-    <span class="prelude-val">Ok</span>(<span class="ident">crate_root</span>)
+<span class="macro">lazy_static!</span> {
+    <span class="kw">pub</span> <span class="kw">static</span> <span class="kw-2">ref</span> <span class="ident">CARGO_REGISTRY_SRC_DIR</span>: <span class="ident">std::path::PathBuf</span> <span class="op">=</span> <span class="ident"><span class="kw">crate</span>::HOME_DIR</span>.<span class="ident">join</span>(<span class="string">&quot;.cargo/registry/src/github.com-1ecc6299db9ec823&quot;</span>);
+    <span class="kw">pub</span> <span class="kw">static</span> <span class="kw-2">ref</span> <span class="ident">CARGO_REGISTRY_CACHE_DIR</span>: <span class="ident">std::path::PathBuf</span> <span class="op">=</span> <span class="ident"><span class="kw">crate</span>::HOME_DIR</span>.<span class="ident">join</span>(<span class="string">&quot;.cargo/registry/cache/github.com-1ecc6299db9ec823&quot;</span>);
 }
 
 <span class="doccomment">/// cargo registry src directory for a crate</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cargo_registry_src_dir_for_crate</span>(<span class="ident">crate_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">crate_version</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="ident">anyhow::Result</span><span class="op">&lt;</span><span class="ident">std::path::PathBuf</span><span class="op">&gt;</span> {
-    <span class="kw">let</span> <span class="ident">home_dir</span> <span class="op">=</span> <span class="ident">home::home_dir</span>().<span class="ident">with_context</span>(<span class="op">|</span><span class="op">|</span> <span class="string">&quot;home::home_dir() is None.&quot;</span>)<span class="question-mark">?</span>;
-    <span class="kw">let</span> <span class="ident">crate_root</span> <span class="op">=</span> <span class="ident">home_dir</span>
-        .<span class="ident">join</span>(<span class="string">&quot;.cargo/registry/src/github.com-1ecc6299db9ec823&quot;</span>)
-        .<span class="ident">join</span>(<span class="kw-2">&amp;</span><span class="ident">crate_version_for_src_folder</span>(<span class="ident">crate_name</span>, <span class="ident">crate_version</span>));
-
-    <span class="comment">// return</span>
-    <span class="prelude-val">Ok</span>(<span class="ident">crate_root</span>)
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cargo_registry_src_dir_for_crate</span>(<span class="ident">crate_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">crate_version</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="ident">std::path::PathBuf</span> {
+    <span class="ident">CARGO_REGISTRY_SRC_DIR</span>.<span class="ident">join</span>(<span class="kw-2">&amp;</span><span class="ident">crate_version_for_src_folder</span>(<span class="ident">crate_name</span>, <span class="ident">crate_version</span>))
 }
 
 <span class="doccomment">/// cargo registry cache file `.crate` for a crate</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cargo_registry_cache_file_for_crate</span>(<span class="ident">crate_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">crate_version</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="ident">anyhow::Result</span><span class="op">&lt;</span><span class="ident">std::path::PathBuf</span><span class="op">&gt;</span> {
-    <span class="kw">let</span> <span class="ident">home_dir</span> <span class="op">=</span> <span class="ident">home::home_dir</span>().<span class="ident">with_context</span>(<span class="op">|</span><span class="op">|</span> <span class="string">&quot;home::home_dir() is None.&quot;</span>)<span class="question-mark">?</span>;
-    <span class="kw">let</span> <span class="ident">crate_root</span> <span class="op">=</span> <span class="ident">home_dir</span>
-        .<span class="ident">join</span>(<span class="string">&quot;.cargo/registry/cache/github.com-1ecc6299db9ec823&quot;</span>)
-        .<span class="ident">join</span>(<span class="macro">format!</span>(<span class="string">&quot;{}.crate&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">crate_version_for_src_folder</span>(<span class="ident">crate_name</span>, <span class="ident">crate_version</span>)));
-
-    <span class="comment">// return</span>
-    <span class="prelude-val">Ok</span>(<span class="ident">crate_root</span>)
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cargo_registry_cache_file_for_crate</span>(<span class="ident">crate_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">crate_version</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="ident">std::path::PathBuf</span> {
+    <span class="ident">CARGO_REGISTRY_CACHE_DIR</span>.<span class="ident">join</span>(<span class="macro">format!</span>(<span class="string">&quot;{}.crate&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">crate_version_for_src_folder</span>(<span class="ident">crate_name</span>, <span class="ident">crate_version</span>)))
 }
 
-<span class="kw">fn</span> <span class="ident">open_index</span>() -&gt; <span class="ident">anyhow::Result</span><span class="op">&lt;</span><span class="ident">crates_index::Index</span><span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cargo_crev_reviews_src_dir_for_crate</span>(<span class="ident">crate_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">crate_version</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="ident">std::path::PathBuf</span> {
+    <span class="ident"><span class="kw">crate</span>::CARGO_CREV_REVIEWS_SRC</span>.<span class="ident">join</span>(<span class="kw-2">&amp;</span><span class="ident">crate_version_for_src_folder</span>(<span class="ident">crate_name</span>, <span class="ident">crate_version</span>))
+}
+<span class="doccomment">/// cargo_crev_reviews `.crate` file for a crate in the temp cache folder</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cargo_crev_reviews_cache_file_for_crate</span>(<span class="ident">crate_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">crate_version</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="ident">std::path::PathBuf</span> {
+    <span class="ident"><span class="kw">crate</span>::CARGO_CREV_REVIEWS_CACHE</span>.<span class="ident">join</span>(<span class="macro">format!</span>(<span class="string">&quot;{}.crate&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">crate_version_for_src_folder</span>(<span class="ident">crate_name</span>, <span class="ident">crate_version</span>)))
+}
+
+<span class="kw">fn</span> <span class="ident">open_cargo_index</span>() -&gt; <span class="ident">anyhow::Result</span><span class="op">&lt;</span><span class="ident">crates_index::Index</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">index</span> <span class="op">=</span> <span class="ident">crates_index::Index::new_cargo_default</span>()<span class="question-mark">?</span>;
     <span class="prelude-val">Ok</span>(<span class="ident">index</span>)
 }
 
 <span class="doccomment">/// yanked</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">yanked_for_version</span>(<span class="ident">crate_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">crate_version</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="ident">anyhow::Result</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
-    <span class="kw">let</span> <span class="ident">crate_info</span> <span class="op">=</span> <span class="macro">unwrap!</span>(<span class="ident">open_index</span>())
+    <span class="kw">let</span> <span class="ident">crate_info</span> <span class="op">=</span> <span class="macro">unwrap!</span>(<span class="ident">open_cargo_index</span>())
         .<span class="ident">crate_</span>(<span class="ident">crate_name</span>)
         .<span class="ident">context</span>(<span class="macro">format!</span>(<span class="string">&quot;Cannot find crate name in registry: {}&quot;</span>, <span class="ident">crate_name</span>))<span class="question-mark">?</span>;
     <span class="kw">for</span> <span class="ident">x</span> <span class="kw">in</span> <span class="ident">crate_info</span>.<span class="ident">versions</span>().<span class="ident">iter</span>() {
@@ -443,7 +392,7 @@
 
 <span class="doccomment">/// list only yanked versions for one crate</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">yanked_for_one_crate</span>(<span class="ident">crate_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="ident">anyhow::Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-    <span class="kw">let</span> <span class="ident">crate_info</span> <span class="op">=</span> <span class="macro">unwrap!</span>(<span class="ident">open_index</span>())
+    <span class="kw">let</span> <span class="ident">crate_info</span> <span class="op">=</span> <span class="macro">unwrap!</span>(<span class="ident">open_cargo_index</span>())
         .<span class="ident">crate_</span>(<span class="ident">crate_name</span>)
         .<span class="ident">context</span>(<span class="macro">format!</span>(<span class="string">&quot;Cannot find crate name in registry: {}&quot;</span>, <span class="ident">crate_name</span>))<span class="question-mark">?</span>;
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">vec</span> <span class="op">=</span> <span class="macro">vec!</span>[];
@@ -457,7 +406,7 @@
 
 <span class="doccomment">/// info of all versions for one crate</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">info_for_one_crate</span>(<span class="ident">crate_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="ident">anyhow::Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">String</span>, <span class="ident">bool</span>)<span class="op">&gt;</span><span class="op">&gt;</span> {
-    <span class="kw">let</span> <span class="ident">crate_info</span> <span class="op">=</span> <span class="macro">unwrap!</span>(<span class="ident">open_index</span>())
+    <span class="kw">let</span> <span class="ident">crate_info</span> <span class="op">=</span> <span class="macro">unwrap!</span>(<span class="ident">open_cargo_index</span>())
         .<span class="ident">crate_</span>(<span class="ident">crate_name</span>)
         .<span class="ident">context</span>(<span class="macro">format!</span>(<span class="string">&quot;Cannot find crate name in registry: {}&quot;</span>, <span class="ident">crate_name</span>))<span class="question-mark">?</span>;
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">vec</span> <span class="op">=</span> <span class="macro">vec!</span>[];
@@ -469,7 +418,7 @@
 
 <span class="doccomment">/// max version from registry index cache</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">max_version_from_registry_index</span>(<span class="ident">crate_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="ident">anyhow::Result</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
-    <span class="kw">let</span> <span class="ident">crate_info</span> <span class="op">=</span> <span class="macro">unwrap!</span>(<span class="ident">open_index</span>())
+    <span class="kw">let</span> <span class="ident">crate_info</span> <span class="op">=</span> <span class="macro">unwrap!</span>(<span class="ident">open_cargo_index</span>())
         .<span class="ident">crate_</span>(<span class="ident">crate_name</span>)
         .<span class="ident">context</span>(<span class="macro">format!</span>(<span class="string">&quot;Cannot find crate name in registry: {}&quot;</span>, <span class="ident">crate_name</span>))<span class="question-mark">?</span>;
     <span class="comment">// max version by semver</span>
@@ -479,7 +428,7 @@
 
 <span class="doccomment">/// fetch/pull the registry index from github</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">update_registry_index</span>() -&gt; <span class="ident">anyhow::Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-    <span class="macro">unwrap!</span>(<span class="ident">open_index</span>()).<span class="ident">update</span>()<span class="question-mark">?</span>;
+    <span class="macro">unwrap!</span>(<span class="ident">open_cargo_index</span>()).<span class="ident">update</span>()<span class="question-mark">?</span>;
     <span class="prelude-val">Ok</span>(())
 }
 
@@ -490,48 +439,10 @@
     <span class="ident">mtime</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span>,
 }
 
-<span class="doccomment">/// when we are writing reviews, the source code of the crate must be locally in the `src` folder.</span>
-<span class="doccomment">/// In that time it is a dependency of our project, so `cargo build` has downloaded the crates.</span>
-<span class="doccomment">/// But later this source code can be removed because all our projects will use newer versions.</span>
-<span class="doccomment">/// If we want to check that the reviews have the correct digest, we need the old source code.</span>
-<span class="doccomment">/// I don&#39;t want to use cargo as a library (for now). And there is not a raw CLI command to download and unpack a crate.</span>
-<span class="doccomment">/// First I will check if the crate_version is in the `src` folder. If not try to unpack it.</span>
-<span class="doccomment">/// If it does not exist neither in the `cache` folder, then download it like</span>
-<span class="doccomment">/// `https://crates.io/api/v1/crates/block-cipher-trait/0.6.0/download`</span>
-<span class="doccomment">/// This works also for yanked crates.</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">fix_missing_src_folder_for_crates_that_have_review</span>() -&gt; <span class="ident">anyhow::Result</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">crates_downloaded</span> <span class="op">=</span> <span class="number">0</span>;
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">crates_unpacked</span> <span class="op">=</span> <span class="number">0</span>;
-    <span class="comment">// my reviews are already copied in a sled database for speed</span>
-    <span class="kw">let</span> <span class="ident">vec</span> <span class="op">=</span> <span class="ident"><span class="kw">crate</span>::db_sled_mod::db_review_mod::list_all_crate_name_version</span>()<span class="question-mark">?</span>;
-    <span class="kw">let</span> <span class="ident">review_count</span> <span class="op">=</span> <span class="ident">vec</span>.<span class="ident">len</span>();
-
-    <span class="kw">for</span> <span class="ident">crate_name_version</span> <span class="kw">in</span> <span class="ident">vec</span>.<span class="ident">iter</span>() {
-        <span class="kw">let</span> (<span class="ident">crate_name</span>, <span class="ident">crate_version</span>) <span class="op">=</span> <span class="ident"><span class="kw">crate</span>::utils_mod::crate_version_split</span>(<span class="kw-2">&amp;</span><span class="ident">crate_name_version</span>);
-        <span class="kw">let</span> <span class="ident">folder</span> <span class="op">=</span> <span class="ident">cargo_registry_src_dir_for_crate</span>(<span class="kw-2">&amp;</span><span class="ident">crate_name</span>, <span class="kw-2">&amp;</span><span class="ident">crate_version</span>)<span class="question-mark">?</span>;
-        <span class="kw">if</span> <span class="op">!</span><span class="ident">folder</span>.<span class="ident">exists</span>() {
-            <span class="comment">// check if the crate_version is in `cache` folder</span>
-            <span class="kw">let</span> <span class="ident">crate_file</span> <span class="op">=</span> <span class="ident">cargo_registry_cache_file_for_crate</span>(<span class="kw-2">&amp;</span><span class="ident">crate_name</span>, <span class="kw-2">&amp;</span><span class="ident">crate_version</span>)<span class="question-mark">?</span>;
-            <span class="kw">if</span> <span class="op">!</span><span class="ident">crate_file</span>.<span class="ident">exists</span>() {
-                <span class="ident">download_crate_from_crate_io</span>(<span class="kw-2">&amp;</span><span class="ident">crate_name</span>, <span class="kw-2">&amp;</span><span class="ident">crate_version</span>)<span class="question-mark">?</span>;
-                <span class="ident">crates_downloaded</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
-            }
-            <span class="ident">unpack_from_cache_to_src</span>(<span class="kw-2">&amp;</span><span class="ident">crate_name</span>, <span class="kw-2">&amp;</span><span class="ident">crate_version</span>)<span class="question-mark">?</span>;
-            <span class="ident">crates_unpacked</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
-        }
-    }
-    <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="macro">format!</span>(
-        <span class="string">&quot;All reviews: {}
-Downloaded (missing): {}
-Unpacked (missing): {}&quot;</span>,
-        <span class="ident">review_count</span>, <span class="ident">crates_downloaded</span>, <span class="ident">crates_unpacked</span>
-    ));
-}
-
-<span class="doccomment">/// download url from crates.io into `cargo registry cache` folder</span>
-<span class="doccomment">/// like: https://crates.io/api/v1/crates/block-cipher-trait/0.6.0/download</span>
+<span class="doccomment">/// download url from crates.io into `cargo_crev_reviews cache` temp folder</span>
+<span class="doccomment">/// URL like: &lt;https://crates.io/api/v1/crates/block-cipher-trait/0.6.0/download&gt;</span>
 <span class="doccomment">/// it works also for yanked crates. This downloads are immutable.</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">download_crate_from_crate_io</span>(<span class="ident">crate_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">crate_version</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="ident">anyhow::Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">download_crate_from_crate_io</span>(<span class="ident">crate_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">crate_version</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="ident">anyhow::Result</span><span class="op">&lt;</span><span class="ident">std::path::PathBuf</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">url</span> <span class="op">=</span> <span class="macro">format!</span>(
         <span class="string">&quot;https://crates.io/api/v1/crates/{}/{}/download&quot;</span>,
         <span class="ident">percent_encoding::utf8_percent_encode</span>(<span class="ident">crate_name</span>, <span class="ident">percent_encoding::NON_ALPHANUMERIC</span>),
@@ -540,53 +451,50 @@ Unpacked (missing): {}&quot;</span>,
     <span class="macro">log::info!</span>(<span class="string">&quot;download_crate_from_crate_io: {}&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">url</span>);
     <span class="kw">let</span> <span class="ident">client</span> <span class="op">=</span> <span class="ident">reqwest::blocking::Client::new</span>();
     <span class="kw">let</span> <span class="ident">response</span> <span class="op">=</span> <span class="ident">client</span>.<span class="ident">get</span>(<span class="ident">url</span>).<span class="ident">send</span>()<span class="question-mark">?</span>;
-    <span class="kw">let</span> <span class="ident">crate_file</span> <span class="op">=</span> <span class="ident">cargo_registry_cache_file_for_crate</span>(<span class="kw-2">&amp;</span><span class="ident">crate_name</span>, <span class="kw-2">&amp;</span><span class="ident">crate_version</span>)<span class="question-mark">?</span>;
+    <span class="kw">let</span> <span class="ident">crate_file</span> <span class="op">=</span> <span class="ident">cargo_crev_reviews_cache_file_for_crate</span>(<span class="kw-2">&amp;</span><span class="ident">crate_name</span>, <span class="kw-2">&amp;</span><span class="ident">crate_version</span>);
 
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">file</span> <span class="op">=</span> <span class="ident">std::fs::File::create</span>(<span class="ident">crate_file</span>)<span class="question-mark">?</span>;
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">file</span> <span class="op">=</span> <span class="ident">std::fs::File::create</span>(<span class="kw-2">&amp;</span><span class="ident">crate_file</span>)<span class="question-mark">?</span>;
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">content</span> <span class="op">=</span> <span class="ident">std::io::Cursor::new</span>(<span class="ident">response</span>.<span class="ident">bytes</span>()<span class="question-mark">?</span>);
     <span class="ident">std::io::copy</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">content</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">file</span>)<span class="question-mark">?</span>;
     <span class="comment">// TODO: maybe use the `cksum` from registry index to check integrity</span>
-    <span class="prelude-val">Ok</span>(())
+    <span class="prelude-val">Ok</span>(<span class="ident">crate_file</span>)
 }
 
-<span class="doccomment">/// unpack the .crate file from the `cache` to the `src` folder</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">unpack_from_cache_to_src</span>(<span class="ident">crate_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">crate_version</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="ident">anyhow::Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-    <span class="kw">let</span> <span class="ident">src_folder</span> <span class="op">=</span> <span class="ident">cargo_registry_src_dir</span>()<span class="question-mark">?</span>;
-    <span class="ident">unpack_from_cache_to_folder</span>(<span class="ident">crate_name</span>, <span class="ident">crate_version</span>, <span class="kw-2">&amp;</span><span class="ident">src_folder</span>)<span class="question-mark">?</span>;
-    <span class="comment">// create `.cargo-ok`. It is a signal for async use, that the unpacking is completed.</span>
-    <span class="kw">let</span> <span class="ident">file_path</span> <span class="op">=</span> <span class="ident">cargo_registry_src_dir_for_crate</span>(<span class="ident">crate_name</span>, <span class="ident">crate_version</span>)<span class="question-mark">?</span>.<span class="ident">join</span>(<span class="string">&quot;.cargo-ok&quot;</span>);
-    <span class="ident">std::fs::write</span>(<span class="ident">file_path</span>, <span class="string">&quot;ok&quot;</span>)<span class="question-mark">?</span>;
-    <span class="prelude-val">Ok</span>(())
-}
-
-<span class="doccomment">/// unpack the .crate file from the `cache` to a folder</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">unpack_from_cache_to_folder</span>(<span class="ident">crate_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">crate_version</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">folder</span>: <span class="kw-2">&amp;</span><span class="ident">std::path::Path</span>) -&gt; <span class="ident">anyhow::Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-    <span class="macro">log::info!</span>(<span class="string">&quot;unpack_from_cache_to_folder: {:#?}&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">folder</span>);
-    <span class="kw">let</span> <span class="ident">crate_file</span> <span class="op">=</span> <span class="ident">cargo_registry_cache_file_for_crate</span>(<span class="kw-2">&amp;</span><span class="ident">crate_name</span>, <span class="kw-2">&amp;</span><span class="ident">crate_version</span>)<span class="question-mark">?</span>;
+<span class="doccomment">/// unpack the .crate file from the `cache` to any folder</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">unpack_from_targz_to_folder</span>(<span class="ident">crate_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">crate_version</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">cache_folder</span>: <span class="kw-2">&amp;</span><span class="ident">std::path::Path</span>, <span class="ident">src_folder</span>: <span class="kw-2">&amp;</span><span class="ident">std::path::Path</span>) -&gt; <span class="ident">anyhow::Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+    <span class="macro">log::info!</span>(<span class="string">&quot;unpack_from_targz_to_folder: {:#?}&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">src_folder</span>);
+    <span class="kw">let</span> <span class="ident">crate_file</span> <span class="op">=</span> <span class="ident">cache_folder</span>.<span class="ident">join</span>(<span class="macro">format!</span>(<span class="string">&quot;{}.crate&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">crate_version_for_src_folder</span>(<span class="ident">crate_name</span>, <span class="ident">crate_version</span>)));
     <span class="kw">let</span> <span class="ident">tar_gz</span> <span class="op">=</span> <span class="ident">std::fs::File::open</span>(<span class="ident">crate_file</span>)<span class="question-mark">?</span>;
     <span class="kw">let</span> <span class="ident">tar</span> <span class="op">=</span> <span class="ident">flate2::read::GzDecoder::new</span>(<span class="ident">tar_gz</span>);
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">archive</span> <span class="op">=</span> <span class="ident">tar::Archive::new</span>(<span class="ident">tar</span>);
-    <span class="ident">archive</span>.<span class="ident">unpack</span>(<span class="ident">folder</span>)<span class="question-mark">?</span>;
+    <span class="ident">archive</span>.<span class="ident">unpack</span>(<span class="ident">src_folder</span>)<span class="question-mark">?</span>;
 
     <span class="prelude-val">Ok</span>(())
 }
 
 <span class="doccomment">/// compare the files in `src` and `cache` folders of `cargo registry`</span>
-<span class="doccomment">/// return a list of folders to delete</span>
-<span class="doccomment">/// and on the end the user will call `cargo check` to re-create a fresh copy of these folders</span>
+<span class="doccomment">/// return a list of unclean folders to manually delete</span>
+<span class="doccomment">/// Cargo will download and unpack the next time it needs this crate.</span>
+<span class="doccomment">/// For cargo_crev_reviews I will download and unpack in a temp folder.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">list_unclean_crates</span>() -&gt; <span class="ident">anyhow::Result</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ret_list</span> <span class="op">=</span> <span class="ident">String::new</span>();
-    <span class="kw">let</span> <span class="ident">home_dir</span> <span class="op">=</span> <span class="ident">home::home_dir</span>().<span class="ident">with_context</span>(<span class="op">|</span><span class="op">|</span> <span class="string">&quot;home::home_dir() is None.&quot;</span>)<span class="question-mark">?</span>;
-    <span class="kw">let</span> <span class="ident">src_folder</span> <span class="op">=</span> <span class="ident">home_dir</span>.<span class="ident">join</span>(<span class="string">&quot;.cargo/registry/src/github.com-1ecc6299db9ec823&quot;</span>);
-    <span class="kw">let</span> <span class="ident">cache_folder</span> <span class="op">=</span> <span class="ident">home_dir</span>.<span class="ident">join</span>(<span class="string">&quot;.cargo/registry/cache/github.com-1ecc6299db9ec823&quot;</span>);
+
     <span class="comment">// region: fill vectors to not repeat the listings of files</span>
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">src_crates</span> <span class="op">=</span> <span class="macro">vec!</span>[];
-    <span class="kw">for</span> <span class="ident">entry</span> <span class="kw">in</span> <span class="ident">walkdir::WalkDir::new</span>(<span class="ident">src_folder</span>).<span class="ident">min_depth</span>(<span class="number">1</span>).<span class="ident">max_depth</span>(<span class="number">1</span>).<span class="ident">sort_by_file_name</span>() {
+    <span class="kw">for</span> <span class="ident">entry</span> <span class="kw">in</span> <span class="ident">walkdir::WalkDir::new</span>(<span class="ident">CARGO_REGISTRY_SRC_DIR</span>.<span class="ident">as_path</span>())
+        .<span class="ident">min_depth</span>(<span class="number">1</span>)
+        .<span class="ident">max_depth</span>(<span class="number">1</span>)
+        .<span class="ident">sort_by_file_name</span>()
+    {
         <span class="kw">let</span> <span class="ident">entry</span> <span class="op">=</span> <span class="ident">entry</span><span class="question-mark">?</span>;
         <span class="ident">src_crates</span>.<span class="ident">push</span>(<span class="ident">entry</span>.<span class="ident">path</span>().<span class="ident">to_owned</span>());
     }
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cache_crates</span> <span class="op">=</span> <span class="macro">vec!</span>[];
-    <span class="kw">for</span> <span class="ident">entry</span> <span class="kw">in</span> <span class="ident">walkdir::WalkDir::new</span>(<span class="ident">cache_folder</span>).<span class="ident">min_depth</span>(<span class="number">1</span>).<span class="ident">max_depth</span>(<span class="number">1</span>).<span class="ident">sort_by_file_name</span>() {
+    <span class="kw">for</span> <span class="ident">entry</span> <span class="kw">in</span> <span class="ident">walkdir::WalkDir::new</span>(<span class="ident">CARGO_REGISTRY_CACHE_DIR</span>.<span class="ident">as_path</span>())
+        .<span class="ident">min_depth</span>(<span class="number">1</span>)
+        .<span class="ident">max_depth</span>(<span class="number">1</span>)
+        .<span class="ident">sort_by_file_name</span>()
+    {
         <span class="kw">let</span> <span class="ident">entry</span> <span class="op">=</span> <span class="ident">entry</span><span class="question-mark">?</span>;
         <span class="ident">cache_crates</span>.<span class="ident">push</span>(<span class="ident">entry</span>.<span class="ident">path</span>().<span class="ident">to_owned</span>());
     }
@@ -595,25 +503,25 @@ Unpacked (missing): {}&quot;</span>,
     <span class="kw">let</span> <span class="ident">cache_crates</span> <span class="op">=</span> <span class="ident">cache_crates</span>;
     <span class="comment">// endregion: fill vectors to not repeat the listings of files</span>
 
-    <span class="comment">// a folder in src mut also be in cache. But a folder in cache does not need to be in src.</span>
+    <span class="comment">// a folder in src must also be in cache. But a folder in cache does not need to be in src.</span>
     <span class="kw">for</span> <span class="ident">src_path</span> <span class="kw">in</span> <span class="ident">src_crates</span>.<span class="ident">iter</span>() {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">contains</span> <span class="op">=</span> <span class="bool-val">false</span>;
+        <span class="kw">let</span> <span class="ident">src_crate_name</span> <span class="op">=</span> <span class="ident">src_path</span>
+            .<span class="ident">file_name</span>()
+            .<span class="ident">with_context</span>(<span class="op">|</span><span class="op">|</span> <span class="string">&quot;src_path.file_name() is None.&quot;</span>)<span class="question-mark">?</span>
+            .<span class="ident">to_string_lossy</span>()
+            .<span class="ident">to_string</span>();
         <span class="kw">for</span> <span class="ident">cache_path</span> <span class="kw">in</span> <span class="ident">cache_crates</span>.<span class="ident">iter</span>() {
-            <span class="kw">let</span> <span class="ident">cache_crate</span> <span class="op">=</span> <span class="ident">cache_path</span>
+            <span class="kw">let</span> <span class="ident">cache_crate_name</span> <span class="op">=</span> <span class="ident">cache_path</span>
                 .<span class="ident">file_name</span>()
                 .<span class="ident">with_context</span>(<span class="op">|</span><span class="op">|</span> <span class="string">&quot;cache_path.file_name() is None.&quot;</span>)<span class="question-mark">?</span>
                 .<span class="ident">to_string_lossy</span>()
                 .<span class="ident">trim_end_matches</span>(<span class="string">&quot;.crate&quot;</span>)
                 .<span class="ident">to_string</span>();
-            <span class="kw">let</span> <span class="ident">src_crate</span> <span class="op">=</span> <span class="ident">src_path</span>
-                .<span class="ident">file_name</span>()
-                .<span class="ident">with_context</span>(<span class="op">|</span><span class="op">|</span> <span class="string">&quot;src_path.file_name() is None.&quot;</span>)<span class="question-mark">?</span>
-                .<span class="ident">to_string_lossy</span>()
-                .<span class="ident">to_string</span>();
-            <span class="kw">if</span> <span class="ident">cache_crate</span> <span class="op">==</span> <span class="ident">src_crate</span> {
-                <span class="macro">log::info!</span>(<span class="string">&quot;check if unclean: {}&quot;</span>, <span class="ident">src_crate</span>);
+            <span class="kw">if</span> <span class="ident">cache_crate_name</span> <span class="op">==</span> <span class="ident">src_crate_name</span> {
+                <span class="macro">log::info!</span>(<span class="string">&quot;check if unclean: {}&quot;</span>, <span class="ident">src_crate_name</span>);
                 <span class="comment">// check if the content is equal</span>
-                <span class="ident">compare_src_and_cache_content</span>(<span class="ident">src_path</span>, <span class="ident">cache_path</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ret_list</span>)<span class="question-mark">?</span>;
+                <span class="ident">if_unclean_add_to_ret_list</span>(<span class="ident">src_path</span>, <span class="ident">cache_path</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ret_list</span>)<span class="question-mark">?</span>;
                 <span class="ident">contains</span> <span class="op">=</span> <span class="bool-val">true</span>;
                 <span class="kw">break</span>;
             }
@@ -627,7 +535,18 @@ Unpacked (missing): {}&quot;</span>,
     <span class="prelude-val">Ok</span>(<span class="ident">ret_list</span>)
 }
 
-<span class="kw">fn</span> <span class="ident">compare_src_and_cache_content</span>(<span class="ident">src_folder</span>: <span class="kw-2">&amp;</span><span class="ident">std::path::Path</span>, <span class="ident">cache_folder</span>: <span class="kw-2">&amp;</span><span class="ident">std::path::Path</span>, <span class="ident">ret_list</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">String</span>) -&gt; <span class="ident">anyhow::Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+<span class="doccomment">/// compare if the folder is unclean</span>
+<span class="doccomment">/// push command to delete unclean folder into string `ret_list`</span>
+<span class="kw">fn</span> <span class="ident">if_unclean_add_to_ret_list</span>(<span class="ident">src_folder</span>: <span class="kw-2">&amp;</span><span class="ident">std::path::Path</span>, <span class="ident">cache_crate_file</span>: <span class="kw-2">&amp;</span><span class="ident">std::path::Path</span>, <span class="ident">ret_list</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">String</span>) -&gt; <span class="ident">anyhow::Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+    <span class="kw">if</span> <span class="op">!</span><span class="ident">is_crate_clean</span>(<span class="ident">src_folder</span>, <span class="ident">cache_crate_file</span>)<span class="question-mark">?</span> {
+        <span class="ident">ret_list</span>.<span class="ident">push_str</span>(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;rm -r {}\n&quot;</span>, <span class="ident">src_folder</span>.<span class="ident">to_string_lossy</span>()));
+    }
+    <span class="comment">//return</span>
+    <span class="prelude-val">Ok</span>(())
+}
+
+<span class="doccomment">/// compare `registry cache` to `registry src` if they are equal</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_crate_clean</span>(<span class="ident">src_folder</span>: <span class="kw-2">&amp;</span><span class="ident">std::path::Path</span>, <span class="ident">cache_crate_file</span>: <span class="kw-2">&amp;</span><span class="ident">std::path::Path</span>) -&gt; <span class="ident">anyhow::Result</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
     <span class="comment">// region: fill vectors to not repeat the listings of files</span>
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">src_files</span> <span class="op">=</span> <span class="macro">vec!</span>[];
     <span class="kw">for</span> <span class="ident">entry</span> <span class="kw">in</span> <span class="ident">walkdir::WalkDir::new</span>(<span class="ident">src_folder</span>).<span class="ident">min_depth</span>(<span class="number">1</span>).<span class="ident">sort_by_file_name</span>() {
@@ -657,7 +576,7 @@ Unpacked (missing): {}&quot;</span>,
     }
 
     <span class="kw">let</span> <span class="ident">archive_folder_name</span> <span class="op">=</span> <span class="ident">src_folder</span>.<span class="ident">file_name</span>().<span class="ident">with_context</span>(<span class="op">|</span><span class="op">|</span> <span class="string">&quot;src_folder.file_name() is None.&quot;</span>)<span class="question-mark">?</span>.<span class="ident">to_string_lossy</span>();
-    <span class="kw">let</span> <span class="ident">tar_gz</span> <span class="op">=</span> <span class="ident">std::fs::File::open</span>(<span class="ident">cache_folder</span>)<span class="question-mark">?</span>;
+    <span class="kw">let</span> <span class="ident">tar_gz</span> <span class="op">=</span> <span class="ident">std::fs::File::open</span>(<span class="ident">cache_crate_file</span>)<span class="question-mark">?</span>;
     <span class="kw">let</span> <span class="ident">tar</span> <span class="op">=</span> <span class="ident">flate2::read::GzDecoder::new</span>(<span class="ident">tar_gz</span>);
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">archive</span> <span class="op">=</span> <span class="ident">tar::Archive::new</span>(<span class="ident">tar</span>);
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cache_files</span> <span class="op">=</span> <span class="macro">vec!</span>[];
@@ -693,8 +612,7 @@ Unpacked (missing): {}&quot;</span>,
 
     <span class="kw">if</span> <span class="ident">src_files</span>.<span class="ident">len</span>() <span class="op">!</span><span class="op">=</span> <span class="ident">cache_files</span>.<span class="ident">len</span>() {
         <span class="comment">// &quot;files count differ {} != {} {}&quot;,src_files.len(),cache_files.len(),</span>
-        <span class="ident">ret_list</span>.<span class="ident">push_str</span>(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;rm -r {}\n&quot;</span>, <span class="ident">src_folder</span>.<span class="ident">to_string_lossy</span>()));
-        <span class="kw">return</span> <span class="prelude-val">Ok</span>(());
+        <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="bool-val">false</span>);
     }
 
     <span class="comment">// 1. are the same files different in src than in cache?</span>
@@ -703,15 +621,13 @@ Unpacked (missing): {}&quot;</span>,
             <span class="kw">if</span> <span class="ident">cache_file</span>.<span class="ident">file_path</span> <span class="op">==</span> <span class="ident">src_file</span>.<span class="ident">file_path</span> {
                 <span class="kw">if</span> <span class="ident">src_file</span>.<span class="ident">size</span> <span class="op">!</span><span class="op">=</span> <span class="ident">cache_file</span>.<span class="ident">size</span> {
                     <span class="comment">// &quot;Same file {} differ size: {} {}&quot;,src_file.file_path, src_file.size, cache_file.size</span>
-                    <span class="ident">ret_list</span>.<span class="ident">push_str</span>(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;rm -r {}\n&quot;</span>, <span class="ident">src_folder</span>.<span class="ident">to_string_lossy</span>()));
-                    <span class="kw">return</span> <span class="prelude-val">Ok</span>(());
+                    <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="bool-val">false</span>);
                 }
                 <span class="comment">// if the cache mtime is None, then the src mtime is today. Don&#39;t need to check.</span>
                 <span class="kw">if</span> <span class="ident">cache_file</span>.<span class="ident">mtime</span>.<span class="ident">is_some</span>() {
                     <span class="kw">if</span> <span class="ident">src_file</span>.<span class="ident">mtime</span> <span class="op">!</span><span class="op">=</span> <span class="ident">cache_file</span>.<span class="ident">mtime</span> {
                         <span class="comment">// &quot;same file {} differ mtime: {:?} {:?}&quot;,src_file.file_path, src_file.mtime, cache_file.mtime</span>
-                        <span class="ident">ret_list</span>.<span class="ident">push_str</span>(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;rm -r {}\n&quot;</span>, <span class="ident">src_folder</span>.<span class="ident">to_string_lossy</span>()));
-                        <span class="kw">return</span> <span class="prelude-val">Ok</span>(());
+                        <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="bool-val">false</span>);
                     }
                 }
                 <span class="kw">break</span>;
@@ -730,8 +646,7 @@ Unpacked (missing): {}&quot;</span>,
         }
         <span class="kw">if</span> <span class="ident">does_file_exist</span> <span class="op">==</span> <span class="bool-val">false</span> {
             <span class="comment">// &quot;src file not exist in cache {}&quot;, src_file.file_path);</span>
-            <span class="ident">ret_list</span>.<span class="ident">push_str</span>(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;rm -r {}\n&quot;</span>, <span class="ident">src_folder</span>.<span class="ident">to_string_lossy</span>()));
-            <span class="kw">return</span> <span class="prelude-val">Ok</span>(());
+            <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="bool-val">false</span>);
         }
     }
 
@@ -746,13 +661,10 @@ Unpacked (missing): {}&quot;</span>,
         }
         <span class="kw">if</span> <span class="ident">does_file_exist</span> <span class="op">==</span> <span class="bool-val">false</span> {
             <span class="comment">// &quot;cache file not exist in src {}&quot;, cache_file.file_path);</span>
-            <span class="ident">ret_list</span>.<span class="ident">push_str</span>(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;rm -r {}\n&quot;</span>, <span class="ident">src_folder</span>.<span class="ident">to_string_lossy</span>()));
-            <span class="kw">return</span> <span class="prelude-val">Ok</span>(());
+            <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="bool-val">false</span>);
         }
     }
-
-    <span class="comment">//return</span>
-    <span class="prelude-val">Ok</span>(())
+    <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>);
 }
 </code></pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="cargo_crev_reviews" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div>

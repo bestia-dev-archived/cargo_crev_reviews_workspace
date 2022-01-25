@@ -10,24 +10,24 @@ use std::borrow::Cow;
 
 // for debug_time it is useful to read from file, so editing files can be made without restarting the server
 // but for runtime, the files must be embedded in the code, so only one file is published
-// this is done by an automation task in `cargo auto` 
+// this is done by an automation task in `cargo auto`
 
 // region: debug mode
-/// returns Cow, because in debug I read from files and return a String. 
+/// returns Cow, because in debug I read from files and return a String.
 /// In release I have embedded strings n the code
 #[cfg(debug_assertions)]
-pub fn get_file_text<'a>(file_name:&str) -> Cow<'a, str>{
-    let file_name = format!("web_server_folder{}",file_name);
+pub fn get_file_text<'a>(file_name: &str) -> Cow<'a, str> {
+    let file_name = format!("web_server_folder{}", file_name);
     let str = std::fs::read_to_string(&file_name).unwrap();
     return Cow::Owned(str);
 }
 
 /// always allocated? Maybe I could do better. I don't know.
 #[cfg(debug_assertions)]
-pub fn get_file_bytes<'a>(file_name:&str) -> Vec<u8>{    
-        let file_name = format!("web_server_folder{}",file_name);
-        let file_bytes = std::fs::read(&file_name).unwrap();
-        return file_bytes;
+pub fn get_file_bytes<'a>(file_name: &str) -> Vec<u8> {
+    let file_name = format!("web_server_folder{}", file_name);
+    let file_bytes = std::fs::read(&file_name).unwrap();
+    return file_bytes;
 }
 
 // endregion: debug mode
@@ -35,30 +35,28 @@ pub fn get_file_bytes<'a>(file_name:&str) -> Vec<u8>{
 // region: release mode
 /// always allocated? Maybe I could do better. I don't know.
 #[cfg(not(debug_assertions))]
-pub fn get_file_bytes<'a>(file_name:&str) -> Vec<u8>{
+pub fn get_file_bytes<'a>(file_name: &str) -> Vec<u8> {
     let str = get_file_text(file_name);
-    
+
     if file_name.ends_with(".png") || file_name.ends_with(".woff2") || file_name.ends_with(".wasm") {
         // I artificially added \n to base64 to make it more text editor friendly
-        let file_bytes = str.replace("\n", "");    
+        let file_bytes = str.replace("\n", "");
         let file_bytes = base64::decode(file_bytes).unwrap();
         return file_bytes;
-
     } else {
         // file_name.ends_with(".html") || file_name.ends_with(".css") || file_name.ends_with(".js") || file_name.ends_with(".json") {
-        let file_bytes =str.as_bytes().to_vec();
+        let file_bytes = str.as_bytes().to_vec();
         return file_bytes;
     };
 }
 
-/// returns Cow, because in debug I read from files and return a String. 
+/// returns Cow, because in debug I read from files and return a String.
 /// In release I have embedded strings n the code
 #[cfg(not(debug_assertions))]
-pub fn get_file_text<'a>(file_name:&str) -> Cow<'a, str>{
-    let str = match file_name{
-
-"/cargo_crev_reviews/publisher_list.html" => {
-r##"<!DOCTYPE html>
+pub fn get_file_text<'a>(file_name: &str) -> Cow<'a, str> {
+    let str = match file_name {
+        "/cargo_crev_reviews/publisher_list.html" => {
+            r##"<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -122,10 +120,10 @@ r##"<!DOCTYPE html>
 </body>
 
 </html>"##
-}
+        }
 
-"/cargo_crev_reviews/review_new.html" => {
-r##"<html lang="en">
+        "/cargo_crev_reviews/review_new.html" => {
+            r##"<html lang="en">
 
 <head>
     <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
@@ -195,10 +193,10 @@ r##"<html lang="en">
 </body>
 
 </html>"##
-}
+        }
 
-"/cargo_crev_reviews/footer.html" => {
-r##"<!DOCTYPE html>
+        "/cargo_crev_reviews/footer.html" => {
+            r##"<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -225,10 +223,10 @@ r##"<!DOCTYPE html>
 </body>
 
 </html>"##
-}
+        }
 
-"/cargo_crev_reviews/modal_message.html" => {
-r##"<!DOCTYPE html>
+        "/cargo_crev_reviews/modal_message.html" => {
+            r##"<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -254,10 +252,10 @@ r##"<!DOCTYPE html>
 </body>
 
 </html>"##
-}
+        }
 
-"/cargo_crev_reviews/review_edit.html" => {
-r##"<html lang="en">
+        "/cargo_crev_reviews/review_edit.html" => {
+            r##"<html lang="en">
 
 <head>
     <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
@@ -324,10 +322,10 @@ r##"<html lang="en">
 </body>
 
 </html>"##
-}
+        }
 
-"/cargo_crev_reviews/publisher_new.html" => {
-r##"<!DOCTYPE html>
+        "/cargo_crev_reviews/publisher_new.html" => {
+            r##"<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -360,10 +358,10 @@ r##"<!DOCTYPE html>
 </body>
 
 </html>"##
-}
+        }
 
-"/cargo_crev_reviews/version_list.html" => {
-r##"<!DOCTYPE html>
+        "/cargo_crev_reviews/version_list.html" => {
+            r##"<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -450,10 +448,10 @@ r##"<!DOCTYPE html>
 </body>
 
 </html>"##
-}
+        }
 
-"/cargo_crev_reviews/review_list.html" => {
-r##"<!DOCTYPE html>
+        "/cargo_crev_reviews/review_list.html" => {
+            r##"<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -567,10 +565,10 @@ r##"<!DOCTYPE html>
 </body>
 
 </html>"##
-}
+        }
 
-"/cargo_crev_reviews/favicon.ico" => {
-r##"AAABAAMAEBAAAAEAIABoBAAANgAAACAgAAABACAAKBEAAJ4EAAAwMAAAAQAgAGgmAADGFQAAKAAA
+        "/cargo_crev_reviews/favicon.ico" => {
+            r##"AAABAAMAEBAAAAEAIABoBAAANgAAACAgAAABACAAKBEAAJ4EAAAwMAAAAQAgAGgmAADGFQAAKAAA
 ABAAAAAgAAAAAQAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAASOsnAEjrsQBI6fYAR+f/
 AkXa/wFH4/8ASOr/AEjq/wBI6v8ASOr/AEjq/wBH6vMAR+qpAETuHgAAAAAARughAEfr7wBH5/8E
 NaT/CRUz/ycqMf8ZIDH/BR1U/wRE1v8ASOr/AEjq/wBI6v8ASOr/AEjq/wBI6uYARugWAEjqnwBI
@@ -841,10 +839,10 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 AAAAAAAAAAAAAAAAAAAAAA=="##
-}
+        }
 
-"/cargo_crev_reviews/publisher_edit.html" => {
-r##"<!DOCTYPE html>
+        "/cargo_crev_reviews/publisher_edit.html" => {
+            r##"<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -878,10 +876,10 @@ r##"<!DOCTYPE html>
 </body>
 
 </html>"##
-}
+        }
 
-"/cargo_crev_reviews/cargo_tree.html" => {
-r##"<!DOCTYPE html>
+        "/cargo_crev_reviews/cargo_tree.html" => {
+            r##"<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -951,10 +949,10 @@ r##"<!DOCTYPE html>
 </body>
 
 </html>"##
-}
+        }
 
-"/cargo_crev_reviews/config_edit.html" => {
-r##"<!DOCTYPE html>
+        "/cargo_crev_reviews/config_edit.html" => {
+            r##"<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -1017,10 +1015,10 @@ r##"<!DOCTYPE html>
 </body>
 
 </html>"##
-}
+        }
 
-"/cargo_crev_reviews/index.html" => {
-r##"<!DOCTYPE html>
+        "/cargo_crev_reviews/index.html" => {
+            r##"<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -1066,10 +1064,10 @@ r##"<!DOCTYPE html>
 </body>
 
 </html>"##
-}
+        }
 
-"/cargo_crev_reviews/favicon.png" => {
-r##"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAABzNJREFUWEel
+        "/cargo_crev_reviews/favicon.png" => {
+            r##"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAABzNJREFUWEel
 l3tQVdcVxn/73HO5l8dFUBC0CsaIRM2E+KqaCmqigA9qqZKp4rQ6NcxoSa2ik6nRlvqaEXWoMqHi
 jLZTKkyHqdHppMVg6ysWOxZJg1ETbMR3gKAEEO7znM7eBgSl9t5x/XPuOfvuvb79rbW/tbbgCTs5
 E31cEHMQzDAh4cnxQN+FwBBwye3jxNAq/iHA7L2G6P3SMpdUw6TQhLGBOvKi0WUIQjUDHwIrRn9L
@@ -1103,10 +1101,10 @@ kVXtZs2aNYpemWSRkZE9a8nTIdsteQQLdu6kZJKN9IGBaQBwPbqZRHUxaU4n34RfdnuQvd8XbhtZ
 h6Gxq8FGk8vg01Yftzt9DA/VGRGqMThY41cvurBhYg0g7t+sf3BwJSvl755rW/1cbOEGhZogx4RH
 hf0bk0Bkr3nNZVV9vewNA9xx91JOTPKjw9ktKlCU9bk3yg+NaSQJyDUFMwWMelYS+TVmIm9Al4TJ
 hz6T92I/5Hrvef8Fmi8dcPHcyoUAAAAASUVORK5CYII="##
-}
+        }
 
-"/cargo_crev_reviews/css/fontawesome.css" => {
-r##"/*!
+        "/cargo_crev_reviews/css/fontawesome.css" => {
+            r##"/*!
  * Font Awesome Free 5.15.3 by @fontawesome
  * https://fontawesome.com/v5.15/icons?d=gallery&p=2&s=solid&m=free
  * License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
@@ -7202,10 +7200,10 @@ readers do not read off random characters that represent icons */
     position: static;
     width: auto;
 }"##
-}
+        }
 
-"/cargo_crev_reviews/css/Roboto-Medium.woff2" => {
-r##"d09GMgABAAAAAMQwAA4AAAAB8gAAAMPSAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGkgbgrU0HIg+
+        "/cargo_crev_reviews/css/Roboto-Medium.woff2" => {
+            r##"d09GMgABAAAAAMQwAA4AAAAB8gAAAMPSAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGkgbgrU0HIg+
 BmAWi2AAnWIKg/J0g7E/ATYCJAOhQAuQYgAEIAWJHwfJfVvwx5EH/3ns/YMDFqW17Bxtv6C4ktL3
 OYLM+0sa8G0Btr3/ow8MjsUwtw3AytGh6zuz////////fUlHbASogws7voOgBua8koFCdHlR5hXV
 IRRU+8Izh6atCld0fV4PFELPvG91BBX16MnxCjnEqZ6NcjID+KhMK7YYNW7ddoqhCU1N/RHIWoKn
@@ -8087,10 +8085,10 @@ Gu1ZcGFZJ4gyLqTSgboHFlxYxZQf9hkRyniQX3+hf7VqnBrW/CffEMKkxzEupNLGs+Dar0eACWVc
 SKWNZ8GFtbXWWmuttdZaay0AAAAAAAAAgHPOOeecc84555zv1zfgQqqzfv+fvZcsfnv2pqR6vAQX
 ZXmKqG3YekJF/wU9HvSqNAISVx2Q4KJsTZEfUpVPyEdrRF1ItmriLMrW1DHgeBd9EPSmw/Vf1o0v
 GV6JBAAAAA=="##
-}
+        }
 
-"/cargo_crev_reviews/css/normalize.css" => {
-r##"/*! normalize.css v8.0.1 | MIT License | github.com/necolas/normalize.css */
+        "/cargo_crev_reviews/css/normalize.css" => {
+            r##"/*! normalize.css v8.0.1 | MIT License | github.com/necolas/normalize.css */
 
 
 /* Document
@@ -8509,10 +8507,10 @@ template {
 [hidden] {
     display: none;
 }"##
-}
+        }
 
-"/cargo_crev_reviews/css/cargo_crev_reviews.css" => {
-r##"        /* css variables */
+        "/cargo_crev_reviews/css/cargo_crev_reviews.css" => {
+            r##"        /* css variables */
         
          :root {
             /* color palette */
@@ -9264,10 +9262,10 @@ A small difference to help search and replace refactoring.
             outline: 0;
         }
         /* endregion: modal window */"##
-}
+        }
 
-"/cargo_crev_reviews/css/fa-solid-900.woff2" => {
-r##"d09GMgABAAAAATF0AA0AAAADF/QAATEaAUuF4wAAAAAAAAAAAAAAAAAAAAAAAAAAP0ZGVE0cGh4G
+        "/cargo_crev_reviews/css/fa-solid-900.woff2" => {
+            r##"d09GMgABAAAAATF0AA0AAAADF/QAATEaAUuF4wAAAAAAAAAAAAAAAAAAAAAAAAAAP0ZGVE0cGh4G
 YACZThEICormaIjDQgE2AiQDnzALnzQABCAFiisH4i5btHWSgXDTKOTXm1UVZIHwey2Ybu5QbhvA
 yZ/hXz1WMrZlBO92cNh+l6vI/v///39VspAx/b/APQkfQsCCYq2uspVtdlO0LsaUrHfJQxkr6CSZ
 uKQo/aBNTUnmaUh9qpNP5QTrNMA3FXPOEhdZgSkCKgIqAsrZ3X3slQde2rSJu3teobfyqlIKet/Q
@@ -10639,10 +10637,10 @@ iWuZ2mbzIy3ewelx7VRGaHRrj3lw7M9TM6nD3xhKiQmM0pEep2sChy+oyatcJ2nr9lTzcG0EUoT7
 XcPR99guJDLpmDwOnyblU56qG5hLY8FiKZrb+TmXBUp/ve5uNZo8MspCEVyTFEe20j5o38lk+rbQ
 PMhjXRxYPE/CtVWxwfvr+GC0MFww5jXY949qmdzrD4FZd/RvipbU5D6aFi+E/o2qxd9+xBdJEv53
 yhYPw75pWzxsmDCJ2dUUg3dR2LGwMuVSaPquxwTsDxGCQ7c3T8aqCbbk4k6g+IMCAA=="##
-}
+        }
 
-"/cargo_crev_reviews/icons/icon-512.png" => {
-r##"iVBORw0KGgoAAAANSUhEUgAAAgAAAAIACAYAAAD0eNT6AAAAAXNSR0IArs4c6QAAIABJREFUeF7s
+        "/cargo_crev_reviews/icons/icon-512.png" => {
+            r##"iVBORw0KGgoAAAANSUhEUgAAAgAAAAIACAYAAAD0eNT6AAAAAXNSR0IArs4c6QAAIABJREFUeF7s
 vQebHEd6JvhGmnLtDbwjABqQAOi9xoDjSM5oNBqdZm/37vYeSbfS/g39jR1pT7u3p2fv0axWGksO
 yRlyhkMzQwcCoANIgCBso9FoW10mTdzzRvUHBJNZ3dWNhunuSDBY1VWZkRFfROX3fl7BHY4CjgKO
 Ao4CjgKOAmuOAmrNzdhN2FHAUcBRwFHAUcBRAA4AuE3gKOAo4CjgKOAosAYp4ADAGlx0N2VHAUcB
@@ -12603,10 +12601,10 @@ n/d+oTtzvRFwBGC9Ee1xvomHuUl73KHhmh4vOXeahkMKk3ngmhWtFDx3vkPAIbBmBEw+vuJlpXlF
 w+RKJlSKOpojQY4jQz93TXlWgt16n+sIwHoj2uN8Rx8j67XI5fOmkuCKDq/JP/MUf0onw8AdDgGH
 gEPgciNQ1vBfYs1/0Rk+WcnN4yo68Kk/P0D9j39GtJJr3bnri4AjAOuL52WZ7fSj/IkPP9Hw7cty
 Q3cTh4BDwCFwIQJzCv6jjviL7b/iqAPn6kTg/wfeSHMNZFE5SAAAAABJRU5ErkJggg=="##
-}
+        }
 
-"/cargo_crev_reviews/icons/icon-032.png" => {
-r##"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAABzNJREFUWEel
+        "/cargo_crev_reviews/icons/icon-032.png" => {
+            r##"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAABzNJREFUWEel
 l3tQVdcVxn/73HO5l8dFUBC0CsaIRM2E+KqaCmqigA9qqZKp4rQ6NcxoSa2ik6nRlvqaEXWoMqHi
 jLZTKkyHqdHppMVg6ysWOxZJg1ETbMR3gKAEEO7znM7eBgSl9t5x/XPuOfvuvb79rbW/tbbgCTs5
 E31cEHMQzDAh4cnxQN+FwBBwye3jxNAq/iHA7L2G6P3SMpdUw6TQhLGBOvKi0WUIQjUDHwIrRn9L
@@ -12640,10 +12638,10 @@ kVXtZs2aNYpemWSRkZE9a8nTIdsteQQLdu6kZJKN9IGBaQBwPbqZRHUxaU4n34RfdnuQvd8XbhtZ
 h6Gxq8FGk8vg01Yftzt9DA/VGRGqMThY41cvurBhYg0g7t+sf3BwJSvl755rW/1cbOEGhZogx4RH
 hf0bk0Bkr3nNZVV9vewNA9xx91JOTPKjw9ktKlCU9bk3yg+NaSQJyDUFMwWMelYS+TVmIm9Al4TJ
 hz6T92I/5Hrvef8Fmi8dcPHcyoUAAAAASUVORK5CYII="##
-}
+        }
 
-"/cargo_crev_reviews/icons/icon-128.png" => {
-r##"iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAAAXNSR0IArs4c6QAAAARnQU1BAACx
+        "/cargo_crev_reviews/icons/icon-128.png" => {
+            r##"iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAAAXNSR0IArs4c6QAAAARnQU1BAACx
 jwv8YQUAAAAJcEhZcwAADsEAAA7BAbiRa+0AAC+fSURBVHhe7Z0HnF1F2f9/t9/dvXf7bjqEFAIJ
 JAQQpCmCFDv4p3dBAeGP4osICioKSEcpr4I0AYUXRAUFjYggoQYIJRAS0nvblu3tlne+c3c2J5e7
 KbsbyO7L7/N5ds6ZM+fcs/M888wzzzwzR5/g/zZ8Xek2wbojFTRJQebM4nhDX80cfoIcWG/o/Myh
@@ -12859,10 +12857,10 @@ sKtJvmuIIcZHjoQvoKShyODZuLkvYAjzFUPzjQBsdehSrwQAGCFgbHWJIYRgR/I+wUeOmww9uCXG
 Xk/otQA4GEEYapJTDOE+nkTeJ9imqDL0qqELDK00zO9TtEqfBcDBCMJIkxxt6Fab8Qm2BR4ydJ9h
 +jOZ076j3wTAwQgCW3UOM3SjoQpD+xj6BL0DXisCOJ4whEOu1TC/Xw2ffhcAL4wwIAify5xZHG/o
 q5nDT5ADBGucnzm0WGIY/nLX8TaA9L813T8oxS52SAAAAABJRU5ErkJggg=="##
-}
+        }
 
-"/cargo_crev_reviews/icons/icon-192.png" => {
-r##"iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAYAAABS3GwHAAAAAXNSR0IArs4c6QAAAARnQU1BAACx
+        "/cargo_crev_reviews/icons/icon-192.png" => {
+            r##"iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAYAAABS3GwHAAAAAXNSR0IArs4c6QAAAARnQU1BAACx
 jwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAF/cSURBVHhe7b0HnGVFmff/u/n2vZ17cmQSYcgS
 BMSsJFFRDOyqGHB19W9aEXXXdX1139f9K7jurorKa9xVFEXEyMCiroIgIJLTRCZPh+kcbr5vfavn
 mTlzuR1m6J4A99ef6nNunTpVdU79nqrnqXRUQw3PZoR2HQ9ZbD9P4UhZi9xpetSnhsMAmUJaG+bd
@@ -13295,10 +13293,10 @@ M9T2TIJiEOsfIH05rCdm/2ryMzmnAgeFdB3nK+YEgZ2soi4DJ7nj551DEJhWgTDU8MwEI4Y4SP4Z
 JwV/dMdCOaTNcyaxems6cNBr3c5zlHYvAGEIuT/2JH2fv7AH5JGBtmn9ck0NUwoIzvz8oP7O+fdd
 3f9Ddyw75Xez/0TvQcYhpXbsOFdNobAnexCp0Oiw95mjP2s4DPCoq93f7NhVOUFt5+ybNLp19yEB
 6f8BFYHmDyyuu/EAAAAASUVORK5CYII="##
-}
+        }
 
-"/cargo_crev_reviews/images/Logo_02.png" => {
-r##"iVBORw0KGgoAAAANSUhEUgAAATIAAADGCAYAAABRsgx+AAAAAXNSR0IArs4c6QAAAARnQU1BAACx
+        "/cargo_crev_reviews/images/Logo_02.png" => {
+            r##"iVBORw0KGgoAAAANSUhEUgAAATIAAADGCAYAAABRsgx+AAAAAXNSR0IArs4c6QAAAARnQU1BAACx
 jwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAGvsSURBVHhe7Z0HnFXF9ccPbXfZSq9L36Up0hGw
 gaCi2DUqlliJLTHG8g+xJGpEo7EQjSUae41dUcROEQVBpEjvvS9bYen/+c57Z7k83nt77/Zyf/uZ
 z525d2bu3Lv3/N6ZmTNnxIcPHz4qO2oEj5UKm4fJgWDUhw8fJYwm4ysfL1ToBvuE5cNHxUFFJrgK
@@ -13785,10 +13783,10 @@ vXdE1p6m1e0ov/t2nR2of+3EJnJE7tLglcNBfXVNfX2i1OfDR0VBaSs3ZaI5+WTmHjPiO0pszQPS
 Ldcf0/JRNVAWPbQyITKFT2g+fFQflOUQU5kSmcInNB8+qi7KY4y8XIhM4ROaDx9VB+VBYIpyJTKF
 T2g+fFRelCeBKSoEkTnhk5oPHxUfFYG8nKhwROaET2o+fFQcVDTycqJCE1kk+ATnw0fpoSITlg8f
 Pnz48OHDh4+KCZH/B8UU4gdWuBreAAAAAElFTkSuQmCC"##
-}
+        }
 
-"/cargo_crev_reviews/js/dropdown.js" => {
-r##"  // open and close dropdown menu
+        "/cargo_crev_reviews/js/dropdown.js" => {
+            r##"  // open and close dropdown menu
   window.onclick = function(event) {
       var dropdowns = document.getElementsByClassName("dropdown-content");
       var i;
@@ -13805,10 +13803,10 @@ r##"  // open and close dropdown menu
           }
       }
   }"##
-}
+        }
 
-"/cargo_crev_reviews/pkg/cargo_crev_reviews_wasm.js" => {
-r##"
+        "/cargo_crev_reviews/pkg/cargo_crev_reviews_wasm.js" => {
+            r##"
 let wasm;
 
 const heap = new Array(32).fill(undefined);
@@ -14333,10 +14331,10 @@ async function init(input) {
 export default init;
 
 "##
-}
+        }
 
-"/cargo_crev_reviews/pkg/cargo_crev_reviews_wasm_bg.wasm" => {
-r##"AGFzbQEAAAABnQImYAJ/fwBgAX8AYAJ/fwF/YAN/f38Bf2ADf39/AGABfwF/YAR/f39/AGAFf39/
+        "/cargo_crev_reviews/pkg/cargo_crev_reviews_wasm_bg.wasm" => {
+            r##"AGFzbQEAAAABnQImYAJ/fwBgAX8AYAJ/fwF/YAN/f38Bf2ADf39/AGABfwF/YAR/f39/AGAFf39/
 f38AYAABf2AGf39/f39/AGALf39/f39/f39/f38AYAAAYAR/f39/AX9gAX8BfmAJf39/f39/f39/
 AGAFf39/f38Bf2ACf38BfmAHf39/f39/fwBgBX9/f35/AGAGf39/f39/AX9gA39/fwF+YAl/f39/
 f39+fn4AYAR/f39+AGAFf399f38AYAV/f3x/fwBgA39+fwBgA39+fgBgBH9+fn8AYAR/fX9/AGAE
@@ -22268,7 +22266,7 @@ QbCswwALAQIAQdCswwALAQIAQaytwwALAQIAQcytwwALDQxmEAAYZhAAAAAAAAEAewlwcm9kdWNl
 cnMCCGxhbmd1YWdlAQRSdXN0AAxwcm9jZXNzZWQtYnkDBXJ1c3RjHTEuNTcuMCAoZjFlZGQwNDI5
 IDIwMjEtMTEtMjkpBndhbHJ1cwYwLjE5LjAMd2FzbS1iaW5kZ2VuEjAuMi43OCAoN2Y4MjBkYjRi
 KQ=="##
-}
+        }
 
         _ => {
             log::error!("File not exists: {}", file_name);
@@ -22278,4 +22276,3 @@ KQ=="##
     return Cow::Borrowed(str);
 }
 // endregion: release mode
-    

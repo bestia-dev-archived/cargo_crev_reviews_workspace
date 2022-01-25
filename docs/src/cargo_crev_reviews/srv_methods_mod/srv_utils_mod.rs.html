@@ -139,24 +139,6 @@
 <span id="139">139</span>
 <span id="140">140</span>
 <span id="141">141</span>
-<span id="142">142</span>
-<span id="143">143</span>
-<span id="144">144</span>
-<span id="145">145</span>
-<span id="146">146</span>
-<span id="147">147</span>
-<span id="148">148</span>
-<span id="149">149</span>
-<span id="150">150</span>
-<span id="151">151</span>
-<span id="152">152</span>
-<span id="153">153</span>
-<span id="154">154</span>
-<span id="155">155</span>
-<span id="156">156</span>
-<span id="157">157</span>
-<span id="158">158</span>
-<span id="159">159</span>
 </pre><pre class="rust"><code><span class="comment">// srv_utils_mod.rs</span>
 
 <span class="doccomment">//! rpc methods prepare the data to respond the POST rpc requests</span>
@@ -227,7 +209,7 @@
     <span class="ident"><span class="kw">crate</span>::response_post_mod::response_modal_message</span>(<span class="string">&quot;Config saved.&quot;</span>)
 }
 
-<span class="doccomment">/// list crates to delete manually. The next `cargo check` or `cargo build` will unzip them from the cache folder.</span>
+<span class="doccomment">/// list crates to delete manually. The next `cargo check` or `cargo build` will unpack them from the cache folder.</span>
 <span class="attribute">#[<span class="ident">named</span>]</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">srv_list_unclean_crates</span>(<span class="ident">_request_data</span>: <span class="ident">serde_json::Value</span>) -&gt; <span class="ident">anyhow::Result</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
     <span class="macro">log::info!</span>(<span class="macro">function_name!</span>());
@@ -241,17 +223,9 @@
     <span class="ident"><span class="kw">crate</span>::response_post_mod::response_modal_message</span>(<span class="kw-2">&amp;</span><span class="ident">list</span>)
 }
 
-<span class="doccomment">/// fix the scr folder for crates that have our review</span>
-<span class="attribute">#[<span class="ident">named</span>]</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">srv_fix_missing_src_folder</span>(<span class="ident">_request_data</span>: <span class="ident">serde_json::Value</span>) -&gt; <span class="ident">anyhow::Result</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
-    <span class="macro">log::info!</span>(<span class="macro">function_name!</span>());
-
-    <span class="kw">let</span> <span class="ident">output</span> <span class="op">=</span> <span class="ident"><span class="kw">crate</span>::cargo_registry_mod::fix_missing_src_folder_for_crates_that_have_review</span>()<span class="question-mark">?</span>;
-    <span class="macro">log::info!</span>(<span class="string">&quot;srv_fix_missing_src_folder() finished.&quot;</span>);
-    <span class="ident"><span class="kw">crate</span>::response_post_mod::response_modal_message</span>(<span class="kw-2">&amp;</span><span class="ident">output</span>)
-}
-
 <span class="doccomment">/// correct digest to all reviews where needed</span>
+<span class="doccomment">/// start with a vector of all reviews</span>
+<span class="doccomment">/// calculate digest (from clean crate) and correct</span>
 <span class="attribute">#[<span class="ident">named</span>]</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">srv_correct_digest</span>(<span class="ident">_request_data</span>: <span class="ident">serde_json::Value</span>) -&gt; <span class="ident">anyhow::Result</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
     <span class="macro">log::info!</span>(<span class="macro">function_name!</span>());
@@ -263,41 +237,31 @@
     <span class="ident">vec_proof</span>.<span class="ident">sort_by</span>(<span class="op">|</span><span class="ident">a</span>, <span class="ident">b</span><span class="op">|</span> <span class="ident">a</span>.<span class="ident">package</span>.<span class="ident">version_for_sorting</span>.<span class="ident">cmp</span>(<span class="kw-2">&amp;</span><span class="ident">b</span>.<span class="ident">package</span>.<span class="ident">version_for_sorting</span>));
     <span class="kw">let</span> <span class="ident">num_of_all</span> <span class="op">=</span> <span class="ident">vec_proof</span>.<span class="ident">len</span>();
     <span class="kw">for</span> <span class="ident">p</span> <span class="kw">in</span> <span class="ident">vec_proof</span>.<span class="ident">iter</span>() {
-        <span class="macro">log::info!</span>(<span class="string">&quot;check digest: {} {}&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">p</span>.<span class="ident">package</span>.<span class="ident">name</span>, <span class="kw-2">&amp;</span><span class="ident">p</span>.<span class="ident">package</span>.<span class="ident">version</span>);
+        <span class="kw">let</span> <span class="ident">crate_name</span> <span class="op">=</span> <span class="ident">p</span>.<span class="ident">package</span>.<span class="ident">name</span>.<span class="ident">clone</span>();
+        <span class="kw">let</span> <span class="ident">crate_version</span> <span class="op">=</span> <span class="ident">p</span>.<span class="ident">package</span>.<span class="ident">version</span>.<span class="ident">clone</span>();
+        <span class="macro">log::info!</span>(<span class="string">&quot;check digest: {} {}&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">crate_name</span>, <span class="kw-2">&amp;</span><span class="ident">crate_version</span>);
         <span class="kw">match</span> <span class="ident">calculate_crate_digest</span>(<span class="kw-2">&amp;</span><span class="ident">p</span>.<span class="ident">package</span>.<span class="ident">name</span>, <span class="kw-2">&amp;</span><span class="ident">p</span>.<span class="ident">package</span>.<span class="ident">version</span>) {
             <span class="prelude-val">Err</span>(<span class="ident">err</span>) =&gt; <span class="ident">ret_string</span>.<span class="ident">push_str</span>(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;{}\n&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">err</span>)),
             <span class="prelude-val">Ok</span>(<span class="ident">digest</span>) =&gt; {
                 <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">package</span>.<span class="ident">digest</span> <span class="op">!</span><span class="op">=</span> <span class="ident">digest</span>.<span class="ident">to_string</span>() {
-                    <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="ident">p</span>.<span class="ident">review</span> {
-                        <span class="prelude-val">None</span> =&gt; {
-                            <span class="kw">let</span> <span class="ident">thoroughness</span> <span class="op">=</span> <span class="ident">crev_data::Level::None</span>;
-                            <span class="kw">let</span> <span class="ident">understanding</span> <span class="op">=</span> <span class="ident">crev_data::Level::None</span>;
-                            <span class="kw">let</span> <span class="ident">rating</span> <span class="op">=</span> <span class="ident">crev_data::Rating::Neutral</span>;
-                            <span class="comment">// crev save review proof</span>
-                            <span class="macro">unwrap!</span>(<span class="ident">crev_save_review</span>(
-                                <span class="kw-2">&amp;</span><span class="ident">p</span>.<span class="ident">package</span>.<span class="ident">name</span>,
-                                <span class="kw-2">&amp;</span><span class="ident">p</span>.<span class="ident">package</span>.<span class="ident">version</span>,
-                                <span class="ident">thoroughness</span>,
-                                <span class="ident">understanding</span>,
-                                <span class="ident">rating</span>,
-                                <span class="kw-2">&amp;</span><span class="ident">p</span>.<span class="ident">comment</span>.<span class="ident">as_deref</span>().<span class="ident">unwrap_or</span>(<span class="string">&quot;&quot;</span>)
-                            ));
-                        }
-                        <span class="prelude-val">Some</span>(<span class="ident">review</span>) =&gt; {
-                            <span class="kw">let</span> <span class="ident">thoroughness</span> <span class="op">=</span> <span class="ident">crev_data::Level::from</span>(<span class="ident">review</span>.<span class="ident">thoroughness</span>);
-                            <span class="kw">let</span> <span class="ident">understanding</span> <span class="op">=</span> <span class="ident">crev_data::Level::from</span>(<span class="ident">review</span>.<span class="ident">understanding</span>);
-                            <span class="kw">let</span> <span class="ident">rating</span> <span class="op">=</span> <span class="ident">crev_data::Rating::from</span>(<span class="ident">review</span>.<span class="ident">rating</span>);
-                            <span class="comment">// crev save review proof</span>
-                            <span class="macro">unwrap!</span>(<span class="ident">crev_save_review</span>(
-                                <span class="kw-2">&amp;</span><span class="ident">p</span>.<span class="ident">package</span>.<span class="ident">name</span>,
-                                <span class="kw-2">&amp;</span><span class="ident">p</span>.<span class="ident">package</span>.<span class="ident">version</span>,
-                                <span class="ident">thoroughness</span>,
-                                <span class="ident">understanding</span>,
-                                <span class="ident">rating</span>,
-                                <span class="kw-2">&amp;</span><span class="ident">p</span>.<span class="ident">comment</span>.<span class="ident">as_deref</span>().<span class="ident">unwrap_or</span>(<span class="string">&quot;&quot;</span>)
-                            ));
-                        }
-                    }
+                    <span class="comment">// review can be optional in cargo-crev, but cargo_crev_reviews saves it always.</span>
+                    <span class="kw">let</span> (<span class="ident">thoroughness</span>, <span class="ident">understanding</span>, <span class="ident">rating</span>) <span class="op">=</span> <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="ident">p</span>.<span class="ident">review</span> {
+                        <span class="prelude-val">None</span> =&gt; (<span class="ident">crev_data::Level::None</span>, <span class="ident">crev_data::Level::None</span>, <span class="ident">crev_data::Rating::Neutral</span>),
+                        <span class="prelude-val">Some</span>(<span class="ident">review</span>) =&gt; (
+                            <span class="ident">crev_data::Level::from</span>(<span class="ident">review</span>.<span class="ident">thoroughness</span>),
+                            <span class="ident">crev_data::Level::from</span>(<span class="ident">review</span>.<span class="ident">understanding</span>),
+                            <span class="ident">crev_data::Rating::from</span>(<span class="ident">review</span>.<span class="ident">rating</span>),
+                        ),
+                    };
+                    <span class="comment">// crev save review proof</span>
+                    <span class="macro">unwrap!</span>(<span class="ident">crev_save_review</span>(
+                        <span class="kw-2">&amp;</span><span class="ident">p</span>.<span class="ident">package</span>.<span class="ident">name</span>,
+                        <span class="kw-2">&amp;</span><span class="ident">p</span>.<span class="ident">package</span>.<span class="ident">version</span>,
+                        <span class="ident">thoroughness</span>,
+                        <span class="ident">understanding</span>,
+                        <span class="ident">rating</span>,
+                        <span class="kw-2">&amp;</span><span class="ident">p</span>.<span class="ident">comment</span>.<span class="ident">as_deref</span>().<span class="ident">unwrap_or</span>(<span class="string">&quot;&quot;</span>)
+                    ));
                     <span class="ident">num_of_corrected</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
                 }
             }

@@ -106,7 +106,7 @@ struct FileMetadata {
 }
 
 /// download url from crates.io into `cargo_crev_reviews cache` temp folder
-/// URL like: https://crates.io/api/v1/crates/block-cipher-trait/0.6.0/download
+/// URL like: <https://crates.io/api/v1/crates/block-cipher-trait/0.6.0/download>
 /// it works also for yanked crates. This downloads are immutable.
 pub fn download_crate_from_crate_io(crate_name: &str, crate_version: &str) -> anyhow::Result<std::path::PathBuf> {
     let url = format!(
