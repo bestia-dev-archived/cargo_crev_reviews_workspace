@@ -149,8 +149,6 @@ pub fn srv_review_open_source_code(request_data: serde_json::Value) -> anyhow::R
     let crate_name = filter.crate_name;
     let crate_version = filter.crate_version.context("Parameter version in None.")?;
 
-    let crate_name_version_folder_name = crate::utils_mod::crate_version_for_src_folder(&crate_name, &crate_version);
-
     let mut cache_crate_file = crate::cargo_registry_mod::cargo_registry_cache_file_for_crate(&crate_name, &crate_version);
     if !cache_crate_file.exists() {
         // download into temp folder and change PathBuf
@@ -160,7 +158,7 @@ pub fn srv_review_open_source_code(request_data: serde_json::Value) -> anyhow::R
 
     // unpack the .crate into temp directory
     // ~\.cache\cargo_crev_reviews\src
-    let temp_path_dir = crate::CARGO_CREV_REVIEWS_SRC.join(&crate_name_version_folder_name);
+    let temp_path_dir = crate::cargo_registry_mod::cargo_crev_reviews_src_dir_for_crate(&crate_name, &crate_version);
     if temp_path_dir.exists() {
         std::fs::remove_dir_all(&temp_path_dir)?;
     }

@@ -38,7 +38,7 @@ pub struct Package {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Warnings {
-    unmaintained: Vec<ListItem>,
+    unmaintained: Option<Vec<ListItem>>,
 }
 
 pub fn run_cargo_audit() -> anyhow::Result<CargoAudit> {
@@ -62,15 +62,20 @@ pub fn get_audit_id_for_crate_version(cargo_audit: &CargoAudit, crate_name: &str
     };
     //if there is no vulnerability, then maybe a warning
     if ret.is_none() {
-        ret = match cargo_audit
-            .warnings
-            .unmaintained
-            .iter()
-            .find(|&x| x.package.name.as_str() == crate_name && x.package.version.as_str() == crate_version)
-        {
-            None => None,
-            Some(item) => Some(item.advisory.id.to_string()),
-        };
+        match &cargo_audit.warnings.unmaintained {
+            None => {
+                return None;
+            }
+            Some(unmaintained) => {
+                ret = match unmaintained
+                    .iter()
+                    .find(|&x| x.package.name.as_str() == crate_name && x.package.version.as_str() == crate_version)
+                {
+                    None => None,
+                    Some(item) => Some(item.advisory.id.to_string()),
+                };
+            }
+        }
     }
     // return
     ret

@@ -57,18 +57,39 @@ pub fn copy_web_folder_files_into_module() {
     module_source_code.push_str(r#"
 /* spell-checker: disable */
 
-use std::borrow::Cow;
-
+// region: debug mode
 // for debug_time it is useful to read from file, so editing files can be made without restarting the server
 // but for runtime, the files must be embedded in the code, so only one file is published
 // this is done by an automation task in `cargo auto` 
+use std::borrow::Cow;
 
-// region: debug mode
+#[cfg(debug_assertions)]
+use lazy_static::lazy_static;
+#[cfg(debug_assertions)]
+lazy_static! {
+    pub static ref WEB_SERVER_FOLDER: String = web_server_folder();
+}
+
+/// web_server_folder as String
+#[cfg(debug_assertions)]
+pub fn web_server_folder() -> String{    
+    // I can run this app from "debug build" anywhere with 
+    // ~/rustprojects/cargo_crev_reviews_workspace/target/release/cargo_crev_reviews
+    // but the web_server_folder is not relative to the pwd, but to the current_exe
+    let current_exe = std::env::current_exe().unwrap();
+    let project_folder = current_exe.parent().unwrap().parent().unwrap().parent().unwrap();
+    let web_server_folder = project_folder.join("web_server_folder");
+    let web_server_folder = web_server_folder.to_string_lossy().to_string();
+    log::info!("web_server_folder {}", web_server_folder);
+    // return
+    web_server_folder
+}
+
 /// returns Cow, because in debug I read from files and return a String. 
 /// In release I have embedded strings n the code
 #[cfg(debug_assertions)]
 pub fn get_file_text<'a>(file_name:&str) -> Cow<'a, str>{
-    let file_name = format!("web_server_folder{}",file_name);
+    let file_name = format!("{}{}",&*WEB_SERVER_FOLDER,file_name);
     let str = std::fs::read_to_string(&file_name).unwrap();
     return Cow::Owned(str);
 }
@@ -76,7 +97,7 @@ pub fn get_file_text<'a>(file_name:&str) -> Cow<'a, str>{
 /// always allocated? Maybe I could do better. I don't know.
 #[cfg(debug_assertions)]
 pub fn get_file_bytes<'a>(file_name:&str) -> Vec<u8>{    
-        let file_name = format!("web_server_folder{}",file_name);
+        let file_name = format!("{}{}",&*WEB_SERVER_FOLDER,file_name);
         let file_bytes = std::fs::read(&file_name).unwrap();
         return file_bytes;
 }

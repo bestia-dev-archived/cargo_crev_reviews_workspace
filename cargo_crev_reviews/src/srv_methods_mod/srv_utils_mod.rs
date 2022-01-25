@@ -93,7 +93,7 @@ pub fn srv_correct_digest(_request_data: serde_json::Value) -> anyhow::Result<St
 
     // for all reviews
     let mut vec_proof = unwrap!(crev_list_my_reviews(&None));
-    vec_proof.sort_by(|a, b| a.package.version_for_sorting.cmp(&b.package.version_for_sorting));
+    crev_sort_list_by_name_version(&mut vec_proof);
     let num_of_all = vec_proof.len();
     for p in vec_proof.iter() {
         let crate_name = p.package.name.clone();

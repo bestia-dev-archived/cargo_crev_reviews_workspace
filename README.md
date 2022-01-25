@@ -3,12 +3,12 @@
 [comment]: # (auto_cargo_toml_to_md start)
 
 **Write cargo-crev reviews in GUI with a cross-platform app written in full-stack Rust**  
-***[repository](https://github.com/lucianobestia/cargo_crev_reviews_workspace); version: 2022.125.1123  date: 2022-01-25 authors: Luciano Bestia***  
+***[repository](https://github.com/lucianobestia/cargo_crev_reviews_workspace); version: 2022.125.1258  date: 2022-01-25 authors: Luciano Bestia***  
 
 [comment]: # (auto_cargo_toml_to_md end)
 
 [comment]: # (auto_lines_of_code start)
-[![Lines in Rust code](https://img.shields.io/badge/Lines_in_Rust-4851-green.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
+[![Lines in Rust code](https://img.shields.io/badge/Lines_in_Rust-4854-green.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
 [![Lines in Doc comments](https://img.shields.io/badge/Lines_in_Doc_comments-685-blue.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
 [![Lines in Comments](https://img.shields.io/badge/Lines_in_comments-399-purple.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
 [![Lines in examples](https://img.shields.io/badge/Lines_in_examples-0-yellow.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)

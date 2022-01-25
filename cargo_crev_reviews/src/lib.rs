@@ -4,9 +4,9 @@
 //! # cargo_crev_reviews
 //!
 //! **Write cargo-crev reviews in GUI with a cross-platform app written in full-stack Rust**  
-//! ***[repository](https://github.com/lucianobestia/cargo_crev_reviews_workspace); version: 2022.125.1123  date: 2022-01-25 authors: Luciano Bestia***  
+//! ***[repository](https://github.com/lucianobestia/cargo_crev_reviews_workspace); version: 2022.125.1258  date: 2022-01-25 authors: Luciano Bestia***  
 //!
-//! [![Lines in Rust code](https://img.shields.io/badge/Lines_in_Rust-2945-green.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
+//! [![Lines in Rust code](https://img.shields.io/badge/Lines_in_Rust-2948-green.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
 //! [![Lines in Doc comments](https://img.shields.io/badge/Lines_in_Doc_comments-556-blue.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
 //! [![Lines in Comments](https://img.shields.io/badge/Lines_in_comments-242-purple.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
 //! [![Lines in examples](https://img.shields.io/badge/Lines_in_examples-0-yellow.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)

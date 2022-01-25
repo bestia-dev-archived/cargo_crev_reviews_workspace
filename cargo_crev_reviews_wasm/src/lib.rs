@@ -4,7 +4,7 @@
 //! # cargo_crev_reviews_wasm
 //!
 //! **Wasm web app that is the frontend of the application cargo_crev_reviews**  
-//! ***[repository](https://github.com/LucianoBestia/cargo_crev_reviews_workspace); version: 2022.125.1123  date: 2022-01-25 authors: Luciano Bestia***  
+//! ***[repository](https://github.com/LucianoBestia/cargo_crev_reviews_workspace); version: 2022.125.1258  date: 2022-01-25 authors: Luciano Bestia***  
 //!
 //! [![Lines in Rust code](https://img.shields.io/badge/Lines_in_Rust-1906-green.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
 //! [![Lines in Doc comments](https://img.shields.io/badge/Lines_in_Doc_comments-129-blue.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)

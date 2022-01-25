@@ -43,7 +43,6 @@ pub struct PackageSegment {
     pub name: String,
     pub version: String,
     pub digest: String,
-    pub version_for_sorting: Option<String>,
 }
 
 #[derive(Deserialize, Clone, Default, Debug)]

@@ -31,6 +31,7 @@ pub fn crate_version_for_src_folder(crate_name: &str, crate_version: &str) -> St
 pub fn crate_version_for_cargo_toml(crate_name: &str, crate_version: &str) -> String {
     format!(r#"{}="{}""#, crate_name, crate_version)
 }
+
 // endregion: crate_version can be in different formats
 
 /// returns the now in nanoseconds
