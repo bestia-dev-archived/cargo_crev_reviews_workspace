@@ -5,22 +5,22 @@
 [comment]: # (auto_cargo_toml_to_md start)
 
 **Write cargo-crev reviews in GUI with a cross-platform app written in full-stack Rust**  
-***[repository](https://github.com/lucianobestia/cargo_crev_reviews_workspace); version: 2022.125.1258  date: 2022-01-25 authors: Luciano Bestia***  
+***[repository](https://github.com/bestia-dev/cargo_crev_reviews_workspace); version: 2022.125.1258  date: 2022-01-25 authors: bestia.dev***  
 
 [comment]: # (auto_cargo_toml_to_md end)
 
 [comment]: # (auto_lines_of_code start)
-[![Lines in Rust code](https://img.shields.io/badge/Lines_in_Rust-2948-green.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
-[![Lines in Doc comments](https://img.shields.io/badge/Lines_in_Doc_comments-556-blue.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
-[![Lines in Comments](https://img.shields.io/badge/Lines_in_comments-242-purple.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
-[![Lines in examples](https://img.shields.io/badge/Lines_in_examples-0-yellow.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
-[![Lines in tests](https://img.shields.io/badge/Lines_in_tests-27-orange.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
+[![Lines in Rust code](https://img.shields.io/badge/Lines_in_Rust-2948-green.svg)](https://github.com/bestia-dev/cargo_crev_reviews_workspace/)
+[![Lines in Doc comments](https://img.shields.io/badge/Lines_in_Doc_comments-556-blue.svg)](https://github.com/bestia-dev/cargo_crev_reviews_workspace/)
+[![Lines in Comments](https://img.shields.io/badge/Lines_in_comments-242-purple.svg)](https://github.com/bestia-dev/cargo_crev_reviews_workspace/)
+[![Lines in examples](https://img.shields.io/badge/Lines_in_examples-0-yellow.svg)](https://github.com/bestia-dev/cargo_crev_reviews_workspace/)
+[![Lines in tests](https://img.shields.io/badge/Lines_in_tests-27-orange.svg)](https://github.com/bestia-dev/cargo_crev_reviews_workspace/)
 
 [comment]: # (auto_lines_of_code end)
 
 [comment]: # (auto_badges start)
 
-[![crates.io](https://img.shields.io/crates/v/cargo_crev_reviews.svg)](https://crates.io/crates/cargo_crev_reviews) [![Documentation](https://docs.rs/cargo_crev_reviews/badge.svg)](https://docs.rs/cargo_crev_reviews/) [![crev reviews](https://web.crev.dev/rust-reviews/badge/crev_count/cargo_crev_reviews.svg)](https://web.crev.dev/rust-reviews/crate/cargo_crev_reviews/) [![Lib.rs](https://img.shields.io/badge/Lib.rs-rust-orange.svg)](https://lib.rs/crates/cargo_crev_reviews/) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/LucianoBestia/cargo_crev_reviews/blob/master/LICENSE) [![Rust](https://github.com/LucianoBestia/cargo_crev_reviews/workflows/RustAction/badge.svg)](https://github.com/LucianoBestia/cargo_crev_reviews/actions)  
+[![crates.io](https://img.shields.io/crates/v/cargo_crev_reviews.svg)](https://crates.io/crates/cargo_crev_reviews) [![Documentation](https://docs.rs/cargo_crev_reviews/badge.svg)](https://docs.rs/cargo_crev_reviews/) [![crev reviews](https://web.crev.dev/rust-reviews/badge/crev_count/cargo_crev_reviews.svg)](https://web.crev.dev/rust-reviews/crate/cargo_crev_reviews/) [![Lib.rs](https://img.shields.io/badge/Lib.rs-rust-orange.svg)](https://lib.rs/crates/cargo_crev_reviews/) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/bestia-dev/cargo_crev_reviews/blob/master/LICENSE) [![Rust](https://github.com/bestia-dev/cargo_crev_reviews/workflows/RustAction/badge.svg)](https://github.com/bestia-dev/cargo_crev_reviews/actions)  
 
 [comment]: # (auto_badges end)
 
@@ -42,9 +42,9 @@ cargo_crev_reviews
 And follow the simple instructions...
 
 Backend CLI in Linux terminal:  
-![screen_5](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/raw/main/images/screen_5.png "screen_5")  
+![screen_5](https://github.com/bestia-dev/cargo_crev_reviews_workspace/raw/main/images/screen_5.png "screen_5")  
 Frontend GUI in browser:  
-![screen_6](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/raw/main/images/screen_6.png "screen_6")  
+![screen_6](https://github.com/bestia-dev/cargo_crev_reviews_workspace/raw/main/images/screen_6.png "screen_6")  
 
 ## cargo tree
 
@@ -107,7 +107,7 @@ For the browser I will create a simple web app. All the code will be in Rust, I 
 
 I will use [cargo-auto](https://crates.io/crates/cargo-auto) to automate the tasks needed to build the project.  
 The sub-directory `automation_tasks_rs` is the Rust project for [cargo-auto](https://crates.io/crates/cargo-auto).  
-My project [dev_bestia_cargo_completion](https://github.com/LucianoBestia/dev_bestia_cargo_completion) helps with bash auto-completion.  
+My project [dev_bestia_cargo_completion](https://github.com/bestia-dev/dev_bestia_cargo_completion) helps with bash auto-completion.  
 
 The Rust workspace is made of members:
 
@@ -300,7 +300,7 @@ pub struct VersionListData {
 
 ### Create a "standard" html page
 
-The html page has to be MicroXml compatible, basically XHtml.  Copy for example `web_server_folder/review_list.html` to a new html file. Open this file with a browser to preview it. I use the VSCode extension [vscode-open-wsl](https://marketplace.visualstudio.com/items?itemName=NoThlnG.vscode-open-wsl) and right-click on the file and `Open with default application`. In WSL2 I use my project [wsl_open_browser](https://github.com/LucianoBestia/wsl_open_browser) to open the default browser from wsl2 to Windows. Now edit the html file to your liking and reload the browser with F5 to see the changes. Use some sample text to make it look as close to what you want. These texts will be later programmatically replaced, but they are invaluable while designing a nice layout.
+The html page has to be MicroXml compatible, basically XHtml.  Copy for example `web_server_folder/review_list.html` to a new html file. Open this file with a browser to preview it. I use the VSCode extension [vscode-open-wsl](https://marketplace.visualstudio.com/items?itemName=NoThlnG.vscode-open-wsl) and right-click on the file and `Open with default application`. In WSL2 I use my project [wsl_open_browser](https://github.com/bestia-dev/wsl_open_browser) to open the default browser from wsl2 to Windows. Now edit the html file to your liking and reload the browser with F5 to see the changes. Use some sample text to make it look as close to what you want. These texts will be later programmatically replaced, but they are invaluable while designing a nice layout.
 
 ### Add markers
 
@@ -362,7 +362,7 @@ Update 2022: I now try to use `mermaid` instead of plantuml, because it is integ
 Write your diagrams in code with plantUml. The language syntax is pretty easy. I have a text file `images/server_plantuml_v3.txt`. The I use the online service `plantuml.com/plantuml/proxy` to create a png image. Because of caching I have the version of the file in the file name. When the version changes the old cache is not in use any more.  
 The server modules:
 
-[![plant_uml](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/LucianoBestia/cargo_crev_reviews_workspace/main/images/server_plantuml_v3.txt)](https://raw.githubusercontent.com/LucianoBestia/cargo_crev_reviews_workspace/main/images/server_plantuml_v3.txt)
+[![plant_uml](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/bestia-dev/cargo_crev_reviews_workspace/main/images/server_plantuml_v3.txt)](https://raw.githubusercontent.com/bestia-dev/cargo_crev_reviews_workspace/main/images/server_plantuml_v3.txt)
 
 ## Bad surprise on WSL2
 
@@ -395,7 +395,7 @@ You can also read reviews quickly on the web:
 My open-source projects are free as a beer (MIT license).  
 I just love programming.  
 But I need also to drink. If you find my projects and tutorials helpful,  
-please buy me a beer donating on my [paypal](https://www.paypal.com/paypalme/LucianoBestia).  
+please buy me a beer donating on my [paypal](https://paypal.me/LucianoBestia).  
 You know the price of a beer in your local bar ;-)  
 So I can drink a free beer for your health :-)  
 [Na zdravje!](https://translate.google.com/?hl=en&sl=sl&tl=en&text=Na%20zdravje&op=translate) [Alla salute!](https://dictionary.cambridge.org/dictionary/italian-english/alla-salute) [Prost!](https://dictionary.cambridge.org/dictionary/german-english/prost) [Nazdravlje!](https://matadornetwork.com/nights/how-to-say-cheers-in-50-languages/) 🍻

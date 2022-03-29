@@ -1,10 +1,10 @@
 [package]
 name = "cargo_crev_reviews_wasm"
 version = "2022.125.1258"
-authors = ["Luciano Bestia <Luciano.Bestia@gmail.com>"]
+authors = ["bestia.dev <info@bestia.dev>"]
 edition = "2021"
 description = "Wasm web app that is the frontend of the application cargo_crev_reviews"
-repository = "https://github.com/LucianoBestia/cargo_crev_reviews_workspace"
+repository = "https://github.com/bestia-dev/cargo_crev_reviews_workspace"
 readme = "README.md"
 license = "MIT"
 keywords = ["wasm"]

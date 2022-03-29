@@ -94,7 +94,7 @@ pub fn init_with_some_default() {
         "publisher_url": "https://github.com/llogiq",
         "note": "rust-lang.org: moderation"
     },  {
-        "publisher_url": "https://github.com/lucianobestia",
+        "publisher_url": "https://github.com/bestia-dev",
         "note": "web.crev.dev, cargo_crev_reviews author"
     },  {
         "publisher_url": "https://github.com/manishearth",

@@ -4,22 +4,22 @@
 //! # cargo_crev_reviews_wasm
 //!
 //! **Wasm web app that is the frontend of the application cargo_crev_reviews**  
-//! ***[repository](https://github.com/LucianoBestia/cargo_crev_reviews_workspace); version: 2022.125.1258  date: 2022-01-25 authors: Luciano Bestia***  
+//! ***[repository](https://github.com/bestia-dev/cargo_crev_reviews_workspace); version: 2022.125.1258  date: 2022-01-25 authors: bestia.dev***  
 //!
-//! [![Lines in Rust code](https://img.shields.io/badge/Lines_in_Rust-1906-green.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
-//! [![Lines in Doc comments](https://img.shields.io/badge/Lines_in_Doc_comments-129-blue.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
-//! [![Lines in Comments](https://img.shields.io/badge/Lines_in_comments-157-purple.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
-//! [![Lines in examples](https://img.shields.io/badge/Lines_in_examples-0-yellow.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
-//! [![Lines in tests](https://img.shields.io/badge/Lines_in_tests-0-orange.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/)
+//! [![Lines in Rust code](https://img.shields.io/badge/Lines_in_Rust-1906-green.svg)](https://github.com/bestia-dev/cargo_crev_reviews_workspace/)
+//! [![Lines in Doc comments](https://img.shields.io/badge/Lines_in_Doc_comments-129-blue.svg)](https://github.com/bestia-dev/cargo_crev_reviews_workspace/)
+//! [![Lines in Comments](https://img.shields.io/badge/Lines_in_comments-157-purple.svg)](https://github.com/bestia-dev/cargo_crev_reviews_workspace/)
+//! [![Lines in examples](https://img.shields.io/badge/Lines_in_examples-0-yellow.svg)](https://github.com/bestia-dev/cargo_crev_reviews_workspace/)
+//! [![Lines in tests](https://img.shields.io/badge/Lines_in_tests-0-orange.svg)](https://github.com/bestia-dev/cargo_crev_reviews_workspace/)
 //!
-//! [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/blob/main/LICENSE)
+//! [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/bestia-dev/cargo_crev_reviews_workspace/blob/main/LICENSE)
 //!
 //! This is a member of the workspace.
 //! It is the wasm frontend for the GUI application.  
 //! The main member project is `cargo_crev_reviews`.  
 //! Please, continue reading `README.md` here:  
 //!
-//! ## [cargo_crev_reviews/README.md](https://github.com/LucianoBestia/cargo_crev_reviews_workspace/tree/main/cargo_crev_reviews)  
+//! ## [cargo_crev_reviews/README.md](https://github.com/bestia-dev/cargo_crev_reviews_workspace/tree/main/cargo_crev_reviews)  
 //!
 // endregion: auto_md_to_doc_comments include README.md A //!
 

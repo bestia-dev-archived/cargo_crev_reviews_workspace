@@ -2,7 +2,7 @@ https://www.ibm.com/demos/live/tts-demo/self-service/home
 English, American, Kevin, 1.0 speed, default pitch
 
 https://bestia.dev/
-https://github.com/LucianoBestia/cargo_crev_reviews_workspace/tree/main/cargo_crev_reviews
+https://github.com/bestia-dev/cargo_crev_reviews_workspace/tree/main/cargo_crev_reviews
 https://www.youtube.com/watch?v=8auYVesj6wc
 
 Hello and welcome to bestia dev !
@@ -43,4 +43,4 @@ Save it, close the tab and refresh the list.
 
 This is all for today. 
 Thank you for watching and see you next time.
-Feel free to contact me on Git hub slash Luciano Bestia.
+Feel free to contact me on Git hub slash bestia.dev.

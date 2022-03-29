@@ -134,7 +134,7 @@
     <span class="kw">let</span> <span class="ident">client</span> <span class="op">=</span> <span class="ident">reqwest::blocking::Client::new</span>();
     <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">client</span>
         .<span class="ident">get</span>(<span class="ident">url</span>)
-        .<span class="ident">header</span>(<span class="string">&quot;User-Agent&quot;</span>, <span class="string">&quot;cargo_crev_reviews (github.com/LucianoBestia/cargo_crev_reviews_workspace)&quot;</span>)
+        .<span class="ident">header</span>(<span class="string">&quot;User-Agent&quot;</span>, <span class="string">&quot;cargo_crev_reviews (github.com/bestia-dev/cargo_crev_reviews_workspace)&quot;</span>)
         .<span class="ident">send</span>()<span class="question-mark">?</span>;
     <span class="kw">let</span> <span class="ident">response_text</span> <span class="op">=</span> <span class="ident">res</span>.<span class="ident">text</span>()<span class="question-mark">?</span>;
     <span class="prelude-val">Ok</span>(<span class="ident">response_text</span>)

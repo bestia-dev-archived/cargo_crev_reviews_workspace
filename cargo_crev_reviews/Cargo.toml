@@ -7,11 +7,11 @@
 name = "cargo_crev_reviews"
 version = "2022.125.1258"
 description = "Write cargo-crev reviews in GUI with a cross-platform app written in full-stack Rust"
-authors = ["Luciano Bestia"]
+authors = ["bestia.dev"]
 edition = "2021"
 license = "MIT"
 readme = "README.md"
-repository = "https://github.com/lucianobestia/cargo_crev_reviews_workspace"
+repository = "https://github.com/bestia-dev/cargo_crev_reviews_workspace"
 categories = ["development-tools"]
 keywords = ["crev", "GUI", "reviews"]
 publish = true

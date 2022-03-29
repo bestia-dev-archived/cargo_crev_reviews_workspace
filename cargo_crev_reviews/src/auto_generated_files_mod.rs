@@ -235,9 +235,9 @@ pub fn get_file_text<'a>(file_name: &str) -> Cow<'a, str> {
 <body>
     <div>
         <div class="container0_content_not_grid" style="line-height: 0.8em;">
-            <p class="small">© Luciano Bestia 2022, MIT License, Version:
+            <p class="small">© bestia.dev 2022, MIT License, Version:
                 <!--wt_cargo_crev_reviews_version-->2022.05.05<br/> Open source repository for this full stack Rust app on
-                <a class="c_link_1 break-all" target="blank" href="https://github.com/LucianoBestia/cargo_crev_reviews_workspace/">GitHub</a>
+                <a class="c_link_1 break-all" target="blank" href="https://github.com/bestia-dev/cargo_crev_reviews_workspace/">GitHub</a>
             </p>
         </div>
     </div>
@@ -1047,7 +1047,7 @@ AAAAAAAAAAAAAAAAAAAAAA=="##
     <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
     <title>cargo_crev_reviews</title>
     <meta name="Description" content="Write cargo-crev reviews in GUI with a cross-platform app written in full-stack rust" />
-    <meta name="author" content="https://github.com/LucianoBestia/cargo_crev_reviews_workspace" />
+    <meta name="author" content="https://github.com/bestia-dev/cargo_crev_reviews_workspace" />
 
     <meta name="viewport" content="width = device-width,initial-scale = 1.0" />
     <link rel="stylesheet" href="css/normalize.css" />

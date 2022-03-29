@@ -54,7 +54,7 @@ fn crate_responses_get(crate_name: &str) -> Result<String, anyhow::Error> {
     let client = reqwest::blocking::Client::new();
     let res = client
         .get(url)
-        .header("User-Agent", "cargo_crev_reviews (github.com/LucianoBestia/cargo_crev_reviews_workspace)")
+        .header("User-Agent", "cargo_crev_reviews (github.com/bestia-dev/cargo_crev_reviews_workspace)")
         .send()?;
     let response_text = res.text()?;
     Ok(response_text)

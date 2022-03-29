@@ -47,7 +47,7 @@ fn main() -> anyhow::Result<()> {
         println!(
             r#"
 This CLI opens the default browser. It is the frontend graphical (GUI) part of the app.
-If the default browser does not open from WSL2, you can see my project `https://github.com/LucianoBestia/wsl_open_browser`."#
+If the default browser does not open from WSL2, you can see my project `https://github.com/bestia-dev/wsl_open_browser`."#
         );
         empty_and_create_temp_directories();
         create_persistent_directories();

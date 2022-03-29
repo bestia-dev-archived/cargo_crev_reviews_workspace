@@ -1,6 +1,6 @@
 @startuml
 ' server_plantuml_v3.txt
-' https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/LucianoBestia/cargo_crev_reviews_workspace/main/images/server_plantuml_v3.txt
+' https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/bestia-dev/cargo_crev_reviews_workspace/main/images/server_plantuml_v3.txt
 
 package "web server 127.0.0.1:8182" {
 

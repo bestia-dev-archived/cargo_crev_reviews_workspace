@@ -5,7 +5,7 @@ date: "2021-09-02T19:13:57.932503400+02:00"
 from:
   id-type: crev
   id: 24YKeuThJDNFSlJyxcl5diSZcKcRbh-0zXM0YxTOFJw
-  url: "https://github.com/LucianoBestia/crev-proofs"
+  url: "https://github.com/bestia-dev/crev-proofs"
 package:
   source: SOURCE_ID
   name: crate_name
