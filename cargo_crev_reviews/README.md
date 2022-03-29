@@ -357,6 +357,8 @@ I will have a try with the [sled](http://sled.rs/) database. A lightweight pure-
 
 ## plantUml
 
+Update 2022: I now try to use `mermaid` instead of plantuml, because it is integrated in the Github markdown.
+
 Write your diagrams in code with plantUml. The language syntax is pretty easy. I have a text file `images/server_plantuml_v3.txt`. The I use the online service `plantuml.com/plantuml/proxy` to create a png image. Because of caching I have the version of the file in the file name. When the version changes the old cache is not in use any more.  
 The server modules:
 
