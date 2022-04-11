@@ -3,7 +3,7 @@ English, American, Kevin, 1.0 speed, default pitch
 
 https://bestia.dev/
 https://github.com/bestia-dev/cargo_crev_reviews_workspace/tree/main/cargo_crev_reviews
-https://www.youtube.com/watch?v=8auYVesj6wc
+https://www.youtube.com/watch?v=d50hb04Cwzw
 
 Hello and welcome to bestia dev !
 I just love programming.

@@ -26,6 +26,8 @@
 
 ## Try it
 
+Video tutorial on youtube: https://www.youtube.com/watch?v=d50hb04Cwzw
+
 Install cargo_crev_reviews:  
 
 ```bash
