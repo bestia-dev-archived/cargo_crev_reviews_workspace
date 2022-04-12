@@ -26,7 +26,7 @@
 
 ## Try it
 
-Video tutorial on youtube: https://www.youtube.com/watch?v=d50hb04Cwzw
+Video tutorial on youtube: <https://bestia.dev/youtube/cargo_crev_reviews_workspace.html>
 
 Install cargo_crev_reviews:  
 
