@@ -2,6 +2,7 @@
 name = "cargo_crev_reviews_wasm"
 version = "2022.125.1258"
 authors = ["bestia.dev"]
+homepage = "https://bestia.dev"
 edition = "2021"
 description = "Wasm web app that is the frontend of the application cargo_crev_reviews"
 repository = "https://github.com/bestia-dev/cargo_crev_reviews_workspace"
