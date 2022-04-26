@@ -24,6 +24,8 @@
 
 [comment]: # (auto_badges end)
 
+Hashtags: #rustlang #buildtool #developmenttool #crev #review #fullstack #gui #clientserver
+
 ## Try it
 
 Video tutorial on youtube: <https://bestia.dev/youtube/cargo_crev_reviews_workspace.html>
