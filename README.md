@@ -12,7 +12,7 @@
 [![Lines in Doc comments](https://img.shields.io/badge/Lines_in_Doc_comments-685-blue.svg)](https://github.com/bestia-dev/cargo_crev_reviews_workspace/)
 [![Lines in Comments](https://img.shields.io/badge/Lines_in_comments-399-purple.svg)](https://github.com/bestia-dev/cargo_crev_reviews_workspace/)
 [![Lines in examples](https://img.shields.io/badge/Lines_in_examples-0-yellow.svg)](https://github.com/bestia-dev/cargo_crev_reviews_workspace/)
-[![Lines in tests](https://img.shields.io/badge/Lines_in_tests-27-orange.svg)](https://github.com/bestia-dev/cargo_crev_reviews_workspace/)
+[![Lines in tests](https://img.shields.io/badge/Lines_in_tests-27-orange.svg)](https://github.com/bestia-dev/cargo_crev_reviews_workspace/) [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fbestia-dev%2Fcargo_crev_reviews_workspace&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)](https://hits.seeyoufarm.com)
 
 [comment]: # (auto_lines_of_code end)
 
