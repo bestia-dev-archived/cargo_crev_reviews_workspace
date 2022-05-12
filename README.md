@@ -3,7 +3,7 @@
 [comment]: # (auto_cargo_toml_to_md start)
 
 **Write cargo-crev reviews in GUI with a cross-platform app written in full-stack Rust**  
-***version: 2022.125.1258 date: 2022-01-25 author: [bestia.dev](https://bestia.dev) repository: [GitHub](https://github.com/bestia-dev/cargo_crev_reviews_workspace)***  
+***version: 2022.512.1631 date: 2022-05-12 author: [bestia.dev](https://bestia.dev) repository: [Github](https://github.com/bestia-dev/cargo_crev_reviews_workspace)***  
 
 [comment]: # (auto_cargo_toml_to_md end)
 

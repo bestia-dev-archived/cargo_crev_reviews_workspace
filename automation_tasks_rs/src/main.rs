@@ -66,7 +66,7 @@ cargo auto build - builds the crate in debug mode, fmt
 cargo auto build_and_run - build and run
 cargo auto release - builds the crate in release mode, version from date, fmt
 cargo auto release_and_run - release and run
-cargo auto docs - builds the docs, copy to docs directory
+cargo auto docs - plantuml, builds the docs, copy to docs directory
 cargo auto test - runs all the tests
 cargo auto commit_and_push - commits and push with mandatory message
     if you use SSH for git push, it is easy to start the `eval $(ssh-agent)` in the background 
@@ -188,10 +188,12 @@ fn task_generated_mod() {
     generate_server_match_response_method();
 }
 
-/// example how to call a list of shell commands and combine with Rust code
+/// cargo doc
 fn task_docs() {
-    auto_md_to_doc_comments();
     let cargo_toml = CargoToml::read();
+    auto_md_to_doc_comments();
+    auto_plantuml(&cargo_toml.package_repository().unwrap());
+
     #[rustfmt::skip]
     let shell_commands = [
         "cargo doc --no-deps --document-private-items",
