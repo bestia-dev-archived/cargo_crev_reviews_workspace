@@ -25,7 +25,6 @@ pub fn cln_no_action(_srv_response: RpcResponse) {
     log::info!("{}", function_name!());
 }
 
-#[named]
 pub fn cln_modal_close(_srv_response: RpcResponse) {
     html_mod::close_modal();
 }

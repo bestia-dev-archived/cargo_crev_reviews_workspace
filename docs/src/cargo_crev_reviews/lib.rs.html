@@ -1,4 +1,9 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `cargo_crev_reviews&#x2F;src&#x2F;lib.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lib.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../cargo_crev_reviews/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `cargo_crev_reviews/src/lib.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
+    <noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../cargo_crev_reviews/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div>
+        </a><h2 class="location"></h2>
+    </nav>
+    <nav class="sidebar"><a class="sidebar-logo" href="../../cargo_crev_reviews/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div>
+        </a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../cargo_crev_reviews/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><div class="theme-picker hidden"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="22" height="22" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -633,23 +638,77 @@
 <span id="633">633</span>
 <span id="634">634</span>
 <span id="635">635</span>
+<span id="636">636</span>
+<span id="637">637</span>
+<span id="638">638</span>
+<span id="639">639</span>
+<span id="640">640</span>
+<span id="641">641</span>
+<span id="642">642</span>
+<span id="643">643</span>
+<span id="644">644</span>
+<span id="645">645</span>
+<span id="646">646</span>
+<span id="647">647</span>
+<span id="648">648</span>
+<span id="649">649</span>
+<span id="650">650</span>
+<span id="651">651</span>
+<span id="652">652</span>
+<span id="653">653</span>
+<span id="654">654</span>
+<span id="655">655</span>
+<span id="656">656</span>
+<span id="657">657</span>
+<span id="658">658</span>
+<span id="659">659</span>
+<span id="660">660</span>
+<span id="661">661</span>
+<span id="662">662</span>
+<span id="663">663</span>
+<span id="664">664</span>
+<span id="665">665</span>
+<span id="666">666</span>
+<span id="667">667</span>
+<span id="668">668</span>
+<span id="669">669</span>
+<span id="670">670</span>
+<span id="671">671</span>
+<span id="672">672</span>
+<span id="673">673</span>
+<span id="674">674</span>
+<span id="675">675</span>
+<span id="676">676</span>
+<span id="677">677</span>
+<span id="678">678</span>
+<span id="679">679</span>
+<span id="680">680</span>
+<span id="681">681</span>
+<span id="682">682</span>
+<span id="683">683</span>
+<span id="684">684</span>
+<span id="685">685</span>
 </pre><pre class="rust"><code><span class="comment">// cargo_crev_reviews/src/lib.rs</span>
 
 <span class="comment">// region: auto_md_to_doc_comments include README.md A //!</span>
 <span class="doccomment">//! # cargo_crev_reviews</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! **Write cargo-crev reviews in GUI with a cross-platform app written in full-stack Rust**  </span>
-<span class="doccomment">//! ***[repository](https://github.com/bestia-dev/cargo_crev_reviews_workspace); version: 2022.125.1258  date: 2022-01-25 authors: bestia.dev***  </span>
+<span class="doccomment">//! ***version: 2022.512.1751 date: 2022-05-12 author: [bestia.dev](https://bestia.dev) repository: [Github](https://github.com/bestia-dev/cargo_crev_reviews_workspace)***  </span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! [![Lines in Rust code](https://img.shields.io/badge/Lines_in_Rust-2948-green.svg)](https://github.com/bestia-dev/cargo_crev_reviews_workspace/)</span>
-<span class="doccomment">//! [![Lines in Doc comments](https://img.shields.io/badge/Lines_in_Doc_comments-556-blue.svg)](https://github.com/bestia-dev/cargo_crev_reviews_workspace/)</span>
+<span class="doccomment">//! [![Lines in Doc comments](https://img.shields.io/badge/Lines_in_Doc_comments-606-blue.svg)](https://github.com/bestia-dev/cargo_crev_reviews_workspace/)</span>
 <span class="doccomment">//! [![Lines in Comments](https://img.shields.io/badge/Lines_in_comments-242-purple.svg)](https://github.com/bestia-dev/cargo_crev_reviews_workspace/)</span>
 <span class="doccomment">//! [![Lines in examples](https://img.shields.io/badge/Lines_in_examples-0-yellow.svg)](https://github.com/bestia-dev/cargo_crev_reviews_workspace/)</span>
 <span class="doccomment">//! [![Lines in tests](https://img.shields.io/badge/Lines_in_tests-27-orange.svg)](https://github.com/bestia-dev/cargo_crev_reviews_workspace/)</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! [![crates.io](https://img.shields.io/crates/v/cargo_crev_reviews.svg)](https://crates.io/crates/cargo_crev_reviews) [![Documentation](https://docs.rs/cargo_crev_reviews/badge.svg)](https://docs.rs/cargo_crev_reviews/) [![crev reviews](https://web.crev.dev/rust-reviews/badge/crev_count/cargo_crev_reviews.svg)](https://web.crev.dev/rust-reviews/crate/cargo_crev_reviews/) [![Lib.rs](https://img.shields.io/badge/Lib.rs-rust-orange.svg)](https://lib.rs/crates/cargo_crev_reviews/) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/bestia-dev/cargo_crev_reviews/blob/master/LICENSE) [![Rust](https://github.com/bestia-dev/cargo_crev_reviews/workflows/RustAction/badge.svg)](https://github.com/bestia-dev/cargo_crev_reviews/actions)  </span>
+<span class="doccomment">//! [![crates.io](https://img.shields.io/crates/v/cargo_crev_reviews.svg)](https://crates.io/crates/cargo_crev_reviews) [![Documentation](https://docs.rs/cargo_crev_reviews/badge.svg)](https://docs.rs/cargo_crev_reviews/) [![crev reviews](https://web.crev.dev/rust-reviews/badge/crev_count/cargo_crev_reviews.svg)](https://web.crev.dev/rust-reviews/crate/cargo_crev_reviews/) [![Lib.rs](https://img.shields.io/badge/Lib.rs-rust-orange.svg)](https://lib.rs/crates/cargo_crev_reviews/) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/bestia-dev/cargo_crev_reviews/blob/master/LICENSE) [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fbestia-dev%2Fcargo_crev_reviews_workspace%2Ftree%2Fmain%2Fcargo_crev_reviews&amp;count_bg=%2379C83D&amp;title_bg=%23555555&amp;icon=&amp;icon_color=%23E7E7E7&amp;title=hits&amp;edge_flat=false)](https://hits.seeyoufarm.com)  </span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! Hashtags: #rustlang #buildtool #developmenttool #crev #review #fullstack #gui #clientserver</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! ## Try it</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! Video tutorial on youtube: &lt;https://bestia.dev/youtube/cargo_crev_reviews_workspace.html&gt;</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! Install cargo_crev_reviews:  </span>
 <span class="doccomment">//!</span>
@@ -982,10 +1041,56 @@
 <span class="doccomment">//!</span>
 <span class="doccomment">//! ## plantUml</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! Write your diagrams in code with plantUml. The language syntax is pretty easy. I have a text file `images/server_plantuml_v3.txt`. The I use the online service `plantuml.com/plantuml/proxy` to create a png image. Because of caching I have the version of the file in the file name. When the version changes the old cache is not in use any more.  </span>
-<span class="doccomment">//! The server modules:</span>
+<span class="doccomment">//! Write your diagrams in code with plantUml. The language syntax is pretty easy.  </span>
+<span class="doccomment">//! I have a code section for plantuml inside markers. Then an automation task in `cargo auto doc` generates the svg file and creates a link to it.  </span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! [![plant_uml](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/bestia-dev/cargo_crev_reviews_workspace/main/images/server_plantuml_v3.txt)](https://raw.githubusercontent.com/bestia-dev/cargo_crev_reviews_workspace/main/images/server_plantuml_v3.txt)</span>
+<span class="doccomment">//! ```plantuml</span>
+<span class="doccomment">//! @startuml</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! package &quot;web server 127.0.0.1:8182&quot; {</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//!   [cargo_crev_reviews.rs] -down- [lib.rs]</span>
+<span class="doccomment">//! note left of cargo_crev_reviews.rs</span>
+<span class="doccomment">//! input passphrase,</span>
+<span class="doccomment">//! start TcpListener and web server,</span>
+<span class="doccomment">//! open browser</span>
+<span class="doccomment">//! end note</span>
+<span class="doccomment">//!   [lib.rs] -down- [response_get_mod]</span>
+<span class="doccomment">//!   [lib.rs] -down- [response_post_mod]</span>
+<span class="doccomment">//!   [response_post_mod] -down- [auto_generated_mod]</span>
+<span class="doccomment">//! note right</span>
+<span class="doccomment">//! autogenerated boilerplate</span>
+<span class="doccomment">//! matching and routing, </span>
+<span class="doccomment">//! client proxy functions</span>
+<span class="doccomment">//! end note</span>
+<span class="doccomment">//!   [auto_generated_mod] -down- [common_structs_mod]</span>
+<span class="doccomment">//!     note right: shared between server and client</span>
+<span class="doccomment">//!   [response_get_mod] -down- [auto_generated_files_mod]</span>
+<span class="doccomment">//!     note left: files are embedded in code</span>
+<span class="doccomment">//! }</span>
+<span class="doccomment">//! package &quot;methods&quot; {</span>
+<span class="doccomment">//!   [common_structs_mod] -down- [srv_methods_mod]</span>
+<span class="doccomment">//!     note right: API endpoints</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! }</span>
+<span class="doccomment">//! package &quot;data_storage&quot; {</span>
+<span class="doccomment">//!   [srv_methods_mod] &lt;-down- [db_sled_mod]</span>
+<span class="doccomment">//!   note left </span>
+<span class="doccomment">//!   trees: crates, version, yanked, review </span>
+<span class="doccomment">//!   stored in \~/.config/crev/cargo_crev_reviews_data</span>
+<span class="doccomment">//!   end note</span>
+<span class="doccomment">//!   [srv_methods_mod] -down-&gt; [crev_mod] : save review</span>
+<span class="doccomment">//!   [db_sled_mod] &lt;-down- [crev_mod]</span>
+<span class="doccomment">//!   [db_sled_mod] &lt;-down- [cargo_registry_mod]</span>
+<span class="doccomment">//!   [db_sled_mod] &lt;-down- [crates_io_mod]</span>
+<span class="doccomment">//!   [crev_mod] &lt;-down-&gt; (\~/.config/crev/)</span>
+<span class="doccomment">//!   [cargo_registry_mod] &lt;-down- (\~/.cargo/registry)</span>
+<span class="doccomment">//!   [crates_io_mod] &lt;-down- (⛅/crates.io/api/v1)</span>
+<span class="doccomment">//! }</span>
+<span class="doccomment">//! @enduml</span>
+<span class="doccomment">//! ```</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! ![svg_s3icSOMh3Tz6Fs0E7X-OY_mExPpR5Ov74jkJ8cSDRhw](https://github.com/bestia-dev/cargo_crev_reviews_workspace/raw/main/images/svg_s3icSOMh3Tz6Fs0E7X-OY_mExPpR5Ov74jkJ8cSDRhw.svg)</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! ## Bad surprise on WSL2</span>
 <span class="doccomment">//!</span>
@@ -1269,6 +1374,5 @@ First check the reviews from other developers on https://web.crev.dev/rust-revie
     <span class="ident">std::fs::create_dir_all</span>(<span class="ident">CARGO_CREV_REVIEWS_SRC</span>.<span class="ident">as_path</span>()).<span class="ident">unwrap</span>();
 }
 </code></pre></div>
-</section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="cargo_crev_reviews" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div>
-    <script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script>
+</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="cargo_crev_reviews" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.60.0 (7737e0b5c 2022-04-04)" ></div>
 </body></html>
