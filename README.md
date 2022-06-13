@@ -28,4 +28,6 @@ This is a Rust [workspace](https://doc.rust-lang.org/book/ch14-03-cargo-workspac
 The main member project is `cargo_crev_reviews`.  
 Please, continue reading `README.md` here:  
 
+[comment]: # (use_other_readme_instead https://github.com/bestia-dev/cargo_crev_reviews_workspace/tree/main/cargo_crev_reviews)
+
 ## [cargo_crev_reviews/README.md](https://github.com/bestia-dev/cargo_crev_reviews_workspace/tree/main/cargo_crev_reviews)  
