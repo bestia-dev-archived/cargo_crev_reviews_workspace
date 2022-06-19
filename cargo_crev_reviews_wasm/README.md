@@ -24,6 +24,9 @@
 
 [comment]: # (auto_badges end)
 
+Hashtags: #rustlang #tutorial
+My projects on Github are more like a tutorial than a finished product: [bestia-dev tutorials](https://github.com/bestia-dev/tutorials_rust_wasm).
+
 This is a member of the workspace.
 It is the wasm frontend for the GUI application.  
 The main member project is `cargo_crev_reviews`.  

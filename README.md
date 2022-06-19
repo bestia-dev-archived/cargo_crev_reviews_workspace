@@ -22,6 +22,9 @@
 
 [comment]: # (auto_badges end)
 
+Hashtags: #rustlang #tutorial  
+My projects on Github are more like a tutorial than a finished product: [bestia-dev tutorials](https://github.com/bestia-dev/tutorials_rust_wasm).
+
 ## Workspace
 
 This is a Rust [workspace](https://doc.rust-lang.org/book/ch14-03-cargo-workspaces.html) (multi-project) that contains member projects.  

@@ -24,7 +24,8 @@
 
 [comment]: # (auto_badges end)
 
-Hashtags: #rustlang #buildtool #developmenttool #crev #review #fullstack #gui #clientserver
+Hashtags: #rustlang #buildtool #developmenttool #crev #review #fullstack #gui #clientserver  
+My projects on Github are more like a tutorial than a finished product: [bestia-dev tutorials](https://github.com/bestia-dev/tutorials_rust_wasm).
 
 ## Try it
 
