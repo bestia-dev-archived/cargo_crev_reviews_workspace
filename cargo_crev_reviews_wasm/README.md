@@ -20,7 +20,7 @@
 
 [comment]: # (auto_badges start)
 
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/bestia-dev/cargo_crev_reviews_workspace/blob/main/LICENSE)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/bestia-dev/cargo_crev_reviews_workspace/blob/main/LICENSE) ![Hits](https://bestia.dev/webpage_hit_counter/get_svg_image/943539693)
 
 [comment]: # (auto_badges end)
 
